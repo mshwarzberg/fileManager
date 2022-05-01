@@ -1,0 +1,14 @@
+* {
+  font: 1rem 'Times New Roman';
+  margin: 0;
+  padding: 0;
+}
+
+
+html,
+body {
+  background: #888888;
+  overflow-x: hidden;
+  width: 100%;
+  height: 100%;
+}
