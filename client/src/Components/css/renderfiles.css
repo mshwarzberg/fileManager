@@ -1,0 +1,51 @@
+#renderfile--page {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.renderfile--block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 21vw;
+  height: 21vh;
+  text-align: center;
+  
+  background-color: #555555;
+}
+
+.renderfile--block:hover {
+  background-color: #333333;
+  color: white;
+  cursor: pointer;
+}
+
+.renderfile--thumbnail {
+  max-height: 90%;
+  max-width: 100%;
+}
+
+.renderfile--icon {
+  position: absolute;
+  width: 15%;
+  right: 3px;
+  top: 3px;
+}
+
+.renderfile--text {
+  position: absolute;
+  bottom: 3px;
+}
+
+.renderfile--play-icon{
+  position: absolute;
+  width: 20%;
+}
+
+.renderfile--full-icon {
+  position: absolute;
+  max-width: 100%;
+  max-height: 100%;
+}

@@ -6,6 +6,8 @@ const ffmpeg = require("fluent-ffmpeg");
 const sharp = require("sharp");
 
 function checkType(type) {
+  type = type.toLowerCase()
+
   const checkIfImage = [
     type === "jpg",
     type === "png",
@@ -40,10 +42,19 @@ function checkType(type) {
 }
 
 router.post("/loaddata", (req, res) => {
-  const currentDir = `./rootDir` + req.body.currentDirectory;
+
+  let currentdirectory
+
+  if (req.body.currentDirectory === '/') {
+    currentdirectory = `./rootDir/`;
+  }
+  else {
+    currentdirectory = req.body.currentDirectory
+  }
+
   // generate all the file in the current folder
   var result = fs
-    .readdirSync(currentDir, { withFileTypes: true })
+    .readdirSync(currentdirectory, { withFileTypes: true })
     .map((file) => {
       let suffix = "";
       var methods = ["isDirectory", "isFile"];
@@ -77,33 +88,31 @@ router.post("/loaddata", (req, res) => {
           prefix += file.name[j];
         }
       }
-
+      // create folder of the current directory within the thumbnails folder to store the thumbnails
+      fs.mkdirSync(`./thumbnails/${currentdirectory}`, {recursive: true}, () => {})
+      
       // before generating thumbnail check if it already exists
-      fs.readdir(`./thumbnails/`, (err, files) => {
-        if (files.indexOf(`thumbnail-${prefix}.png`) === -1) {
+      fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
+        if (files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
           // generate thumbnails for videos and gifs
           if (
             checkType(suffix) === "videoIcon" ||
             checkType(suffix) === "gifIcon"
           ) {
-            ffmpeg(`${currentDir}/${file.name}`)
+            ffmpeg(`${currentdirectory}/${file.name}`)
               .screenshots({
                 count: 1,
-                folder: "./thumbnails/temp",
-                timestamps: ["70%"],
-                filename: `thumbnail-${prefix}.png`,
+                folder: `./thumbnails/${currentdirectory}`,
+                timestamps: ["40%"],
+                width: '512',
+                filename: `thumbnail-${prefix}${suffix}.jpeg`,
               })
-              .on("end", async () => {
-                await sharp(`./thumbnails/temp/thumbnail-${prefix}.png`)
-                  .resize({ width: 192 })
-                  .toFile(`./thumbnails/thumbnail-${prefix}.png`).catch(err => {console.log(err)})
-              });
           }
           // generate thumbnails for images
           else if (checkType(suffix) === "imageIcon" && suffix !== "xcf") {
-            sharp(`${currentDir}/${file.name}`)
-              .resize({ width: 192 })
-              .toFile(`./thumbnails/thumbnail-${prefix}.png`)
+            sharp(`${currentdirectory}/${file.name}`)
+              .resize({ width: 512 })
+              .toFile(`./thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`)
               .then((res) => {
                 return;
               })
@@ -111,31 +120,35 @@ router.post("/loaddata", (req, res) => {
                 console.log(err);
               });
           }
+    
         }
       });
-
+      
       const filteredData = {
         ...item,
         itemtype: item.isDirectory ? "folderIcon" : checkType(suffix),
         fileextension: suffix || "Directory",
         prefix: prefix,
+        size: fs.statSync(`${currentdirectory}/${file.name}`).size,
       };
       return filteredData;
     });
-  res.send({ result: result });
+  res.send([...result, { currentdirectory: currentdirectory }]);
 });
 
 router.post('/getthumbs', (req, res) => {
-  fs.readdir(`./thumbnails`, (err, files) =>{
+  const { currentdirectory, prefix, suffix } = req.body
+  fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) =>{
     if (err) res.end(err);
-    if (files.indexOf(`thumbnail-${req.body.prefix}.png`) !== -1) {
+    if (files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) !== -1) {
       const options = {
         root: "./",
         headers: {
-          prefix: req.body.prefix,
+          prefix: prefix,
+          suffix: suffix
         },
       }
-      return res.sendFile(`/thumbnails/thumbnail-${req.body.prefix}.png`, options)
+      return res.sendFile(`/thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`, options)
     } else {
       res.end()
     }

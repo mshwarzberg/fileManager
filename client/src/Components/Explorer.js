@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import folderIcon from "../images/folder.png";
-import gifIcon from "../images/gif.png";
-import videoIcon from "../images/film.png";
-import documentIcon from "../images/document.png";
-import imageIcon from "../images/image.png";
-import unknownIcon from "../images/unknownfile.png";
+
+import Navbar from "./Navbar";
+import RenderFiles from "./RenderFiles";
 
 function Explorer() {
+  // usestate to hold the value of the current directory, the actual items within it that are gonna be rendered, and the current index to later use to apply thumbnails if applicable.
   const [currentDir, setCurrentDir] = useState("/");
   const [itemsInDirectory, setITemsInDirectory] = useState([]);
-  const [currentItem, setCurrentItem] = useState(0)
+  const [currentItem, setCurrentItem] = useState(0);
+  const [viewImage, setViewImage] = useState();
+
   // load file data
   useEffect(() => {
     fetch("/api/explorer/loaddata", {
@@ -19,89 +19,80 @@ function Explorer() {
     })
       .then(async (res) => {
         let response = await res.json();
-        setITemsInDirectory(response.result);
+        setCurrentDir(response[response.length - 1].currentdirectory);
+        setITemsInDirectory(response);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [currentDir]);
+  }, [currentDir, setCurrentDir]);
 
   // load thumbnails
   useEffect(() => {
-     if (itemsInDirectory[currentItem]) {
+    if (itemsInDirectory[currentItem]) {
       fetch("/api/explorer/getthumbs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prefix: itemsInDirectory[currentItem].prefix, currentDirectory: currentDir }),
+        body: JSON.stringify({
+          prefix: itemsInDirectory[currentItem].prefix,
+          currentdirectory: currentDir,
+          suffix: itemsInDirectory[currentItem].fileextension,
+        }),
       })
         .then(async (res) => {
           let response = await res.blob();
-          setITemsInDirectory(prevItem => {
-            const imageURL = URL.createObjectURL(response)
-            return prevItem.map(item => {
-              if (res.headers.get('prefix') === item.prefix) {
-              }
+          let imageURL = URL.createObjectURL(response);
+
+          setITemsInDirectory((prevItem) => {
+            return prevItem.map((item) => {
               const newData = {
                 ...item,
-                thumbnail: res.headers.get('prefix') === item.prefix ? imageURL : item.thumbnail
-              }
-              return newData
-            })
-          })
-          setCurrentItem(prevItem => prevItem + 1)
+                thumbnail:
+                  res.headers.get("prefix") === item.prefix &&
+                  res.headers.get("suffix") === item.fileextension
+                    ? imageURL
+                    : item.thumbnail,
+              };
+              return newData;
+            });
+          });
+          setCurrentItem(currentItem + 1);
         })
         .catch((err) => {
           console.log(err);
         });
-     }
-  }, [setCurrentItem, itemsInDirectory, currentItem]);
+      return;
+    }
+  }, [itemsInDirectory, currentItem, currentDir]);
 
-  // render the file data and thumbnails
-  const renderItems = itemsInDirectory.map((item) => {
-
-    const icon = () => {
-      if (item.itemtype === "gifIcon") {
-        return gifIcon;
-      }
-      if (item.itemtype === "videoIcon") {
-        return videoIcon;
-      }
-      if (item.itemtype === "imageIcon") {
-        return imageIcon;
-      }
-      if (item.itemtype === "documentIcon") {
-        return documentIcon;
-      }
-      if (item.itemtype === "unknownIcon") {
-        return unknownIcon;
-      }
-      if (item.itemtype === "folderIcon") {
-        return folderIcon;
-      }
-    };
-
-    if (item.name) {
-      return (
+  return (
+    <div id="explorer--page">
+      {!viewImage && (
+        <Navbar
+          currentDir={currentDir}
+          setCurrentDir={setCurrentDir}
+          setCurrentItem={setCurrentItem}
+        />
+      )}
+      {viewImage && (
         <div
-          key={item.name}
-          className="viewport--file-data"
+          id="viewimage--view-block"
           onClick={() => {
-            if (item.itemtype === "folderIcon") {
-              setCurrentDir(`/${item.name}`);
-              setCurrentItem(0)
-            }
+            return setViewImage();
           }}
         >
-          {item.thumbnail ? <img src={item.thumbnail} className="viewport--icon"/> : <img src={icon()} alt="icon" className="viewport--icon" />}
-          <p>File name: {item.name}</p>
-          <p>Type of item: {item.fileextension}</p>
+          <img id="viewimage--view-image" src={viewImage} alt="focused" />
         </div>
-      );
-    }
-    return "";
-  });
-
-  return <div id="viewport--folders-and-files">{renderItems}</div>;
+      )}
+      <RenderFiles
+        itemsInDirectory={itemsInDirectory}
+        setCurrentDir={setCurrentDir}
+        setCurrentItem={setCurrentItem}
+        currentDir={currentDir}
+        setViewImage={setViewImage}
+      />
+    </div>
+  );
 }
 
 export default Explorer;
