@@ -1,11 +1,15 @@
-import React from 'react'
+import React, { createContext, useState } from 'react'
 import Explorer from './Components/Explorer';
 
+export const DirectoryContext = createContext()
+
 function App() {
+  const [currentDir, setCurrentDir] = useState('./rootDir')
+
   return (
-    <div className="App">
+    <DirectoryContext.Provider value={{currentDir, setCurrentDir}}>
       <Explorer />
-    </div>
+    </DirectoryContext.Provider>
   );
 }
 

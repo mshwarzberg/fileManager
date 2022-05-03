@@ -1,12 +1,13 @@
 const express = require("express");
 const fs = require("fs");
 const router = express.Router();
+const fastFolderSize = require('fast-folder-size')
 
 const ffmpeg = require("fluent-ffmpeg");
 const sharp = require("sharp");
 
 function checkType(type) {
-  type = type.toLowerCase()
+  type = type.toLowerCase();
 
   const checkIfImage = [
     type === "jpg",
@@ -19,6 +20,7 @@ function checkType(type) {
     type === "mkv",
     type === "webm",
     type === "avi",
+    type === "wmv",
   ];
 
   const checkIfGif = [type === "gif"];
@@ -41,31 +43,60 @@ function checkType(type) {
   }
 }
 
-router.post("/loaddata", (req, res) => {
+let currentdirectory;
+let subDirSizes = {}
+function checkIfFileOrDir(file) {
+  var methods = ["isDirectory", "isFile"];
 
-  let currentdirectory
-
-  if (req.body.currentDirectory === '/') {
-    currentdirectory = `./rootDir/`;
+  // check if current item in directory is a file or a sub-directory
+  var item = { name: file.name };
+  for (var method of methods) {
+    if (file[method]() === true) {
+      item[method] = file[method]();
+    }
   }
-  else {
-    currentdirectory = req.body.currentDirectory
-  }
+  return item
+}
 
-  // generate all the file in the current folder
-  var result = fs
-    .readdirSync(currentdirectory, { withFileTypes: true })
-    .map((file) => {
-      let suffix = "";
-      var methods = ["isDirectory", "isFile"];
+// when a user enters a new folder create all the subdirectories before moving forward
+function newDirs(req, res, next) {
 
-      // check if current item in directory is a file or a sub-directory
-      var item = { name: file.name };
-      for (var method of methods) {
-        if (file[method]() === true) {
-          item[method] = file[method]();
+  currentdirectory = `${req.body.currentdirectory}`;
+  
+  // create folder of the current directory within the thumbnails folder to store the thumbnails
+  fs.mkdir(`./thumbnails/${currentdirectory}`, { recursive: true }, () => {
+    fs.readdir(`./${currentdirectory}`, {withFileTypes: true}, (err, files) => {
+      if (err) console.log('cant make dir', err);
+      for (let i = 0; i < files.length - 1; i++) {
+        if (checkIfFileOrDir(files[i]).isDirectory) {
+            fastFolderSize(`./${currentdirectory}/${files[i].name}`,(err, bytes) => {
+              if (err) {
+                throw err
+              }
+              subDirSizes = {
+                ...subDirSizes,
+                [currentdirectory]: bytes
+              }
+              return subDirSizes
+            })
+          fs.mkdir(`./thumbnails/${currentdirectory}/${files[i].name}`, () => {})
         }
       }
+    });
+  });
+  next()
+}
+
+router.post("/loaddata", newDirs, (req, res) => {
+  // generate all the file in the current folder
+  var result = fs
+  .readdirSync(`./${currentdirectory}`, { withFileTypes: true })
+  .map((file) => {
+    console.log(subDirSizes);
+    let suffix = "";
+
+      const item = checkIfFileOrDir(file)
+
       // get the file extension
       if (!item.isDirectory) {
         for (let i = file.name.length - 1; i > 0; i--) {
@@ -81,38 +112,41 @@ router.post("/loaddata", (req, res) => {
       // get the filename without the extension
       let prefix = "";
       // if the item is a folder don't remove anything. keep the file as is.
-      for (let j = 0; j < file.name.length - (suffix.length && suffix.length + 1); j++) {
+      for (
+        let j = 0;
+        j < file.name.length - (suffix.length && suffix.length + 1);
+        j++
+      ) {
         if (prefix === "") {
           prefix = file.name[j];
         } else {
           prefix += file.name[j];
         }
       }
-      // create folder of the current directory within the thumbnails folder to store the thumbnails
-      fs.mkdirSync(`./thumbnails/${currentdirectory}`, {recursive: true}, () => {})
-      
+
       // before generating thumbnail check if it already exists
       fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
+        if (err) console.log(err);
         if (files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
           // generate thumbnails for videos and gifs
           if (
             checkType(suffix) === "videoIcon" ||
             checkType(suffix) === "gifIcon"
           ) {
-            ffmpeg(`${currentdirectory}/${file.name}`)
-              .screenshots({
-                count: 1,
-                folder: `./thumbnails/${currentdirectory}`,
-                timestamps: ["40%"],
-                width: '512',
-                filename: `thumbnail-${prefix}${suffix}.jpeg`,
-              })
+            ffmpeg(`./${currentdirectory}/${file.name}`).screenshots({
+              count: 1,
+              folder: `./thumbnails/${currentdirectory}`,
+              timestamps: ["70%"],
+              filename: `thumbnail-${prefix}${suffix}.jpeg`,
+            });
           }
           // generate thumbnails for images
           else if (checkType(suffix) === "imageIcon" && suffix !== "xcf") {
-            sharp(`${currentdirectory}/${file.name}`)
+            sharp(`./${currentdirectory}/${file.name}`)
               .resize({ width: 512 })
-              .toFile(`./thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`)
+              .toFile(
+                `./thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`
+              )
               .then((res) => {
                 return;
               })
@@ -120,7 +154,6 @@ router.post("/loaddata", (req, res) => {
                 console.log(err);
               });
           }
-    
         }
       });
       
@@ -132,27 +165,30 @@ router.post("/loaddata", (req, res) => {
         size: fs.statSync(`${currentdirectory}/${file.name}`).size,
       };
       return filteredData;
-    });
+    })
   res.send([...result, { currentdirectory: currentdirectory }]);
 });
 
-router.post('/getthumbs', (req, res) => {
-  const { currentdirectory, prefix, suffix } = req.body
-  fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) =>{
-    if (err) res.end(err);
+router.post("/getthumbs", newDirs, (req, res) => {
+  const { currentdirectory, prefix, suffix } = req.body;
+  fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
+    if (err) console.log(err);
     if (files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) !== -1) {
       const options = {
         root: "./",
         headers: {
           prefix: prefix,
-          suffix: suffix
+          suffix: suffix,
         },
-      }
-      return res.sendFile(`/thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`, options)
+      };
+      return res.sendFile(
+        `/thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`,
+        options
+      );
     } else {
-      res.end()
+      res.end();
     }
-  })
-})
+  });
+});
 
 module.exports = router;

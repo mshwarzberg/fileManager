@@ -1,6 +1,10 @@
 #renderfile--page {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  padding-top: 6rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 .renderfile--block {
@@ -9,43 +13,51 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 25vw;
   width: 21vw;
-  height: 21vh;
+  margin: 0.5vw;
+  background-color: #222222;
+  border-radius: 0.3rem;
+  padding: 0 1vw;
   text-align: center;
-  
-  background-color: #555555;
 }
 
-.renderfile--block:hover {
-  background-color: #333333;
-  color: white;
-  cursor: pointer;
-}
-
-.renderfile--thumbnail {
-  max-height: 90%;
-  max-width: 100%;
-}
-
-.renderfile--icon {
+#renderfile--corner-icon {
+  width: 17%;
+  height: 17%;
   position: absolute;
-  width: 15%;
-  right: 3px;
-  top: 3px;
+  top: 0.3rem;
+  right: 0.3rem;
+}
+
+#renderfile--image-thumbnail, #renderfile--video-thumbnail {
+  max-height: 80%;
+  max-width: 80%;
+  position: absolute;
 }
 
 .renderfile--text {
+  text-overflow: ellipsis;
   position: absolute;
-  bottom: 3px;
+  bottom: 0;
+  max-height: 100%;
+  color: white;
+  background-color: black;
+  padding: 1% 5%;
+  border: 1px solid white;
+  border-radius: 1rem;
+}
+.renderfile--block:hover {
+  cursor: pointer;
+  color: white;
 }
 
-.renderfile--play-icon{
-  position: absolute;
+#renderfile--play-icon {
   width: 20%;
+  position: absolute;
 }
 
 .renderfile--full-icon {
-  position: absolute;
   max-width: 100%;
   max-height: 100%;
 }
