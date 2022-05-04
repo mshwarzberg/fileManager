@@ -2,49 +2,51 @@ import React, { useState, useEffect, useContext } from "react";
 
 import Navbar from "./Navbar";
 import RenderFiles from "./RenderFiles";
-import ItemDisplay from "./ItemDisplay";
+import ItemDisplayFocused from "./ItemDisplayFocused";
 
-import  {DirectoryContext} from '../App'
+import { DirectoryContext } from "../App";
 
 function Explorer() {
 
-  const {currentDir, setCurrentDir} = useContext(DirectoryContext)
+  const { currentDir, setCurrentDir } = useContext(DirectoryContext);
 
   // usestate to hold the value of the current directory, the actual items within it that are gonna be rendered, and the current index to later use to apply thumbnails if applicable.
-  const [itemsInDirectory, setITemsInDirectory] = useState([]);
+  const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // view images, videos and documents.
-  const [viewImage, setViewImage] = useState({
-    imageURL: "",
+
+  const [viewItem, setViewItem] = useState({
+    type: null,
+    property: null,
     index: null,
-  });
-  const [viewVideo, setViewVideo] = useState({
-    path: "",
-    index: null,
-  });
-  const [viewDocument, setViewDocument] = useState({
-    document: "",
-    index: null,
+    name: null,
   });
 
+  // turn the byte integers from the filesize to more readable format
   function shortHandFileSize(originalSize) {
-    let newSize;
 
-    if (originalSize > 1000 && originalSize < 950000) {
+    let newSize;
+    let letter
+
+    if (originalSize < 1000) {
+      newSize = originalSize
+      letter = ''
+    }
+    else if (originalSize > 1000 && originalSize < 950000) {
       newSize = originalSize / 1000;
-      newSize = newSize.toString().slice(0, 5);
-      newSize += "KB";
-    }
-    else if (originalSize >= 950000 && originalSize < 950000000) {
+      letter = 'K'
+    } else if (originalSize >= 950000 && originalSize < 950000000) {
       newSize = originalSize / 1000000;
-      newSize = newSize.toString().slice(0, 5);
-      newSize += "MB";
-    }
-    else if (originalSize >= 950000000) {
+      letter = 'M'
+    } else if (originalSize >= 950000000) {
       newSize = originalSize / 1000000000;
-      newSize = newSize.toString().slice(0, 5);
-      newSize += "GB";
+      letter = 'G'
+    } else {
+      return originalSize
     }
+
+    newSize = newSize.toString().slice(0, 5);
+    newSize += `${letter}B`;
+
     return newSize;
   }
   // wasn't able to pass in the directory into the video in RenderFiles component so I'm setting it here so that the video may load from any folder.
@@ -68,7 +70,7 @@ function Explorer() {
       .then(async (res) => {
         let response = await res.json();
         setCurrentDir(response[response.length - 1].currentdirectory);
-        setITemsInDirectory(response);
+        setItemsInDirectory(response);
       })
       .catch((err) => {
         console.log(err);
@@ -78,7 +80,6 @@ function Explorer() {
   // load thumbnails
   useEffect(() => {
     if (itemsInDirectory[currentIndex]) {
-      
       fetch("/api/explorer/getthumbs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,7 +93,7 @@ function Explorer() {
           let response = await res.blob();
           let imageURL = URL.createObjectURL(response);
 
-          setITemsInDirectory((prevItem) => {
+          setItemsInDirectory((prevItem) => {
             return prevItem.map((item) => {
               const newData = {
                 ...item,
@@ -116,41 +117,28 @@ function Explorer() {
   }, [itemsInDirectory, currentIndex, currentDir]);
 
   function clear() {
-    URL.revokeObjectURL(viewImage.imageURL);
-    setViewVideo({
-      path: "",
+    URL.revokeObjectURL(viewItem.property);
+    setViewItem({
+      type: null,
+      property: null,
       index: null,
-    });
-    setViewImage({
-      imageURL: null,
-      index: null,
-    });
-    setViewDocument({
-      document: null,
-      index: null,
+      name: null,
     });
   }
 
   return (
     <div id="explorer--page">
-      <Navbar
-        setCurrentIndex={setCurrentIndex}
-      />
-      <ItemDisplay
-        viewDocument={viewDocument}
-        viewVideo={viewVideo}
-        viewImage={viewImage}
+      <ItemDisplayFocused
+        viewItem={viewItem}
         clear={clear}
+        setViewItem={setViewItem}
       />
+      <Navbar setCurrentIndex={setCurrentIndex} />
       <RenderFiles
-        viewImage={viewImage}
-        viewVideo={viewVideo}
-        viewDocument={viewDocument}
         itemsInDirectory={itemsInDirectory}
         setCurrentIndex={setCurrentIndex}
-        setViewImage={setViewImage}
-        setViewVideo={setViewVideo}
-        setViewDocument={setViewDocument}
+        viewItem={viewItem}
+        setViewItem={setViewItem}
         clear={clear}
       />
     </div>

@@ -43,9 +43,18 @@
   max-height: 100%;
   color: white;
   background-color: black;
-  padding: 1% 5%;
-  border: 1px solid white;
-  border-radius: 1rem;
+  padding: 1%;
+  border: 1.5px solid white;
+  border-radius: 0.8rem;
+  width: 95%;
+  font-family: Bitter;
+  font-size: 95%;
+}
+
+.renderfile--text:hover {
+  color: #000;
+  background-color: #fff;
+  bottom: 1.5px solid black;
 }
 .renderfile--block:hover {
   cursor: pointer;

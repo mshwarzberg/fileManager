@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const router = express.Router();
 const fastFolderSize = require('fast-folder-size')
-
+const { promisify } = require('util')
 const ffmpeg = require("fluent-ffmpeg");
 const sharp = require("sharp");
 
@@ -58,20 +58,20 @@ function checkIfFileOrDir(file) {
   return item
 }
 
-// when a user enters a new folder create all the subdirectories before moving forward
+// when a user enters a new folder create all the subdirectories for the thumbnails.
 function newDirs(req, res, next) {
 
   currentdirectory = `${req.body.currentdirectory}`;
-  
+  const fastFolderSizeSync = promisify(fastFolderSize)
   // create folder of the current directory within the thumbnails folder to store the thumbnails
   fs.mkdir(`./thumbnails/${currentdirectory}`, { recursive: true }, () => {
     fs.readdir(`./${currentdirectory}`, {withFileTypes: true}, (err, files) => {
       if (err) console.log('cant make dir', err);
       for (let i = 0; i < files.length - 1; i++) {
         if (checkIfFileOrDir(files[i]).isDirectory) {
-            fastFolderSize(`./${currentdirectory}/${files[i].name}`,(err, bytes) => {
+            fastFolderSizeSync(`./${currentdirectory}/${files[i].name}`,(err, bytes) => {
               if (err) {
-                throw err
+                console.log(err);
               }
               subDirSizes = {
                 ...subDirSizes,
@@ -92,7 +92,6 @@ router.post("/loaddata", newDirs, (req, res) => {
   var result = fs
   .readdirSync(`./${currentdirectory}`, { withFileTypes: true })
   .map((file) => {
-    console.log(subDirSizes);
     let suffix = "";
 
       const item = checkIfFileOrDir(file)

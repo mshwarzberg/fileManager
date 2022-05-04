@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
+
 import folderIcon from "../images/folder.png";
 import gifIcon from "../images/gif.png";
 import videoIcon from "../images/film.png";
@@ -8,18 +9,17 @@ import imageIcon from "../images/image.png";
 import unknownIcon from "../images/unknownfile.png";
 import playIcon from "../images/play.png";
 
+import lightFolderIcon from "../images/folderhover.png";
+import lightGifIcon from '../images/gifhover.png'
+import lightVideoIcon from "../images/filmhover.png";
+import lightDocumentIcon from "../images/documenthover.png";
+import lightImageIcon from "../images/imagehover.png";
+import lightUnknownIcon from "../images/unknownfilehover.png";
+import lightPlayIcon from "../images/playhover.png";
+
 function RenderFiles(props) {
-  const {
-    itemsInDirectory,
-    setCurrentIndex,
-    setViewImage,
-    setViewVideo,
-    viewVideo,
-    viewImage,
-    viewDocument,
-    clear,
-    setViewDocument,
-  } = props;
+  const { itemsInDirectory, setCurrentIndex, clear, setViewItem, viewItem } =
+    props;
 
   const { setCurrentDir } = useContext(DirectoryContext);
 
@@ -33,7 +33,7 @@ function RenderFiles(props) {
       ) {
         return;
       }
-      if (viewVideo.path || viewImage.imageURL || viewDocument.document) {
+      if (viewItem.property) {
         if (e.key === "Escape") {
           clear();
           return;
@@ -46,9 +46,9 @@ function RenderFiles(props) {
           direction = "backwards";
         }
         changeFolderOrViewFiles(
-          viewVideo.itemtype || viewImage.itemtype || viewDocument.itemtype,
-          viewImage.name || viewVideo.name || viewDocument.name,
-          viewImage.index || viewVideo.index || viewDocument.index,
+          viewItem.type,
+          viewItem.name,
+          viewItem.index,
           direction
         );
       }
@@ -59,16 +59,68 @@ function RenderFiles(props) {
     };
   });
 
+  function renderViewItem(type, property, index, filename) {
+    if (type === "videoIcon") {
+      return setViewItem({
+        type: "videoIcon",
+        property: property,
+        index: index,
+        name: filename,
+      });
+    } else if (
+      type === "imageIcon" ||
+      type === "gifIcon" ||
+      type === "documentIcon"
+    ) {
+      fetch(`/api/loadfiles/file`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          file: filename,
+          type: type,
+        }),
+      })
+        .then(async (res) => {
+          const response = await res.blob();
+
+          if (res.headers.get("type") === "image") {
+            const imageURL = URL.createObjectURL(response);
+            return setViewItem({
+              type: "imageIcon",
+              property: imageURL,
+              index: index,
+              name: filename,
+            });
+          } else {
+            const reader = new FileReader();
+
+            reader.onload = function () {
+              setViewItem({
+                type: "documentIcon",
+                property: reader.result,
+                index: index,
+                name: filename,
+              });
+            };
+            reader.readAsBinaryString(response);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
+
   function changeFolderOrViewFiles(type, filename, index, direction) {
     if (direction) {
       if (direction === "forwards") {
         for (let i = index + 1; i < itemsInDirectory.length; i++) {
+          type = itemsInDirectory[i].itemtype
           if (
-            itemsInDirectory[i].itemtype === "videoIcon" ||
-            itemsInDirectory[i].itemtype === "imageIcon" ||
-            itemsInDirectory[i].itemtype === "documentIcon"
+            type === "videoIcon" ||
+            type === "imageIcon" ||
+            type === "documentIcon"
           ) {
-            type = itemsInDirectory[i].itemtype;
             filename = itemsInDirectory[i].name;
             index = i;
             break;
@@ -76,12 +128,12 @@ function RenderFiles(props) {
         }
       } else if (direction === "backwards") {
         for (let i = index - 1; i > 0; i--) {
+          type = itemsInDirectory[i].itemtype
           if (
-            itemsInDirectory[i].itemtype === "videoIcon" ||
-            itemsInDirectory[i].itemtype === "imageIcon" ||
-            itemsInDirectory[i].itemtype === "documentIcon"
+            type === "videoIcon" ||
+            type === "imageIcon" ||
+            type === "documentIcon"
           ) {
-            type = itemsInDirectory[i].itemtype;
             filename = itemsInDirectory[i].name;
             index = i;
             break;
@@ -95,91 +147,47 @@ function RenderFiles(props) {
     if (type === "folderIcon") {
       setCurrentDir((prevDir) => `${prevDir}/${filename}`);
       setCurrentIndex(0);
-    } else if (type === "imageIcon" || type === "gifIcon") {
-      fetch("/api/loadfiles/image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          image: filename,
-        }),
-      })
-        .then(async (res) => {
-          const response = await res.blob();
-          const imageURL = URL.createObjectURL(response);
-
-          setViewImage({
-            imageURL: imageURL,
-            index: index,
-            itemtype: type,
-            name: filename,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else if (type === "videoIcon") {
-      setViewVideo({
-        path: `/api/loadfiles/playvideo/${filename}`,
-        index: index,
-        itemtype: type,
-        name: filename,
-      });
-    } else if (type === "documentIcon") {
-      fetch("/api/loadfiles/document", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          document: filename,
-        }),
-      })
-        .then(async (res) => {
-          const response = await res.blob();
-
-          const reader = new FileReader();
-          reader.onload = function () {
-            setViewDocument({
-              document: reader.result,
-              index: index,
-              itemtype: type,
-              name: filename,
-            });
-          };
-          reader.readAsText(response);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    } else {
+      // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
+      return renderViewItem(
+        type,
+        `/api/loadfiles/playvideo/${filename}`,
+        index,
+        filename
+      );
     }
   }
+
   function sliceName(name) {
     if (name.slice(0, 25) < name) {
       return name.slice(0, 25) + "...";
     }
     return name.slice(0, 25);
   }
+
   // render the file data and thumbnails
   const renderItems = itemsInDirectory.map((item) => {
     const { itemtype, name, fileextension, size, thumbnail, shorthandsize } =
       item;
 
-    const icon = () => {
+    const icon = (light) => {
       if (itemtype === "gifIcon") {
-        return gifIcon;
+        return light ? lightGifIcon : gifIcon ;
       }
       if (itemtype === "videoIcon") {
-        return videoIcon;
+        return light ? lightVideoIcon : videoIcon;
       }
       if (itemtype === "imageIcon") {
-        return imageIcon;
+        return light ? lightImageIcon : imageIcon;
       }
       if (itemtype === "documentIcon") {
-        return documentIcon;
+        return light ? lightDocumentIcon : documentIcon;
       }
       if (itemtype === "unknownIcon") {
-        return unknownIcon;
+        return light ? lightUnknownIcon : unknownIcon;
       }
       if (itemtype === "folderIcon") {
-        return folderIcon;
+        return light ? lightFolderIcon : folderIcon;
       }
     };
 
@@ -215,6 +223,8 @@ function RenderFiles(props) {
                     />
                     <img
                       src={icon()}
+                      onMouseEnter={(e) => {e.currentTarget.src = icon(true)}}
+                      onMouseLeave={(e) => {e.currentTarget.src = icon()}}
                       alt="imageicon"
                       id="renderfile--corner-icon"
                     />
@@ -237,6 +247,8 @@ function RenderFiles(props) {
                     />
                     <img
                       src={playIcon}
+                      onMouseEnter={(e) => {e.currentTarget.src = lightPlayIcon}}
+                      onMouseLeave={(e) => {e.currentTarget.src = playIcon}}
                       alt="playvideo"
                       id="renderfile--play-icon"
                     />
@@ -254,6 +266,8 @@ function RenderFiles(props) {
                 >
                   <img
                     src={icon()}
+                    onMouseEnter={(e) => {e.currentTarget.src = icon(true)}}
+                    onMouseLeave={(e) => {e.currentTarget.src = icon()}}
                     alt="fileicon"
                     className="renderfile--full-icon"
                   />

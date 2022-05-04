@@ -9,17 +9,21 @@ router.post("/setdirectorytocurrent", (req, res) => {
   res.end();
 });
 
-router.post("/image", (req, res) => {
-  return res.sendFile(`/${currentdirectory}/${req.body.image}`, {
+router.post("/file", (req, res) => {
+  let type
+  if (req.body.type === 'imageIcon' || req.body.type === 'gifIcon') {
+    type = 'image'
+  } else {
+    type = 'document'
+  }
+  return res.sendFile(`/${currentdirectory}/${req.body.file}`, {
     root: "./",
+    headers: {
+      type: type
+    }
   });
 });
 
-router.post("/document", (req, res) => {
-  return res.sendFile(`/${currentdirectory}/${req.body.document}`, {
-    root: "./",
-  });
-});
 
 router.get("/playvideo/:video", (req, res) => {
   const path = `${currentdirectory}/${req.params.video}`;

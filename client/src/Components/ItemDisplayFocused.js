@@ -1,11 +1,13 @@
 import React from "react";
 
-function ItemDisplay(props) {
-  const { viewDocument, viewVideo, viewImage, clear } = props;
+function ItemDisplayFocused(props) {
+
+  const { viewItem, clear } = props;
 
   return (
-    (viewImage.imageURL && (
+    (viewItem.type === 'imageIcon' && (
       <div id="viewitem--block">
+        <h1 id="viewitem--filename">{viewItem.name}</h1>
         <button
           className="viewitem--close"
           onClick={() => {
@@ -16,13 +18,14 @@ function ItemDisplay(props) {
         </button>
         <img
           id="viewitem--item"
-          src={viewImage.imageURL}
-          alt={viewImage.name}
+          src={viewItem.property}
+          alt={viewItem.name}
         />
       </div>
     )) ||
-    (viewVideo.path && (
+    (viewItem.type === 'videoIcon' && (
       <div id="viewitem--block">
+        <h1 id="viewitem--filename">{viewItem.name}</h1>
         <button
           className="viewitem--close"
           onClick={() => {
@@ -32,12 +35,13 @@ function ItemDisplay(props) {
           X
         </button>
         <video id="viewitem--item" controls autoPlay muted >
-          <source src={`${viewVideo.path}`}/>
+          <source src={`${viewItem.property}`}/>
         </video>
       </div>
     )) ||
-    (viewDocument.document && (
+    (viewItem.type === 'documentIcon' && (
       <div id="viewitem--block-document">
+        <h1 id="viewitem--filename">{viewItem.name}</h1>
         <button
           className="viewitem--close"
           onClick={() => {
@@ -46,10 +50,10 @@ function ItemDisplay(props) {
         >
           X
         </button>
-        <pre id="viewitem--document">{viewDocument.document}</pre>
+        <pre id="viewitem--document">{viewItem.property}</pre>
       </div>
     ))
   );
 }
 
-export default ItemDisplay;
+export default ItemDisplayFocused;
