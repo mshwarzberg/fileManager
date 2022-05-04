@@ -25,7 +25,7 @@ function checkType(type) {
 
   const checkIfGif = [type === "gif"];
 
-  const checkIfText = [type === "txt", type === "rtf", type === "ion"];
+  const checkIfText = [type === "txt", type === "rtf", type === "ion", type === 'docx'];
 
   if (checkIfImage.includes(true)) {
     return "imageIcon";
@@ -45,6 +45,7 @@ function checkType(type) {
 
 let currentdirectory;
 let subDirSizes = {}
+
 function checkIfFileOrDir(file) {
   var methods = ["isDirectory", "isFile"];
 
