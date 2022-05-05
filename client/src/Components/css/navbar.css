@@ -1,17 +1,25 @@
-#navbar--navbar {
-  position: sticky;
-  top: 0;
-  right: 0;
-  height: 5rem;
-  width: 100%;
-  z-index: 1;
-  background-color: #444444;
+#navbar--container, #navbar--component {
   display: flex;
   flex-direction: row;
   align-items: center;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  background-color: #444444;
+  border-bottom: 5px solid #000;
+  height: 7rem;
 }
 
-#navbar--back {
+#navbar--navigation {
+  display: flex;
+  flex-direction: row;
+}
+#navbar--navigation > * {
+  font-size: 2rem;
+}
+
+.navbar--button {
   width: 5rem;
   height: 5rem;
   margin-right: 1rem;
@@ -24,19 +32,18 @@
   align-items: center;
   justify-content: center;
   font-family: Lato;
-  font-size: 1.5rem;
 }
 
-#navbar--back:hover {
+.navbar--button:hover {
   color: white;
   background-color: black;
   border: 2px solid white;
   cursor: pointer;
 }
 
-#navbar--back:disabled {
+#navbar--backwards:disabled, #navbar--forwards:disabled {
   background-color: #888888;
-  color: #666666;
+  color: #444444;
   border: 2px solid #666;
   cursor: default;
 }
@@ -44,4 +51,6 @@
 #navbar--current-directory {
   font-size: 2rem;
   color: white;
+  font-family: jakarta;
+  cursor: default;
 }

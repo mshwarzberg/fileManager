@@ -1,27 +1,19 @@
 import React, { useEffect, useContext } from "react";
+
+// context import
 import { DirectoryContext } from "../App";
-
-import folderIcon from "../images/folder.png";
-import gifIcon from "../images/gif.png";
-import videoIcon from "../images/film.png";
-import documentIcon from "../images/document.png";
-import imageIcon from "../images/image.png";
-import unknownIcon from "../images/unknownfile.png";
-import playIcon from "../images/play.png";
-
-import lightFolderIcon from "../images/folderhover.png";
-import lightGifIcon from '../images/gifhover.png'
-import lightVideoIcon from "../images/filmhover.png";
-import lightDocumentIcon from "../images/documenthover.png";
-import lightImageIcon from "../images/imagehover.png";
-import lightUnknownIcon from "../images/unknownfilehover.png";
-import lightPlayIcon from "../images/playhover.png";
+import { ItemContext } from "./Main";
+// component import
+import ImageGif from "./RenderItems/ImageGif";
+import Video from "./RenderItems/Video";
+import Icon from "./RenderItems/Icon";
 
 function RenderFiles(props) {
-  const { itemsInDirectory, setCurrentIndex, clear, setViewItem, viewItem } =
-    props;
+  
+  const { itemsInDirectory } = props;
 
   const { setCurrentDir } = useContext(DirectoryContext);
+  const { viewItem, setViewItem } = useContext(ItemContext);
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
@@ -34,10 +26,6 @@ function RenderFiles(props) {
         return;
       }
       if (viewItem.property) {
-        if (e.key === "Escape") {
-          clear();
-          return;
-        }
         let direction;
         if (e.key === "ArrowRight" || e.key === " ") {
           direction = "forwards";
@@ -60,17 +48,17 @@ function RenderFiles(props) {
   });
 
   function renderViewItem(type, property, index, filename) {
-    if (type === "videoIcon") {
+    if (type === "video") {
       return setViewItem({
-        type: "videoIcon",
+        type: "video",
         property: property,
         index: index,
         name: filename,
       });
     } else if (
-      type === "imageIcon" ||
-      type === "gifIcon" ||
-      type === "documentIcon"
+      type === "image" ||
+      type === "gif" ||
+      type === "document"
     ) {
       fetch(`/api/loadfiles/file`, {
         method: "POST",
@@ -83,10 +71,10 @@ function RenderFiles(props) {
         .then(async (res) => {
           const response = await res.blob();
 
-          if (res.headers.get("type") === "image") {
+          if (res.headers.get("type") === "imagegif") {
             const imageURL = URL.createObjectURL(response);
             return setViewItem({
-              type: "imageIcon",
+              type: "imagegif",
               property: imageURL,
               index: index,
               name: filename,
@@ -96,7 +84,7 @@ function RenderFiles(props) {
 
             reader.onload = function () {
               setViewItem({
-                type: "documentIcon",
+                type: "document",
                 property: reader.result,
                 index: index,
                 name: filename,
@@ -115,11 +103,11 @@ function RenderFiles(props) {
     if (direction) {
       if (direction === "forwards") {
         for (let i = index + 1; i < itemsInDirectory.length; i++) {
-          type = itemsInDirectory[i].itemtype
+          type = itemsInDirectory[i].itemtype;
           if (
-            type === "videoIcon" ||
-            type === "imageIcon" ||
-            type === "documentIcon"
+            type === "video" ||
+            type === "image" ||
+            type === "document"
           ) {
             filename = itemsInDirectory[i].name;
             index = i;
@@ -128,11 +116,11 @@ function RenderFiles(props) {
         }
       } else if (direction === "backwards") {
         for (let i = index - 1; i > 0; i--) {
-          type = itemsInDirectory[i].itemtype
+          type = itemsInDirectory[i].itemtype;
           if (
-            type === "videoIcon" ||
-            type === "imageIcon" ||
-            type === "documentIcon"
+            type === "video" ||
+            type === "image" ||
+            type === "document"
           ) {
             filename = itemsInDirectory[i].name;
             index = i;
@@ -142,11 +130,8 @@ function RenderFiles(props) {
       }
     }
 
-    clear();
-
-    if (type === "folderIcon") {
+    if (type === "folder") {
       setCurrentDir((prevDir) => `${prevDir}/${filename}`);
-      setCurrentIndex(0);
     } else {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
@@ -158,44 +143,14 @@ function RenderFiles(props) {
     }
   }
 
-  function sliceName(name) {
-    if (name.slice(0, 25) < name) {
-      return name.slice(0, 25) + "...";
-    }
-    return name.slice(0, 25);
-  }
-
   // render the file data and thumbnails
   const renderItems = itemsInDirectory.map((item) => {
     const { itemtype, name, fileextension, size, thumbnail, shorthandsize } =
       item;
-
-    const icon = (light) => {
-      if (itemtype === "gifIcon") {
-        return light ? lightGifIcon : gifIcon ;
-      }
-      if (itemtype === "videoIcon") {
-        return light ? lightVideoIcon : videoIcon;
-      }
-      if (itemtype === "imageIcon") {
-        return light ? lightImageIcon : imageIcon;
-      }
-      if (itemtype === "documentIcon") {
-        return light ? lightDocumentIcon : documentIcon;
-      }
-      if (itemtype === "unknownIcon") {
-        return light ? lightUnknownIcon : unknownIcon;
-      }
-      if (itemtype === "folderIcon") {
-        return light ? lightFolderIcon : folderIcon;
-      }
-    };
-
     if (name) {
       return (
         <div
           key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
-          className="renderfile--block"
           // decide what to do when a user clicks on an item.
           onClick={() => {
             changeFolderOrViewFiles(
@@ -205,79 +160,27 @@ function RenderFiles(props) {
             );
           }}
         >
-          {/* which icon/thumbnail is gonna be rendered */}
-          {(() => {
-            if (thumbnail) {
-              if (itemtype === "imageIcon" || itemtype === "gifIcon") {
-                return (
-                  <div
-                    className="renderfile--block"
-                    id="renderfile--image-block"
-                    title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
-                  >
-                    <img
-                      src={thumbnail}
-                      alt="imagethumb"
-                      className="renderfile--thumbnail"
-                      id="renderfile--image-thumbnail"
-                    />
-                    <img
-                      src={icon()}
-                      onMouseEnter={(e) => {e.currentTarget.src = icon(true)}}
-                      onMouseLeave={(e) => {e.currentTarget.src = icon()}}
-                      alt="imageicon"
-                      id="renderfile--corner-icon"
-                    />
-                    <p className="renderfile--text">
-                      Item name: {sliceName(name)}
-                    </p>
-                  </div>
-                );
-              } else if (itemtype === "videoIcon") {
-                return (
-                  <div
-                    className="renderfile--block"
-                    title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
-                  >
-                    <img
-                      src={thumbnail}
-                      alt="gifthumb"
-                      className="renderfile--thumbnail"
-                      id="renderfile--video-thumbnail"
-                    />
-                    <img
-                      src={playIcon}
-                      onMouseEnter={(e) => {e.currentTarget.src = lightPlayIcon}}
-                      onMouseLeave={(e) => {e.currentTarget.src = playIcon}}
-                      alt="playvideo"
-                      id="renderfile--play-icon"
-                    />
-                    <p className="renderfile--text">
-                      Item name: {sliceName(name)}
-                    </p>
-                  </div>
-                );
-              }
-            } else {
-              return (
-                <div
-                  className="renderfile--block"
-                  title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
-                >
-                  <img
-                    src={icon()}
-                    onMouseEnter={(e) => {e.currentTarget.src = icon(true)}}
-                    onMouseLeave={(e) => {e.currentTarget.src = icon()}}
-                    alt="fileicon"
-                    className="renderfile--full-icon"
-                  />
-                  <p className="renderfile--text">
-                    Item name: {sliceName(name)}
-                  </p>
-                </div>
-              );
-            }
-          })()}
+          <ImageGif
+            name={name}
+            shorthandsize={shorthandsize}
+            fileextension={fileextension}
+            itemtype={itemtype}
+            thumbnail={thumbnail}
+          />
+          <Video
+            name={name}
+            shorthandsize={shorthandsize}
+            fileextension={fileextension}
+            thumbnail={thumbnail}
+            itemtype={itemtype}
+          />
+          <Icon
+            name={name}
+            shorthandsize={shorthandsize}
+            fileextension={fileextension}
+            itemtype={itemtype}
+            thumbnail={thumbnail}
+          />
         </div>
       );
     }

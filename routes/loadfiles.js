@@ -11,8 +11,8 @@ router.post("/setdirectorytocurrent", (req, res) => {
 
 router.post("/file", (req, res) => {
   let type
-  if (req.body.type === 'imageIcon' || req.body.type === 'gifIcon') {
-    type = 'image'
+  if (req.body.type === 'image' || req.body.type === 'gif') {
+    type = 'imagegif'
   } else {
     type = 'document'
   }
@@ -24,12 +24,11 @@ router.post("/file", (req, res) => {
   });
 });
 
-
 router.get("/playvideo/:video", (req, res) => {
   const path = `${currentdirectory}/${req.params.video}`;
   const totalSize = fs.statSync(path).size;
   const range = req.headers.range;
-
+  
   if (range) {
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);

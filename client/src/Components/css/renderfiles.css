@@ -1,7 +1,7 @@
 #renderfile--page {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding-top: 6rem;
+  padding-top: 8rem;
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -34,12 +34,13 @@
   max-height: 80%;
   max-width: 80%;
   position: absolute;
+
 }
 
 .renderfile--text {
   text-overflow: ellipsis;
   position: absolute;
-  bottom: 0;
+  bottom: 2%;
   max-height: 100%;
   color: white;
   background-color: black;
@@ -48,7 +49,7 @@
   border-radius: 0.8rem;
   width: 95%;
   font-family: Bitter;
-  font-size: 95%;
+  font-size: 90%;
 }
 
 .renderfile--text:hover {
@@ -56,9 +57,10 @@
   background-color: #fff;
   bottom: 1.5px solid black;
 }
+
 .renderfile--block:hover {
   cursor: pointer;
-  color: white;
+  background-color: #555555;
 }
 
 #renderfile--play-icon {

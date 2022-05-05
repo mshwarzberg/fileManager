@@ -1,19 +1,24 @@
-import React, { useState, useEffect, useContext } from "react";
-
-import Navbar from "./Navbar";
-import RenderFiles from "./RenderFiles";
-import ItemDisplayFocused from "./ItemDisplayFocused";
-
+import React, { useState, useEffect, useContext, createContext } from "react";
 import { DirectoryContext } from "../App";
+import SortBy from "./Navbar/SortBy";
+import RenderFiles from "./RenderFiles";
+import VideoDisplay from "./ItemDisplay/VideoDisplay";
+import DocumentDisplay from "./ItemDisplay/DocumentDisplay";
+import ImageDisplay from "./ItemDisplay/ImageDisplay";
+import shortHandFileSize from "../Helpers/FileSize";
 
-function Explorer() {
+import Navbar from "./Navbar/Navbar";
 
+export const ItemContext = createContext();
+
+function Main() {
   const { currentDir, setCurrentDir } = useContext(DirectoryContext);
 
   // usestate to hold the value of the current directory, the actual items within it that are gonna be rendered, and the current index to later use to apply thumbnails if applicable.
+  // change to usereducer
   const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [error, setError] = useState();
   const [viewItem, setViewItem] = useState({
     type: null,
     property: null,
@@ -21,34 +26,6 @@ function Explorer() {
     name: null,
   });
 
-  // turn the byte integers from the filesize to more readable format
-  function shortHandFileSize(originalSize) {
-
-    let newSize;
-    let letter
-
-    if (originalSize < 1000) {
-      newSize = originalSize
-      letter = ''
-    }
-    else if (originalSize > 1000 && originalSize < 950000) {
-      newSize = originalSize / 1000;
-      letter = 'K'
-    } else if (originalSize >= 950000 && originalSize < 950000000) {
-      newSize = originalSize / 1000000;
-      letter = 'M'
-    } else if (originalSize >= 950000000) {
-      newSize = originalSize / 1000000000;
-      letter = 'G'
-    } else {
-      return originalSize
-    }
-
-    newSize = newSize.toString().slice(0, 5);
-    newSize += `${letter}B`;
-
-    return newSize;
-  }
   // wasn't able to pass in the directory into the video in RenderFiles component so I'm setting it here so that the video may load from any folder.
   useEffect(() => {
     fetch("/api/loadfiles/setdirectorytocurrent", {
@@ -58,6 +35,7 @@ function Explorer() {
       },
       body: JSON.stringify({ currentdirectory: currentDir }),
     });
+    setCurrentIndex(0);
   }, [currentDir, setCurrentDir]);
 
   // load file data
@@ -69,8 +47,17 @@ function Explorer() {
     })
       .then(async (res) => {
         let response = await res.json();
+        if (response.err) {
+          return setError(response.err);
+        }
         setCurrentDir(response[response.length - 1].currentdirectory);
-        setItemsInDirectory(response);
+        setItemsInDirectory([
+          ...response,
+          response.map((item) => ({
+            ...item,
+            prefix: decodeURIComponent(item.prefix),
+          })),
+        ]);
       })
       .catch((err) => {
         console.log(err);
@@ -84,7 +71,7 @@ function Explorer() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prefix: itemsInDirectory[currentIndex].prefix,
+          prefix: decodeURIComponent(itemsInDirectory[currentIndex].prefix),
           currentdirectory: `/${currentDir}`,
           suffix: itemsInDirectory[currentIndex].fileextension,
         }),
@@ -114,35 +101,23 @@ function Explorer() {
         });
       return;
     }
-  }, [itemsInDirectory, currentIndex, currentDir]);
-
-  function clear() {
-    URL.revokeObjectURL(viewItem.property);
-    setViewItem({
-      type: null,
-      property: null,
-      index: null,
-      name: null,
-    });
-  }
+  }, [itemsInDirectory, setItemsInDirectory, currentIndex, currentDir]);
 
   return (
     <div id="explorer--page">
-      <ItemDisplayFocused
-        viewItem={viewItem}
-        clear={clear}
-        setViewItem={setViewItem}
-      />
-      <Navbar setCurrentIndex={setCurrentIndex} />
-      <RenderFiles
-        itemsInDirectory={itemsInDirectory}
-        setCurrentIndex={setCurrentIndex}
-        viewItem={viewItem}
-        setViewItem={setViewItem}
-        clear={clear}
-      />
+      <nav id="navbar--container">
+        <Navbar />
+        <SortBy setItemsInDirectory={setItemsInDirectory} />
+      </nav>
+      <ItemContext.Provider value={{ viewItem, setViewItem }}>
+        <VideoDisplay />
+        <DocumentDisplay />
+        <ImageDisplay />
+        <RenderFiles itemsInDirectory={itemsInDirectory} />
+      </ItemContext.Provider>
+      {error && <h1>{error}</h1>}
     </div>
   );
 }
 
-export default Explorer;
+export default Main;

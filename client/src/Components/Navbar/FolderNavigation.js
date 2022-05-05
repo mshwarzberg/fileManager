@@ -1,17 +1,16 @@
 import React, { useContext } from "react";
-import folderIconForNavbar from "../images/navfolder.png";
 
-import { DirectoryContext } from "../App";
+import { DirectoryContext } from "../../App";
 
-function Navbar(props) {
+function FolderNavigation() {
 
-  const { setCurrentIndex } = props;
   const { currentDir, setCurrentDir } = useContext(DirectoryContext);
-  
+
   return (
-    <nav id="navbar--navbar">
+    <div id="navbar--navigation">
       <button
-        id="navbar--back"
+      id="navbar--backwards"
+        className="navbar--button"
         onClick={() => {
           setCurrentDir((prevDir) => {
             for (let i = prevDir.length - 2; i > 0; i--) {
@@ -19,19 +18,22 @@ function Navbar(props) {
                 return prevDir.slice(0, i);
               }
             }
-
             return prevDir;
           });
-          setCurrentIndex(0);
         }}
         disabled={currentDir === "./rootDir"}
       >
-        Back
+        ←
       </button>
-      <img src={folderIconForNavbar} alt="folder" />
-      <h1 id="navbar--current-directory">&nbsp;{currentDir}</h1>
-    </nav>
-  );
+      <button
+        id="navbar--forwards"
+        className="navbar--button"
+        disabled={true}
+      >
+        →
+      </button>
+    </div>
+  )
 }
 
-export default Navbar;
+export default FolderNavigation

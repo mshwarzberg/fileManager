@@ -1,8 +1,6 @@
 const express = require("express");
 const fs = require("fs");
 const router = express.Router();
-const fastFolderSize = require('fast-folder-size')
-const { promisify } = require('util')
 const ffmpeg = require("fluent-ffmpeg");
 const sharp = require("sharp");
 
@@ -28,23 +26,30 @@ function checkType(type) {
   const checkIfText = [type === "txt", type === "rtf", type === "ion", type === 'docx'];
 
   if (checkIfImage.includes(true)) {
-    return "imageIcon";
+    return "image";
   }
   if (checkIfVideo.includes(true)) {
-    return "videoIcon";
+    return "video";
   }
   if (checkIfGif.includes(true)) {
-    return "gifIcon";
+    return "gif";
   }
   if (checkIfText.includes(true)) {
-    return "documentIcon";
+    return "document";
   } else {
-    return "unknownIcon";
+    return "unknown";
   }
 }
 
+function verifyFolder(req,res, next) {
+  currentdirectory = req.body.currentdirectory;
+  if (fs.existsSync(`./${currentdirectory}`)) {
+    return next()
+  }
+  return res.send({err: 'ERROR: FOLDER DOES NOT EXIST'});
+}
+
 let currentdirectory;
-let subDirSizes = {}
 
 function checkIfFileOrDir(file) {
   var methods = ["isDirectory", "isFile"];
@@ -60,26 +65,15 @@ function checkIfFileOrDir(file) {
 }
 
 // when a user enters a new folder create all the subdirectories for the thumbnails.
-function newDirs(req, res, next) {
+function makeThumbnailDirectories(req, res, next) {
 
-  currentdirectory = `${req.body.currentdirectory}`;
-  const fastFolderSizeSync = promisify(fastFolderSize)
   // create folder of the current directory within the thumbnails folder to store the thumbnails
   fs.mkdir(`./thumbnails/${currentdirectory}`, { recursive: true }, () => {
     fs.readdir(`./${currentdirectory}`, {withFileTypes: true}, (err, files) => {
       if (err) console.log('cant make dir', err);
       for (let i = 0; i < files.length - 1; i++) {
         if (checkIfFileOrDir(files[i]).isDirectory) {
-            fastFolderSizeSync(`./${currentdirectory}/${files[i].name}`,(err, bytes) => {
-              if (err) {
-                console.log(err);
-              }
-              subDirSizes = {
-                ...subDirSizes,
-                [currentdirectory]: bytes
-              }
-              return subDirSizes
-            })
+            
           fs.mkdir(`./thumbnails/${currentdirectory}/${files[i].name}`, () => {})
         }
       }
@@ -88,7 +82,7 @@ function newDirs(req, res, next) {
   next()
 }
 
-router.post("/loaddata", newDirs, (req, res) => {
+router.post("/loaddata", verifyFolder, makeThumbnailDirectories, (req, res) => {
   // generate all the file in the current folder
   var result = fs
   .readdirSync(`./${currentdirectory}`, { withFileTypes: true })
@@ -130,8 +124,8 @@ router.post("/loaddata", newDirs, (req, res) => {
         if (files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
           // generate thumbnails for videos and gifs
           if (
-            checkType(suffix) === "videoIcon" ||
-            checkType(suffix) === "gifIcon"
+            checkType(suffix) === "video" ||
+            checkType(suffix) === "gif"
           ) {
             ffmpeg(`./${currentdirectory}/${file.name}`).screenshots({
               count: 1,
@@ -141,7 +135,7 @@ router.post("/loaddata", newDirs, (req, res) => {
             });
           }
           // generate thumbnails for images
-          else if (checkType(suffix) === "imageIcon" && suffix !== "xcf") {
+          else if (checkType(suffix) === "image" && suffix !== "xcf") {
             sharp(`./${currentdirectory}/${file.name}`)
               .resize({ width: 512 })
               .toFile(
@@ -159,17 +153,18 @@ router.post("/loaddata", newDirs, (req, res) => {
       
       const filteredData = {
         ...item,
-        itemtype: item.isDirectory ? "folderIcon" : checkType(suffix),
+        itemtype: item.isDirectory ? "folder" : checkType(suffix),
         fileextension: suffix || "Directory",
-        prefix: prefix,
+        prefix: encodeURIComponent(prefix),
         size: fs.statSync(`${currentdirectory}/${file.name}`).size,
       };
+      
       return filteredData;
     })
   res.send([...result, { currentdirectory: currentdirectory }]);
 });
 
-router.post("/getthumbs", newDirs, (req, res) => {
+router.post("/getthumbs", verifyFolder, makeThumbnailDirectories, (req, res) => {
   const { currentdirectory, prefix, suffix } = req.body;
   fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
     if (err) console.log(err);
@@ -177,7 +172,7 @@ router.post("/getthumbs", newDirs, (req, res) => {
       const options = {
         root: "./",
         headers: {
-          prefix: prefix,
+          prefix: encodeURIComponent(prefix),
           suffix: suffix,
         },
       };
