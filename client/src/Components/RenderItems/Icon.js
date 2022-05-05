@@ -22,7 +22,7 @@ function Icon(props) {
           alt="fileicon"
           className="renderfile--full-icon"
         />
-        <p className="renderfile--text">Item name: {SliceName(name)}</p>
+        <p className="renderfile--text">{SliceName(name)}</p>
       </div>
     )
   );

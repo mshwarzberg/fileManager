@@ -1,15 +1,11 @@
-import React, { useState, useEffect, useContext, createContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
 import SortBy from "./Navbar/SortBy";
 import RenderFiles from "./RenderFiles";
-import VideoDisplay from "./ItemDisplay/VideoDisplay";
-import DocumentDisplay from "./ItemDisplay/DocumentDisplay";
-import ImageDisplay from "./ItemDisplay/ImageDisplay";
+
 import shortHandFileSize from "../Helpers/FileSize";
 
 import Navbar from "./Navbar/Navbar";
-
-export const ItemContext = createContext();
 
 function Main() {
   const { currentDir, setCurrentDir } = useContext(DirectoryContext);
@@ -19,12 +15,6 @@ function Main() {
   const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState();
-  const [viewItem, setViewItem] = useState({
-    type: null,
-    property: null,
-    index: null,
-    name: null,
-  });
 
   // wasn't able to pass in the directory into the video in RenderFiles component so I'm setting it here so that the video may load from any folder.
   useEffect(() => {
@@ -50,10 +40,8 @@ function Main() {
         if (response.err) {
           return setError(response.err);
         }
-        setCurrentDir(response[response.length - 1].currentdirectory);
         setItemsInDirectory([
-          ...response,
-          response.map((item) => ({
+          ...response.map((item) => ({
             ...item,
             prefix: decodeURIComponent(item.prefix),
           })),
@@ -71,7 +59,7 @@ function Main() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prefix: decodeURIComponent(itemsInDirectory[currentIndex].prefix),
+          prefix: itemsInDirectory[currentIndex].prefix,
           currentdirectory: `/${currentDir}`,
           suffix: itemsInDirectory[currentIndex].fileextension,
         }),
@@ -109,12 +97,7 @@ function Main() {
         <Navbar />
         <SortBy setItemsInDirectory={setItemsInDirectory} />
       </nav>
-      <ItemContext.Provider value={{ viewItem, setViewItem }}>
-        <VideoDisplay />
-        <DocumentDisplay />
-        <ImageDisplay />
-        <RenderFiles itemsInDirectory={itemsInDirectory} />
-      </ItemContext.Provider>
+      {!error && <RenderFiles itemsInDirectory={itemsInDirectory} />}
       {error && <h1>{error}</h1>}
     </div>
   );

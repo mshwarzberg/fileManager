@@ -31,7 +31,7 @@ export default function ImageGif(props) {
           alt="imageicon"
           id="renderfile--corner-icon"
         />
-        <p className="renderfile--text">Item name: {SliceName(name)}</p>
+        <p className="renderfile--text">{SliceName(name)}</p>
       </div>
     )
   );

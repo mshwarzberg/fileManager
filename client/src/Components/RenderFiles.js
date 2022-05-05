@@ -1,19 +1,27 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 
 // context import
 import { DirectoryContext } from "../App";
-import { ItemContext } from "./Main";
 // component import
 import ImageGif from "./RenderItems/ImageGif";
 import Video from "./RenderItems/Video";
 import Icon from "./RenderItems/Icon";
 
+import VideoDisplay from "./ItemDisplay/VideoDisplay";
+import DocumentDisplay from "./ItemDisplay/DocumentDisplay";
+import ImageDisplay from "./ItemDisplay/ImageDisplay";
+
 function RenderFiles(props) {
-  
   const { itemsInDirectory } = props;
 
   const { setCurrentDir } = useContext(DirectoryContext);
-  const { viewItem, setViewItem } = useContext(ItemContext);
+
+  const [viewItem, setViewItem] = useState({
+    type: null,
+    property: null,
+    index: null,
+    name: null,
+  });
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
@@ -55,11 +63,7 @@ function RenderFiles(props) {
         index: index,
         name: filename,
       });
-    } else if (
-      type === "image" ||
-      type === "gif" ||
-      type === "document"
-    ) {
+    } else if (type === "image" || type === "gif" || type === "document") {
       fetch(`/api/loadfiles/file`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,11 +108,7 @@ function RenderFiles(props) {
       if (direction === "forwards") {
         for (let i = index + 1; i < itemsInDirectory.length; i++) {
           type = itemsInDirectory[i].itemtype;
-          if (
-            type === "video" ||
-            type === "image" ||
-            type === "document"
-          ) {
+          if (type === "video" || type === "image" || type === "document") {
             filename = itemsInDirectory[i].name;
             index = i;
             break;
@@ -117,11 +117,7 @@ function RenderFiles(props) {
       } else if (direction === "backwards") {
         for (let i = index - 1; i > 0; i--) {
           type = itemsInDirectory[i].itemtype;
-          if (
-            type === "video" ||
-            type === "image" ||
-            type === "document"
-          ) {
+          if (type === "video" || type === "image" || type === "document") {
             filename = itemsInDirectory[i].name;
             index = i;
             break;
@@ -186,7 +182,14 @@ function RenderFiles(props) {
     }
     return "";
   });
-  return <div id="renderfile--page">{renderItems}</div>;
+  return (
+    <div id="renderfile--page">
+      {renderItems}
+      <VideoDisplay viewItem={viewItem} setViewItem={setViewItem} />
+      <DocumentDisplay viewItem={viewItem} setViewItem={setViewItem} />
+      <ImageDisplay viewItem={viewItem} setViewItem={setViewItem} />
+    </div>
+  );
 }
 
 export default RenderFiles;

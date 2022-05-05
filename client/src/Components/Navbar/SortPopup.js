@@ -1,82 +1,50 @@
 import React, { useState } from "react";
 
 function SortPopup(props) {
-  const { setItemsInDirectory, descending,setDescending } = props;
+  const { setItemsInDirectory, descending } = props;
 
   const [showSubSort, setShowSubSort] = useState(false);
 
-  function sort(sortMethod, type) {
+  function mySort(sortMethod, type) {
     setItemsInDirectory((prevItems) => {
-      prevItems.sort((a, b) => {
-        if (sortMethod === 'size') {
-          return a.size - b.size;
-        }
-        else if (sortMethod) {
-          if (type === 'folder') {
-            return a.itemtype === type
-          }
-          if (type === 'name') {
-            return a.name
-          }
-          return a.fileextension === type
-        } 
-        return a.sortMethod
-      });
-
       let sortedArray = [];
+      let sortDirection = descending;
+
+      if (sortMethod === "folder") {
+        // top down
+        prevItems.sort((item) => {
+          return item.itemtype !== "folder";
+        });
+      }
+      if (sortMethod === "name") {
+        // top down
+        prevItems.sort((a, b) => {
+          a = a.name.toLowerCase();
+          b = b.name.toLowerCase();
+          if (a < b) return -1;
+          if (a > b) return 1;
+          return 0;
+        });
+      }
+      if (sortMethod === "size") {
+        // top down
+        prevItems.sort((a, b) => {
+          return b.size - a.size;
+        });
+      }
+      if (type) {
+        // top down
+        prevItems.sort((item) => {
+          return item.fileextension !== type;
+        });
+      }
+
       prevItems.forEach((item) => {
         sortedArray.push(item);
       });
-      if (!descending) {
-        return sortedArray
-      }
-      return sortedArray.reverse()
+      console.log(sortDirection, sortedArray);
+      return sortDirection ? sortedArray : sortedArray.reverse();
     });
-
-    // if (value === "folders") {
-    //   return setItemsInDirectory((prevItems) => {
-    //     let sortedArray = [];
-    //     let otherItems = [];
-    //     prevItems.map((item) => {
-    //       if (item.itemtype === "folderIcon") {
-    //         return sortedArray.push(item);
-    //       }
-    //       return otherItems.push(item);
-    //     });
-
-    //     sortedArray = sortedArray.concat(otherItems);
-    //     return sortedArray;
-    //   });
-    // } else if (value === "size") {
-    //   return setItemsInDirectory((prevItems) => {
-    //     prevItems.sort((a, b) => {
-    //       return a.size - b.size;
-    //     });
-    //     let sortedArray = [];
-    //     prevItems.forEach((item) => {
-    //       sortedArray.push(item);
-    //     });
-    //     if (descending) {
-    //       sortedArray.reverse();
-    //     }
-    //     return sortedArray;
-    //   });
-
-    // } else if (value === 'name') {
-    //   return setItemsInDirectory((prevItems) => {
-    //     prevItems.sort((item) => {
-    //       return item.name
-    //     })
-    //     let sortedArray = []
-    //     prevItems.forEach((item) => {
-    //       sortedArray.push(item)
-    //     })
-    //     if (descending) {
-    //       sortedArray.reverse();
-    //     }
-    //     return sortedArray
-    //   })
-    // }
   }
 
   return (
@@ -91,7 +59,7 @@ function SortPopup(props) {
         className="filter--list-item"
         id="filter--by-folder-first"
         onClick={() => {
-          sort("folder", 'folder');
+          mySort("folder");
         }}
       >
         Sort Folders First
@@ -100,7 +68,7 @@ function SortPopup(props) {
         className="filter--list-item"
         id="filter--by-folder-second"
         onClick={() => {
-          sort("name");
+          mySort("name");
         }}
       >
         Sort By Name
@@ -109,7 +77,7 @@ function SortPopup(props) {
         className="filter--list-item"
         id="filter--by-folder-third"
         onClick={() => {
-          sort("size");
+          mySort("size");
         }}
       >
         Sort By File Size
@@ -130,7 +98,7 @@ function SortPopup(props) {
             <li
               className="filter--list-item"
               onClick={() => {
-                sort("type", "jpg");
+                mySort("type", "jpg");
               }}
             >
               jpg
@@ -138,7 +106,7 @@ function SortPopup(props) {
             <li
               className="filter--list-item"
               onClick={() => {
-                sort("type", "mp4");
+                mySort("type", "mp4");
               }}
             >
               mp4
@@ -146,7 +114,7 @@ function SortPopup(props) {
             <li
               className="filter--list-item"
               onClick={() => {
-                sort("type", "png");
+                mySort("type", "png");
               }}
             >
               png
@@ -154,7 +122,7 @@ function SortPopup(props) {
             <li
               className="filter--list-item"
               onClick={() => {
-                sort("type", "txt");
+                mySort("type", "txt");
               }}
             >
               txt
@@ -162,7 +130,7 @@ function SortPopup(props) {
             <li
               className="filter--list-item"
               onClick={() => {
-                sort("type", "gif");
+                mySort("type", "gif");
               }}
             >
               gif

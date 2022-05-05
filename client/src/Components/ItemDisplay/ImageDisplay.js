@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
-import { ItemContext } from "../Main";
+import React from "react";
 
-function ImageDisplay() {
-  const { viewItem, setViewItem } = useContext(ItemContext);
+function ImageDisplay(props) {
+  const { viewItem, setViewItem } = props;
 
   return (
     viewItem.type === "imagegif" && (

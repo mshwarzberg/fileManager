@@ -161,18 +161,19 @@ router.post("/loaddata", verifyFolder, makeThumbnailDirectories, (req, res) => {
       
       return filteredData;
     })
-  res.send([...result, { currentdirectory: currentdirectory }]);
+  res.send(result);
 });
 
 router.post("/getthumbs", verifyFolder, makeThumbnailDirectories, (req, res) => {
-  const { currentdirectory, prefix, suffix } = req.body;
+  const { currentdirectory, suffix } = req.body;
+  const prefix = decodeURIComponent(req.body.prefix)
   fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
     if (err) console.log(err);
     if (files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) !== -1) {
       const options = {
         root: "./",
         headers: {
-          prefix: encodeURIComponent(prefix),
+          prefix: req.body.prefix,
           suffix: suffix,
         },
       };

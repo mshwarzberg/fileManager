@@ -1,8 +1,6 @@
-import React, { useContext } from "react";
-import { ItemContext } from "../Main";
-
-function DocumentDisplay() {
-  const { viewItem, setViewItem } = useContext(ItemContext);
+import React from "react";
+function DocumentDisplay(props) {
+  const { viewItem, setViewItem } = props;
 
   return (
     viewItem.type === "document" && (

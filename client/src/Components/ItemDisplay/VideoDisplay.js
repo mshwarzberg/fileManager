@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import { ItemContext } from "../Main";
+import React, { useEffect } from "react";
 
-function VideoDisplay() {
-  const { viewItem, setViewItem } = useContext(ItemContext);
+function VideoDisplay(props) {
+  const { viewItem, setViewItem } = props;
+
   return (
     viewItem.type === "video" && (
       <div id="viewitem--block">
@@ -21,9 +21,7 @@ function VideoDisplay() {
         >
           X
         </button>
-        <video id="viewitem--item" controls autoPlay muted>
-          <source src={`${viewItem.property}`} />
-        </video>
+        <video id="viewitem--item" src={viewItem.property}controls autoPlay muted />
       </div>
     )
   );

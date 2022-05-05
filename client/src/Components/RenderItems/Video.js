@@ -30,7 +30,7 @@ function Video(props) {
           alt="playvideo"
           id="renderfile--play-icon"
         />
-        <p className="renderfile--text">Item name: {SliceName(name)}</p>
+        <p className="renderfile--text">{SliceName(name)}</p>
       </div>
     )
   );
