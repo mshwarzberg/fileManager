@@ -1,12 +1,17 @@
 import React from "react";
 
 function ImageDisplay(props) {
+  
   const { viewItem, setViewItem } = props;
 
   return (
     viewItem.type === "imagegif" && (
-      <div id="viewitem--block">
-        <h1 id="viewitem--filename">{viewItem.name}</h1>
+      <div
+        id="viewitem--block"
+      >
+        <h1 id="viewitem--filename">
+          {viewItem.name}
+        </h1>
         <button
           className="viewitem--close"
           onClick={() => {

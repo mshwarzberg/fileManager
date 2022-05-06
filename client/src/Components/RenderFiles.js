@@ -3,9 +3,9 @@ import React, { useEffect, useContext, useState } from "react";
 // context import
 import { DirectoryContext } from "../App";
 // component import
-import ImageGif from "./RenderItems/ImageGif";
-import Video from "./RenderItems/Video";
-import Icon from "./RenderItems/Icon";
+import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
+import Video from "./RenderIconsAndThumbnails/Video";
+import Icon from "./RenderIconsAndThumbnails/Icon";
 
 import VideoDisplay from "./ItemDisplay/VideoDisplay";
 import DocumentDisplay from "./ItemDisplay/DocumentDisplay";
@@ -14,7 +14,7 @@ import ImageDisplay from "./ItemDisplay/ImageDisplay";
 function RenderFiles(props) {
   const { itemsInDirectory } = props;
 
-  const { setCurrentDir } = useContext(DirectoryContext);
+  const { setCurrentDir, currentDir, setNavigatedDirs } = useContext(DirectoryContext);
 
   const [viewItem, setViewItem] = useState({
     type: null,
@@ -128,6 +128,12 @@ function RenderFiles(props) {
 
     if (type === "folder") {
       setCurrentDir((prevDir) => `${prevDir}/${filename}`);
+      setNavigatedDirs(prevNavDirs => {
+        return {
+          array: [...prevNavDirs.array, `${currentDir}/${filename}`],
+          index: prevNavDirs.index + 1,
+        }
+      })
     } else {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
@@ -141,41 +147,27 @@ function RenderFiles(props) {
 
   // render the file data and thumbnails
   const renderItems = itemsInDirectory.map((item) => {
-    const { itemtype, name, fileextension, size, thumbnail, shorthandsize } =
+    const { name, fileextension, size } =
       item;
     if (name) {
       return (
         <div
           key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
-          // decide what to do when a user clicks on an item.
-          onClick={() => {
-            changeFolderOrViewFiles(
-              itemtype,
-              name,
-              itemsInDirectory.indexOf(item)
-            );
-          }}
         >
           <ImageGif
-            name={name}
-            shorthandsize={shorthandsize}
-            fileextension={fileextension}
-            itemtype={itemtype}
-            thumbnail={thumbnail}
-          />
+            itemsInDirectory={itemsInDirectory}
+            changeFolderOrViewFiles={changeFolderOrViewFiles}
+            item={item}
+            />
           <Video
-            name={name}
-            shorthandsize={shorthandsize}
-            fileextension={fileextension}
-            thumbnail={thumbnail}
-            itemtype={itemtype}
-          />
+            itemsInDirectory={itemsInDirectory}
+            changeFolderOrViewFiles={changeFolderOrViewFiles}
+            item={item}
+            />
           <Icon
-            name={name}
-            shorthandsize={shorthandsize}
-            fileextension={fileextension}
-            itemtype={itemtype}
-            thumbnail={thumbnail}
+            itemsInDirectory={itemsInDirectory}
+            changeFolderOrViewFiles={changeFolderOrViewFiles}
+            item={item}
           />
         </div>
       );

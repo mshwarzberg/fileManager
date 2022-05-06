@@ -5,6 +5,7 @@ import './Components/css/sortby.css'
 import './Components/css/itemdisplayfocused.css'
 import './Components/css/navbar.css'
 import './Components/css/renderfiles.css'
+import './Components/css/main.css'
 import './Assets/fonts/fonts.css'
 import App from './App';
 

@@ -1,0 +1,48 @@
+#main--current-directory, #main--current-directory-error {
+  height: 3em;
+  background-color: #000;
+  color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  border-bottom: 4px solid #000;
+}
+
+#main--current-directory-error {
+  background-color: red;
+}
+
+#main--not-found-error {
+  font-size: 5rem;
+  color: red;
+  font-family: 'bebas neue';
+  text-align: center;
+}
+.main--current-directory-text {
+  color: white;
+  border: none;
+  background-color: #00000000;
+  outline: none;
+  font-family: lato;
+  font-style: none;
+  cursor: default;
+  font-size: 2em;
+}
+
+#main--curent-directory-input {
+  position: absolute;
+  left: 2rem;
+  width: 85vw;
+}
+#main--curent-directory-items-loaded {
+  position: absolute;
+  right: 5px;
+  font-size: 1.3em;
+}
+
+#main--current-directory-image {
+  cursor: pointer;
+  margin-left: 5px;
+}
+

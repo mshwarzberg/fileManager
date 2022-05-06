@@ -1,22 +1,21 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
+
+import DirectoryChange from "./NavigateDirectories/InputDirectoryChange";
 import SortBy from "./Navbar/SortBy";
 import RenderFiles from "./RenderFiles";
+import Navbar from "./Navbar/Navbar";
 
 import shortHandFileSize from "../Helpers/FileSize";
 
-import Navbar from "./Navbar/Navbar";
-
 function Main() {
+
   const { currentDir, setCurrentDir } = useContext(DirectoryContext);
 
-  // usestate to hold the value of the current directory, the actual items within it that are gonna be rendered, and the current index to later use to apply thumbnails if applicable.
-  // change to usereducer
   const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [error, setError] = useState();
+  const [notFoundError, setNotFoundError] = useState(false);
 
-  // wasn't able to pass in the directory into the video in RenderFiles component so I'm setting it here so that the video may load from any folder.
   useEffect(() => {
     fetch("/api/loadfiles/setdirectorytocurrent", {
       method: "POST",
@@ -28,7 +27,6 @@ function Main() {
     setCurrentIndex(0);
   }, [currentDir, setCurrentDir]);
 
-  // load file data
   useEffect(() => {
     fetch("/api/explorer/loaddata", {
       method: "POST",
@@ -38,21 +36,20 @@ function Main() {
       .then(async (res) => {
         let response = await res.json();
         if (response.err) {
-          return setError(response.err);
+          setNotFoundError(true);
+          setTimeout(() => {
+            return setNotFoundError(false)
+          }, 5000);
         }
-        setItemsInDirectory([
-          ...response.map((item) => ({
-            ...item,
-            prefix: decodeURIComponent(item.prefix),
-          })),
-        ]);
+        else {
+          setItemsInDirectory([...response]);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
   }, [currentDir, setCurrentDir]);
 
-  // load thumbnails
   useEffect(() => {
     if (itemsInDirectory[currentIndex]) {
       fetch("/api/explorer/getthumbs", {
@@ -92,13 +89,14 @@ function Main() {
   }, [itemsInDirectory, setItemsInDirectory, currentIndex, currentDir]);
 
   return (
-    <div id="explorer--page">
+    <div id="main--page">
       <nav id="navbar--container">
         <Navbar />
         <SortBy setItemsInDirectory={setItemsInDirectory} />
       </nav>
-      {!error && <RenderFiles itemsInDirectory={itemsInDirectory} />}
-      {error && <h1>{error}</h1>}
+      <DirectoryChange itemsInDirectory={itemsInDirectory} notFoundError={notFoundError}/>
+      {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} />}
+      {notFoundError && <h1 id="main--not-found-error">Folder Not Found</h1>}
     </div>
   );
 }

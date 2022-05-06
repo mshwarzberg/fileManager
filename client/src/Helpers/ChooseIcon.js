@@ -15,7 +15,7 @@ import lightUnknownIcon from "../Assets/images/unknownfilehover.png";
 export default function ChooseIcon(type, light) {
   
   if (type === "gif") {
-    return light ? lightGifIcon : gifIcon ;
+    return light ? lightGifIcon : gifIcon;
   }
   if (type === "video") {
     return light ? lightVideoIcon : videoIcon;

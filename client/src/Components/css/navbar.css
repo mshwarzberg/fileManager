@@ -3,7 +3,7 @@
   flex-direction: row;
   align-items: center;
   width: 100vw;
-  position: fixed;
+  position: sticky;
   top: 0;
   z-index: 1;
   background-color: #444444;
@@ -15,14 +15,16 @@
   display: flex;
   flex-direction: row;
 }
+
 #navbar--navigation > * {
-  font-size: 2rem;
+  font-size: 1.3rem;
 }
 
 .navbar--button {
-  width: 5rem;
-  height: 5rem;
-  margin-right: 1rem;
+  width: 3rem;
+  height: 2rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   color: #000;
   background-color: #fff;
   border-radius: 1rem;
@@ -41,16 +43,9 @@
   cursor: pointer;
 }
 
-#navbar--backwards:disabled, #navbar--forwards:disabled {
+.navbar--button:disabled {
   background-color: #888888;
   color: #444444;
   border: 2px solid #666;
-  cursor: default;
-}
-
-#navbar--current-directory {
-  font-size: 2rem;
-  color: white;
-  font-family: jakarta;
   cursor: default;
 }

@@ -4,15 +4,19 @@ import ChooseIcon from "../../Helpers/ChooseIcon";
 import SliceName from "../../Helpers/SliceName";
 
 export default function ImageGif(props) {
-  
-  const { name, shorthandsize, fileextension, thumbnail, itemtype } = props;
+  const { item, changeFolderOrViewFiles, itemsInDirectory } = props;
+  const { name, shorthandsize, fileextension, thumbnail, itemtype } = item;
 
   return (
-    thumbnail && (itemtype === "image" || itemtype === "gif") && (
+    thumbnail &&
+    (itemtype === "image" || itemtype === "gif") && (
       <div
         className="renderfile--block"
         id="renderfile--image-block"
         title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
+        onClick={() => {
+          return changeFolderOrViewFiles(itemtype, name, itemsInDirectory.indexOf(item))
+        }}
       >
         <img
           src={thumbnail}

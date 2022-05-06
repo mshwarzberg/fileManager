@@ -173,7 +173,7 @@ router.post("/getthumbs", verifyFolder, makeThumbnailDirectories, (req, res) => 
       const options = {
         root: "./",
         headers: {
-          prefix: req.body.prefix,
+          prefix: encodeURIComponent(prefix),
           suffix: suffix,
         },
       };

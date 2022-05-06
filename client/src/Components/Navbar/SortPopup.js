@@ -2,22 +2,24 @@ import React, { useState } from "react";
 
 function SortPopup(props) {
   const { setItemsInDirectory, descending } = props;
-
+  
   const [showSubSort, setShowSubSort] = useState(false);
+  const [isFolderSorted, setIsFolderSorted] = useState(false);
 
   function mySort(sortMethod, type) {
     setItemsInDirectory((prevItems) => {
+
       let sortedArray = [];
       let sortDirection = descending;
 
       if (sortMethod === "folder") {
-        // top down
+        if (isFolderSorted) {
+          return prevItems;
+        }
         prevItems.sort((item) => {
           return item.itemtype !== "folder";
         });
-      }
-      if (sortMethod === "name") {
-        // top down
+      } else if (sortMethod === "name") {
         prevItems.sort((a, b) => {
           a = a.name.toLowerCase();
           b = b.name.toLowerCase();
@@ -25,15 +27,11 @@ function SortPopup(props) {
           if (a > b) return 1;
           return 0;
         });
-      }
-      if (sortMethod === "size") {
-        // top down
+      } else if (sortMethod === "size") {
         prevItems.sort((a, b) => {
           return b.size - a.size;
         });
-      }
-      if (type) {
-        // top down
+      } else if (type) {
         prevItems.sort((item) => {
           return item.fileextension !== type;
         });
@@ -42,9 +40,17 @@ function SortPopup(props) {
       prevItems.forEach((item) => {
         sortedArray.push(item);
       });
-      console.log(sortDirection, sortedArray);
+
+      if (sortedArray === prevItems) {
+        return prevItems
+      }
       return sortDirection ? sortedArray : sortedArray.reverse();
     });
+    if (sortMethod === 'folder') {
+      setIsFolderSorted(true)
+    } else {
+      setIsFolderSorted(false)
+    }
   }
 
   return (
@@ -134,6 +140,22 @@ function SortPopup(props) {
               }}
             >
               gif
+            </li>
+            <li
+              className="filter--list-item"
+              onClick={() => {
+                mySort("type", "xcf");
+              }}
+            >
+              xcf
+            </li>
+            <li
+              className="filter--list-item"
+              onClick={() => {
+                mySort("type", "rtf");
+              }}
+            >
+              rtf
             </li>
           </ol>
         )}
