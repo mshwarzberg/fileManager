@@ -6,8 +6,6 @@ export const DirectoryContext = createContext();
 function App() {
 
   const [currentDir, setCurrentDir] = useState("./rootDir");
-  
-  const [directoryTree, setDirectoryTree] = useState(['./rootDir'])
 
   return (
     <DirectoryContext.Provider

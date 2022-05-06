@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
 
-import DirectoryChange from "./Navbar/DirectoryManagement/InputDirectoryChange";
+import InputDirectoryChange from "./Navbar/DirectoryManagement/InputDirectoryChange";
 import RenderFiles from "./Rendering/RenderFiles";
 import Navbar from "./Navbar/Navbar";
 
@@ -93,13 +93,15 @@ function Main() {
   return (
     <div id="main--page">
       <Navbar
+      itemsInDirectory={itemsInDirectory}
         setItemsInDirectory={setItemsInDirectory}
         navigatedDirs={navigatedDirs}
         setNavigatedDirs={setNavigatedDirs}
       />
-      <DirectoryChange
+      <InputDirectoryChange
         itemsInDirectory={itemsInDirectory}
         notFoundError={notFoundError}
+        setNavigatedDirs={setNavigatedDirs}
       />
       {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} setNavigatedDirs={setNavigatedDirs}/>}
       {notFoundError && <h1 id="inputdirectory--not-found-error">Folder Not Found</h1>}

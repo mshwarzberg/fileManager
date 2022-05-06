@@ -3,9 +3,9 @@ import folderIconForNavbar from "../../../Assets/images/folder.png";
 
 import { DirectoryContext } from "../../../App";
 
-function DirectoryChange(props) {
+function InputDirectoryChange(props) {
   
-  const { currentDir, setCurrentDir, setNavigatedDirs, notFoundError } = useContext(DirectoryContext);
+  const { currentDir, setCurrentDir, notFoundError } = useContext(DirectoryContext);
   
   const [searchBarDir, setSearchBarDir] = useState(currentDir);
 
@@ -14,7 +14,7 @@ function DirectoryChange(props) {
       if (e.key === "Enter") {
         setCurrentDir(searchBarDir);
         if (!notFoundError) {
-          return setNavigatedDirs(prevNavDirs => ({
+          return props.setNavigatedDirs(prevNavDirs => ({
             array: [...prevNavDirs.array, currentDir],
             index: prevNavDirs.index + 1
           }))
@@ -47,7 +47,7 @@ function DirectoryChange(props) {
         id="inputdirectory--image"
         onClick={() => {
           setCurrentDir("./rootDir");
-          setNavigatedDirs(prevNavDirs => ({
+          props.setNavigatedDirs(prevNavDirs => ({
             array: [...prevNavDirs.array, './rootDir'],
             index: prevNavDirs.index + 1
           }))
@@ -70,4 +70,4 @@ function DirectoryChange(props) {
   );
 }
 
-export default DirectoryChange;
+export default InputDirectoryChange;

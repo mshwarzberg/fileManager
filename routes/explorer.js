@@ -127,12 +127,16 @@ router.post("/loaddata", verifyFolder, makeThumbnailDirectories, (req, res) => {
             checkType(suffix) === "video" ||
             checkType(suffix) === "gif"
           ) {
-            ffmpeg(`./${currentdirectory}/${file.name}`).screenshots({
-              count: 1,
-              folder: `./thumbnails/${currentdirectory}`,
-              timestamps: ["70%"],
-              filename: `thumbnail-${prefix}${suffix}.jpeg`,
-            });
+            try {
+              ffmpeg(`./${currentdirectory}/${file.name}`).screenshots({
+                count: 1,
+                folder: `./thumbnails/${currentdirectory}`,
+                timestamps: ["70%"],
+                filename: `thumbnail-${prefix}${suffix}.jpeg`,
+              });
+            } catch (e) {
+              console.log(e);
+            }
           }
           // generate thumbnails for images
           else if (checkType(suffix) === "image" && suffix !== "xcf") {
