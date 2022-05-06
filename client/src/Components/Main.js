@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
 
-import DirectoryChange from "./NavigateDirectories/InputDirectoryChange";
-import SortBy from "./Navbar/SortBy";
-import RenderFiles from "./RenderFiles";
+import DirectoryChange from "./Navbar/DirectoryManagement/InputDirectoryChange";
+import RenderFiles from "./Rendering/RenderFiles";
 import Navbar from "./Navbar/Navbar";
 
 import shortHandFileSize from "../Helpers/FileSize";
 
 function Main() {
-
   const { currentDir, setCurrentDir } = useContext(DirectoryContext);
 
   const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [notFoundError, setNotFoundError] = useState(false);
+
+  const [navigatedDirs, setNavigatedDirs] = useState({
+    array: ["./rootDir"],
+    index: 0,
+  });
 
   useEffect(() => {
     fetch("/api/loadfiles/setdirectorytocurrent", {
@@ -38,10 +41,9 @@ function Main() {
         if (response.err) {
           setNotFoundError(true);
           setTimeout(() => {
-            return setNotFoundError(false)
+            return setNotFoundError(false);
           }, 5000);
-        }
-        else {
+        } else {
           setItemsInDirectory([...response]);
         }
       })
@@ -90,13 +92,17 @@ function Main() {
 
   return (
     <div id="main--page">
-      <nav id="navbar--container">
-        <Navbar />
-        <SortBy setItemsInDirectory={setItemsInDirectory} />
-      </nav>
-      <DirectoryChange itemsInDirectory={itemsInDirectory} notFoundError={notFoundError}/>
-      {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} />}
-      {notFoundError && <h1 id="main--not-found-error">Folder Not Found</h1>}
+      <Navbar
+        setItemsInDirectory={setItemsInDirectory}
+        navigatedDirs={navigatedDirs}
+        setNavigatedDirs={setNavigatedDirs}
+      />
+      <DirectoryChange
+        itemsInDirectory={itemsInDirectory}
+        notFoundError={notFoundError}
+      />
+      {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} setNavigatedDirs={setNavigatedDirs}/>}
+      {notFoundError && <h1 id="inputdirectory--not-found-error">Folder Not Found</h1>}
     </div>
   );
 }

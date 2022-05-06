@@ -1,0 +1,35 @@
+
+#directorytree--button-showhide  {
+  position: absolute;
+  top: 2rem;
+  text-align: center;
+  height: 3rem;
+  left: 5px;
+}
+
+#directorytree--body {
+  max-width: 25rem;
+  width: calc(var(--screen-width) * .6);
+  height: calc(var(--screen-height) - 7rem);
+  background-color: #333333;
+  position: absolute;
+  left: 0;
+  top: 7rem;
+}
+
+#directory--tree-current-directory {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: white;
+}
+
+@media screen and (max-width: 768px) {
+  #directorytree--button-showhide  {
+    position: absolute;
+    top: 1rem;
+  }
+  #directorytree--body {
+    top: 5rem;
+  }
+}

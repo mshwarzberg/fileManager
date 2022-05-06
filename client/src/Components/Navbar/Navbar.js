@@ -1,12 +1,20 @@
 import React from "react";
+import DirectoryNavigation from "./DirectoryManagement/DirectoryNavigation";
+import SortBy from "./Sorting/SortBy";
+import DirectoryTree from "./DirectoryManagement/DirectoryTree";
 
-import FolderNavigation from "./NavbarFolderNavigation";
+function Navbar(props) {
 
-function Navbar() {
+  const { setItemsInDirectory, navigatedDirs, setNavigatedDirs } = props;
 
   return (
     <nav id="navbar--component">
-      <FolderNavigation />
+      <DirectoryTree />
+      <DirectoryNavigation
+        navigatedDirs={navigatedDirs}
+        setNavigatedDirs={setNavigatedDirs}
+      />
+      <SortBy setItemsInDirectory={setItemsInDirectory} />
     </nav>
   );
 }

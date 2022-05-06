@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useState } from "react";
 import Main from "./Components/Main";
 
 export const DirectoryContext = createContext();
@@ -6,20 +6,14 @@ export const DirectoryContext = createContext();
 function App() {
 
   const [currentDir, setCurrentDir] = useState("./rootDir");
-  const [navigatedDirs, setNavigatedDirs] = useState({
-    array: ["./rootDir"],
-    index: 0
-  });
-  // useEffect(() => {
-  //   console.log(navigatedDirs.array, navigatedDirs.index, navigatedDirs.array[navigatedDirs.index]);
-  // }, [navigatedDirs])
+  
+  const [directoryTree, setDirectoryTree] = useState(['./rootDir'])
+
   return (
     <DirectoryContext.Provider
       value={{
         currentDir,
         setCurrentDir,
-        navigatedDirs,
-        setNavigatedDirs,
       }}
     >
       <Main />
