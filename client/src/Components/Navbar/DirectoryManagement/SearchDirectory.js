@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { DirectoryContext } from "../../../App";
 import folderIconForNavbar from "../../../Assets/images/folder.png";
 
-function InputDirectoryChange(props) {
-  const { state, setAction, setDirectory } = useContext(DirectoryContext);
+function SearchDirectory(props) {
+  const { state, setDirectory } = useContext(DirectoryContext);
 
   const [searchBarDir, setSearchBarDir] = useState(state.currentDirectory);
 
@@ -11,7 +11,8 @@ function InputDirectoryChange(props) {
     function submitNewDirectory(e) {
       let originalDir = state.currentDirectory
       if (e.key === "Enter") {
-        setDirectory('InputDirectoryChange', [searchBarDir, originalDir])
+        setDirectory('enterFolder', searchBarDir) 
+        console.log(props);
       }
     }
     document.addEventListener("keydown", submitNewDirectory);
@@ -39,7 +40,7 @@ function InputDirectoryChange(props) {
         alt="folder"
         id="inputdirectory--image"
         onClick={() => {
-          setDirectory("InputDirectoryChange")
+          setDirectory("SearchDirectory")
         }}
       />
       <input
@@ -57,4 +58,4 @@ function InputDirectoryChange(props) {
   );
 }
 
-export default InputDirectoryChange;
+export default SearchDirectory;

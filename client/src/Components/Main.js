@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
-import InputDirectoryChange from "./Navbar/DirectoryManagement/InputDirectoryChange";
+import InputDirectoryChange from "./Navbar/DirectoryManagement/SearchDirectory";
 import RenderFiles from "./Rendering/RenderFiles";
 import Navbar from "./Navbar/Navbar";
 import shortHandFileSize from "../Helpers/FileSize";

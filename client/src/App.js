@@ -1,12 +1,17 @@
 import React, { useReducer, createContext } from "react";
 import Main from "./Components/Main";
+import useLog from "./Hooks/useLog";
 
 const actions = {
   setCurrentDirectory: "setCurrentDirectory",
-  setNavigate: "setNavigate",
+  setNavigateDirectory: "setNavigateDirectory",
+  removeFromNavigate: "removeFromNavigate",
+  addToNavigateIndex: "addToNavigateIndex",
+  subtractFromNavigateIndex: "subtractFromNavigateIndex",
   setDirectoryTree: "setDirectoryTree",
-  setTreeIndex: "setTreeIndex",
   removeFromTree: "removeFromTree",
+  addToTreeIndex: "addToTreeIndex",
+  subtractFromTreeIndex: "subtractFromTreeIndex",
 };
 
 export const DirectoryContext = createContext();
@@ -15,13 +20,29 @@ function reducer(state, action) {
   switch (action.type) {
     case actions.setCurrentDirectory:
       return { ...state, currentDirectory: action.value };
-    case actions.setNavigate:
+    case actions.setNavigateDirectory:
       return {
         ...state,
-        navigatedDirectories: {
-          array: action.value.array,
-          index: action.value.index,
-        },
+        navigatedDirectories: [...state.navigatedDirectories, action.value],
+      };
+    case actions.removeFromNavigate:
+      return {
+        ...state,
+        navigatedDirectories: state.navigatedDirectories.slice(
+          0,
+          state.arrayIndex + 1
+        ),
+        arrayIndex: state.arrayIndex + 1,
+      };
+    case actions.addToNavigateIndex:
+      return {
+        ...state,
+        arrayIndex: state.arrayIndex + 1,
+      };
+    case actions.subtractFromNavigateIndex:
+      return {
+        ...state,
+        arrayIndex: state.arrayIndex - 1,
       };
     case actions.setDirectoryTree:
       return {
@@ -34,17 +55,13 @@ function reducer(state, action) {
     case actions.removeFromTree:
       return {
         ...state,
-        directoryTree: state.directoryTree.slice(
-          0,
-          state.directoryTree.length - 1
-        ),
       };
-    case actions.addTreeIndex:
+    case actions.addToTreeIndex:
       return {
         ...state,
         treeIndex: state.treeIndex + 1,
       };
-    case actions.subtractTreeIndex:
+    case actions.subtractFromTreeIndex:
       return {
         ...state,
         treeIndex: state.treeIndex - 1,
@@ -57,99 +74,50 @@ function reducer(state, action) {
 function App() {
   const [state, dispatch] = useReducer(reducer, {
     currentDirectory: "./rootDir",
-    navigatedDirectories: {
-      array: ["./rootDir"],
-      index: 0,
-    },
-    treeIndex: 0,
+    navigatedDirectories: ["./rootDir"],
+    arrayIndex: 0,
     directoryTree: [{ 0: ["./rootDir"] }],
+    treeIndex: 0,
   });
 
-  function setAction(action, value) {
-    console.log("oh hell no");
-  }
-
-  function setDirTree(folders) {
-    dispatch({ type: actions.setDirectoryTree, value: folders });
-  }
-
-  function setDirectory(callLocation, callArguments) {
-    const newDirectory = (directory) => {
-      if (directory) {
-        callArguments[0] = directory;
+  function setDirectory(action, value) {
+    if (action === "enterFolder") {
+      dispatch({ type: "setCurrentDirectory", value: value });
+      if (state.arrayIndex + 1 < state.navigatedDirectories.length) {
+        dispatch({ type: "removeFromNavigate" });
+      } else {
+        dispatch({ type: "addToNavigateIndex" });
       }
-      return dispatch({ type: "setCurrentDirectory", value: callArguments[0] });
-    };
-
-    const navigateTo = (toFolder) => {
-      return dispatch({
-        type: "setNavigate",
-        value: {
-          array: [
-            ...state.navigatedDirectories.array.slice(
-              0,
-              state.navigatedDirectories.index
-            ),
-            toFolder,
-          ],
-          index: state.navigatedDirectories.index + 1,
-        },
-      });
-    };
-
-    const navigateBackwards = () => {
-      return dispatch({
-        type: "setNavigate",
-        value: {
-          array: state.navigatedDirectories.array,
-          index: state.navigatedDirectories.index - 1,
-        },
-      });
-    };
-
-    const navigateForwards = () => {
-      return dispatch({
-        type: "setNavigate",
-        value: {
-          array: state.navigatedDirectories.array,
-          index: state.navigatedDirectories.index + 1,
-        },
-      });
-    };
-    if (callLocation === "InputDirectoryChange") {
-      if (callArguments === undefined) {
-        dispatch({ type: "setCurrentDirectory", value: "./rootDir" });
-        return navigateTo("./rootDir");
-      }
-
-      newDirectory();
-      navigateTo(state.currentDirectory);
-
-      if (callArguments[1].length > callArguments[0].length) {
-        return dispatch({ type: "removeFromTree", value: state.treeIndex });
-      }
+      dispatch({ type: "setNavigateDirectory", value: value });
       return;
-    } else if (callLocation === "RenderFiles") {
-      newDirectory();
-      return navigateTo(callArguments[0]);
-    } else if (callLocation === "DirectoryNavigation") {
-      if (callArguments[0] === "UpFolder") {
-        newDirectory(callArguments[1]);
-        return navigateTo(callArguments[0]);
-      } else if (callArguments[0] === "BackFolder") {
-        newDirectory(callArguments[1]);
-        return navigateBackwards();
-      } else if (callArguments[0] === "ForwardFolder") {
-        newDirectory(callArguments[1]);
-        return navigateForwards();
-      }
+    } else if (action === "goBackFolder") {
+      dispatch({
+        type: "setCurrentDirectory",
+        value: state.navigatedDirectories[state.arrayIndex - 1],
+      });
+      dispatch({ type: "subtractFromNavigateIndex" });
+      return;
+    } else if (action === "goForwardsFolder") {
+      dispatch({
+        type: "setCurrentDirectory",
+        value: state.navigatedDirectories[state.arrayIndex + 1],
+      });
+      dispatch({ type: "addToNavigateIndex" });
+      return;
+    } else if (action === "goUpFolder") {
+      dispatch({ type: "setCurrentDirectory", value: value });
+      dispatch({ type: "setNavigateDirectory", value: value });
+      dispatch({ type: "addToNavigateIndex" });
+      return;
+    } else if (action === "searchDirectory") {
+      dispatch({ type: "setCurrentDirectory", value: value });
+      dispatch({ type: "setNavigateDirectory", value: value });
+      dispatch({ type: "addToNavigateIndex" });
     }
   }
 
   return (
-    <DirectoryContext.Provider
-      value={{ state, setAction, setDirTree, setDirectory }}
-    >
+    <DirectoryContext.Provider value={{ state, setDirectory }}>
       <Main />
     </DirectoryContext.Provider>
   );

@@ -127,7 +127,7 @@ function RenderFiles(props) {
     }
     // change folder on click
     if (type === "folder") {
-      setDirectory("RenderFiles", [`${state.currentDirectory}/${filename}`])
+      setDirectory("enterFolder", `${state.currentDirectory}/${filename}`)
     } else {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(

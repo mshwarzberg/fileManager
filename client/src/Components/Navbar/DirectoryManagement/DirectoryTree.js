@@ -21,7 +21,6 @@ function DirectoryTree() {
       <button
         id="directorytree--button-showhide"
         onClick={() => {
-          console.log(renderTree)
           setShowTree(!showTree);
         }}
       >
