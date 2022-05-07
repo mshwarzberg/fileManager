@@ -1,24 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
+import { DirectoryContext } from "../../../App";
 import folderIconForNavbar from "../../../Assets/images/folder.png";
 
-import { DirectoryContext } from "../../../App";
-
 function InputDirectoryChange(props) {
-  
-  const { currentDir, setCurrentDir, notFoundError } = useContext(DirectoryContext);
-  
-  const [searchBarDir, setSearchBarDir] = useState(currentDir);
+  const { state, setAction, setDirectory } = useContext(DirectoryContext);
+
+  const [searchBarDir, setSearchBarDir] = useState(state.currentDirectory);
 
   useEffect(() => {
     function submitNewDirectory(e) {
+      let originalDir = state.currentDirectory
       if (e.key === "Enter") {
-        setCurrentDir(searchBarDir);
-        if (!notFoundError) {
-          return props.setNavigatedDirs(prevNavDirs => ({
-            array: [...prevNavDirs.array, currentDir],
-            index: prevNavDirs.index + 1
-          }))
-        }
+        setDirectory('InputDirectoryChange', [searchBarDir, originalDir])
       }
     }
     document.addEventListener("keydown", submitNewDirectory);
@@ -29,8 +22,8 @@ function InputDirectoryChange(props) {
   });
 
   useEffect(() => {
-    setSearchBarDir(currentDir);
-  }, [currentDir]);
+    setSearchBarDir(state.currentDirectory);
+  }, [state.currentDirectory]);
 
   return (
     <div
@@ -46,11 +39,7 @@ function InputDirectoryChange(props) {
         alt="folder"
         id="inputdirectory--image"
         onClick={() => {
-          setCurrentDir("./rootDir");
-          props.setNavigatedDirs(prevNavDirs => ({
-            array: [...prevNavDirs.array, './rootDir'],
-            index: prevNavDirs.index + 1
-          }))
+          setDirectory("InputDirectoryChange")
         }}
       />
       <input
@@ -61,9 +50,7 @@ function InputDirectoryChange(props) {
           setSearchBarDir(e.target.value);
         }}
       />
-      <h1
-        id="inputdirectory--items-loaded"
-      >
+      <h1 id="inputdirectory--items-loaded">
         {props.itemsInDirectory.length} items loaded
       </h1>
     </div>

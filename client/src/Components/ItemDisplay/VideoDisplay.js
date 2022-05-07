@@ -21,7 +21,7 @@ function VideoDisplay(props) {
         >
           X
         </button>
-        <video id="viewitem--item" src={viewItem.property}controls autoPlay muted />
+        <video id="viewitem--item" src={viewItem.property}controls autoPlay />
       </div>
     )
   );

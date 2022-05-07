@@ -1,7 +1,5 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
-// context import
-import { DirectoryContext } from "../../App";
 // component import
 import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
 import Video from "./RenderIconsAndThumbnails/Video";
@@ -11,10 +9,12 @@ import VideoDisplay from "../ItemDisplay/VideoDisplay";
 import DocumentDisplay from "../ItemDisplay/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
 
-function RenderFiles(props) {
-  const { itemsInDirectory, setNavigatedDirs } = props;
+import { DirectoryContext } from "../../App";
 
-  const { setCurrentDir, currentDir } = useContext(DirectoryContext);
+function RenderFiles(props) {
+  const { itemsInDirectory } = props;
+
+  const { state, setDirectory } = useContext(DirectoryContext);
 
   const [viewItem, setViewItem] = useState({
     type: null,
@@ -28,14 +28,13 @@ function RenderFiles(props) {
       if (
         e.key !== "ArrowRight" &&
         e.key !== "ArrowLeft" &&
-        e.key !== " " &&
         e.key !== "Escape"
       ) {
         return;
       }
       if (viewItem.property) {
         let direction;
-        if (e.key === "ArrowRight" || e.key === " ") {
+        if (e.key === "ArrowRight") {
           direction = "forwards";
         }
         if (e.key === "ArrowLeft") {
@@ -104,6 +103,7 @@ function RenderFiles(props) {
   }
 
   function changeFolderOrViewFiles(type, filename, index, direction) {
+    // arrow functionality to
     if (direction) {
       if (direction === "forwards") {
         for (let i = index + 1; i < itemsInDirectory.length; i++) {
@@ -125,15 +125,9 @@ function RenderFiles(props) {
         }
       }
     }
-
+    // change folder on click
     if (type === "folder") {
-      setCurrentDir((prevDir) => `${prevDir}/${filename}`);
-      setNavigatedDirs(prevNavDirs => {
-        return {
-          array: [...prevNavDirs.array, `${currentDir}/${filename}`],
-          index: prevNavDirs.index + 1,
-        }
-      })
+      setDirectory("RenderFiles", [`${state.currentDirectory}/${filename}`])
     } else {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
@@ -147,23 +141,20 @@ function RenderFiles(props) {
 
   // render the file data and thumbnails
   const renderItems = itemsInDirectory.map((item) => {
-    const { name, fileextension, size } =
-      item;
+    const { name, fileextension, size } = item;
     if (name) {
       return (
-        <div
-          key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
-        >
+        <div key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}>
           <ImageGif
             itemsInDirectory={itemsInDirectory}
             changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
-            />
+          />
           <Video
             itemsInDirectory={itemsInDirectory}
             changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
-            />
+          />
           <Icon
             itemsInDirectory={itemsInDirectory}
             changeFolderOrViewFiles={changeFolderOrViewFiles}

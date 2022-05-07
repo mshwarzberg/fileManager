@@ -1,23 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
-
 import InputDirectoryChange from "./Navbar/DirectoryManagement/InputDirectoryChange";
 import RenderFiles from "./Rendering/RenderFiles";
 import Navbar from "./Navbar/Navbar";
-
 import shortHandFileSize from "../Helpers/FileSize";
 
 function Main() {
-  const { currentDir, setCurrentDir } = useContext(DirectoryContext);
+  const { state, setDirTree, setAction } = useContext(DirectoryContext);
 
   const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [notFoundError, setNotFoundError] = useState(false);
-
-  const [navigatedDirs, setNavigatedDirs] = useState({
-    array: ["./rootDir"],
-    index: 0,
-  });
 
   useEffect(() => {
     fetch("/api/loadfiles/setdirectorytocurrent", {
@@ -25,16 +18,47 @@ function Main() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ currentdirectory: currentDir }),
+      body: JSON.stringify({ currentdirectory: state.currentDirectory }),
     });
     setCurrentIndex(0);
-  }, [currentDir, setCurrentDir]);
+  }, [state.currentDirectory]);
+
+  useEffect(() => {
+    function compare(arrayA, arrayB) {
+      if (arrayA === arrayB) return true;
+      if (arrayA == null || arrayB == null) return false;
+      if (arrayA.length !== arrayB.length) {
+        return false;
+      }
+
+      for (let i = 0; i < arrayA.length; i++) {
+        if (arrayA[i] !== arrayB[i]) return false;
+      }
+      return true;
+    }
+    let folders = [];
+    for (let i = 0; i < itemsInDirectory.length; i++) {
+      if (itemsInDirectory[i].itemtype === "folder") {
+        folders.push(itemsInDirectory[i].name);
+      }
+    }
+    
+    if (
+      !compare(
+        folders,
+        state.directoryTree[state.directoryTree.length - 1][state.treeIndex]
+      ) && folders.length > 0
+    ) {
+      // setAction("addTreeIndex");
+      // setDirTree(folders);
+    }
+  }, [itemsInDirectory]);
 
   useEffect(() => {
     fetch("/api/explorer/loaddata", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ currentdirectory: currentDir }),
+      body: JSON.stringify({ currentdirectory: state.currentDirectory }),
     })
       .then(async (res) => {
         let response = await res.json();
@@ -50,7 +74,7 @@ function Main() {
       .catch((err) => {
         console.log(err);
       });
-  }, [currentDir, setCurrentDir]);
+  }, [state.currentDirectory]);
 
   useEffect(() => {
     if (itemsInDirectory[currentIndex]) {
@@ -59,7 +83,7 @@ function Main() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prefix: itemsInDirectory[currentIndex].prefix,
-          currentdirectory: `/${currentDir}`,
+          currentdirectory: `/${state.currentDirectory}`,
           suffix: itemsInDirectory[currentIndex].fileextension,
         }),
       })
@@ -88,23 +112,27 @@ function Main() {
         });
       return;
     }
-  }, [itemsInDirectory, setItemsInDirectory, currentIndex, currentDir]);
+  }, [
+    itemsInDirectory,
+    setItemsInDirectory,
+    currentIndex,
+    state.currentDirectory,
+  ]);
 
   return (
     <div id="main--page">
       <Navbar
-      itemsInDirectory={itemsInDirectory}
+        itemsInDirectory={itemsInDirectory}
         setItemsInDirectory={setItemsInDirectory}
-        navigatedDirs={navigatedDirs}
-        setNavigatedDirs={setNavigatedDirs}
       />
       <InputDirectoryChange
         itemsInDirectory={itemsInDirectory}
         notFoundError={notFoundError}
-        setNavigatedDirs={setNavigatedDirs}
       />
-      {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} setNavigatedDirs={setNavigatedDirs}/>}
-      {notFoundError && <h1 id="inputdirectory--not-found-error">Folder Not Found</h1>}
+      {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} />}
+      {notFoundError && (
+        <h1 id="inputdirectory--not-found-error">Folder Not Found</h1>
+      )}
     </div>
   );
 }

@@ -1,26 +1,25 @@
 import React, { useContext } from "react";
-
 import { DirectoryContext } from "../../../App";
-
-function DirectoryNavigation(props) {
-  const { currentDir, setCurrentDir } = useContext(DirectoryContext);
-  const { navigatedDirs, setNavigatedDirs } = props;
-
+import useLog from '../../../Hooks/useLog'
+function DirectoryNavigation() {
+  const { state, setDirectory } = useContext(DirectoryContext);
+  useLog(state.navigatedDirectories.index + " index")
+  useLog(state.navigatedDirectories.array.length + " array")
   return (
     <div id="navbar--navigation">
       <button
         onClick={() => {
-          setCurrentDir((prevDir) => {
-            for (let i = prevDir.length - 2; i > 0; i--) {
-              if (prevDir[i] === "/") {
-                return prevDir.slice(0, i);
-              }
+          let newDir = state.currentDirectory;
+          for (let i = newDir.length - 2; i > 0; i--) {
+            if (newDir[i] === "/") {
+              newDir = newDir.slice(0, i);
+              break;
             }
-            return prevDir;
-          });
+          }
+          setDirectory("DirectoryNavigation", ["UpFolder", newDir]);
         }}
         className="navbar--button"
-        disabled={currentDir === "./rootDir"}
+        disabled={state.currentDirectory === "./rootDir"}
       >
         ↑
       </button>
@@ -28,27 +27,32 @@ function DirectoryNavigation(props) {
         id="navbar--backwards"
         className="navbar--button"
         onClick={() => {
-          setCurrentDir(navigatedDirs.array[navigatedDirs.index - 1]);
-          setNavigatedDirs((prevNavDirs) => ({
-            array: [...prevNavDirs.array],
-            index: prevNavDirs.index - 1,
-          }));
+          setDirectory("DirectoryNavigation", [
+            "BackFolder",
+            state.navigatedDirectories.array[
+              state.navigatedDirectories.index - 1
+            ],
+          ]);
         }}
-        disabled={navigatedDirs.index === 0}
+        disabled={state.navigatedDirectories.index === 0}
       >
         ←
       </button>
       <button
         onClick={() => {
-          setCurrentDir(navigatedDirs.array[navigatedDirs.index + 1]);
-          setNavigatedDirs((prevNavDirs) => ({
-            array: [...prevNavDirs.array],
-            index: prevNavDirs.index + 1,
-          }));
+          setDirectory("DirectoryNavigation", [
+            "ForwardFolder",
+            state.navigatedDirectories.array[
+              state.navigatedDirectories.index + 1
+            ],
+          ]);
         }}
         id="navbar--forwards"
         className="navbar--button"
-        disabled={navigatedDirs.index === navigatedDirs.array.length - 1}
+        disabled={
+          state.navigatedDirectories.index ===
+          state.navigatedDirectories.array.length - 1
+        }
       >
         →
       </button>

@@ -1,46 +1,27 @@
-import React, { useState, useContext, useEffect } from "react";
-import ReactDOM from 'react-dom/client'
-import {DirectoryContext} from '../../../App'
+import React, { useContext, useState } from "react";
+import { DirectoryContext } from "../../../App";
 
-function DirectoryTree(props) {
-
-  const {currentDir, setCurrentDir} = useContext(DirectoryContext)
-  const {itemsInDirectory} = props
-  const [treeIndex, setTreeIndex] = useState(0)
+function DirectoryTree() {
   const [showTree, setShowTree] = useState(false);
-  const [directoryTree, setDirectoryTree] = useState([{[treeIndex]: './rootDir'}])
 
-  useEffect(() => {
-      if (itemsInDirectory[0]) {
-        setDirectoryTree(prevDirTree => {
-          let array = []
-          itemsInDirectory.map(item => {
-            if (item.itemtype === 'folder' && !directoryTree.treeIndex !== item.name) {
-              return array.push(item.name)
-            } 
-            return ''
-          })
-          if (array[0]) {
-            return [...prevDirTree,{[treeIndex]: array}]
-          }
-          return [{...prevDirTree}]
-        })
-        console.log(directoryTree);
-      }
-  }, [itemsInDirectory])
+  const { state } = useContext(DirectoryContext);
 
-  const renderDirectoryTree = directoryTree.map(item => {
-    if (typeof item === 'string') {
-      return console.log('string', item);
+  const renderTree = state.directoryTree.map((item, index) => {
+    if (item[index]) {
+      const renderArrays = item[index].map((arrayItem) => {
+        return <p key={arrayItem}>{arrayItem}</p>;
+      });
+      return <div key={item[index]}>{renderArrays}</div>;
     }
-    return console.log('array', item);
-  })
+    return "";
+  });
 
   return (
     <div id="directory--tree">
       <button
         id="directorytree--button-showhide"
         onClick={() => {
+          console.log(renderTree)
           setShowTree(!showTree);
         }}
       >
@@ -48,8 +29,9 @@ function DirectoryTree(props) {
       </button>
       {showTree && (
         <div id="directorytree--body">
-          <h1 id="directory--tree-current-directory">{currentDir}</h1>
-          {renderDirectoryTree}
+          <h1 id="directory--tree-current-directory">
+            {renderTree[0] ? renderTree : "nothing here"}
+          </h1>
         </div>
       )}
     </div>
