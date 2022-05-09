@@ -105,7 +105,7 @@ function RenderFiles(props) {
   function changeFolderOrViewFiles(type, filename, index, direction) {
     // arrow functionality to
     if (direction) {
-      if (direction === "forwards") {
+      if (direction === "forwards" && type !== 'video') {
         for (let i = index + 1; i < itemsInDirectory.length; i++) {
           type = itemsInDirectory[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
@@ -114,7 +114,7 @@ function RenderFiles(props) {
             break;
           }
         }
-      } else if (direction === "backwards") {
+      } else if (direction === "backwards" && type !== 'video') {
         for (let i = index - 1; i > 0; i--) {
           type = itemsInDirectory[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {

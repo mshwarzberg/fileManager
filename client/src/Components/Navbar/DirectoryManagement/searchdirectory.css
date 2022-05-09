@@ -13,11 +13,11 @@
   background-color: red;
 }
 
-#inputdirectory--not-found-error {
-  font-size: 5rem;
-  color: red;
+#inputdirectory--text-error {
+  font-size: 3em;
   font-family: 'bebas neue';
   text-align: center;
+  width: 100%;
 }
 
 #inputdirectory--input {

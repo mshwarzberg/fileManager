@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DirectoryContext } from "../../../App";
 import folderIconForNavbar from "../../../Assets/images/folder.png";
+import useLog from "../../../Hooks/useLog";
 
 function SearchDirectory(props) {
   const { state, setDirectory } = useContext(DirectoryContext);
@@ -9,10 +10,8 @@ function SearchDirectory(props) {
 
   useEffect(() => {
     function submitNewDirectory(e) {
-      let originalDir = state.currentDirectory
       if (e.key === "Enter") {
-        setDirectory('enterFolder', searchBarDir) 
-        console.log(props);
+        setDirectory("searchDirectory", searchBarDir);
       }
     }
     document.addEventListener("keydown", submitNewDirectory);
@@ -34,26 +33,32 @@ function SearchDirectory(props) {
           : "inputdirectory--directory"
       }
     >
-      <img
-        title="Go back to root folder"
-        src={folderIconForNavbar}
-        alt="folder"
-        id="inputdirectory--image"
-        onClick={() => {
-          setDirectory("SearchDirectory")
-        }}
-      />
-      <input
-        id="inputdirectory--input"
-        type="text"
-        value={`${searchBarDir}`}
-        onChange={(e) => {
-          setSearchBarDir(e.target.value);
-        }}
-      />
-      <h1 id="inputdirectory--items-loaded">
-        {props.itemsInDirectory.length} items loaded
-      </h1>
+      {props.notFoundError ? (
+        <h1 id="inputdirectory--text-error">DIRECTORY NOT FOUND</h1>
+      ) : (
+        <>
+          <img
+            title="Go back to root folder"
+            src={folderIconForNavbar}
+            alt="folder"
+            id="inputdirectory--image"
+            onClick={() => {
+              setDirectory("enterFolder", './rootDir');
+            }}
+          />
+          <input
+            id="inputdirectory--input"
+            type="text"
+            value={`${searchBarDir}`}
+            onChange={(e) => {
+              setSearchBarDir(e.target.value);
+            }}
+          />
+          <h1 id="inputdirectory--items-loaded">
+            {props.itemsInDirectory.length} items loaded
+          </h1>
+        </>
+      )}
     </div>
   );
 }

@@ -1,16 +1,26 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DirectoryContext } from "../App";
-import InputDirectoryChange from "./Navbar/DirectoryManagement/SearchDirectory";
-import RenderFiles from "./Rendering/RenderFiles";
-import Navbar from "./Navbar/Navbar";
-import shortHandFileSize from "../Helpers/FileSize";
 
+import Navbar from "./Navbar/Navbar";
+import RenderFiles from "./Rendering/RenderFiles";
+import shortHandFileSize from "../Helpers/FileSize";
+import SearchDirectory from "./Navbar/DirectoryManagement/SearchDirectory";
 function Main() {
-  const { state, setDirTree, setAction } = useContext(DirectoryContext);
+
+  const { state, setDirectory } = useContext(DirectoryContext);
 
   const [itemsInDirectory, setItemsInDirectory] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [notFoundError, setNotFoundError] = useState(false);
+
+  useEffect(() => {
+    if (notFoundError === true) {
+      setTimeout(() => {
+        setDirectory("handleError")
+        setNotFoundError(false)
+      }, 3000);
+    }
+  }, [notFoundError, setDirectory]);
 
   useEffect(() => {
     fetch("/api/loadfiles/setdirectorytocurrent", {
@@ -24,34 +34,28 @@ function Main() {
   }, [state.currentDirectory]);
 
   useEffect(() => {
-    function compare(arrayA, arrayB) {
-      if (arrayA === arrayB) return true;
-      if (arrayA == null || arrayB == null) return false;
-      if (arrayA.length !== arrayB.length) {
-        return false;
+    if (itemsInDirectory.length === currentIndex && currentIndex !== 0) {
+      function compare(arrayA, arrayB) {
+        if (arrayA === arrayB) return true;
+        if (arrayA == null || arrayB == null) return false;
+        if (arrayA.length !== arrayB.length) {
+          return false;
+        }
+  
+        for (let i = 0; i < arrayA.length; i++) {
+          if (arrayA[i] !== arrayB[i]) return false;
+        }
+        return true;
       }
-
-      for (let i = 0; i < arrayA.length; i++) {
-        if (arrayA[i] !== arrayB[i]) return false;
+      let folders = [];
+      for (let i = 0; i < itemsInDirectory.length; i++) {
+        if (itemsInDirectory[i].itemtype === "folder") {
+          folders.push(itemsInDirectory[i].name);
+        }
       }
-      return true;
+      console.log(folders);
     }
-    let folders = [];
-    for (let i = 0; i < itemsInDirectory.length; i++) {
-      if (itemsInDirectory[i].itemtype === "folder") {
-        folders.push(itemsInDirectory[i].name);
-      }
-    }
-    
-    if (
-      !compare(
-        folders,
-        state.directoryTree[state.directoryTree.length - 1][state.treeIndex]
-      ) && folders.length > 0
-    ) {
-      // setAction("addTreeIndex");
-      // setDirTree(folders);
-    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemsInDirectory]);
 
   useEffect(() => {
@@ -64,9 +68,6 @@ function Main() {
         let response = await res.json();
         if (response.err) {
           setNotFoundError(true);
-          setTimeout(() => {
-            return setNotFoundError(false);
-          }, 5000);
         } else {
           setItemsInDirectory([...response]);
         }
@@ -125,14 +126,11 @@ function Main() {
         itemsInDirectory={itemsInDirectory}
         setItemsInDirectory={setItemsInDirectory}
       />
-      <InputDirectoryChange
+      <SearchDirectory
         itemsInDirectory={itemsInDirectory}
         notFoundError={notFoundError}
       />
-      {!notFoundError && <RenderFiles itemsInDirectory={itemsInDirectory} />}
-      {notFoundError && (
-        <h1 id="inputdirectory--not-found-error">Folder Not Found</h1>
-      )}
+      <RenderFiles itemsInDirectory={itemsInDirectory} />
     </div>
   );
 }

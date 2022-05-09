@@ -29,6 +29,7 @@ function checkType(type) {
     type === "rtf",
     type === "ion",
     type === "docx",
+    type === 'json'
   ];
 
   if (checkIfImage.includes(true)) {

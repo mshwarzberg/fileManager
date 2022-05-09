@@ -9,14 +9,12 @@ const actions = {
   addToNavigateIndex: "addToNavigateIndex",
   subtractFromNavigateIndex: "subtractFromNavigateIndex",
   setDirectoryTree: "setDirectoryTree",
-  removeFromTree: "removeFromTree",
-  addToTreeIndex: "addToTreeIndex",
-  subtractFromTreeIndex: "subtractFromTreeIndex",
 };
 
 export const DirectoryContext = createContext();
 
 function reducer(state, action) {
+  
   switch (action.type) {
     case actions.setCurrentDirectory:
       return { ...state, currentDirectory: action.value };
@@ -32,7 +30,6 @@ function reducer(state, action) {
           0,
           state.arrayIndex + 1
         ),
-        arrayIndex: state.arrayIndex + 1,
       };
     case actions.addToNavigateIndex:
       return {
@@ -52,42 +49,35 @@ function reducer(state, action) {
           { [state.treeIndex]: action.value },
         ],
       };
-    case actions.removeFromTree:
-      return {
-        ...state,
-      };
-    case actions.addToTreeIndex:
-      return {
-        ...state,
-        treeIndex: state.treeIndex + 1,
-      };
-    case actions.subtractFromTreeIndex:
-      return {
-        ...state,
-        treeIndex: state.treeIndex - 1,
-      };
     default:
       return state;
   }
 }
 
 function App() {
+
   const [state, dispatch] = useReducer(reducer, {
     currentDirectory: "./rootDir",
     navigatedDirectories: ["./rootDir"],
     arrayIndex: 0,
-    directoryTree: [{ 0: ["./rootDir"] }],
-    treeIndex: 0,
+    directoryTree: [],
   });
 
   function setDirectory(action, value) {
+
+    // if the new input is the same as the current folder don't do anything
+    if (state.currentDirectory === value) {
+      return
+    }
+    if (value === "." || value === "./" || value === "") {
+      value = "./rootDir";
+    }
     if (action === "enterFolder") {
       dispatch({ type: "setCurrentDirectory", value: value });
       if (state.arrayIndex + 1 < state.navigatedDirectories.length) {
         dispatch({ type: "removeFromNavigate" });
-      } else {
-        dispatch({ type: "addToNavigateIndex" });
       }
+      dispatch({ type: "addToNavigateIndex" });
       dispatch({ type: "setNavigateDirectory", value: value });
       return;
     } else if (action === "goBackFolder") {
@@ -110,9 +100,39 @@ function App() {
       dispatch({ type: "addToNavigateIndex" });
       return;
     } else if (action === "searchDirectory") {
-      dispatch({ type: "setCurrentDirectory", value: value });
-      dispatch({ type: "setNavigateDirectory", value: value });
-      dispatch({ type: "addToNavigateIndex" });
+      // dispatch({ type: "setCurrentDirectory", value: value });
+      // dispatch({ type: "setNavigateDirectory", value: value });
+      // dispatch({ type: "addToNavigateIndex" });
+      // if (value.length < state.currentDirectory.length) {
+      //   let loopLength = state.currentDirectory.length - value.length - 1
+      //     for (
+      //       let i = loopLength;
+      //       i > 0;
+      //       i--
+      //     ) {
+      //       if (
+      //         state.currentDirectory[i] === "/" ||
+      //         state.currentDirectory[i] === "\\"
+      //       ) {
+      //         dispatch({ type: "removeFromTree" });
+      //         dispatch({ type: "subtractFromTreeIndex" });
+      //       }
+      //     }
+      // } else {
+      //   dispatch({ type: "setDirectoryTree", value: value });
+      //   dispatch({ type: "addToTreeIndex" });
+      // }
+      // return;
+    } else if (action === "handleError") {
+      dispatch({
+        type: "setCurrentDirectory",
+        value: state.navigatedDirectories[state.arrayIndex - 1] || "./rootDir",
+      });
+      dispatch({
+        type: "subtractFromNavigateIndex",
+      });
+      dispatch({ type: "removeFromNavigate" });
+      return;
     }
   }
 

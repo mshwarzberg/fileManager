@@ -1,4 +1,11 @@
-
+@keyframes hoverDirs {
+  0% {
+    transform: scaleX(1)scaleY(1);
+  }
+  100% {
+    transform: scaleX(1.03)scaleY(1.1);
+  }
+}
 #directorytree--button-showhide  {
   position: absolute;
   top: 2rem;
@@ -12,16 +19,45 @@
   width: calc(var(--screen-width) * .6);
   height: calc(var(--screen-height) - 7rem);
   background-color: #333333;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 7rem;
+  overflow-y: scroll;
+  overflow-x: scroll;
 }
 
-#directory--tree-current-directory {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: white;
+#directory--tree-directories, #directory--tree-hide-sub-directories {
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: #222;
+}
+
+#directory--tree-parent-directory {
+  font-size: 1.3rem;
+  font-family: 'roboto slab';
+  color: red;
+}
+
+.directory--tree-directory {
+  margin-top: 5px;
+  font-family: 'roboto slab';
+  font-weight: bold;
+  border-radius: 3px;
+  padding-left: 5px;
+  cursor: pointer;
+}
+
+.directory--tree-directory:hover {
+  animation: hoverDirs 100ms forwards ease-out;
+}
+
+.directory--tree-directory:nth-child(2n + 1) {
+  background-color: #777;
+}
+
+.directory--tree-directory:nth-child(2n + 2) {
+  background-color: #333333;
+  color: #dddddd;
 }
 
 @media screen and (max-width: 768px) {
