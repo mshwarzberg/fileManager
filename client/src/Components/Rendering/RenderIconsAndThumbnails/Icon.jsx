@@ -11,7 +11,7 @@ function Icon(props) {
   const [displayIcon, setDisplayIcon] = useState();
 
   if (!displayIcon && isFile) {
-    import(`../../../Assets/images/Icons/${fileextension}.png`)
+    import(`../../../Assets/images/Icons/${fileextension.toLowerCase()}.png`)
       .then((image) => setDisplayIcon(image.default))
       .catch(() => {
         import(`../../../Assets/images/blank.png`).then((image) => {

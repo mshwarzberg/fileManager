@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { DirectoryContext } from "../../../App";
+import { DirectoryStateContext } from "../../../App";
 
 function DirectoryNavigation() {
 
-  const { state, setDirectory } = useContext(DirectoryContext);
+  const { state, dispatch } = useContext(DirectoryStateContext);
   
   return (
     <div id="navbar--navigation">
@@ -16,10 +16,10 @@ function DirectoryNavigation() {
               break;
             }
           }
-          setDirectory("goUpFolder", uppedDirectory);
+          dispatch({type: "upDirectory", value: uppedDirectory});
         }}
         className="navbar--button"
-        disabled={state.currentDirectory === "./rootDir"}
+        disabled={state.currentDirectory === "./root"}
       >
         ↑
       </button>
@@ -27,20 +27,20 @@ function DirectoryNavigation() {
         id="navbar--backwards"
         className="navbar--button"
         onClick={() => {
-          setDirectory("goBackFolder");
+          dispatch({type:"backDirectory"});
         }}
-        disabled={state.arrayIndex === 0}
+        disabled={state.navigatedIndex === 0}
       >
         ←
       </button>
       <button
         onClick={() => {
-          setDirectory("goForwardsFolder");
+          dispatch({type: "forwardDirectory"});
         }}
         id="navbar--forwards"
         className="navbar--button"
         disabled={
-          state.arrayIndex ===
+          state.navigatedIndex ===
           state.navigatedDirectories.length - 1
         }
       >

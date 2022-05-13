@@ -1,13 +1,11 @@
 #navbar--sort-button {
-  position: fixed;
-  right: 0;
-  top: 1rem;
+  position: absolute;
+  right: 1rem;
+  top: .5rem;
   z-index: 1;
   font-family: 'bebas neue';
   font-size: 1.3rem;
-  width: 7rem;
-  height: 5rem;
-  border-radius: 5px;
+  width: 5rem;
 }
 
 #filter--list {
@@ -22,12 +20,11 @@
 
 #filter--list:hover {
   background-color: black;
-  border: 2px solid black;
   color: #000;
 }
 
 .filter--list-item {
-  border: 1px solid black;
+  cursor: pointer;
   width: 100%;
   height: 20%;
   display: flex;
@@ -70,47 +67,20 @@
   top: 59.5%;
 }
 
-#navbar--asc-or-desc {
+
+#navbar--asc-desc {
   position: absolute;
-  right: 7.5rem;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  top: 1rem;
-}
-
-#navbar--descending, #navbar--ascending {
+  right: 6rem;
+  top: 0.5rem;
   padding: 3px;
-  height: 2.5rem;
-  width: 7rem;
-  border: 2px solid black;
-  font-family: 'bebas neue';
-  color: #000;
+  height: 3rem;
+  border: 1.5px solid black;
   font-size: 1.4rem;
-  background-color: #fff;
-  cursor: pointer;
 }
 
-#navbar--descending {
-  border-radius: 4px 4px 0 0;
+#navbar--asc-desc:hover {
+  border: 1.5px solid white;
 }
-#navbar--ascending {
-  border-radius: 0 0 4px 4px ;
-}
-#navbar--descending:hover, #navbar--ascending:hover {
-  color: white;
-  background-color: black;
-  border: 2px solid white;
-}
-
-#navbar--descending:disabled, #navbar--ascending:disabled {
-  background-color: #444;
-  border: 2px solid #222;
-  color: #222;
-  cursor: default;
-  width: 7rem;
-}
-
 @media screen and (max-width: 768px) {
   #navbar--sort-button {
     width: 3rem;

@@ -6,58 +6,51 @@
     transform: scaleX(1.03)scaleY(1.1);
   }
 }
+
 #directorytree--button-showhide  {
   position: absolute;
-  top: 2rem;
+  z-index: 1;
+  top: 0.5rem;
   text-align: center;
   height: 3rem;
+  width: 5rem;
   left: 5px;
 }
 
 #directorytree--body {
-  max-width: 25rem;
+  z-index: 1;
+  cursor: default;
+  max-width: 30rem;
   width: calc(var(--screen-width) * .6);
-  height: calc(var(--screen-height) - 7rem);
-  background-color: #333333;
+  height: calc(var(--screen-height) - 4rem);
+  background-color: #333355;
   position: fixed;
   left: 0;
-  top: 7rem;
+  top: 4rem;
   overflow-y: scroll;
   overflow-x: scroll;
+  padding-right: 5px;
 }
 
-#directory--tree-directories, #directory--tree-hide-sub-directories {
-  padding: 1rem;
-  border-radius: 4px;
-  background-color: #222;
+#directory--tree-parent-directory, .directory--tree-directory {
+  font-family: 'roboto slab';
+  color: white;
+  border-radius: 3px;
+  margin-top: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  padding-left: 5px;
 }
 
 #directory--tree-parent-directory {
+  background-color: #111;
   font-size: 1.3rem;
-  font-family: 'roboto slab';
-  color: red;
-}
-
-.directory--tree-directory {
-  margin-top: 5px;
-  font-family: 'roboto slab';
-  font-weight: bold;
-  border-radius: 3px;
-  padding-left: 5px;
-  cursor: pointer;
+  border-radius: 5px;
+  color: white;
 }
 
 .directory--tree-directory:hover {
   animation: hoverDirs 100ms forwards ease-out;
-}
-
-.directory--tree-directory:nth-child(2n + 1) {
-  background-color: #777;
-}
-
-.directory--tree-directory:nth-child(2n + 2) {
-  background-color: #333333;
-  color: #dddddd;
 }
 
 @media screen and (max-width: 768px) {

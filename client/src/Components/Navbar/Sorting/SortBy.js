@@ -9,34 +9,21 @@ function SortBy(props) {
 
   return (
     <div>
-      <div id="navbar--asc-or-desc">
         <button
-          disabled={descending}
-          id="navbar--descending"
+          className="navbar--button"
+          id="navbar--asc-desc"
           onClick={() => {
-            setDescending(true);
+            setDescending(!descending);
           }}
+          title={`Click to sort ${descending ? 'ascending' : 'descending'}`}
         >
-          Descending ↓
+          {descending ? '↓' : '↑'}
         </button>
-        <button
-          disabled={!descending}
-          id="navbar--ascending"
-          onClick={() => {
-            setDescending(false);
-          }}
-        >
-          Ascending ↑
-        </button>
-      </div>
       <button
         className="navbar--button"
         id="navbar--sort-button"
-        onMouseEnter={() => {
-          setShowPopup(true);
-        }}
-        onMouseLeave={() => {
-          setShowPopup(false);
+        onClick={() => {
+          setShowPopup(!showPopup)
         }}
         onDoubleClick={() => {
           setItemsInDirectory((prevItems) => {

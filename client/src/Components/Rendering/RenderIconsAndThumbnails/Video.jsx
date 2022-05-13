@@ -11,7 +11,7 @@ function Video(props) {
   const [displayCornerIcon, setDisplayCornerIcon] = useState();
 
   if (!displayCornerIcon && isFile) {
-    import(`../../../Assets/images/Icons/${fileextension}.png`)
+    import(`../../../Assets/images/Icons/${fileextension.toLowerCase()}.png`)
       .then((image) => setDisplayCornerIcon(image.default))
       .catch(() => {
         import(`../../../Assets/images/blank.png`).then((image) => {

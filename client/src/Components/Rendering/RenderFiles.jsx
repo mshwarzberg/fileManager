@@ -9,12 +9,12 @@ import VideoDisplay from "../ItemDisplay/VideoDisplay";
 import DocumentDisplay from "../ItemDisplay/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
 
-import { DirectoryContext } from "../../App";
+import { DirectoryStateContext } from "../../App";
 
 function RenderFiles(props) {
   const { itemsInDirectory } = props;
 
-  const { state, setDirectory } = useContext(DirectoryContext);
+  const { state, dispatch } = useContext(DirectoryStateContext);
 
   const [viewItem, setViewItem] = useState({
     type: null,
@@ -22,6 +22,19 @@ function RenderFiles(props) {
     index: null,
     name: null,
   });
+
+  const [fullscreen, setFullscreen] = useState(false);
+
+  function enterExitFullscreen() {
+    const item = document.querySelector("#fullscreen");
+    if (document.fullscreenElement == null) {
+      item.requestFullscreen();
+      setFullscreen(true);
+    } else {
+      setFullscreen(false);
+      document.exitFullscreen();
+    }
+  }
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
@@ -105,7 +118,7 @@ function RenderFiles(props) {
   function changeFolderOrViewFiles(type, filename, index, direction) {
     // arrow functionality to
     if (direction) {
-      if (direction === "forwards" && type !== 'video') {
+      if (direction === "forwards" && type !== "video") {
         for (let i = index + 1; i < itemsInDirectory.length; i++) {
           type = itemsInDirectory[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
@@ -114,7 +127,7 @@ function RenderFiles(props) {
             break;
           }
         }
-      } else if (direction === "backwards" && type !== 'video') {
+      } else if (direction === "backwards" && type !== "video") {
         for (let i = index - 1; i > 0; i--) {
           type = itemsInDirectory[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
@@ -127,7 +140,7 @@ function RenderFiles(props) {
     }
     // change folder on click
     if (type === "folder") {
-      setDirectory("enterFolder", `${state.currentDirectory}/${filename}`)
+      dispatch({ type: "openDirectory", value: `${state.currentDirectory}/${filename}`});
     } else {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
@@ -140,7 +153,7 @@ function RenderFiles(props) {
   }
 
   // render the file data and thumbnails
-  const renderItems = itemsInDirectory.map((item) => {
+  const renderItems = itemsInDirectory?.map((item) => {
     const { name, fileextension, size } = item;
     if (name) {
       return (
@@ -168,9 +181,34 @@ function RenderFiles(props) {
   return (
     <div id="renderfile--page">
       {renderItems}
-      <VideoDisplay viewItem={viewItem} setViewItem={setViewItem} />
-      <DocumentDisplay viewItem={viewItem} setViewItem={setViewItem} />
-      <ImageDisplay viewItem={viewItem} setViewItem={setViewItem} />
+      {viewItem.type && (
+        <div id="fullscreen">
+          {viewItem.type === "video" && (
+            <VideoDisplay
+              viewItem={viewItem}
+              setViewItem={setViewItem}
+              enterExitFullscreen={enterExitFullscreen}
+              fullscreen={fullscreen}
+            />
+          )}
+          {viewItem.type === "document" && (
+            <DocumentDisplay
+              viewItem={viewItem}
+              setViewItem={setViewItem}
+              enterExitFullscreen={enterExitFullscreen}
+              fullscreen={fullscreen}
+            />
+          )}
+          {viewItem.type === "imagegif" && (
+            <ImageDisplay
+              viewItem={viewItem}
+              setViewItem={setViewItem}
+              enterExitFullscreen={enterExitFullscreen}
+              fullscreen={fullscreen}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
