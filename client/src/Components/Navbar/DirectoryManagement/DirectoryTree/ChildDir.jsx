@@ -5,10 +5,10 @@ import useFetch from "../../../../Hooks/useFetch";
 
 export default function ChildDir(props) {
 
-  const {addToStr, subItem, margin} = props
+  const {addToPath, subItem, margin} = props
   const {state, dispatch} = useContext(DirectoryStateContext)
 
-  const {data: directories} = useFetch('/api/getdirectories', JSON.stringify({path: `./root/${addToStr}/${subItem}`}))
+  const {data: directories} = useFetch('/api/getdirectories', JSON.stringify({path: `./root/${addToPath}/${subItem}`}))
 
   const changeItem = useUpdateDirectoryTree()
 
@@ -16,16 +16,15 @@ export default function ChildDir(props) {
     <p
       onClick={() => {
         let parentDirs = [];
-        if (addToStr) {
-          parentDirs = addToStr.split("/");
+        if (addToPath) {
+          parentDirs = addToPath.split("/");
         }
 
         parentDirs.push(subItem);
         dispatch({
           type: "openDirectory",
-          value: `./root/${addToStr}/${subItem}`,
+          value: `./root/${addToPath}/${subItem}`,
         });
-        console.log(`./root/${addToStr}/${subItem}`)
         if (directories) {
           dispatch({
             type: 'updateDirectoryTree', 
@@ -35,6 +34,7 @@ export default function ChildDir(props) {
       }}
       style={{ marginLeft: `${margin * 7}px` }}
       className="directorytree--directory"
+      title={`Name: ${subItem}\nPath: ${`./root/${addToPath}/${subItem}`}`}
     >
       {subItem}
     </p>

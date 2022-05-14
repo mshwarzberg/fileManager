@@ -6,7 +6,6 @@ import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
 
 export default function DirectoryTree() {
-  
   const [showTree, setShowTree] = useState(false);
 
   const { state } = useContext(DirectoryStateContext);
@@ -15,17 +14,18 @@ export default function DirectoryTree() {
     margin = margin + 1;
     let openDirName = path;
     let openDirectory;
-    
+    let addToPath
+
     openDirectory = tree.map((subItem) => {
       if (tree.indexOf(subItem) === 0 && typeof subItem === "string") {
         openDirName = subItem;
       }
-      let addToStr = `${path}/${openDirName}`;
+      addToPath = `${path}/${openDirName}`;
       if (path === "") {
-        addToStr = openDirName;
-        if (addToStr === 'root') {
-          addToStr = ''
-          openDirName = ''
+        addToPath = openDirName;
+        if (addToPath === "root") {
+          addToPath = "";
+          openDirName = "";
         }
       }
       if (typeof subItem === "string") {
@@ -33,14 +33,25 @@ export default function DirectoryTree() {
           return "";
         }
         return (
-          <ChildDir subItem={subItem} addToStr={addToStr} margin={margin} key={RandomChars()}/>
+          <ChildDir
+            subItem={subItem}
+            addToPath={addToPath}
+            margin={margin}
+            key={RandomChars()}
+          />
         );
       } else {
-        return mapDirectoryTreeLoop(subItem, margin, addToStr);
+        return mapDirectoryTreeLoop(subItem, margin, addToPath);
       }
     });
     return (
-      <ParentDir openDirName={openDirName} margin={margin} openDirectory={openDirectory} key={RandomChars()}/>
+      <ParentDir
+        path={path}
+        openDirName={openDirName}
+        margin={margin}
+        openDirectory={openDirectory}
+        key={RandomChars()}
+      />
     );
   }
 

@@ -27,7 +27,6 @@
   left: -5px;
   top: 4rem;
   overflow-y: scroll;
-  overflow-x: scroll;
   padding-right: 5px;
   scrollbar-color: rebeccapurple #4444;
   scrollbar-width: thin;
@@ -65,8 +64,10 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 2.5rem;
-  font-size: 1.3rem;
+  height: 1.8rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  letter-spacing: -0.2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -100,6 +101,7 @@
   text-overflow: ellipsis;
   font-family: 'roboto slab';
 }
+
 .directorytree--directory:hover {
   background-color: #fff;
   color: #000;
