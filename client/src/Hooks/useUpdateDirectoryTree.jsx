@@ -7,10 +7,7 @@ export default function useUpdateDirectoryTree() {
         tree[i] = changeItem(tree[i], array, currentIndex + 1, newValue);
       }
     }
-    
     if (!tree[0]) {
-      console.log('object');
-      tree.push('root')
       tree = tree.concat(array)
     }
     if (currentIndex === array.length - 1) {

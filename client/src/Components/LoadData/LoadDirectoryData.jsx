@@ -87,6 +87,7 @@ function LoadDirectoryData() {
 
   useEffect(() => {
     if (directories) {
+
       let parentDirs = state.currentDirectory.split("/").slice(1, state.currentDirectory.length)
       parentDirs = [...parentDirs, ...directories.array]
       
@@ -94,6 +95,7 @@ function LoadDirectoryData() {
         type: "updateDirectoryTree",
         value: changeItem(state.directoryTree, parentDirs, 0, directories.array),
       });
+      
     }
   }, [directories]);
 

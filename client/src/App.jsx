@@ -1,6 +1,6 @@
 import React, { useReducer, createContext } from "react";
 import LoadDirectoryData from "./Components/LoadData/LoadDirectoryData";
-import DirectoryTree from "./Components/Navbar/DirectoryManagement/DirectoryTree";
+import DirectoryTree from "./Components/Navbar/DirectoryManagement/DirectoryTree/DirectoryTree";
 
 export const DirectoryStateContext = createContext();
 
