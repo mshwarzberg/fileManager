@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
 function SortPopup(props) {
-  const { setItemsInDirectory, descending } = props;
+  const { setDirectoryItems, descending } = props;
   
   const [showSubSort, setShowSubSort] = useState(false);
   const [isFolderSorted, setIsFolderSorted] = useState(false);
 
   function mySort(sortMethod, type) {
-    setItemsInDirectory((prevItems) => {
+    setDirectoryItems((prevItems) => {
 
       let sortedArray = [];
       let sortDirection = descending;

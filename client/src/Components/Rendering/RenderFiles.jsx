@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 // component import
 import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
@@ -11,8 +11,10 @@ import ImageDisplay from "../ItemDisplay/ImageDisplay";
 
 import { DirectoryStateContext } from "../../App";
 
+export const DisplayContext = createContext()
+
 function RenderFiles(props) {
-  const { itemsInDirectory } = props;
+  const { directoryItems } = props;
 
   const { state, dispatch } = useContext(DirectoryStateContext);
 
@@ -119,19 +121,19 @@ function RenderFiles(props) {
     // arrow functionality to
     if (direction) {
       if (direction === "forwards" && type !== "video") {
-        for (let i = index + 1; i < itemsInDirectory.length; i++) {
-          type = itemsInDirectory[i].itemtype;
+        for (let i = index + 1; i < directoryItems.length; i++) {
+          type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
-            filename = itemsInDirectory[i].name;
+            filename = directoryItems[i].name;
             index = i;
             break;
           }
         }
       } else if (direction === "backwards" && type !== "video") {
         for (let i = index - 1; i > 0; i--) {
-          type = itemsInDirectory[i].itemtype;
+          type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
-            filename = itemsInDirectory[i].name;
+            filename = directoryItems[i].name;
             index = i;
             break;
           }
@@ -153,23 +155,23 @@ function RenderFiles(props) {
   }
 
   // render the file data and thumbnails
-  const renderItems = itemsInDirectory?.map((item) => {
+  const renderItems = directoryItems?.map((item) => {
     const { name, fileextension, size } = item;
     if (name) {
       return (
         <div key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}>
           <ImageGif
-            itemsInDirectory={itemsInDirectory}
+            directoryItems={directoryItems}
             changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
           />
           <Video
-            itemsInDirectory={itemsInDirectory}
+            directoryItems={directoryItems}
             changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
           />
           <Icon
-            itemsInDirectory={itemsInDirectory}
+            directoryItems={directoryItems}
             changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
           />
@@ -182,32 +184,25 @@ function RenderFiles(props) {
     <div id="renderfile--page">
       {renderItems}
       {viewItem.type && (
-        <div id="fullscreen">
+        <DisplayContext.Provider value={{viewItem, setViewItem, fullscreen}}>
+          <div id="fullscreen">
           {viewItem.type === "video" && (
             <VideoDisplay
-              viewItem={viewItem}
-              setViewItem={setViewItem}
               enterExitFullscreen={enterExitFullscreen}
-              fullscreen={fullscreen}
             />
           )}
           {viewItem.type === "document" && (
             <DocumentDisplay
-              viewItem={viewItem}
-              setViewItem={setViewItem}
               enterExitFullscreen={enterExitFullscreen}
-              fullscreen={fullscreen}
             />
           )}
           {viewItem.type === "imagegif" && (
             <ImageDisplay
-              viewItem={viewItem}
-              setViewItem={setViewItem}
               enterExitFullscreen={enterExitFullscreen}
-              fullscreen={fullscreen}
             />
           )}
         </div>
+        </DisplayContext.Provider>
       )}
     </div>
   );

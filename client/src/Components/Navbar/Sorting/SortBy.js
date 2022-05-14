@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import SortPopup from "./SortPopup";
 
 function SortBy(props) {
-  const { setItemsInDirectory } = props;
+  const { setDirectoryItems } = props;
 
   const [showPopup, setShowPopup] = useState(false);
   const [descending, setDescending] = useState(true);
@@ -26,7 +26,7 @@ function SortBy(props) {
           setShowPopup(!showPopup)
         }}
         onDoubleClick={() => {
-          setItemsInDirectory((prevItems) => {
+          setDirectoryItems((prevItems) => {
             var i, j, k;
             let newArray = [...prevItems];
             for (i = newArray.length - 1; i > 0; i--) {
@@ -43,7 +43,7 @@ function SortBy(props) {
         Sort By...{" "}
         {showPopup && (
           <SortPopup
-            setItemsInDirectory={setItemsInDirectory}
+            setDirectoryItems={setDirectoryItems}
             descending={descending}
             setDescending={setDescending}
           />

@@ -2,9 +2,12 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 
-const { checkIfFileOrDir } = require("./middleware");
+const { checkIfFileOrDir } = require("../helpers/isfileordirectory");
 
 router.post("/", (req, res) => {
+  if (!req.body.path) {
+    return res.send({err: 'path is blank'})
+  }
   fs.readdir(req.body.path, {withFileTypes: true},(error, files) => {
     if (error) console.log(error)
     let dirArray = []

@@ -20,36 +20,89 @@
 #directorytree--body {
   z-index: 1;
   cursor: default;
-  max-width: 30rem;
-  width: calc(var(--screen-width) * .6);
   height: calc(var(--screen-height) - 4rem);
-  background-color: #333355;
+  width: calc(100vw / 3);
+  background-color: #111;
   position: fixed;
-  left: 0;
+  left: -5px;
   top: 4rem;
   overflow-y: scroll;
   overflow-x: scroll;
   padding-right: 5px;
+  scrollbar-color: rebeccapurple #4444;
+  scrollbar-width: thin;
 }
 
-#directory--tree-parent-directory, .directory--tree-directory {
-  font-family: 'roboto slab';
-  color: white;
-  border-radius: 3px;
-  margin-top: 5px;
-  font-weight: bold;
-  cursor: pointer;
-  padding-left: 5px;
+#directorytree--body::-webkit-scrollbar {
+  width: 10px;
 }
 
-#directory--tree-parent-directory {
-  background-color: #111;
-  font-size: 1.3rem;
+#directorytree--body::-webkit-scrollbar-track {
+  background: gainsboro;
   border-radius: 5px;
-  color: white;
 }
 
-.directory--tree-directory:hover {
+#directorytree--body::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 5px;
+}
+
+#directorytree--body::-webkit-scrollbar-thumb:hover {
+  background: rebeccapurple;
+}
+
+.directorytree-parent-down {
+  height: 1.5rem;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.directorytree--parent-directory {
+  margin-top: 1rem;
+  background-color: white;
+  border-radius: 5px;
+  color: black;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 2.5rem;
+  font-size: 1.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'roboto slab';
+}
+
+.directorytree--expanded-directory {
+  position: relative;
+  margin-top: 1rem;
+}
+
+.line--down {
+  position: absolute;
+  margin-top: 2.7rem;
+  left: 0;
+  top: 0;
+  height: calc(100% - 2.5rem);
+  background-color: #fff;
+  width: 1px;
+}
+
+.directorytree--directory {
+  margin-top: 5px;
+  background-color: #000;
+  color: white;
+  height: 1.5rem;
+  border-radius: 5px;
+  padding-left: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'roboto slab';
+}
+.directorytree--directory:hover {
+  background-color: #fff;
+  color: #000;
   animation: hoverDirs 100ms forwards ease-out;
 }
 

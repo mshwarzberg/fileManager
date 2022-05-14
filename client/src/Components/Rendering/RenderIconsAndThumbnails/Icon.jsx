@@ -3,7 +3,7 @@ import SliceName from "../../../Helpers/SliceName";
 
 function Icon(props) {
 
-  const { item, changeFolderOrViewFiles, itemsInDirectory } = props;
+  const { item, changeFolderOrViewFiles, directoryItems } = props;
   
   const { name, shorthandsize, fileextension, itemtype, thumbnail, isFile } =
     item;
@@ -32,7 +32,7 @@ function Icon(props) {
           changeFolderOrViewFiles(
             itemtype,
             name,
-            itemsInDirectory.indexOf(item)
+            directoryItems.indexOf(item)
           );
         }}
       >

@@ -1,75 +1,20 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { DirectoryStateContext } from "../../../App";
 import RandomChars from "../../../Helpers/RandomChars";
+import DownArrow from "../../../Assets/images/down-arrow.png";
+import RightArrow from "../../../Assets/images/right-arrow.png";
 
 export default function DirectoryTree() {
-  const [directoryTree, setDirectoryTree] = useState([
-   
-  ]);
-
+  
   const [showTree, setShowTree] = useState(false);
-  const [data, setData] = useState();
 
   const { state, dispatch } = useContext(DirectoryStateContext);
-
-  const changeItem = useCallback((tree, array, currentIndex, newValue) => {
-    for (let i in tree) {
-      if (tree[i][0] === array[currentIndex]) {
-        tree[i] = changeItem(tree[i], array, currentIndex + 1, newValue);
-      }
-    }
-    if (currentIndex === array.length - 1) {
-      for (let i in tree) {
-        if (tree[i] === array[array.length - 1]) {
-          tree.splice(tree.indexOf(array[currentIndex]), 1, [
-            array[currentIndex],
-            ...newValue,
-          ]);
-        }
-      }
-    }
-    return tree;
-  }, []);
-  
-  useEffect(() => {
-    if (data) {
-      fetch("/api/getdirectories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: data.path }),
-      })
-        .then(async (res) => {
-          const response = await res.json();
-          setDirectoryTree((prevTree) => {
-            let newTree = prevTree;
-            newTree = changeItem(
-              directoryTree,
-              data.directoryArray,
-              0,
-              response.array
-            );
-            return newTree;
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-    let dump = directoryTree
-    setDirectoryTree(dump)
-  }, [
-    state.currentDirectory,
-    changeItem,
-    data,
-    directoryTree,
-    setDirectoryTree,
-  ]);
 
   function mapDirectoryTreeLoop(tree, margin, path) {
     margin = margin + 1;
     let openDirName = path;
     let openDirectory;
-
+    
     openDirectory = tree.map((subItem) => {
       if (tree.indexOf(subItem) === 0 && typeof subItem === "string") {
         openDirName = subItem;
@@ -77,6 +22,9 @@ export default function DirectoryTree() {
       let addToStr = `${path}/${openDirName}`;
       if (path === "") {
         addToStr = openDirName;
+        if (addToStr === 'root') {
+          [addToStr, openDirName] = ''
+        }
       }
       if (typeof subItem === "string") {
         if (tree.indexOf(subItem) === 0) {
@@ -85,22 +33,21 @@ export default function DirectoryTree() {
         return (
           <p
             key={RandomChars()}
-            onClick={(e) => {
+            onClick={() => {
               let parentDirs = [];
               if (addToStr) {
                 parentDirs = addToStr.split("/");
               }
 
               parentDirs.push(subItem);
-              setData({
-                directoryArray: parentDirs,
-                path: `./root/${addToStr}/${subItem}`,
+              dispatch({
+                type: "openDirectory",
+                value: `./root/${addToStr}/${subItem}`,
+                array: ['abc', 'def', 'ghi']
               });
-              dispatch({type: "openDirectory", value: `./root/${addToStr}/${subItem}`});
             }}
             style={{ marginLeft: `${margin * 5}px` }}
-            className="directory--tree-directory"
-            
+            className="directorytree--directory"
           >
             {subItem}
           </p>
@@ -115,12 +62,27 @@ export default function DirectoryTree() {
         style={{
           marginLeft: `${margin * 5}px`,
         }}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
+        className="directorytree--expanded-directory"
       >
-        <p id="directory--tree-parent-directory">{openDirName}</p>
-        {openDirectory}
+        <div className="line--down" />
+        <p className="directorytree--parent-directory">
+          <img
+            onClick={(e) => {
+              if (e.target.parentElement.nextSibling.style.display === "") {
+                e.target.parentElement.nextSibling.style.display = "none";
+                e.target.src = RightArrow;
+              } else {
+                e.target.parentElement.nextSibling.style.display = "";
+                e.target.src = DownArrow;
+              }
+            }}
+            className="directorytree-parent-down"
+            src={DownArrow}
+            alt=""
+          />
+          {openDirName}
+        </p>
+        <div className="directorytree--open-directories">{openDirectory}</div>
       </div>
     );
   }
@@ -138,7 +100,7 @@ export default function DirectoryTree() {
       </button>
       {showTree && (
         <div id="directorytree--body">
-          {mapDirectoryTreeLoop(directoryTree, 0, "")}
+          {mapDirectoryTreeLoop(state.directoryTree, 0, "")}
         </div>
       )}
     </div>

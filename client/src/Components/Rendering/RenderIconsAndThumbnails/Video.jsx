@@ -4,7 +4,7 @@ import playIcon from "../../../Assets/images/play.png";
 import lightPlayIcon from "../../../Assets/images/playhover.png";
 
 function Video(props) {
-  const { item, changeFolderOrViewFiles, itemsInDirectory } = props;
+  const { item, changeFolderOrViewFiles, directoryItems } = props;
   const { name, shorthandsize, fileextension, thumbnail, itemtype, isFile } =
     item;
 
@@ -29,7 +29,7 @@ function Video(props) {
           return changeFolderOrViewFiles(
             itemtype,
             name,
-            itemsInDirectory.indexOf(item)
+            directoryItems.indexOf(item)
           );
         }}
       >

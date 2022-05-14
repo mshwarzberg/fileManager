@@ -1,31 +1,14 @@
-import React from "react";
-function VideoDisplay(props) {
-  const { viewItem, setViewItem, enterExitFullscreen } = props;
+import React, {useContext} from "react";
+import DisplayHeaderAndClose from "./DisplayHeaderAndClose";
+import { DisplayContext } from "../Rendering/RenderFiles";
 
+function VideoDisplay() {
+
+  const { viewItem } = useContext(DisplayContext)
+  
   return (
     <div className="viewitem--block" id="viewitem--block-video">
-      <button
-        onClick={() => {
-          enterExitFullscreen();
-        }}
-      >
-        Enter/Exit Fullscreen
-      </button>
-      <h1 id="viewitem--filename">{viewItem.name}</h1>
-      <button
-        className="viewitem--close"
-        onClick={() => {
-          URL.revokeObjectURL(viewItem.property);
-          setViewItem({
-            type: null,
-            property: null,
-            index: null,
-            name: null,
-          });
-        }}
-      >
-        X
-      </button>
+      <DisplayHeaderAndClose />
       <video
         className="viewitem--item"
         id="viewitem--video"

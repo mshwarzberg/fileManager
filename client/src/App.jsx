@@ -52,6 +52,11 @@ function reducer(state, action) {
           state.navigatedIndex + 1
         ),
       };
+    case "updateDirectoryTree":
+      return {
+        ...state, 
+        directoryTree: action.value
+      }
     default:
       return state;
   }
@@ -64,6 +69,7 @@ export default function App() {
     navigatedDirectories: ["./root"],
     navigatedIndex: 0,
   });
+
 
   return (
     <>

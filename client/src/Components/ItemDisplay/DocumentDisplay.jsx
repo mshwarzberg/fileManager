@@ -1,34 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import DisplayHeaderAndClose from "./DisplayHeaderAndClose";
+import { DisplayContext } from "../Rendering/RenderFiles";
+
 function DocumentDisplay(props) {
-  const { viewItem, setViewItem, enterExitFullscreen, fullscreen } = props;
+  const { viewItem } = useContext(DisplayContext);
   const [editFile, setEditFile] = useState(viewItem.property);
 
   return (
     <div className="viewitem--block" id="viewitem--block-document">
-      {!fullscreen && <h1 id="viewitem--filename">{viewItem.name}</h1>}
-      <button
-        className="viewitem--close"
-        onClick={() => {
-          URL.revokeObjectURL(viewItem.property);
-          setViewItem({
-            type: null,
-            property: null,
-            index: null,
-            name: null,
-          });
-        }}
-      >
-        X
-      </button>
+      <DisplayHeaderAndClose />
       <textarea
         className="viewitem--item"
-        onDoubleClick={() => {
-          enterExitFullscreen();
-        }}
         id="viewitem--document"
         value={editFile}
         onChange={(e) => {
           setEditFile(e.target.value);
+        }}
+        onDoubleClick={() => {
+          props.enterExitFullscreen();
         }}
         spellCheck={false}
       />

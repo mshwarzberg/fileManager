@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
-export default function useFetch(url, body) {
+// the dependency allows react to rerender whenever I feel like it
+export default function useFetch(url, body, dependency) {
   const [data, setData] = useState(null);
+
   useEffect(() => {
+      
       fetch(url, {
         method: "POST",
         headers: {
@@ -11,10 +14,13 @@ export default function useFetch(url, body) {
         body: body,
       })
         .then(async (res) => {
-          setData(await res.json());
+          const response = await res.json()
+          if (!response.err) {
+            setData(response);
+          }
         })
         .catch((err) => console.log(err));
-  }, [url, body]);
-
-  return { data };
+  }, [url, body, dependency]);
+  
+ return { data }
 }

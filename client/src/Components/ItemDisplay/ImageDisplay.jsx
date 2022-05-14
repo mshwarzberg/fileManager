@@ -1,30 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
+import { DisplayContext } from "../Rendering/RenderFiles";
+import DisplayHeaderAndClose from "./DisplayHeaderAndClose";
 
 function ImageDisplay(props) {
-  const { viewItem, setViewItem, enterExitFullscreen, fullscreen } = props;
+  const { viewItem, fullscreen } = useContext(DisplayContext)
 
   return (
     <div className="viewitem--block">
-      {!fullscreen && <h1 id="viewitem--filename">{viewItem.name}</h1>}
-      <button
-        className="viewitem--close"
-        onClick={() => {
-          URL.revokeObjectURL(viewItem.property);
-          setViewItem({
-            type: null,
-            property: null,
-            index: null,
-            name: null,
-          });
-        }}
-      >
-        X
-      </button>
+      <DisplayHeaderAndClose />
       <img
       onDoubleClick={() =>  {
-        enterExitFullscreen()
+        props.enterExitFullscreen()
       }}
-      id={fullscreen ? 'image-fullscreen' : ''}
+        id={fullscreen ? 'image-fullscreen' : ''}
         className="viewitem--item"
         src={viewItem.property}
         alt={viewItem.name}

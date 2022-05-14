@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import SliceName from "../../../Helpers/SliceName";
 
 export default function ImageGif(props) {
-  const { item, changeFolderOrViewFiles, itemsInDirectory } = props;
+  const { item, changeFolderOrViewFiles, directoryItems } = props;
   const { name, shorthandsize, fileextension, thumbnail, itemtype, isFile } =
     item;
 
@@ -30,7 +30,7 @@ export default function ImageGif(props) {
           return changeFolderOrViewFiles(
             itemtype,
             name,
-            itemsInDirectory.indexOf(item)
+            directoryItems.indexOf(item)
           );
         }}
       >
