@@ -86,7 +86,8 @@ function LoadDirectoryData() {
   }, [itemData, state.currentDirectory]);
 
   useEffect(() => {
-    if (directories) {
+    // the first time everything loads update the directory tree to load all the directories within the root directory
+    if (directories && !state.directoryTree[0]) {
 
       let parentDirs = state.currentDirectory.split("/").slice(1, state.currentDirectory.length)
       parentDirs = [...parentDirs, ...directories.array]

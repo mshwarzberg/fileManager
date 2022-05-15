@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SliceName from "../../../Helpers/SliceName";
 import playIcon from "../../../Assets/images/play.png";
-import lightPlayIcon from "../../../Assets/images/playhover.png";
+import PlayIconHover from "../../../Assets/images/playhover.png";
 
 function Video(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
@@ -23,6 +23,7 @@ function Video(props) {
     thumbnail &&
     itemtype === "video" && (
       <div
+      id="renderfile--video"
         className="renderfile--block"
         title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
         onClick={() => {
@@ -42,13 +43,15 @@ function Video(props) {
         <img
           src={playIcon}
           onMouseEnter={(e) => {
-            e.currentTarget.src = lightPlayIcon;
+            e.currentTarget.src = PlayIconHover
+            e.stopPropagation()
           }}
           onMouseLeave={(e) => {
             e.currentTarget.src = playIcon;
           }}
           alt="playvideo"
           id="renderfile--play-icon"
+          title={`Play "${name}"`}
         />
         <img
           src={displayCornerIcon}

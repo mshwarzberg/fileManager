@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import SliceName from "../../../Helpers/SliceName";
 
+
 function Icon(props) {
+  
 
   const { item, changeFolderOrViewFiles, directoryItems } = props;
   

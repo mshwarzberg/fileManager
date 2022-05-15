@@ -14,6 +14,7 @@ import { DirectoryStateContext } from "../../App";
 export const DisplayContext = createContext()
 
 function RenderFiles(props) {
+
   const { directoryItems } = props;
 
   const { state, dispatch } = useContext(DirectoryStateContext);
@@ -25,6 +26,7 @@ function RenderFiles(props) {
     name: null,
   });
 
+  const [isNavigating, setIsNavigating] = useState(true)
   const [fullscreen, setFullscreen] = useState(false);
 
   function enterExitFullscreen() {
@@ -40,21 +42,26 @@ function RenderFiles(props) {
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
+      if (e.key === 'CapsLock') {
+        setIsNavigating(!isNavigating)
+      }
       if (
         e.key !== "ArrowRight" &&
         e.key !== "ArrowLeft" &&
-        e.key !== "Escape"
+        e.key !== "Escape" && 
+        e.key !== 'CapsLock'
       ) {
         return;
       }
       if (viewItem.property) {
         let direction;
-        if (e.key === "ArrowRight") {
+        if (e.key === "ArrowRight" && isNavigating) {
           direction = "forwards";
         }
-        if (e.key === "ArrowLeft") {
+        if (e.key === "ArrowLeft" && isNavigating) {
           direction = "backwards";
         }
+        console.log(e.key === "ArrowLeft" && isNavigating);
         changeFolderOrViewFiles(
           viewItem.type,
           viewItem.name,
@@ -120,7 +127,7 @@ function RenderFiles(props) {
   function changeFolderOrViewFiles(type, filename, index, direction) {
     // arrow functionality to
     if (direction) {
-      if (direction === "forwards" && type !== "video") {
+      if (direction === "forwards") {
         for (let i = index + 1; i < directoryItems.length; i++) {
           type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
@@ -129,7 +136,7 @@ function RenderFiles(props) {
             break;
           }
         }
-      } else if (direction === "backwards" && type !== "video") {
+      } else if (direction === "backwards") {
         for (let i = index - 1; i > 0; i--) {
           type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
@@ -189,16 +196,19 @@ function RenderFiles(props) {
           {viewItem.type === "video" && (
             <VideoDisplay
               enterExitFullscreen={enterExitFullscreen}
+              changeFolderOrViewFiles={changeFolderOrViewFiles}
             />
           )}
           {viewItem.type === "document" && (
             <DocumentDisplay
               enterExitFullscreen={enterExitFullscreen}
+              changeFolderOrViewFiles={changeFolderOrViewFiles}
             />
           )}
           {viewItem.type === "imagegif" && (
             <ImageDisplay
               enterExitFullscreen={enterExitFullscreen}
+              changeFolderOrViewFiles={changeFolderOrViewFiles}
             />
           )}
         </div>

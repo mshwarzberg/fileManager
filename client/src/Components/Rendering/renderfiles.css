@@ -32,7 +32,11 @@
   max-width: 90%;
   position: absolute;
 }
-
+#renderfile--image-thumbnail:hover {
+  transform: scale(1.05);
+  transition: 500ms;
+  z-index: 3;
+}
 .renderfile--text {
   position: absolute;
   bottom: 2%;
@@ -58,9 +62,18 @@
   border: 1.5px solid white;
 }
 
+#renderfile--video {
+  cursor: default;
+}
+
 #renderfile--play-icon {
   width: 20%;
   position: absolute;
+  cursor: pointer;
+}
+
+#renderfile--play-icon:hover {
+  opacity: 0.2;
 }
 
 .renderfile--full-icon {

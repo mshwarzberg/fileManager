@@ -12,20 +12,20 @@ export default function DirectoryTree() {
 
   function mapDirectoryTreeLoop(tree, margin, path) {
     margin = margin + 1;
-    let openDirName = path;
+    let openDirectoryName = path;
     let openDirectory;
     let addToPath
 
     openDirectory = tree.map((subItem) => {
       if (tree.indexOf(subItem) === 0 && typeof subItem === "string") {
-        openDirName = subItem;
+        openDirectoryName = subItem;
       }
-      addToPath = `${path}/${openDirName}`;
+      addToPath = `${path}/${openDirectoryName}`;
       if (path === "") {
-        addToPath = openDirName;
+        addToPath = openDirectoryName;
         if (addToPath === "root") {
           addToPath = "";
-          openDirName = "";
+          openDirectoryName = "";
         }
       }
       if (typeof subItem === "string") {
@@ -47,7 +47,7 @@ export default function DirectoryTree() {
     return (
       <ParentDir
         path={path}
-        openDirName={openDirName}
+        openDirectoryName={openDirectoryName}
         margin={margin}
         openDirectory={openDirectory}
         key={RandomChars()}
