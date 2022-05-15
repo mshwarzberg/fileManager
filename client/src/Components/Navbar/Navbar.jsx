@@ -27,6 +27,7 @@ function Navbar(props) {
           setReload(!reload);
         }}
       />
+      
     </nav>
   );
 }

@@ -9,7 +9,7 @@
 
 #directorytree--button-showhide  {
   position: absolute;
-  z-index: 1;
+  z-index: 10;
   top: 0.5rem;
   text-align: center;
   height: 3rem;
@@ -18,7 +18,7 @@
 }
 
 #directorytree--body {
-  z-index: 1;
+  z-index: 10;
   cursor: default;
   height: calc(var(--screen-height) - 4rem);
   width: 35vw;
@@ -30,7 +30,7 @@
   overflow-x: scroll;
   padding-right: 5px;
 }
-
+#directorytree--body:
 .tree--expanded-chunk {
   position: relative;
   width: 100%;
@@ -88,11 +88,11 @@
 }
 
 #highlight--child {
-  background-color: #abcdef;
+  background-color: yellowgreen;
 }
 
 #highlight--parent {
-  background-color: #fe8cba;
+  background-color: white;
 }
 
 .tree--closed-directory:hover, .tree--open-directory:hover {

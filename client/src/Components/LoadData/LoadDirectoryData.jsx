@@ -108,6 +108,7 @@ function LoadDirectoryData() {
         setReload={setReload}
         reload={reload}
       />
+      <h1 style={{color: 'white'}} id="navbar--current-directory-header">{state.currentDirectory}</h1>
       <RenderFiles directoryItems={directoryItems} />
     </div>
   );

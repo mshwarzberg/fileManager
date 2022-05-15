@@ -6,15 +6,14 @@ import Back from "../../Assets/images/navigate-backwards.png";
 import Forward from "../../Assets/images/navigate-forwards.png";
 
 function ImageDisplay(props) {
-  const { viewItem, fullscreen } =
-    useContext(DisplayContext);
+  const { viewItem, fullscreen } = useContext(DisplayContext);
 
   const { width } = useScreenDimensions();
 
   return (
     <div className="viewitem--block">
       {width < 800 && (
-        <div>
+        <>
           <img
             id="button--backwards"
             src={Back}
@@ -41,9 +40,19 @@ function ImageDisplay(props) {
               );
             }}
           />
-        </div>
+        </>
       )}
       <DisplayHeaderAndClose />
+      {!fullscreen && props.isNavigating.visible && (
+        <h1
+          id="navigating--indicator"
+          title={`Press "Tab" to toggle the visibility of this message`}
+        >
+          {props.isNavigating.value
+              ? `Navigation Enabled: "CapsLock" to disable`
+              : `Navigation Disabled: "CapsLock" to enable`}
+        </h1>
+      )}
       <img
         onDoubleClick={() => {
           props.enterExitFullscreen();

@@ -4,7 +4,7 @@ import { DisplayContext } from "../Rendering/RenderFiles";
 
 export default function DisplayHeaderAndClose() {
   
-  const {fullscreen, viewItem, setViewItem} = useContext(DisplayContext)
+  const {fullscreen, viewItem, setViewItem, setFullscreen} = useContext(DisplayContext)
 
   return (
     <>
@@ -14,6 +14,7 @@ export default function DisplayHeaderAndClose() {
         alt=""
         className="viewitem--close"
         onClick={() => {
+          setFullscreen(false)
           URL.revokeObjectURL(viewItem.property);
           setViewItem({
             type: null,

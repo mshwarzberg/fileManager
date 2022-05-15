@@ -26,7 +26,11 @@ function RenderFiles(props) {
     name: null,
   });
 
-  const [isNavigating, setIsNavigating] = useState(true)
+  const [isNavigating, setIsNavigating] = useState({
+    value: true,
+    visible: true
+  })
+
   const [fullscreen, setFullscreen] = useState(false);
 
   function enterExitFullscreen() {
@@ -43,25 +47,25 @@ function RenderFiles(props) {
   useEffect(() => {
     function navigateImagesAndVideos(e) {
       if (e.key === 'CapsLock') {
-        setIsNavigating(!isNavigating)
+        setIsNavigating({
+          value: !isNavigating.value,
+          visible: isNavigating.visible
+        })
       }
-      if (
-        e.key !== "ArrowRight" &&
-        e.key !== "ArrowLeft" &&
-        e.key !== "Escape" && 
-        e.key !== 'CapsLock'
-      ) {
-        return;
+      if (e.key === 'Tab') {
+        setIsNavigating({
+          value: isNavigating.value,
+          visible: !isNavigating.visible
+        })
       }
       if (viewItem.property) {
         let direction;
-        if (e.key === "ArrowRight" && isNavigating) {
+        if (e.key === "ArrowRight" && isNavigating.value) {
           direction = "forwards";
         }
-        if (e.key === "ArrowLeft" && isNavigating) {
+        if (e.key === "ArrowLeft" && isNavigating.value) {
           direction = "backwards";
         }
-        console.log(e.key === "ArrowLeft" && isNavigating);
         changeFolderOrViewFiles(
           viewItem.type,
           viewItem.name,
@@ -125,10 +129,10 @@ function RenderFiles(props) {
   }
 
   function changeFolderOrViewFiles(type, filename, index, direction) {
-    // arrow functionality to
+    // arrow functionality to navigate through the files while item is displayed
     if (direction) {
       if (direction === "forwards") {
-        for (let i = index + 1; i < directoryItems.length; i++) {
+        for (let i = index + 1; i < directoryItems.length - 1; i++) {
           type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
             filename = directoryItems[i].name;
@@ -191,24 +195,27 @@ function RenderFiles(props) {
     <div id="renderfile--page">
       {renderItems}
       {viewItem.type && (
-        <DisplayContext.Provider value={{viewItem, setViewItem, fullscreen}}>
+        <DisplayContext.Provider value={{viewItem, setViewItem, fullscreen, setFullscreen}}>
           <div id="fullscreen">
           {viewItem.type === "video" && (
             <VideoDisplay
               enterExitFullscreen={enterExitFullscreen}
               changeFolderOrViewFiles={changeFolderOrViewFiles}
+              isNavigating={isNavigating}
             />
           )}
           {viewItem.type === "document" && (
             <DocumentDisplay
               enterExitFullscreen={enterExitFullscreen}
               changeFolderOrViewFiles={changeFolderOrViewFiles}
+              isNavigating={isNavigating}
             />
           )}
           {viewItem.type === "imagegif" && (
             <ImageDisplay
               enterExitFullscreen={enterExitFullscreen}
               changeFolderOrViewFiles={changeFolderOrViewFiles}
+              isNavigating={isNavigating}
             />
           )}
         </div>

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-import SliceName from "../../../Helpers/SliceName";
-
 export default function ImageGif(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
   const { name, shorthandsize, fileextension, thumbnail, itemtype, isFile } =
@@ -45,7 +43,7 @@ export default function ImageGif(props) {
           alt="imageicon"
           id="renderfile--corner-icon"
         />
-        <p className="renderfile--text">{SliceName(name)}</p>
+        <p className="renderfile--text">{name}</p>
       </div>
     )
   );

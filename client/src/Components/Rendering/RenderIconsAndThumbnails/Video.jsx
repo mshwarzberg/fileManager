@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SliceName from "../../../Helpers/SliceName";
+
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
 
@@ -23,7 +23,6 @@ function Video(props) {
     thumbnail &&
     itemtype === "video" && (
       <div
-      id="renderfile--video"
         className="renderfile--block"
         title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
         onClick={() => {
@@ -43,8 +42,8 @@ function Video(props) {
         <img
           src={playIcon}
           onMouseEnter={(e) => {
-            e.currentTarget.src = PlayIconHover
-            e.stopPropagation()
+            e.currentTarget.src = PlayIconHover;
+            e.stopPropagation();
           }}
           onMouseLeave={(e) => {
             e.currentTarget.src = playIcon;
@@ -58,7 +57,7 @@ function Video(props) {
           alt="imageicon"
           id="renderfile--corner-icon"
         />
-        <p className="renderfile--text">{SliceName(name)}</p>
+        <p className="renderfile--text">{name}</p>
       </div>
     )
   );

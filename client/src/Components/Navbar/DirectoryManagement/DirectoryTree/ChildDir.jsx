@@ -3,7 +3,6 @@ import { DirectoryStateContext } from "../../../../App";
 import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
 import useFetch from "../../../../Hooks/useFetch";
 
-import RightArrowBlack from "../../../../Assets/images/right-arrow-black.png";
 import RightArrowWhite from "../../../../Assets/images/right-arrow-white.png";
 import RightArrowRed from "../../../../Assets/images/right-arrow-red.png";
 import FolderIcon from "../../../../Assets/images/folder.png";
@@ -51,7 +50,7 @@ export default function ChildDir(props) {
   return (
     <p
       onMouseEnter={(e) => {
-        e.currentTarget.firstChild.src = RightArrowBlack;
+        e.currentTarget.firstChild.src = RightArrowWhite;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.firstChild.src = RightArrowWhite;
@@ -76,7 +75,7 @@ export default function ChildDir(props) {
           e.target.src = RightArrowRed;
         }}
         onMouseLeave={(e) => {
-          e.target.src = RightArrowBlack;
+          e.target.src = RightArrowWhite;
         }}
         onClick={(e) => {
           expandDirectory(false);

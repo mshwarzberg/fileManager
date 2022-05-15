@@ -27,7 +27,7 @@ export default function ParentDir(props) {
         className={"tree--open-directory"}
         title={`./root${path && "/" + path}/${openDirectoryName}`}
         onMouseEnter={(e) => {
-          console.log(e.currentTarget);
+         
           e.currentTarget.firstChild.src = DownArrowWhite;
         }}
         onMouseLeave={(e) => {

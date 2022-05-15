@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import SliceName from "../../../Helpers/SliceName";
 
 
 function Icon(props) {
@@ -43,7 +42,7 @@ function Icon(props) {
           alt="fileicon"
           className="renderfile--full-icon"
         />
-        <p className="renderfile--text">{SliceName(name)}</p>
+        <p className="renderfile--text">{name}</p>
       </div>
     )
   );
