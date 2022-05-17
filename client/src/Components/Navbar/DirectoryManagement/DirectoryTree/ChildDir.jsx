@@ -1,15 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { DirectoryStateContext } from "../../../../App";
 import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
 import useFetch from "../../../../Hooks/useFetch";
-
+import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArray";
+import RightArrowBlack from "../../../../Assets/images/right-arrow-black.png";
 import RightArrowWhite from "../../../../Assets/images/right-arrow-white.png";
-import RightArrowRed from "../../../../Assets/images/right-arrow-red.png";
+import RightArrowAccented from "../../../../Assets/images/right-arrow-accented.png";
 import FolderIcon from "../../../../Assets/images/folder.png";
+import { RenderPath, IsLastInArray } from "../../../../Helpers/RenderPath";
 
 export default function ChildDir(props) {
-  const { addToPath, subItem, margin } = props;
+
+  const { addToPath, subItem } = props;
   const { state, dispatch } = useContext(DirectoryStateContext);
+  const childPosition = useRef();
 
   const { data: directories } = useFetch(
     "/api/getdirectories",
@@ -17,15 +21,7 @@ export default function ChildDir(props) {
   );
 
   const changeItem = useUpdateDirectoryTree();
-
   function expandDirectory(toOpenDirectory) {
-    let parentDirs = [];
-    parentDirs = addToPath?.split("/");
-
-    parentDirs.push(subItem);
-    if (parentDirs[0] === "") {
-      parentDirs = parentDirs.slice(1, parentDirs.length);
-    }
     // if a user clicks on the down caret don't open the directory. Instead just expand to the child directories
     if (toOpenDirectory) {
       dispatch({
@@ -39,7 +35,7 @@ export default function ChildDir(props) {
         type: "updateDirectoryTree",
         value: changeItem(
           state.directoryTree,
-          parentDirs,
+          ParentDirectoriesToArray(`${addToPath}${subItem && "/" + subItem}`),
           0,
           directories.array
         ),
@@ -47,22 +43,25 @@ export default function ChildDir(props) {
     }
   }
 
+  function renderPathLine() {
+    if (
+      !RenderPath(subItem, `${addToPath}/${subItem}`, state.currentDirectory) ||
+      !IsLastInArray(state.currentDirectory, subItem)
+    ) {
+      return;
+    }
+    return true;
+  }
   return (
-    <p
-      onMouseEnter={(e) => {
-        e.currentTarget.firstChild.src = RightArrowWhite;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.firstChild.src = RightArrowWhite;
-      }}
+    <div
+      ref={childPosition}
       onClick={(e) => {
         expandDirectory(true);
         e.stopPropagation();
       }}
-      style={{ marginLeft: `${margin * 4}px` }}
       className="tree--closed-directory"
       id={
-        `./root/${addToPath}/${subItem}` === state.currentDirectory
+        `./root${addToPath && '/' + addToPath}/${subItem}` === state.currentDirectory
           ? "highlight--child"
           : ""
       }
@@ -70,22 +69,43 @@ export default function ChildDir(props) {
         addToPath && "/" + addToPath
       }/${subItem}`}`}
     >
+      {renderPathLine() && childPosition?.current?.id && (
+        <>
+          {
+            <div
+              id="path--identifier-line"
+              style={{
+                height: childPosition.current.offsetTop-10,
+              }}
+            />
+          }
+        </>
+      )}
       <img
         onMouseEnter={(e) => {
-          e.target.src = RightArrowRed;
+          if (`./root/${addToPath}/${subItem}` !== state.currentDirectory) {
+            return (e.target.src = RightArrowAccented);
+          }
         }}
         onMouseLeave={(e) => {
-          e.target.src = RightArrowWhite;
+          if (`./root/${addToPath}/${subItem}` !== state.currentDirectory) {
+            return (e.target.src = RightArrowWhite);
+          }
         }}
         onClick={(e) => {
           expandDirectory(false);
           e.stopPropagation();
         }}
         className="tree--arrow"
-        src={RightArrowWhite}
+        src={
+          `./root/${addToPath}/${subItem}` === state.currentDirectory
+            ? RightArrowBlack
+            : RightArrowWhite
+        }
         alt=""
       />
-      <img src={FolderIcon} alt="" className="folder--icon"/>{subItem}
-    </p>
+      <img src={FolderIcon} alt="" className="folder--icon" />
+      {subItem}
+    </div>
   );
 }

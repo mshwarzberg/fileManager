@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 export default function useUpdateDirectoryTree() {
-  const changeItem = useCallback((tree, parentArray, currentIndex, newValue) => {
+  const changeItem = useCallback((tree, parentArray, currentIndex, newValue, getArrayLength) => {
     if (parentArray[0] === '' && parentArray.length === 1) {
       let newTree = []
       for (let i in tree) {
@@ -16,7 +16,7 @@ export default function useUpdateDirectoryTree() {
     if (typeof newValue === 'string') {
       for (let i in tree) {
         if (tree[i][0] === parentArray[currentIndex] && currentIndex !== parentArray.length - 1) {
-          tree[i] = changeItem(tree[i], parentArray, currentIndex+1, newValue)
+          tree[i] = changeItem(tree[i], parentArray, currentIndex+1, newValue, getArrayLength)
         }
         if (currentIndex === parentArray.length - 1) {
           for (let i in tree) {
@@ -29,7 +29,6 @@ export default function useUpdateDirectoryTree() {
       }
       return tree
     }
-    
     for (let i in tree) {
       if (tree[i][0] === parentArray[currentIndex]) {
         tree[i] = changeItem(tree[i], parentArray, currentIndex + 1, newValue);

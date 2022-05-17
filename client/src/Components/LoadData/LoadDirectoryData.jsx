@@ -7,13 +7,14 @@ import RenderFiles from "../Rendering/RenderFiles";
 import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
 
 function LoadDirectoryData() {
+
   const changeItem = useUpdateDirectoryTree();
+
   const { state, dispatch } = useContext(DirectoryStateContext);
   
   const [directoryItems, setDirectoryItems] = useState();
   const [notFoundError, setNotFoundError] = useState(false);
   const [reload, setReload] = useState(false);
-
 
   useEffect(() => {
     if (notFoundError === true) {
@@ -98,6 +99,7 @@ function LoadDirectoryData() {
       });
       
     }
+  // eslint-disable-next-line
   }, [directories]);
 
   return (
@@ -108,7 +110,7 @@ function LoadDirectoryData() {
         setReload={setReload}
         reload={reload}
       />
-      <h1 style={{color: 'white'}} id="navbar--current-directory-header">{state.currentDirectory}</h1>
+      <h1 id="navbar--current-directory-header">{state.currentDirectory}</h1>
       <RenderFiles directoryItems={directoryItems} />
     </div>
   );

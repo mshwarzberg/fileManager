@@ -1,0 +1,54 @@
+@import '../SCSS\ General/variables';
+
+#navbar--component {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: $fullscreenWidth;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #111;
+  height: 4rem;
+}
+
+#navbar--navigation {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  left: 6rem;
+}
+
+#navbar--navigation > * {
+  font-size: 1.3rem;
+}
+
+.navbar--button {
+  @include navbarBtn;
+}
+
+#reload--icon {
+  position: absolute;
+  padding: 0.5rem;
+  right: 1rem;
+}
+
+#navbar--current-directory-header {
+  cursor: default;
+  background-color: $accentColor;
+  position: sticky;
+  top: 4rem;
+  @include flexStyle(column);
+  align-items:flex-start;
+  padding-left: 1rem;
+  padding-top: 4px;
+  height: 2rem;
+  font-size: 1.1em;
+  text-align: left;
+  z-index: 5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  font-family: 'Roboto Flex';
+}

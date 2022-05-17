@@ -5,29 +5,35 @@ import Reload from "../../Assets/images/reload.png";
 import ReloadHover from "../../Assets/images/reloadhover.png";
 
 function Navbar(props) {
-  const { setDirectoryItems, setReload, reload } = props;
+  const { setDirectoryItems, setReload, reload, directoryItems } = props;
 
   return (
     <nav id="navbar--component">
       <DirectoryNavigation />
       <SortBy setDirectoryItems={setDirectoryItems} />
-      <img
-        alt="reload"
+      <button
         className="navbar--button"
         id="reload--icon"
-        title="Reload current page"
+        disabled={directoryItems?.length === 0}
         onMouseEnter={(e) => {
-          e.currentTarget.src = ReloadHover;
+          if (!e.currentTarget.disabled) {
+            e.currentTarget.firstChild.src = ReloadHover;
+          }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.src = Reload;
+          e.currentTarget.firstChild.src = Reload;
         }}
+      >
+      <img
+        alt="reload"
+        title="Reload current page"
+        style={{width: '100%'}}
         src={Reload}
         onClick={() => {
           setReload(!reload);
         }}
       />
-      
+      </button>
     </nav>
   );
 }

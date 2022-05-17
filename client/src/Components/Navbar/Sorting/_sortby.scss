@@ -1,10 +1,11 @@
+@import '../../SCSS\ General/variables';
+
 #navbar--sort-button {
+  @include navbarBtn;
   position: absolute;
   right: 5rem;
   top: .4rem;
   z-index: 1;
-  font-family: 'bebas neue';
-  font-size: 1.3rem;
   width: 5rem;
 }
 
@@ -19,24 +20,21 @@
 }
 
 #filter--list:hover {
-  background-color: black;
   color: #000;
+  border: 1.5px solid black;
 }
 
 .filter--list-item {
   cursor: pointer;
   width: 100%;
   height: 20%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  @include flexStyle(column);
   font-family: 'bebas neue';
   font-size: 1.5rem;
 }
 
 .filter--list-item:hover {
-  color: red;
+  color: $accentColor;
 }
 
 #filter--by-folder-first {
@@ -69,17 +67,13 @@
 
 #navbar--asc-desc {
   position: absolute;
-  right: 10rem;
+  right: 10.2rem;
   top: .4rem;
   padding: 3px;
   height: 3rem;
-  border: 1.5px solid black;
-  font-size: 1.4rem;
+  font-size: 1.8rem;
 }
 
-#navbar--asc-desc:hover {
-  border: 1.5px solid white;
-}
 @media screen and (max-width: 768px) {
   #navbar--sort-button {
     width: 3rem;

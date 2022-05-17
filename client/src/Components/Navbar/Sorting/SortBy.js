@@ -25,22 +25,24 @@ function SortBy(props) {
         onClick={() => {
           setShowPopup(!showPopup)
         }}
-        onDoubleClick={() => {
-          setDirectoryItems((prevItems) => {
-            var i, j, k;
-            let newArray = [...prevItems];
-            for (i = newArray.length - 1; i > 0; i--) {
-              j = Math.floor(Math.random() * i);
-              k = newArray[i];
-              newArray[i] = newArray[j];
-              newArray[j] = k;
-            }
-            return newArray;
-          });
+        title="Click here and press 'r' to sort randomly"
+        onKeyDown={(e) => {
+          if (e.key === 'r') {
+            setDirectoryItems((prevItems) => {
+              var i, j, k;
+              let newArray = [...prevItems];
+              for (i = newArray.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * i);
+                k = newArray[i];
+                newArray[i] = newArray[j];
+                newArray[j] = k;
+              }
+              return newArray;
+            });
+          }
         }}
       >
-        {" "}
-        Sort By...{" "}
+        Sort By...
         {showPopup && (
           <SortPopup
             setDirectoryItems={setDirectoryItems}

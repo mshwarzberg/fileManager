@@ -14,7 +14,6 @@ function checkType(type) {
     type === "jpg",
     type === "png",
     type === "jpeg",
-    type === "xcf",
   ];
   const checkIfVideo = [
     type === "mp4",

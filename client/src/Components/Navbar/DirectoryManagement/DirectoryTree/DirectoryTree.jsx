@@ -10,8 +10,7 @@ export default function DirectoryTree() {
 
   const { state } = useContext(DirectoryStateContext);
 
-  function mapDirectoryTreeLoop(tree, margin, path) {
-    margin = margin + 1;
+  function mapDirectoryTreeLoop(tree, path) {
     let openDirectoryName = path;
     let openDirectory;
     let addToPath
@@ -36,19 +35,17 @@ export default function DirectoryTree() {
           <ChildDir
             subItem={subItem}
             addToPath={addToPath}
-            margin={margin}
             key={RandomChars()}
           />
         );
       } else {
-        return mapDirectoryTreeLoop(subItem, margin, addToPath);
+        return mapDirectoryTreeLoop(subItem, addToPath);
       }
     });
     return (
       <ParentDir
         path={path}
         openDirectoryName={openDirectoryName}
-        margin={margin}
         openDirectory={openDirectory}
         key={RandomChars()}
       />
@@ -68,7 +65,7 @@ export default function DirectoryTree() {
       </button>
       {showTree && (
         <div id="directorytree--body">
-          {mapDirectoryTreeLoop(state.directoryTree, 0, "")}
+          {mapDirectoryTreeLoop(state.directoryTree, "")}
         </div>
       )}
     </div>

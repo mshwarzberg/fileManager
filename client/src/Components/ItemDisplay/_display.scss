@@ -1,9 +1,11 @@
+@import '../SCSS\ General/variables';
+@use 'sass:math';
 
 @keyframes focusImage {
   0% {
       position: absolute;
-      opacity: 0;
-      transform: scale(40%);
+      opacity: 0.4;
+      transform: scale(0%);
   }
   100% {
       opacity: 1;
@@ -13,33 +15,29 @@
 }
 
 .viewitem--block {
+  @include flexStyle(column);
   position: absolute;
   left: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   background-color: #0f0f0ff9;
-  width: 100%;
-  height: 100vh;
+  width: $fullscreenWidth;
+  height: $fullscreenHeight;
   top: 0;
   z-index: 50;
 }
 
 #image-fullscreen {
-  object-fit: contain;
-  height: 100vh;
-  width: 100vw;
+  height: $fullscreenHeight;
+  width: $fullscreenWidth;
   max-width: 100%;
   max-height: 100%;
   background-color: black;
 }
 
 .viewitem--item {
-  height: 100vh;
-  width: 100vw;
+  height: $fullscreenHeight;
+  width: $fullscreenWidth;
   object-fit: contain;
-  animation: focusImage forwards ease-out 500ms;
+  animation: focusImage forwards ease-out 800ms;
   max-width: 96%;
   max-height: 96%;
 }
@@ -61,8 +59,6 @@
 }
 
 #viewitem--block-document {
-  position: absolute;
-  top: 0;
   background-color: #101010fe;
   width: 100%;
   min-height: 100%;
@@ -78,16 +74,11 @@
   text-align: left;
   font-size: 1.5rem;
   color: white;
-  white-space: pre-wrap;  
-  white-space: -moz-pre-wrap;  
-  white-space: -pre-wrap;      
-  white-space: -o-pre-wrap; 
   margin: 1rem;
   border: none;
   outline: none;
   background-color: #222;
-  height: calc(var(--screen-height) - 5rem);
-  width: var(--screen-width);
+  height: calc(100vh - 5rem);
 }
 
 .viewitem--close {

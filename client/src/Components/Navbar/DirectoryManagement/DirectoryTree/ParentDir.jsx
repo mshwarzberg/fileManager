@@ -1,72 +1,126 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import DownArrowBlack from "../../../../Assets/images/down-arrow-black.png";
-import DownArrowRed from "../../../../Assets/images/down-arrow-red.png";
+import DownArrowAccented from "../../../../Assets/images/down-arrow-accented.png";
 import DownArrowWhite from "../../../../Assets/images/down-arrow-white.png";
-import FolderIcon from "../../../../Assets/images/folder.png";
 
+import FolderIcon from "../../../../Assets/images/folder.png";
+import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArray";
+import { IsLastInArray, RenderPath } from "../../../../Helpers/RenderPath";
 import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
+
 import { DirectoryStateContext } from "../../../../App";
-import HighlightDirectory from "../../../../Helpers/HightlightDirectory";
 
 export default function ParentDir(props) {
-  const { openDirectoryName, margin, openDirectory, path } = props;
-
+  const { openDirectoryName, openDirectory, path } = props;
+  const parentPosition = useRef();
   const changeItem = useUpdateDirectoryTree();
   const { state, dispatch } = useContext(DirectoryStateContext);
 
+  const [highlightedLine, setHighlightedLine] = useState({
+    height: 0,
+    top: 0,
+  });
+
+  useEffect(() => {
+    if (parentPosition.current.id) {
+      // position relative to the previous parent element
+      setHighlightedLine({
+        height: parentPosition.current.offsetParent.offsetTop - 15,
+        top: -parentPosition.current.offsetParent.offsetTop + 31,
+      });
+    }
+  }, [parentPosition]);
+
   return (
-    <div
-      style={{
-        marginLeft: `${margin * 4}px`,
-      }}
-      className="tree--expanded-chunk"
-    >
+    <div className="tree--expanded-chunk">
       <div className="line--down" />
+
+      {RenderPath(
+        openDirectoryName,
+        `${path}/${openDirectoryName}`,
+        state.currentDirectory
+      ) && (
+        <>
+          {(IsLastInArray(state.currentDirectory, openDirectoryName) ||
+            RenderPath(
+              openDirectoryName,
+              `${path}/${openDirectoryName}`,
+              state.currentDirectory
+            )) && (
+            <div
+              id="path--identifier-line-parent"
+              style={{
+                height: highlightedLine.height,
+                top: highlightedLine.top,
+              }}
+            />
+          )}
+          <div id="path--identifier-curve" />
+        </>
+      )}
       <p
-        className={"tree--open-directory"}
+        ref={parentPosition}
+        className="tree--open-directory"
         title={`./root${path && "/" + path}/${openDirectoryName}`}
         onMouseEnter={(e) => {
-         
-          e.currentTarget.firstChild.src = DownArrowWhite;
+          if (
+            `./root${path && "/" + path}/${openDirectoryName}` !==
+            state.currentDirectory
+          ) {
+            e.currentTarget.firstChild.src = DownArrowWhite;
+          }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.firstChild.src = DownArrowBlack;
+          if (
+            `./root${path && "/" + path}/${openDirectoryName}` !==
+            state.currentDirectory
+          ) {
+            e.currentTarget.firstChild.src = DownArrowBlack;
+          }
         }}
         id={
-          HighlightDirectory(
-            `./root${path && "/" + path}/${openDirectoryName}`,
-            state.currentDirectory
-          )
-            ? "highlight--parent"
-            : `./root${path && "/" + path}/${openDirectoryName}` ===
-              state.currentDirectory
+          `./root${path && "/" + path}/${openDirectoryName}` ===
+          state.currentDirectory
             ? "highlight--child"
+            : RenderPath(
+                openDirectoryName,
+                `${path}/${openDirectoryName}`,
+                state.currentDirectory
+              )
+            ? "tree--in-path"
             : ""
         }
         onClick={() => {
-          console.log(`./root${path && "/" + path}/${openDirectoryName}`);
+          dispatch({
+            type: "openDirectory",
+            value: `./root${path && "/" + path}/${openDirectoryName}`,
+          });
         }}
       >
         <img
           onMouseEnter={(e) => {
-            e.target.src = DownArrowRed;
+            if (
+              `./root${path && "/" + path}/${openDirectoryName}` !==
+              state.currentDirectory
+            ) {
+              e.target.src = DownArrowAccented;
+            }
           }}
           onMouseLeave={(e) => {
-            e.target.src = DownArrowWhite;
+            if (
+              `./root${path && "/" + path}/${openDirectoryName}` !==
+              state.currentDirectory
+            ) {
+              e.target.src = DownArrowWhite;
+            }
           }}
           onClick={(e) => {
-            let parentDirs = `${path}/${openDirectoryName}`;
-            parentDirs = parentDirs.split("/");
-            if (parentDirs[0] === "") {
-              parentDirs = parentDirs.slice(1, parentDirs.length);
-            }
-
             dispatch({
               type: "updateDirectoryTree",
               value: changeItem(
                 state.directoryTree,
-                parentDirs,
+                ParentDirectoriesToArray(`${path}/${openDirectoryName}`),
                 0,
                 openDirectoryName
               ),
@@ -75,18 +129,12 @@ export default function ParentDir(props) {
           }}
           className="tree--arrow"
           src={DownArrowBlack}
-          alt=""
+          alt="close tree"
         />
-        <img src={FolderIcon} alt="" className="folder--icon" />
+        <img src={FolderIcon} alt="folder" className="folder--icon" />
         {openDirectoryName}
       </p>
-      <div
-        style={{
-          marginLeft: `${margin * 7}px`,
-        }}
-      >
-        {openDirectory}
-      </div>
+      <div className="opendirectory--list">{openDirectory}</div>
     </div>
   );
 }
