@@ -14,7 +14,7 @@
 
   @for $i from 0 through 15 {
     &:nth-child(#{$i}) {
-      margin-left: #{$var * 5}px;
+      margin-left: #{$var * 7}px;
       $var: $var + 1;
     }
   }
@@ -32,15 +32,14 @@
 #directorytree--body {
   z-index: 10;
   height: calc(100vh - 4rem);
-  width: 35vw;
+  width: 35%;
   background-color: #111;
-  position: fixed;
+  position: absolute;
   left: -5px;
   top: 4rem;
   overflow-y: auto;
   overflow-x: auto;
-  padding-right: 1rem;
-  padding-left: 1rem;
+  padding: 0 0.7rem 4rem 1.4rem;
 }
 
 .tree--expanded-chunk {
@@ -49,60 +48,59 @@
 
 .line--down {
   position: absolute;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   left: 0;
   top: 0;
-  height: calc(100% - 2rem);
-  width: 1rem;
+  height: calc(100% - 2.5rem);
+  width: 0.5rem;
   background: linear-gradient(
     to right,
-    #00000000 44%,
-    white 45%,
-    white 55%,
+    #00000000 45%,
+    white 46%,
+    white 54%,
     #00000000 56%
   );
   background-size: 100%;
-  border-radius: 20%;
+  border-radius: 40%;
+  &:hover {
+    cursor: pointer;
+    background: linear-gradient(
+      to right,
+      #00000000 35%,
+      $accentColor 36%,
+      $accentColor 64%,
+      #00000000 65%
+    );
+  }
 }
 
-.line--down:hover {
+.path--identifier-curve {
   cursor: pointer;
-  background: linear-gradient(
-    to right,
-    #00000000 40%,
-    $accentColor 41%,
-    $accentColor 59%,
-    #00000000 60%
-  );
-}
-
-#path--identifier-curve {
   position: absolute;
-  left: -2.5%;
   top: 0%;
-  width: 1.70rem;
-  height: 2rem;
-  border: 3px solid red;
-  border-width: 0 0 2px 2px;
-  border-bottom-left-radius: 1rem;
-  pointer-events: none;
+  background-color: red;
+  clip-path: polygon(
+    0 0,
+    10% 0,
+    10% 62%,
+    10% 86%,
+    14% 90%,
+    31% 90%,
+    100% 90%,
+    100% 100%,
+    65% 100%,
+    35% 100%,
+    0 100%,
+    0 80%
+  );
+  border-bottom-left-radius: 0.3rem;
 }
 
-#path--identifier-line-parent {
+.path--identifier-line {
+  cursor: pointer;
   background-color: red;
   width: 2px;
   position: absolute;
-  left: -2.5%;
-  pointer-events: none;
-}
-
-#path--identifier-line {
-  width: 2px;
-  background-color: red;
-  position: absolute;
-  left: 5.5%;
-  top: 1.9rem;
-  pointer-events: none;
 }
 
 .folder--icon {
@@ -124,6 +122,14 @@
   margin-top: 5px;
   font-family: "roboto slab";
   border-radius: 3px;
+  &:hover {
+    cursor: pointer;
+    background-color: black;
+    color: white;
+    transform: scaleX(1.03) scaleY(1.1);
+    border: 1.5px solid white;
+    transition: 200ms ease-out;
+  }
 }
 
 .tree--open-directory {
@@ -133,7 +139,6 @@
   font-size: 1.1rem;
   font-weight: bold;
   letter-spacing: -0.2px;
-  border-bottom-left-radius: 0.7rem;
 }
 
 .tree--closed-directory {
@@ -152,14 +157,19 @@
   color: #000;
   background-color: $accentColor;
 }
-#highlight--child:hover {
-  color: #000;
-}
 
-.tree--closed-directory:hover,
-.tree--open-directory:hover {
-  cursor: pointer;
-  background-color: black;
-  color: white;
-  border: 1.5px solid white;
+#tree--in-path {
+  background-color: darken($accentColor, 50%);
+  &:hover {
+    color: #000;
+    background-color: $accentColor;
+    border: none;
+  }
+}
+@media screen and (max-width: 768px) {
+  #directorytree--button-showhide {
+    top: 0;
+    height: 2rem;
+    left: 0;
+  }
 }

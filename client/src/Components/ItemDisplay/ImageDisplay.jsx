@@ -1,12 +1,16 @@
-import React, { useContext } from "react";
-import { DisplayContext } from "../Rendering/RenderFiles";
-import DisplayHeaderAndClose from "./DisplayHeaderAndClose";
+import React from "react";
 import useScreenDimensions from "../../Hooks/useScreenDimensions";
 import Back from "../../Assets/images/navigate-backwards.png";
 import Forward from "../../Assets/images/navigate-forwards.png";
 
 function ImageDisplay(props) {
-  const { viewItem, fullscreen } = useContext(DisplayContext);
+  const {
+    viewItem,
+    fullscreen,
+    changeFolderOrViewFiles,
+    isNavigating,
+    enterExitFullscreen,
+  } = props;
 
   const { width } = useScreenDimensions();
 
@@ -19,7 +23,7 @@ function ImageDisplay(props) {
             src={Back}
             alt="back"
             onClick={() => {
-              props.changeFolderOrViewFiles(
+              changeFolderOrViewFiles(
                 viewItem.type,
                 viewItem.name,
                 viewItem.index,
@@ -32,7 +36,7 @@ function ImageDisplay(props) {
             src={Forward}
             alt="forward"
             onClick={() => {
-              props.changeFolderOrViewFiles(
+              changeFolderOrViewFiles(
                 viewItem.type,
                 viewItem.name,
                 viewItem.index,
@@ -42,20 +46,19 @@ function ImageDisplay(props) {
           />
         </>
       )}
-      <DisplayHeaderAndClose />
-      {!fullscreen && props.isNavigating.visible && (
+      {!fullscreen && isNavigating.visible && (
         <h1
           id="navigating--indicator"
           title={`Press "Tab" to toggle the visibility of this message`}
         >
-          {props.isNavigating.value
-              ? `Navigation Enabled: "CapsLock" to disable`
-              : `Navigation Disabled: "CapsLock" to enable`}
+          {isNavigating.value
+            ? `Navigation Enabled: "CapsLock" to disable`
+            : `Navigation Disabled: "CapsLock" to enable`}
         </h1>
       )}
       <img
         onDoubleClick={() => {
-          props.enterExitFullscreen();
+          enterExitFullscreen();
         }}
         id={fullscreen ? "image-fullscreen" : ""}
         className="viewitem--item"

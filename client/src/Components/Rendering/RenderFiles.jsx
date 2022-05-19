@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // component import
 import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
@@ -8,16 +8,10 @@ import Icon from "./RenderIconsAndThumbnails/Icon";
 import VideoDisplay from "../ItemDisplay/VideoDisplay";
 import DocumentDisplay from "../ItemDisplay/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
-
-import { DirectoryStateContext } from "../../App";
-
-export const DisplayContext = createContext()
+import DisplayHeaderAndClose from "../ItemDisplay/DisplayHeaderAndClose";
 
 function RenderFiles(props) {
-
   const { directoryItems } = props;
-
-  const { state, dispatch } = useContext(DirectoryStateContext);
 
   const [viewItem, setViewItem] = useState({
     type: null,
@@ -28,8 +22,8 @@ function RenderFiles(props) {
 
   const [isNavigating, setIsNavigating] = useState({
     value: true,
-    visible: true
-  })
+    visible: true,
+  });
 
   const [fullscreen, setFullscreen] = useState(false);
 
@@ -46,17 +40,17 @@ function RenderFiles(props) {
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
-      if (e.key === 'CapsLock') {
+      if (e.key === "CapsLock") {
         setIsNavigating({
           value: !isNavigating.value,
-          visible: isNavigating.visible
-        })
+          visible: isNavigating.visible,
+        });
       }
-      if (e.key === 'Tab') {
+      if (e.key === "Tab") {
         setIsNavigating({
           value: isNavigating.value,
-          visible: !isNavigating.visible
-        })
+          visible: !isNavigating.visible,
+        });
       }
       if (viewItem.property) {
         let direction;
@@ -110,7 +104,6 @@ function RenderFiles(props) {
             });
           } else {
             const reader = new FileReader();
-
             reader.onload = function () {
               setViewItem({
                 type: "document",
@@ -151,10 +144,7 @@ function RenderFiles(props) {
         }
       }
     }
-    // change folder on click
-    if (type === "folder") {
-      dispatch({ type: "openDirectory", value: `${state.currentDirectory}/${filename}`});
-    } else {
+    if (type !== "folder") {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
         type,
@@ -194,32 +184,66 @@ function RenderFiles(props) {
   return (
     <div id="renderfile--page">
       {renderItems}
-      {viewItem.type && (
-        <DisplayContext.Provider value={{viewItem, setViewItem, fullscreen, setFullscreen}}>
+      {viewItem.property && (
+        <>
           <div id="fullscreen">
-          {viewItem.type === "video" && (
-            <VideoDisplay
-              enterExitFullscreen={enterExitFullscreen}
-              changeFolderOrViewFiles={changeFolderOrViewFiles}
-              isNavigating={isNavigating}
-            />
-          )}
-          {viewItem.type === "document" && (
-            <DocumentDisplay
-              enterExitFullscreen={enterExitFullscreen}
-              changeFolderOrViewFiles={changeFolderOrViewFiles}
-              isNavigating={isNavigating}
-            />
-          )}
-          {viewItem.type === "imagegif" && (
-            <ImageDisplay
-              enterExitFullscreen={enterExitFullscreen}
-              changeFolderOrViewFiles={changeFolderOrViewFiles}
-              isNavigating={isNavigating}
-            />
-          )}
-        </div>
-        </DisplayContext.Provider>
+            {viewItem.type === "video" && (
+              <>
+                <DisplayHeaderAndClose
+                  fullscreen={fullscreen}
+                  viewItem={viewItem}
+                  setViewItem={setViewItem}
+                  setFullscreen={setFullscreen}
+                />
+                <VideoDisplay
+                  enterExitFullscreen={enterExitFullscreen}
+                  changeFolderOrViewFiles={changeFolderOrViewFiles}
+                  isNavigating={isNavigating}
+                  fullscreen={fullscreen}
+                  setFullscreen={setFullscreen}
+                  viewItem={viewItem}
+                  setViewItem={setViewItem}
+                />
+              </>
+            )}
+            {viewItem.type === "document" && (
+              <>
+                <DisplayHeaderAndClose
+                  fullscreen={fullscreen}
+                  viewItem={viewItem}
+                  setViewItem={setViewItem}
+                  setFullscreen={setFullscreen}
+                />
+                <DocumentDisplay
+                  enterExitFullscreen={enterExitFullscreen}
+                  changeFolderOrViewFiles={changeFolderOrViewFiles}
+                  isNavigating={isNavigating}
+                  fullscreen={fullscreen}
+                  setFullscreen={setFullscreen}
+                  viewItem={viewItem}
+                  setViewItem={setViewItem}
+                />
+              </>
+            )}
+            {viewItem.type === "imagegif" && (
+              <>
+                <DisplayHeaderAndClose
+                  fullscreen={fullscreen}
+                  viewItem={viewItem}
+                  setViewItem={setViewItem}
+                  setFullscreen={setFullscreen}
+                />
+                <ImageDisplay
+                  enterExitFullscreen={enterExitFullscreen}
+                  changeFolderOrViewFiles={changeFolderOrViewFiles}
+                  isNavigating={isNavigating}
+                  fullscreen={fullscreen}
+                  viewItem={viewItem}
+                />
+              </>
+            )}
+          </div>
+        </>
       )}
     </div>
   );

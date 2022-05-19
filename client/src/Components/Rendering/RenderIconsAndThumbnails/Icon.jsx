@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-
+import React, { useState, useContext } from "react";
+import { DirectoryStateContext } from "../../../App";
 
 function Icon(props) {
-  
+  const { state, dispatch } = useContext(DirectoryStateContext);
 
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  
+
   const { name, shorthandsize, fileextension, itemtype, thumbnail, isFile } =
     item;
 
@@ -30,11 +30,13 @@ function Icon(props) {
         className="renderfile--block"
         title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
         onClick={() => {
-          changeFolderOrViewFiles(
-            itemtype,
-            name,
-            directoryItems.indexOf(item)
-          );
+          if (itemtype === "folder") {
+            dispatch({
+              type: "openDirectory",
+              value: `${state.currentDirectory}${name && '/' + name}`,
+            });
+          }
+          changeFolderOrViewFiles(itemtype, name, directoryItems.indexOf(item));
         }}
       >
         <img

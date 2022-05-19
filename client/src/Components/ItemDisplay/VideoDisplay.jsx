@@ -1,17 +1,14 @@
-import React, { useContext } from "react";
-import DisplayHeaderAndClose from "./DisplayHeaderAndClose";
-import { DisplayContext } from "../Rendering/RenderFiles";
+import React from "react";
 import Back from "../../Assets/images/navigate-backwards.png";
 import Forward from "../../Assets/images/navigate-forwards.png";
 import useScreenDimensions from "../../Hooks/useScreenDimensions";
 
 function VideoDisplay(props) {
-  const { viewItem, fullscreen } = useContext(DisplayContext);
+  const { viewItem, fullscreen, changeFolderOrViewFiles, isNavigating } = props;
   const { width } = useScreenDimensions();
 
   return (
     <div className="viewitem--block" id="viewitem--block-video">
-      <DisplayHeaderAndClose />
       {width < 800 && (
         <>
           <img
@@ -19,7 +16,7 @@ function VideoDisplay(props) {
             src={Back}
             alt="back"
             onClick={() => {
-              props.changeFolderOrViewFiles(
+              changeFolderOrViewFiles(
                 viewItem.type,
                 viewItem.name,
                 viewItem.index,
@@ -32,7 +29,7 @@ function VideoDisplay(props) {
             src={Forward}
             alt="forward"
             onClick={() => {
-              props.changeFolderOrViewFiles(
+              changeFolderOrViewFiles(
                 viewItem.type,
                 viewItem.name,
                 viewItem.index,
@@ -42,12 +39,12 @@ function VideoDisplay(props) {
           />
         </>
       )}
-      {!fullscreen && props.isNavigating.visible && (
+      {!fullscreen && isNavigating.visible && (
         <h1
           id="navigating--indicator"
           title={`Press "Tab" to toggle the visibility of this message`}
         >
-          {props.isNavigating.value
+          {isNavigating.value
               ? `Navigation Enabled: "CapsLock" to disable`
               : `Navigation Disabled: "CapsLock" to enable`}
         </h1>

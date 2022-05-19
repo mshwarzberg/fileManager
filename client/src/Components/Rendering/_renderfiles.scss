@@ -1,4 +1,4 @@
-@import '../SCSS\ General/variables';
+@import "../SCSS\ General/variables";
 
 #renderfile--page {
   display: grid;
@@ -16,12 +16,11 @@
   background-color: #444444;
   border-radius: 0.3rem;
   text-align: center;
-}
-
-.renderfile--block:hover {
-  cursor: default;
-  background-color: #111;
-  border: 1.5px solid $accentColor;
+  &:hover {
+    cursor: default;
+    background-color: #111;
+    border: 1.5px solid $accentColor;
+  }
 }
 
 #renderfile--corner-icon {
@@ -32,7 +31,8 @@
   left: 2%;
 }
 
-#renderfile--image-thumbnail, #renderfile--video-thumbnail {
+#renderfile--image-thumbnail,
+#renderfile--video-thumbnail {
   max-height: 90%;
   max-width: 90%;
   position: absolute;
@@ -58,22 +58,20 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.renderfile--text:hover {
-  color: white;
-  background-color: black;
-  border: 1.5px solid white;
+  &:hover {
+    color: white;
+    background-color: black;
+    border: 1.5px solid white;
+  }
 }
 
 #renderfile--play-icon {
   width: 20%;
   position: absolute;
   cursor: pointer;
-}
-
-#renderfile--play-icon:hover {
-  opacity: 0.2;
+  &:hover {
+    opacity: 0.2;
+  }
 }
 
 .renderfile--full-icon {
@@ -81,7 +79,6 @@
   max-height: 80%;
   margin-bottom: 5%;
 }
-
 
 @media screen and (max-width: 2000px) {
   #renderfile--page {
@@ -117,7 +114,7 @@
 @media screen and (max-width: 700px) {
   #renderfile--page {
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: calc(var(--screen-width)/ 1.8);
+    grid-auto-rows: calc(var(--screen-width) / 1.8);
   }
   #renderfile--corner-icon {
     width: 2.5rem;

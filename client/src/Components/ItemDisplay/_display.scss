@@ -37,7 +37,7 @@
   height: $fullscreenHeight;
   width: $fullscreenWidth;
   object-fit: contain;
-  animation: focusImage forwards ease-out 800ms;
+  animation: focusImage forwards ease-out 500ms;
   max-width: 96%;
   max-height: 96%;
 }
@@ -88,7 +88,11 @@
   width: 2.5rem;
   height: 2.5rem;
   cursor: pointer;
-  z-index: 1;
+  z-index: 51;
+  &:hover {
+    transform: scale(1.2);
+    transition: 100ms ease-in;
+  }
 }
 
 #navigating--indicator {

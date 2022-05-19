@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { DirectoryStateContext } from "../../../../App";
 import RandomChars from "../../../../Helpers/RandomChars";
 
@@ -10,11 +10,11 @@ export default function DirectoryTree() {
 
   const { state } = useContext(DirectoryStateContext);
 
+  const treeID = useRef();
   function mapDirectoryTreeLoop(tree, path) {
     let openDirectoryName = path;
     let openDirectory;
-    let addToPath
-
+    let addToPath;
     openDirectory = tree.map((subItem) => {
       if (tree.indexOf(subItem) === 0 && typeof subItem === "string") {
         openDirectoryName = subItem;
@@ -33,6 +33,7 @@ export default function DirectoryTree() {
         }
         return (
           <ChildDir
+            treeID={treeID}
             subItem={subItem}
             addToPath={addToPath}
             key={RandomChars()}
@@ -44,6 +45,7 @@ export default function DirectoryTree() {
     });
     return (
       <ParentDir
+        treeID={treeID}
         path={path}
         openDirectoryName={openDirectoryName}
         openDirectory={openDirectory}
@@ -64,7 +66,7 @@ export default function DirectoryTree() {
         {showTree ? "Hide Tree" : "Show Tree"}
       </button>
       {showTree && (
-        <div id="directorytree--body">
+        <div id="directorytree--body" ref={treeID}>
           {mapDirectoryTreeLoop(state.directoryTree, "")}
         </div>
       )}

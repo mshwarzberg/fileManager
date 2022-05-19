@@ -52,3 +52,26 @@
   width: 100%;
   font-family: 'Roboto Flex';
 }
+
+@media screen and (max-width: 768px) {
+  #navbar--component {
+    height: 2rem;
+  }
+  .navbar--button {
+    max-height: 100%;
+    max-width: 20%;
+    font-size: 50%;
+    top: 0;
+    border: 1px solid black;
+  }
+  #reload--icon {
+    right: 0;
+  }
+  #navbar--navigation {
+    height: 2rem;
+    left: 2rem;
+  }
+  #navbar--current-directory-header {
+    top: 2rem;
+  }
+}

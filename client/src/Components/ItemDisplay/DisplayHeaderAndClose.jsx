@@ -1,17 +1,16 @@
-import React, {useContext} from "react";
+import React from "react";
 import Close from '../../Assets/images/close.png'
-import { DisplayContext } from "../Rendering/RenderFiles";
 
-export default function DisplayHeaderAndClose() {
+export default function DisplayHeaderAndClose(props) {
   
-  const {fullscreen, viewItem, setViewItem, setFullscreen} = useContext(DisplayContext)
+  const {fullscreen, viewItem, setViewItem, setFullscreen} = props
 
   return (
     <>
       {!fullscreen && <h1 id="viewitem--filename">{viewItem.name}</h1>}
       <img
         src={Close}
-        alt=""
+        alt="close"
         className="viewitem--close"
         onClick={() => {
           setFullscreen(false)

@@ -5,13 +5,13 @@ import shortHandFileSize from "../../Helpers/FileSize";
 import Navbar from "../Navbar/Navbar";
 import RenderFiles from "../Rendering/RenderFiles";
 import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
+import CompareArray from "../../Helpers/CompareArray";
 
 function LoadDirectoryData() {
-
   const changeItem = useUpdateDirectoryTree();
 
   const { state, dispatch } = useContext(DirectoryStateContext);
-  
+
   const [directoryItems, setDirectoryItems] = useState();
   const [notFoundError, setNotFoundError] = useState(false);
   const [reload, setReload] = useState(false);
@@ -48,58 +48,72 @@ function LoadDirectoryData() {
     JSON.stringify({ path: state.currentDirectory })
   );
 
+  function fetchStuff(index) {
+    fetch("/api/data/thumbs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prefix: itemData[index].prefix,
+        suffix: itemData[index].fileextension,
+        currentdirectory: `${state.currentDirectory}`,
+      }),
+    })
+      .then(async (res) => {
+        let response = await res.blob();
+        if (response.size === 0 && response.type === '') {
+          if (itemData[index].itemtype === 'image' || itemData[index].itemtype === 'video') {
+            return fetchStuff(index)
+          }
+        }
+        let imageURL = URL.createObjectURL(response);
+        setDirectoryItems((prevItem) => {
+          return prevItem.map((item) => {
+            const newData = {
+              ...item,
+              shorthandsize: shortHandFileSize(item.size),
+              thumbnail:
+                res.headers.get("prefix") === item.prefix &&
+                res.headers.get("suffix") === item.fileextension
+                  ? imageURL
+                  : item.thumbnail,
+            };
+            return newData;
+          });
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   useEffect(() => {
     if (itemData) {
+      if (!CompareArray(itemData, directoryItems)) {
       setDirectoryItems(itemData);
-      for (let i in itemData) {
-        fetch("/api/data/thumbs", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prefix: itemData[i].prefix,
-            suffix: itemData[i].fileextension,
-            currentdirectory: `${state.currentDirectory}`,
-          }),
-        })
-          .then(async (res) => {
-            let response = await res.blob();
-            let imageURL = URL.createObjectURL(response);
-            setDirectoryItems((prevItem) => {
-              return prevItem.map((item) => {
-                const newData = {
-                  ...item,
-                  shorthandsize: shortHandFileSize(item.size),
-                  thumbnail:
-                    res.headers.get("prefix") === item.prefix &&
-                    res.headers.get("suffix") === item.fileextension
-                      ? imageURL
-                      : item.thumbnail,
-                };
-                return newData;
-              });
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
+      for (let i = 0; i < itemData.length;i++) {
+        fetchStuff(i)
+      }}
     }
   }, [itemData, state.currentDirectory]);
 
   useEffect(() => {
     // the first time everything loads update the directory tree to load all the directories within the root directory
     if (directories && !state.directoryTree[0]) {
+      let parentDirs = state.currentDirectory
+        .split("/")
+        .slice(1, state.currentDirectory.length);
+      parentDirs = [...parentDirs, ...directories.array];
 
-      let parentDirs = state.currentDirectory.split("/").slice(1, state.currentDirectory.length)
-      parentDirs = [...parentDirs, ...directories.array]
-      
       dispatch({
         type: "updateDirectoryTree",
-        value: changeItem(state.directoryTree, parentDirs, 0, directories.array),
+        value: changeItem(
+          state.directoryTree,
+          parentDirs,
+          0,
+          directories.array
+        ),
       });
-      
     }
-  // eslint-disable-next-line
+    // eslint-disable-next-line
   }, [directories]);
 
   return (
