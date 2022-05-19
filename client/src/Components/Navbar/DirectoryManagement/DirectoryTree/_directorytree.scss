@@ -166,10 +166,31 @@
     border: none;
   }
 }
+
+#resize--tree {
+  width: 0.5rem;
+  height: 5rem;
+  position: absolute;
+  bottom: 40%;
+  left: calc(35% - 0.3rem);
+  background-color: $accentColor;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  cursor: grab;
+  z-index: 10;
+  &:active {
+    transform: scale(1.5);
+    transition: 100ms ease;
+  }
+}
+
 @media screen and (max-width: 768px) {
   #directorytree--button-showhide {
     top: 0;
     height: 2rem;
     left: 0;
+  }
+  #resize--tree {
+    width: 0.8rem;
   }
 }

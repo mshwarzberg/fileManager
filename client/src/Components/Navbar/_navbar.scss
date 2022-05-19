@@ -39,18 +39,19 @@
   position: sticky;
   top: 4rem;
   @include flexStyle(column);
-  align-items:flex-start;
-  padding-left: 1rem;
-  padding-top: 4px;
-  height: 2rem;
+  align-items: flex-start;
+  padding-left: 0.5rem;
   font-size: 1.1em;
   text-align: left;
   z-index: 5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
-  font-family: 'Roboto Flex';
+  width: 100vw;
+  font-family: Bitter;
+  font-weight: bold;
+  padding-left: 1rem;
+  padding-right: 1.5rem;
 }
 
 @media screen and (max-width: 768px) {

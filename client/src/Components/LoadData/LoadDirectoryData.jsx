@@ -60,9 +60,12 @@ function LoadDirectoryData() {
     })
       .then(async (res) => {
         let response = await res.blob();
-        if (response.size === 0 && response.type === '') {
-          if (itemData[index].itemtype === 'image' || itemData[index].itemtype === 'video') {
-            return fetchStuff(index)
+        if (response.size === 0 && response.type === "") {
+          if (
+            itemData[index].itemtype === "image" ||
+            itemData[index].itemtype === "video"
+          ) {
+            return fetchStuff(index);
           }
         }
         let imageURL = URL.createObjectURL(response);
@@ -88,15 +91,16 @@ function LoadDirectoryData() {
   useEffect(() => {
     if (itemData) {
       if (!CompareArray(itemData, directoryItems)) {
-      setDirectoryItems(itemData);
-      for (let i = 0; i < itemData.length;i++) {
-        fetchStuff(i)
-      }}
+        setDirectoryItems(itemData);
+        for (let i = 0; i < itemData.length; i++) {
+          fetchStuff(i);
+        }
+      }
     }
   }, [itemData, state.currentDirectory]);
 
   useEffect(() => {
-    // the first time everything loads update the directory tree to load all the directories within the root directory
+    // the first time everydrag loads update the directory tree to load all the directories within the root directory
     if (directories && !state.directoryTree[0]) {
       let parentDirs = state.currentDirectory
         .split("/")
@@ -124,7 +128,10 @@ function LoadDirectoryData() {
         setReload={setReload}
         reload={reload}
       />
-      <h1 id="navbar--current-directory-header">{state.currentDirectory}</h1>
+      <span id="navbar--current-directory-header">
+        {state.currentDirectory}
+      </span>
+
       <RenderFiles directoryItems={directoryItems} />
     </div>
   );

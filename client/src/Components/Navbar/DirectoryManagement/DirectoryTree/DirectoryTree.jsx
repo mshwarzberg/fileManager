@@ -1,4 +1,5 @@
 import React, { useContext, useState, useRef } from "react";
+import { useEffect } from "react";
 import { DirectoryStateContext } from "../../../../App";
 import RandomChars from "../../../../Helpers/RandomChars";
 
@@ -7,6 +8,24 @@ import ParentDir from "./ParentDir";
 
 export default function DirectoryTree() {
   const [showTree, setShowTree] = useState(false);
+  const [treeWidth, setTreeWidth] = useState();
+
+  useEffect(() => {
+    const grab = document.querySelector("#resize--tree");
+    if (grab) {
+      grab.addEventListener("dragend", (e) => {
+        setTreeWidth(e.clientX);
+      });
+      grab.addEventListener("touchend", (e) => {
+        setTreeWidth(e.changedTouches[0].screenX);
+      });
+      return () => {
+        grab.removeEventListener("ondrag", () => {});
+        grab.removeEventListener("dragend", () => {});
+        grab.removeEventListener("touchend", () => {});
+      };
+    }
+  });
 
   const { state } = useContext(DirectoryStateContext);
 
@@ -66,9 +85,16 @@ export default function DirectoryTree() {
         {showTree ? "Hide Tree" : "Show Tree"}
       </button>
       {showTree && (
-        <div id="directorytree--body" ref={treeID}>
+        <>
+        <div
+          id="directorytree--body"
+          ref={treeID}
+          style={{ width: treeWidth && treeWidth }}
+          >
           {mapDirectoryTreeLoop(state.directoryTree, "")}
         </div>
+          <div id="resize--tree" draggable style={{left: treeWidth && treeWidth - 5}}/>
+          </>
       )}
     </div>
   );
