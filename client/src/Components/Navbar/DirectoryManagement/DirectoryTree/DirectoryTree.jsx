@@ -9,19 +9,31 @@ import ParentDir from "./ParentDir";
 export default function DirectoryTree() {
   const [showTree, setShowTree] = useState(false);
   const [treeWidth, setTreeWidth] = useState();
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const grab = document.querySelector("#resize--tree");
-    if (grab) {
-      grab.addEventListener("dragend", (e) => {
+    function handleDrag(e) {
+      if (isDragging) {
         setTreeWidth(e.clientX);
+      }
+    }
+    if (grab) {
+      grab.addEventListener("mousedown", () => {
+        setIsDragging(true);
       });
-      grab.addEventListener("touchend", (e) => {
+      document.addEventListener("mouseup", () => {
+        setIsDragging(false);
+      });
+      document.addEventListener("mousemove", handleDrag);
+
+      document.addEventListener("touchend", (e) => {
         setTreeWidth(e.changedTouches[0].screenX);
       });
       return () => {
-        grab.removeEventListener("ondrag", () => {});
-        grab.removeEventListener("dragend", () => {});
+        grab.removeEventListener("mousedown", () => {});
+        document.removeEventListener("mousemove", handleDrag);
+        document.removeEventListener("mouseup", () => {});
         grab.removeEventListener("touchend", () => {});
       };
     }
@@ -30,6 +42,7 @@ export default function DirectoryTree() {
   const { state } = useContext(DirectoryStateContext);
 
   const treeID = useRef();
+
   function mapDirectoryTreeLoop(tree, path) {
     let openDirectoryName = path;
     let openDirectory;
@@ -86,15 +99,18 @@ export default function DirectoryTree() {
       </button>
       {showTree && (
         <>
-        <div
-          id="directorytree--body"
-          ref={treeID}
-          style={{ width: treeWidth && treeWidth }}
+          <div
+            id="directorytree--body"
+            ref={treeID}
+            style={{ width: treeWidth && treeWidth }}
           >
-          {mapDirectoryTreeLoop(state.directoryTree, "")}
-        </div>
-          <div id="resize--tree" draggable style={{left: treeWidth && treeWidth - 5}}/>
-          </>
+            {mapDirectoryTreeLoop(state.directoryTree, "")}
+          </div>
+          <div
+            id="resize--tree"
+            style={{ left: treeWidth && treeWidth - 5 }}
+          />
+        </>
       )}
     </div>
   );

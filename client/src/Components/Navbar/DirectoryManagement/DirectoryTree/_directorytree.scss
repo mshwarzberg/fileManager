@@ -167,7 +167,7 @@
   }
 }
 
-#resize--tree {
+#resize--tree, #resize--tree-active {
   width: 0.5rem;
   height: 5rem;
   position: absolute;
@@ -178,12 +178,10 @@
   border-bottom-right-radius: 1rem;
   cursor: grab;
   z-index: 10;
-  &:active {
-    transform: scale(1.5);
-    transition: 100ms ease;
-  }
 }
-
+#resize--tree-active {
+  background-color: #fff;
+}
 @media screen and (max-width: 768px) {
   #directorytree--button-showhide {
     top: 0;
