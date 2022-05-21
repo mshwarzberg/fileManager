@@ -1,14 +1,14 @@
 import React, { useContext, useRef } from "react";
 // import { useEffect, useState } from "react";
-import DownArrowBlack from "../../../../Assets/images/down-arrow-black.png";
-import DownArrowAccented from "../../../../Assets/images/down-arrow-accented.png";
-import DownArrowWhite from "../../../../Assets/images/down-arrow-white.png";
+import DownArrowBlack from "../../../../Assets/images/directorytree/down-arrow-black.png";
+import DownArrowAccented from "../../../../Assets/images/directorytree/down-arrow-accented.png";
+import DownArrowWhite from "../../../../Assets/images/directorytree/down-arrow-white.png";
 
 import FolderIcon from "../../../../Assets/images/folder.png";
 import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArray";
 import { RenderPath } from "../../../../Helpers/RenderPath";
-// import { IsLastInArray } from "../../../../Helpers/RenderPath";
 import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
+// import { IsLastInArray } from "../../../../Helpers/RenderPath";
 // import HoverOverPathID from "../../../../Helpers/HoverOverPathID";
 import { DirectoryStateContext } from "../../../../App";
 

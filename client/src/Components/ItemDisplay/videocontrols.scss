@@ -1,0 +1,125 @@
+@import "../SCSS\ General/variables";
+
+#video-container {
+  @include flexStyle(column);
+  position: relative;
+  height: 96%;
+  width: 96%;
+}
+#video-controls-container {
+  background-color: #222222cd;
+  width: 100%;
+  height: 25%;
+  max-height: 8rem;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+}
+
+#controls {
+  position: absolute;
+  bottom: 20%;
+  width: 100%;
+  @include flexStyle(row);
+  justify-content: space-around;
+}
+
+#play-pause,
+#mini-player,
+#playback-speed,
+#volume-control,
+#full-screen-control {
+  height: 3rem;
+  width: 3rem;
+  max-width: 20%;
+  max-height: 20%;
+  background-color: #00000000;
+  border:none;
+}
+
+#mini-player img,
+#play-pause img,
+#timeline-control img,
+#volume-control img,
+#full-screen-control img {
+  width: 100%;
+  height: 100%;
+  &:hover {
+   transform: scale(1.3);
+   transition: transform 100ms ease-out;
+   cursor: pointer;
+  }
+}
+
+#timeline-container {
+  position: absolute;
+  top: 1.5rem;
+  width: 96%;
+  margin-inline: 2%;
+  height: 10%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  background-color: black;
+  border-radius: 2rem;
+}
+
+#duration-container {
+  @include flexStyle(row);
+  height: 3rem;
+  width: 6rem;
+  max-width: 20%;
+}
+
+#duration-container p,
+#playback-speed {
+  font-family: "bebas neue";
+  font-size: 1.2em;
+}
+
+#volume-container {
+  @include flexStyle(row);
+}
+
+#volume-control {
+  min-width: 100%;
+}
+#viewitem--video {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.control--icon {
+  height: 20px;
+}
+
+#timeline {
+  background-color: rgba(100, 100, 100, 1);
+  height: 50%;
+  border-radius: 1rem;
+  width: 99%;
+  margin-inline: 0.5%;
+  position: relative;
+  &::before {
+    border-radius: 1rem;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: calc(100% - var(--preview-position) * 100%);
+    background-color: rgb(150, 150, 150);
+    display: none;
+  }
+  &::after {
+    border-radius: 1rem;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: calc(100% - var(--progress-position) * 100%);
+    background-color: $accentColor;
+  }
+}

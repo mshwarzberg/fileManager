@@ -14,8 +14,6 @@ function LoadDirectoryData() {
 
   const [directoryItems, setDirectoryItems] = useState();
   const [notFoundError, setNotFoundError] = useState(false);
-  const [reload, setReload] = useState(false);
-
   useEffect(() => {
     if (notFoundError === true) {
       setTimeout(() => {
@@ -35,11 +33,10 @@ function LoadDirectoryData() {
     });
   }, [state.currentDirectory]);
 
-  // get all items in the current directory and add 'reload' as a dependency.
+  // get all items in the current directory
   const { data: itemData } = useFetch(
     "/api/data/data",
-    JSON.stringify({ currentdirectory: state.currentDirectory }),
-    reload
+    JSON.stringify({ currentdirectory: state.currentDirectory })
   );
 
   // get all subdirectories for the directory tree. This has no dependencies since reloading shouldn't affect the tree.
@@ -97,6 +94,8 @@ function LoadDirectoryData() {
         }
       }
     }
+
+    // eslint-disable-next-line
   }, [itemData, state.currentDirectory]);
 
   useEffect(() => {
@@ -123,10 +122,7 @@ function LoadDirectoryData() {
   return (
     <div>
       <Navbar
-        directoryItems={directoryItems}
         setDirectoryItems={setDirectoryItems}
-        setReload={setReload}
-        reload={reload}
       />
       <span id="navbar--current-directory-header">
         {state.currentDirectory}

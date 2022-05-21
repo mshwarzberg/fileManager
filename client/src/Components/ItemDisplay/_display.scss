@@ -1,5 +1,4 @@
 @import '../SCSS\ General/variables';
-@use 'sass:math';
 
 @keyframes focusImage {
   0% {
@@ -23,6 +22,11 @@
   height: $fullscreenHeight;
   top: 0;
   z-index: 50;
+}
+
+.viewitem--block.mini-player {
+  width: 30vw;
+  height: 30vh;
 }
 
 #image-fullscreen {
@@ -64,11 +68,6 @@
   min-height: 100%;
 }
 
-#viewitem--video {
-  height: auto;
-  width: auto;
-}
-
 #viewitem--document {
   top: 3rem;
   text-align: left;
@@ -95,11 +94,48 @@
   }
 }
 
-#navigating--indicator {
-  cursor: default;
+#navigating-indicator {
+  display: flex;
+  align-items: center;
   position: absolute;
-  top: 1rem;
-  height: 2rem;
-  color: yellow;
   left: 1rem;
+  top: 1rem;
+  width: max-content;
+}
+#navigating-indicator img {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3rem;
+  height: 3rem;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+#navigating-indicator-popup {
+  font-family: 'bebas neue';
+  font-size: 1.3rem;
+  z-index: 1;
+  background-color: black;
+  height: 3rem;
+  @include flexStyle(row);
+  color: white;
+  position: fixed;
+  left: 4.5rem;
+  padding-inline: 1.5rem;
+  top: 1rem;
+  width: max-content;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: width 150ms ease-in-out, transform 150ms ease-in-out;
+}
+
+#navigating-indicator img:hover {
+  background-color: #ffffff00;
+}
+#navigating-indicator:hover #navigating-indicator-popup, #navigating-indicator-popup:focus-within {
+  border-top-left-radius: 1.5rem;
+  border-bottom-left-radius: 1.5rem;
+  width: max-content;
+  transform: scaleX(1);
 }

@@ -1,7 +1,6 @@
 import React, { useContext, useState, useRef } from "react";
 import { useEffect } from "react";
 import { DirectoryStateContext } from "../../../../App";
-import RandomChars from "../../../../Helpers/RandomChars";
 
 import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
@@ -27,14 +26,21 @@ export default function DirectoryTree() {
       });
       document.addEventListener("mousemove", handleDrag);
 
-      document.addEventListener("touchend", (e) => {
-        setTreeWidth(e.changedTouches[0].screenX);
-      });
+      grab.addEventListener('touchstart', () => {
+        setIsDragging(true)
+      })
+      document.addEventListener('touchend', () => {
+        setIsDragging(false)
+      })
+      document.addEventListener('touchmove', handleDrag) 
+
       return () => {
         grab.removeEventListener("mousedown", () => {});
         document.removeEventListener("mousemove", handleDrag);
         document.removeEventListener("mouseup", () => {});
-        grab.removeEventListener("touchend", () => {});
+        grab.removeEventListener('touchstart', () => {})
+        document.removeEventListener('touchmove', handleDrag) 
+        document.removeEventListener('touchend', () => {})
       };
     }
   });
@@ -68,7 +74,7 @@ export default function DirectoryTree() {
             treeID={treeID}
             subItem={subItem}
             addToPath={addToPath}
-            key={RandomChars()}
+            key={`./root${addToPath && "/" + addToPath}/${subItem}`}
           />
         );
       } else {
@@ -81,7 +87,7 @@ export default function DirectoryTree() {
         path={path}
         openDirectoryName={openDirectoryName}
         openDirectory={openDirectory}
-        key={RandomChars()}
+        key={`./root${path && "/" + path}/${openDirectoryName}`}
       />
     );
   }

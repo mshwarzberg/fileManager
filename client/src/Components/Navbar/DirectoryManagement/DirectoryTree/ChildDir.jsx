@@ -3,9 +3,9 @@ import { DirectoryStateContext } from "../../../../App";
 import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
 import useFetch from "../../../../Hooks/useFetch";
 import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArray";
-import RightArrowBlack from "../../../../Assets/images/right-arrow-black.png";
-import RightArrowWhite from "../../../../Assets/images/right-arrow-white.png";
-import RightArrowAccented from "../../../../Assets/images/right-arrow-accented.png";
+import RightArrowBlack from "../../../../Assets/images/directorytree/right-arrow-black.png";
+import RightArrowWhite from "../../../../Assets/images/directorytree/right-arrow-white.png";
+import RightArrowAccented from "../../../../Assets/images/directorytree/right-arrow-accented.png";
 import FolderIcon from "../../../../Assets/images/folder.png";
 // import { RenderPath, IsLastInArray } from "../../../../Helpers/RenderPath";
 // import HoverOverPathID from "../../../../Helpers/HoverOverPathID";
@@ -17,7 +17,7 @@ export default function ChildDir(props) {
 
   const { data: directories } = useFetch(
     "/api/getdirectories",
-    JSON.stringify({ path: `./root/${addToPath}/${subItem}` })
+    JSON.stringify({ path: `./root${addToPath && "/" + addToPath}/${subItem}` })
   );
 
   const changeItem = useUpdateDirectoryTree();

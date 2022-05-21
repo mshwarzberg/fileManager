@@ -5,5 +5,6 @@ import directorytree from '../Navbar/DirectoryManagement/DirectoryTree/_director
 import sortby from '../Navbar/Sorting/_sortby.scss'
 import display from '../ItemDisplay/_display.scss'
 import fonts from '../../Assets/fonts/fonts.css'
+import videocontrols from '../ItemDisplay/videocontrols.scss'
 
-export { general, navbar, renderfiles, directorytree, sortby, display, fonts}
+export { general, navbar, renderfiles, directorytree, sortby, display, fonts, videocontrols}

@@ -171,17 +171,15 @@
   width: 0.5rem;
   height: 5rem;
   position: absolute;
-  bottom: 40%;
+  bottom: 50%;
   left: calc(35% - 0.3rem);
-  background-color: $accentColor;
+  background-color: red;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
   cursor: grab;
   z-index: 10;
 }
-#resize--tree-active {
-  background-color: #fff;
-}
+
 @media screen and (max-width: 768px) {
   #directorytree--button-showhide {
     top: 0;
