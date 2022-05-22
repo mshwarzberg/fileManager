@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDuration } from "../../Helpers/VideoControlHelpers";
 
 import {
@@ -25,12 +25,10 @@ export default function VideoControls(props) {
     setIsFullscreen,
   } = props;
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState("0:00");
-  const [volumePosition, setVolumePosition] = useState(0);
-
-  const timeline = useRef();
+  const [volumePosition, setVolumePosition] = useState(1);
 
   useEffect(() => {
-    const timelineContainer = document.querySelector("#timeline-container")
+    const timelineContainer = document.querySelector("#timeline-container");
     // Timeline
     timelineContainer.addEventListener("mousemove", handleTimelineUpdate);
     timelineContainer.addEventListener("mousedown", toggleScrubbing);
@@ -40,7 +38,6 @@ export default function VideoControls(props) {
     document.addEventListener("mousemove", (e) => {
       if (isScrubbing) handleTimelineUpdate(e);
     });
-
     let isScrubbing = false;
     let wasPaused;
     function toggleScrubbing(e) {
@@ -48,7 +45,6 @@ export default function VideoControls(props) {
       const percent =
         Math.min(Math.max(0, e.x - rect.x), rect.width) / rect.width;
       isScrubbing = (e.buttons & 1) === 1;
-      videoContainer.classList.toggle("scrubbing", isScrubbing);
       if (isScrubbing) {
         wasPaused = video.paused;
         video.pause();
@@ -73,14 +69,15 @@ export default function VideoControls(props) {
     }
     video.addEventListener("timeupdate", () => {
       setCurrentPlaybackTime(formatDuration(video.currentTime));
+      const percent = video.currentTime / video.duration;
+      timelineContainer.style.setProperty("--progress-position", percent);
     });
     return () => {
       video.removeEventListener("timeupdate", () => {});
-      timelineContainer.removeEventListener('mousemove', () => {})
-      timelineContainer.removeEventListener('mousedown', () => {})
-      document.removeEventListener('mousemove', () => {})
-      document.removeEventListener('mouseup', () => {})
-      
+      timelineContainer.removeEventListener("mousemove", () => {});
+      timelineContainer.removeEventListener("mousedown", () => {});
+      document.removeEventListener("mousemove", () => {});
+      document.removeEventListener("mouseup", () => {});
     };
   });
 
@@ -94,7 +91,7 @@ export default function VideoControls(props) {
         e.stopPropagation();
       }}
     >
-      <div id="timeline-container" ref={timeline}>
+      <div id="timeline-container">
         <div id="timeline" />
       </div>
       <div id="controls">
@@ -142,7 +139,6 @@ export default function VideoControls(props) {
               <img
                 className="control--icon"
                 src={volumehigh}
-                id="volume-high-icon"
                 alt="volumehigh"
               />
             )}
@@ -150,7 +146,6 @@ export default function VideoControls(props) {
               <img
                 className="control--icon"
                 src={volumelow}
-                id="volume-low-icon"
                 alt="volumelow"
               />
             )}
@@ -158,19 +153,25 @@ export default function VideoControls(props) {
               <img
                 className="control--icon"
                 src={volumemute}
-                id="volume-muted-icon"
                 alt="volumemute"
               />
             )}
           </button>
-          <div id="volume-slider" />
+          <input id="volume-slider" type='range' min='0' max='1' step='any' onInput={(e)=> {
+            setVolumePosition(e.target.value)
+            video.volume = e.target.value
+          }} value={volumePosition}/>
         </div>
-        <div id="duration-container">
-          <p>
+        <svg id="duration-container" viewBox="0 0 90 25">
+          <text x='0' y='18' fill="currentColor">
             {currentPlaybackTime}/{formatDuration(video.duration) || "0:00"}
-          </p>
-        </div>
-        <button id="playback-speed">1x</button>
+          </text>
+        </svg>
+        <svg id="playback-speed" viewBox="0 0 15 25">
+          <text x='0' y='18' fill="currentColor">
+            1X
+          </text>
+        </svg>
         <button id="mini-player">
           <img src={miniplayer} alt="" className="control--icon" />
         </button>

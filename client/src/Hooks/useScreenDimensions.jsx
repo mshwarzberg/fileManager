@@ -5,7 +5,7 @@ export default function useScreenDimensions(dependency) {
     width: 0,
     height: 0,
   });
-
+  
   useEffect(() => {
     window.addEventListener('resize', () => {
       setScreenSize({

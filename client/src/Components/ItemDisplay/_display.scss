@@ -102,6 +102,7 @@
   top: 1rem;
   width: max-content;
 }
+
 #navigating-indicator img {
   position: absolute;
   left: 0;
@@ -124,18 +125,13 @@
   left: 4.5rem;
   padding-inline: 1.5rem;
   top: 1rem;
-  width: max-content;
   transform-origin: left;
   transform: scaleX(0);
   transition: width 150ms ease-in-out, transform 150ms ease-in-out;
 }
 
-#navigating-indicator img:hover {
-  background-color: #ffffff00;
-}
 #navigating-indicator:hover #navigating-indicator-popup, #navigating-indicator-popup:focus-within {
   border-top-left-radius: 1.5rem;
   border-bottom-left-radius: 1.5rem;
-  width: max-content;
   transform: scaleX(1);
 }

@@ -9,65 +9,10 @@ function VideoDisplay(props) {
   const { viewItem, fullscreen, changeFolderOrViewFiles, isNavigating } = props;
   const { height: screenHeight, width: screenWidth } = useScreenDimensions();
   const [containerDimensions, setContainerDimensions] = useState({
-    width: (screenWidth * 96) / 100,
-    height: (screenHeight * 96) / 100,
+    width: 0,
+    height: 0,
   });
 
-  function fitVideo(video, videoContainer) {
-    video.current.volume = 0;
-
-    const videoHeight = video.current.videoHeight;
-    const videoWidth = video.current.videoWidth;
-    let containerWidth = videoContainer.current.style.width;
-    let containerHeight = videoContainer.current.style.height;
-
-    if (
-      containerHeight !== screenHeight &&
-      containerHeight !== videoHeight &&
-      containerWidth !== screenWidth &&
-      containerWidth !== videoWidth
-    ) {
-      // contain the video within the screen
-      if (videoHeight > screenHeight || videoWidth > screenWidth) {
-        // contain the video's height within the screen's vertical while keeping the ratio
-        if (screenHeight < videoHeight) {
-          let newHeight = (screenHeight * 96) / 100;
-          return setContainerDimensions({
-            width: (newHeight / videoHeight) * videoWidth,
-            height: newHeight,
-          });
-          // contain the video's width within the screen's horizontal while keeping the ratio
-        } else if (screenWidth < videoWidth) {
-          let newWidth = (screenWidth * 96) / 100;
-          return setContainerDimensions({
-            width: newWidth,
-            height: (newWidth / videoWidth) * videoHeight,
-          });
-        }
-        // expand the video to fit the screen
-      } else if (videoHeight <= screenHeight || videoWidth <= screenWidth) {
-        // expand the video's width to match 96% of the screen's width and keep the ratio
-        if (
-          videoHeight < videoWidth
-        ) {
-          let newWidth = (screenWidth * 96) / 100;
-          return setContainerDimensions({
-            width: newWidth,
-            height: (videoHeight * newWidth) / videoWidth,
-          });
-          // expand the video's height to match 96% of the screen's height and keep the ratio
-        } else if (
-          videoHeight > videoWidth
-        ) {
-          let newHeight = (screenHeight * 96) / 100;
-          return setContainerDimensions({
-            width: (videoWidth * newHeight) / videoHeight,
-            height: newHeight,
-          });
-        }
-      }
-    }
-  }
   const videoPage = useRef();
   const video = useRef();
   const videoContainer = useRef();
@@ -77,7 +22,89 @@ function VideoDisplay(props) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    fitVideo(video, videoContainer);
+    function fitVideo() {
+      if (video.current) {
+        const videoHeight = video.current.videoHeight;
+        const videoWidth = video.current.videoWidth;
+        const scaledHeight = (screenHeight * 96) / 100;
+        const scaledWidth = (screenWidth * 96) / 100;
+        let containerWidth = videoContainer.current.style.width;
+        let containerHeight = videoContainer.current.style.height;
+
+        if (
+          containerHeight !== screenHeight &&
+          containerHeight !== videoHeight &&
+          containerWidth !== screenWidth &&
+          containerWidth !== videoWidth
+        ) {
+          const larger = Math.max(videoWidth, videoHeight);
+          const smaller = Math.min(videoWidth, videoHeight);
+          // ratio of video is greater or equal to the screens ratio. (taller or wider)
+          if (larger / smaller >= screenWidth / screenHeight) {
+            // vertical video
+            if (larger === videoHeight) {
+              let newWidth = (scaledHeight * smaller) / larger;
+              // if the scaled video width fits within the screen
+              if (newWidth < scaledWidth) {
+                return setContainerDimensions({
+                  width: newWidth,
+                  height: scaledHeight,
+                });
+                // if the new video's container is wider than the screen scale down to the screen
+              } else if (newWidth > scaledWidth) {
+                let newHeight = (scaledWidth * larger) / smaller;
+
+                return setContainerDimensions({
+                  width: scaledWidth,
+                  height: newHeight,
+                });
+              }
+              // horizontal video.
+            } else if (larger === videoWidth) {
+              let newHeight = (scaledWidth / larger) * smaller;
+
+              return setContainerDimensions({
+                width: scaledWidth,
+                height: newHeight,
+              });
+            }
+            // ratio of screen is greater or equal than the ratio of the video
+          } else if (larger / smaller <= screenWidth / screenHeight) {
+            // vertical video
+            if (larger === videoHeight) {
+              let newWidth = (scaledHeight * smaller) / larger;
+              return setContainerDimensions({
+                width: newWidth,
+                height: scaledHeight,
+              });
+              // horizontal video
+            } else if (larger === videoWidth) {
+              let newWidth = (scaledHeight / smaller) * larger;
+
+              return setContainerDimensions({
+                height: scaledHeight,
+                width: newWidth,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    const currentVideo = video.current;
+    const currentVideoPage = videoPage.current
+    
+    currentVideo.addEventListener("canplay", () => {
+      fitVideo();
+    });
+    currentVideoPage.addEventListener("click", () => {
+      fitVideo();
+    });
+
+    return () => {
+      currentVideo.removeEventListener("canplay", () => {});
+      currentVideoPage.removeEventListener("click", () => {});
+    };
   }, [screenHeight, screenWidth]);
 
   return (
@@ -148,13 +175,14 @@ function VideoDisplay(props) {
           }
         }}
         id="video-container"
-        data-volume-level="high"
         style={{
           width: containerDimensions.width,
           height: containerDimensions.height,
         }}
       >
         {containerDimensions.width && containerDimensions.height && (
+          <>
+          <div id="video-header">{viewItem.name}</div>
           <VideoControls
             videoPage={videoPage.current}
             video={video.current}
@@ -163,7 +191,8 @@ function VideoDisplay(props) {
             setIsPlaying={setIsPlaying}
             isFullscreen={isFullscreen}
             setIsFullscreen={setIsFullscreen}
-          />
+            />
+          </>
         )}
         <video
           ref={video}
