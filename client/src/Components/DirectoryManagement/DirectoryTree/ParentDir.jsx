@@ -1,18 +1,17 @@
 import React, { useContext, useRef } from "react";
-// import { useEffect, useState } from "react";
-import DownArrowBlack from "../../../../Assets/images/directorytree/down-arrow-black.png";
-import DownArrowAccented from "../../../../Assets/images/directorytree/down-arrow-accented.png";
-import DownArrowWhite from "../../../../Assets/images/directorytree/down-arrow-white.png";
+import DownArrowBlack from "../../../Assets/images/directorytree/down-arrow-black.png";
+import DownArrowAccented from "../../../Assets/images/directorytree/down-arrow-accented.png";
+import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-white.png";
 
-import FolderIcon from "../../../../Assets/images/folder.png";
-import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArray";
-import { RenderPath } from "../../../../Helpers/RenderPath";
-import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
-// import { IsLastInArray } from "../../../../Helpers/RenderPath";
-import { DirectoryStateContext } from "../../../../App";
+import FolderIcon from "../../../Assets/images/folder.png";
+import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
+import { RenderPath } from "../../../Helpers/RenderPath";
+import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
+// import { IsLastInArray } from "../../../Helpers/RenderPath";
+import { DirectoryStateContext } from "../../../App";
 
 export default function ParentDir(props) {
-  const { openDirectoryName, openDirectory, path, HoverOverPathID } = props;
+  const { openDirectoryName, openDirectory, path } = props;
   const parentPosition = useRef();
   const changeItem = useUpdateDirectoryTree();
   const { state, dispatch } = useContext(DirectoryStateContext);
@@ -54,10 +53,10 @@ export default function ParentDir(props) {
                 left: props.treeID?.current?.offsetLeft - 2 || 1,
               }}
               onMouseEnter={() => {
-                HoverOverPathID(".path--identifier-container", true);
+                props.HoverOverPathID(".path--identifier-container", true);
               }}
               onMouseLeave={() => {
-                HoverOverPathID(".path--identifier-container");
+                props.HoverOverPathID(".path--identifier-container");
               }}
             />
           )}
@@ -70,10 +69,10 @@ export default function ParentDir(props) {
               height: 32,
             }}
             onMouseEnter={() => {
-              HoverOverPathID(".path--identifier-container", true);
+              props.HoverOverPathID(".path--identifier-container", true);
             }}
             onMouseLeave={() => {
-              HoverOverPathID(".path--identifier-container");
+              props.HoverOverPathID(".path--identifier-container");
             }}
           />
         </div>

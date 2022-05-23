@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { DirectoryStateContext } from "../../../App";
-import RandomChars from "../../../Helpers/RandomChars";
+import ColorizeIcons from "../../../Helpers/ColorizeIcons";
+
 function Icon(props) {
   const { state, dispatch } = useContext(DirectoryStateContext);
 
@@ -33,19 +34,36 @@ function Icon(props) {
         }}
       >
         {isFile ? (
-          <div id="custom-icon-full-parent">
-            <p
-              id="custom-icon-text"
-              style={{
-                backgroundColor: "#" + RandomChars(6, "1234567890abcdef"),
-              }}
-            >
+          <svg viewBox="0 0 100 100">
+            <rect
+              fill="grey"
+              x="10"
+              y='-5'
+              width="80"
+              height="100"
+              clipPath="polygon(100% 0, 100% 75%, 69% 100%, 0 100%, 0 0)"
+            />
+            <rect
+              x="5"
+              y="20"
+              width="50"
+              height="25"
+              fill={ColorizeIcons(fileextension)}
+              rx="1" 
+              ry="1"
+            />
+            <rect
+              width="25"
+              height="25"
+              fill="white"
+              y="70"
+              x="65"
+              clipPath="polygon(0 0, 0% 100%, 100% 0)"
+            />
+            <text fill="white" x="13" y="38" width="25" height="25">
               {fileextension.toUpperCase()}
-            </p>
-            <div id="custom-icon-full">
-              <div />
-            </div>
-          </div>
+            </text>
+          </svg>
         ) : (
           <img
             src={displayIcon}

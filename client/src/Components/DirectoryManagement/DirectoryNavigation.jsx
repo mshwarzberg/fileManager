@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
-import { DirectoryStateContext } from "../../../App";
+import { DirectoryStateContext } from "../../App";
 
-import forwards from "../../../Assets/images/navigation/forwards.png";
-import backwards from "../../../Assets/images/navigation/backwards.png";
-import upwards from "../../../Assets/images/navigation/upwards.png";
+import forwards from "../../Assets/images/navigation/forwards.png";
+import backwards from "../../Assets/images/navigation/backwards.png";
+import upwards from "../../Assets/images/navigation/upwards.png";
 
-import forthhover from "../../../Assets/images/navigation/forwardshover.png";
-import backhover from "../../../Assets/images/navigation/backwardshover.png";
-import uphover from "../../../Assets/images/navigation/upwardshover.png";
+import forthhover from "../../Assets/images/navigation/forwardshover.png";
+import backhover from "../../Assets/images/navigation/backwardshover.png";
+import uphover from "../../Assets/images/navigation/upwardshover.png";
 
 function DirectoryNavigation() {
   const { state, dispatch } = useContext(DirectoryStateContext);

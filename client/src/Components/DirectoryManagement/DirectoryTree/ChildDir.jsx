@@ -1,16 +1,16 @@
 import React, { useContext, useRef } from "react";
-import { DirectoryStateContext } from "../../../../App";
-import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
-import useFetch from "../../../../Hooks/useFetch";
-import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArray";
-import RightArrowBlack from "../../../../Assets/images/directorytree/right-arrow-black.png";
-import RightArrowWhite from "../../../../Assets/images/directorytree/right-arrow-white.png";
-import RightArrowAccented from "../../../../Assets/images/directorytree/right-arrow-accented.png";
-import FolderIcon from "../../../../Assets/images/folder.png";
-// import { RenderPath, IsLastInArray } from "../../../../Helpers/RenderPath";
+import { DirectoryStateContext } from "../../../App";
+import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
+import useFetch from "../../../Hooks/useFetch";
+import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
+import RightArrowBlack from "../../../Assets/images/directorytree/right-arrow-black.png";
+import RightArrowWhite from "../../../Assets/images/directorytree/right-arrow-white.png";
+import RightArrowAccented from "../../../Assets/images/directorytree/right-arrow-accented.png";
+import FolderIcon from "../../../Assets/images/folder.png";
+// import { RenderPath, IsLastInArray } from "../../../Helpers/RenderPath";
 
 export default function ChildDir(props) {
-  const { addToPath, subItem, HoverOverPathID } = props;
+  const { addToPath, subItem } = props;
   const { state, dispatch } = useContext(DirectoryStateContext);
   const childPosition = useRef();
 
@@ -65,10 +65,10 @@ export default function ChildDir(props) {
                 top: 31,
               }}
               onMouseEnter={() => {
-                HoverOverPathID(".path--identifier-container", true);
+                props.HoverOverPathID(".path--identifier-container", true);
               }}
               onMouseLeave={() => {
-                HoverOverPathID(".path--identifier-container");
+                props.HoverOverPathID(".path--identifier-container");
               }}
             />
           }

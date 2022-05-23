@@ -1,8 +1,8 @@
 import React from "react";
-
+import CornerIcon from "./CornerIcon";
 export default function ImageGif(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  const { name, shorthandsize, fileextension, thumbnail, itemtype, bgColor } = item;
+  const { name, shorthandsize, fileextension, thumbnail, itemtype } = item;
 
   return (
     thumbnail &&
@@ -25,20 +25,8 @@ export default function ImageGif(props) {
           className="renderfile--thumbnail"
           id="renderfile--image-thumbnail"
         />
-        <div id="custom-icon-parent">
-          <p
-            id="custom-icon-text"
-            style={{
-              backgroundColor: bgColor,
-            }}
-          >
-            {fileextension.toUpperCase()}
-          </p>
-          <div id="custom-icon">
-            <div />
-          </div>
-        </div>
         <p className="renderfile--text">{name}</p>
+        <CornerIcon fileextension={fileextension} />
       </div>
     )
   );

@@ -79,8 +79,7 @@ function LoadDirectoryData() {
                 res.headers.get("prefix") === item.prefix &&
                 res.headers.get("suffix") === item.fileextension
                   ? imageURL
-                  : item.thumbnail,
-              bgColor: '#' + RandomChars(6, 'abcdef1234567890')
+                  : item.thumbnail
             };
             return newData;
           });

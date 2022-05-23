@@ -5,7 +5,7 @@ import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
 import Video from "./RenderIconsAndThumbnails/Video";
 import Icon from "./RenderIconsAndThumbnails/Icon";
 
-import VideoDisplay from "../ItemDisplay/VideoDisplay";
+import VideoDisplay from "../ItemDisplay/Video/VideoDisplay";
 import DocumentDisplay from "../ItemDisplay/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
 import DisplayHeaderAndClose from "../ItemDisplay/DisplayHeaderAndClose";

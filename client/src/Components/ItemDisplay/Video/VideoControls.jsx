@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { formatDuration } from "../../Helpers/VideoControlHelpers";
+import { formatDuration } from "../../../Helpers/VideoControlHelpers";
 
 import {
   play,
@@ -12,7 +12,7 @@ import {
   volumelow,
   volumemute,
   miniplayer,
-} from "../../Assets/images/videocontrols/index.js";
+} from "../../../Assets/images/videocontrols/index.js";
 
 export default function VideoControls(props) {
   const {

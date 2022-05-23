@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef } from "react";
 import { useEffect } from "react";
-import { DirectoryStateContext } from "../../../../App";
+import { DirectoryStateContext } from "../../../App";
 
 import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
@@ -9,7 +9,6 @@ export default function DirectoryTree() {
   const [showTree, setShowTree] = useState(false);
   const [treeWidth, setTreeWidth] = useState();
   const [isDragging, setIsDragging] = useState(false);
-  const [dump, setdump] = useState([])
   
   function HoverOverPathID(path, isHovering) {
     let children = document.querySelectorAll(path);
@@ -23,7 +22,6 @@ export default function DirectoryTree() {
     const grab = document.querySelector("#resize--tree");
     function handleDrag(e) {
       if (isDragging) {
-        setdump(e)
         setTreeWidth(e.x);
       }
     }

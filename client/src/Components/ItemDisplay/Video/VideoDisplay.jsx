@@ -1,19 +1,18 @@
 import React, { useState, useRef } from "react";
-import back from "../../Assets/images/navigate-backwards.png";
-import forward from "../../Assets/images/navigate-forwards.png";
-import useScreenDimensions from "../../Hooks/useScreenDimensions";
+import back from "../../../Assets/images/navigate-backwards.png";
+import forward from "../../../Assets/images/navigate-forwards.png";
+import useScreenDimensions from "../../../Hooks/useScreenDimensions";
 import VideoControls from "./VideoControls";
-import alerticon from "../../Assets/images/alert.png";
+import alerticon from "../../../Assets/images/alert.png";
+import useFitVideo from '../../../Hooks/useFitVideo'
 
 let timeouts
 
 function VideoDisplay(props) {
   const { viewItem, fullscreen, changeFolderOrViewFiles, isNavigating } = props;
-  const { height: screenHeight, width: screenWidth } = useScreenDimensions();
-  const [containerDimensions, setContainerDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
+  const { width: screenWidth } = useScreenDimensions();
+
+  const {fitVideo, containerDimensions} = useFitVideo()
 
   const videoPage = useRef();
   const video = useRef();
@@ -23,75 +22,6 @@ function VideoDisplay(props) {
   //  video states
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  function fitVideo() {
-    if (video.current) {
-      const videoHeight = video.current.videoHeight;
-      const videoWidth = video.current.videoWidth;
-      const scaledHeight = (screenHeight * 96) / 100;
-      const scaledWidth = (screenWidth * 96) / 100;
-      let containerWidth = videoContainer.current.style.width;
-      let containerHeight = videoContainer.current.style.height;
-
-      if (
-        containerHeight !== screenHeight &&
-        containerHeight !== videoHeight &&
-        containerWidth !== screenWidth &&
-        containerWidth !== videoWidth
-      ) {
-        const larger = Math.max(videoWidth, videoHeight);
-        const smaller = Math.min(videoWidth, videoHeight);
-        // ratio of video is greater or equal to the screens ratio. (taller or wider)
-        if (larger / smaller >= screenWidth / screenHeight) {
-          // vertical video
-          if (larger === videoHeight) {
-            let newWidth = (scaledHeight * smaller) / larger;
-            // if the scaled video width fits within the screen
-            if (newWidth < scaledWidth) {
-              return setContainerDimensions({
-                width: newWidth,
-                height: scaledHeight,
-              });
-              // if the new video's container is wider than the screen scale down to the screen
-            } else if (newWidth > scaledWidth) {
-              let newHeight = (scaledWidth * larger) / smaller;
-
-              return setContainerDimensions({
-                width: scaledWidth,
-                height: newHeight,
-              });
-            }
-            // horizontal video.
-          } else if (larger === videoWidth) {
-            let newHeight = (scaledWidth / larger) * smaller;
-
-            return setContainerDimensions({
-              width: scaledWidth,
-              height: newHeight,
-            });
-          }
-          // ratio of screen is greater or equal than the ratio of the video
-        } else if (larger / smaller <= screenWidth / screenHeight) {
-          // vertical video
-          if (larger === videoHeight) {
-            let newWidth = (scaledHeight * smaller) / larger;
-            return setContainerDimensions({
-              width: newWidth,
-              height: scaledHeight,
-            });
-            // horizontal video
-          } else if (larger === videoWidth) {
-            let newWidth = (scaledHeight / smaller) * larger;
-
-            return setContainerDimensions({
-              height: scaledHeight,
-              width: newWidth,
-            });
-          }
-        }
-      }
-    }
-  }
 
   return (
     <div className="viewitem--block" id="viewitem--block-video" ref={videoPage}>
@@ -153,13 +83,16 @@ function VideoDisplay(props) {
             containerDimensions.width !== video.current.videoWidth ||
             containerDimensions.height !== video.current.videoHeight
             ) {
-              fitVideo();
+              fitVideo(video.current, videoContainer.current);
             }
             if (e.target.id !== 'viewitem--video') {
               return
             }
             if (isPlaying && videoControls.current && videoHeader.current) {
               timeouts = setTimeout(() => {
+                if (!videoContainer.current) {
+                  return
+                }
                 videoContainer.current.style.cursor = "none";
                 videoControls.current.style.display = 'none'
                 videoHeader.current.style.display = 'none'
@@ -224,7 +157,7 @@ function VideoDisplay(props) {
             if (!containerDimensions.width && !containerDimensions.height) {
               video.current.volume = 0
             }
-            fitVideo();
+            fitVideo(video.current, videoContainer.current);
           }}
           ref={video}
           className="viewitem--item"

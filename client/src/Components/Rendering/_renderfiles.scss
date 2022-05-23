@@ -6,6 +6,7 @@
   grid-auto-rows: calc((var(--screen-width) / 8));
   grid-gap: 1rem;
   margin-top: 1rem;
+  margin-inline: 3rem;
 }
 
 .renderfile--block {
@@ -13,81 +14,35 @@
   @include flexStyle(column);
   width: 100%;
   height: 100%;
-  background-color: #444444;
   border-radius: 0.3rem;
   text-align: center;
   &:hover {
     cursor: default;
-    background-color: #00000000;
+    background-color: #222222;
     border: 1.5px solid $accentColor;
   }
 }
 
-#custom-icon-parent, #custom-icon-full-parent {
-  border-radius: 1px;
-  height: 14%;
-  aspect-ratio: 1;
-  max-height: 5rem;
+#custom-icon-small {
+  color: #ff6e6e;
   position: absolute;
-  top: 2%;
   left: 2%;
-  pointer-events: none;
+  top: 2%;
 }
 
-#custom-icon, #custom-icon-full {
-  width: 80%;
-  clip-path: polygon(100% 0, 100% 75%, 70% 100%, 0 100%, 0 0);
-  height: 100%;
-  background-color: #fff;
-  position: relative;
-  left: 10%;
+#custom-icon-small-text {
+  letter-spacing: 3px;
+  font-size: 1.4em;
 }
 
-#custom-icon div, #custom-icon-full div {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 30%;
-  aspect-ratio: 1 /1;
-  background-color: gray;
+text {
+  font-family: 'bebas neue';
+  letter-spacing: 3.5px;
 }
 
-#custom-icon-parent p, #custom-icon-full-parent p {
- font-family: 'bebas neue';
- background-color: red;
- position: absolute;
- left: 0%;
- top: 20%;
- height: 40%;
- width: 70%;
- color: white;
- z-index: 1;
- padding-top: 1%;
-}
-
-#custom-icon-full-parent {
-  height: 85%;
-  width: 100%;
-  max-height: none;
-  position: relative;
-  top: -5%;
-  left: 0;
-}
-#custom-icon-full {
-  width: 75%;
-  left: 12.5%;
-}
-#custom-icon-full-parent p {
-  padding-top: 3%;
-  height: 30%;
-  left: 4%;
-  font-size: 5em;
-  letter-spacing: 0.5rem;
-  @include flexStyle(row)
-}
 #renderfile--image-thumbnail,
 #renderfile--video-thumbnail {
-  max-height: 90%;
+  max-height: 80%;
   max-width: 90%;
   position: absolute;
   cursor: pointer;
@@ -96,21 +51,14 @@
 .renderfile--text {
   position: absolute;
   bottom: 2%;
-  background-color: white;
-  padding: 1%;
-  border: 1.5px solid black;
-  border-radius: 3px;
+  padding-bottom: 2%;
   width: 95%;
-  font-family: Bitter;
+  font-family: akshar;
   font-size: 90%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  &:hover {
-    color: white;
-    background-color: black;
-    border: 1.5px solid white;
-  }
+  color: white;
 }
 
 #renderfile--play-icon {
@@ -153,19 +101,11 @@
     grid-template-columns: repeat(3, 1fr);
     grid-auto-rows: calc((var(--screen-width) / 2.8));
   }
-  #renderfile--corner-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
 }
 
 @media screen and (max-width: 700px) {
   #renderfile--page {
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: calc(var(--screen-width) / 1.8);
-  }
-  #renderfile--corner-icon {
-    width: 2.5rem;
-    height: 2.5rem;
   }
 }
