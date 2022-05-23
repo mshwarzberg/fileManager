@@ -16,6 +16,7 @@ function Icon(props) {
       setDisplayIcon(image.default);
     });
   }
+
   return (
     !thumbnail && (
       <div
@@ -32,10 +33,19 @@ function Icon(props) {
         }}
       >
         {isFile ? (
-          <div id="custom-icon-full">
-          <div/>
-          <p id="custom-icon-text" style={{backgroundColor: '#' + RandomChars(6, '1234567890abcdef')}}>{fileextension.toUpperCase()}</p>
-        </div>
+          <div id="custom-icon-full-parent">
+            <p
+              id="custom-icon-text"
+              style={{
+                backgroundColor: "#" + RandomChars(6, "1234567890abcdef"),
+              }}
+            >
+              {fileextension.toUpperCase()}
+            </p>
+            <div id="custom-icon-full">
+              <div />
+            </div>
+          </div>
         ) : (
           <img
             src={displayIcon}

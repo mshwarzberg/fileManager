@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import back from "../../Assets/images/navigate-backwards.png";
 import forward from "../../Assets/images/navigate-forwards.png";
 import useScreenDimensions from "../../Hooks/useScreenDimensions";
 import VideoControls from "./VideoControls";
 import alerticon from "../../Assets/images/alert.png";
+
+let timeouts
 
 function VideoDisplay(props) {
   const { viewItem, fullscreen, changeFolderOrViewFiles, isNavigating } = props;
@@ -16,26 +18,11 @@ function VideoDisplay(props) {
   const videoPage = useRef();
   const video = useRef();
   const videoContainer = useRef();
-
+  const videoControls = useRef()
+  const videoHeader = useRef()
   //  video states
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showHideOverlay, setShowHideOverlay] = useState({
-    mouseMoving: false,
-    forceShowOverlay: true,
-  });
-
-  function showHideHeaderControls() {
-    if (!containerDimensions.width || !containerDimensions.height) {
-      return false;
-    }
-    if (!isPlaying) {
-      return true;
-    }
-    if (showHideOverlay.mouseMoving) {
-      return true;
-    }
-  }
 
   function fitVideo() {
     if (video.current) {
@@ -106,22 +93,6 @@ function VideoDisplay(props) {
     }
   }
 
-  useEffect(() => {
-    let timer;
-    if (showHideOverlay.mouseMoving && !showHideOverlay.forceShowOverlay && isPlaying) {
-      timer = setTimeout(() => {
-        setShowHideOverlay({
-          mouseMoving: false,
-          forceShowOverlay: true,
-        });
-          videoContainer.current.style.cursor = "none";
-      }, 3000);
-    }
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [showHideOverlay]);
-
   return (
     <div className="viewitem--block" id="viewitem--block-video" ref={videoPage}>
       {screenWidth < 800 && (
@@ -171,34 +142,48 @@ function VideoDisplay(props) {
       <div
         id="video-container"
         onMouseMove={(e) => {
+          clearTimeout(timeouts)
+
+          if (videoControls.current) {
+            videoControls.current.style.display = 'block'
+            videoContainer.current.style.cursor = "default";
+            videoHeader.current.style.display = 'block'
+          }
           if (
             containerDimensions.width !== video.current.videoWidth ||
             containerDimensions.height !== video.current.videoHeight
-          ) {
-            fitVideo();
-          }
-          setShowHideOverlay({
-            mouseMoving: true,
-            forceShowOverlay: showHideOverlay.forceShowOverlay,
-          });
-          videoContainer.current.style.cursor = "default";
+            ) {
+              fitVideo();
+            }
+            if (e.target.id !== 'viewitem--video') {
+              return
+            }
+            if (isPlaying && videoControls.current && videoHeader.current) {
+              timeouts = setTimeout(() => {
+                videoContainer.current.style.cursor = "none";
+                videoControls.current.style.display = 'none'
+                videoHeader.current.style.display = 'none'
+              }, 2000)
+            }
           e.stopPropagation();
         }}
         onMouseLeave={() => {
-          setShowHideOverlay({
-            mouseMoving: false,
-            forceShowOverlay: false,
-          });
+          if (videoControls.current && isPlaying && videoHeader.current) {
+            videoControls.current.style.display = 'none'
+            videoHeader.current.style.display = 'none'
+          }
         }}
         onClick={() => {
           if (video.current.paused) {
             video.current.play();
-            setIsPlaying(true);
+            return setIsPlaying(true);
           } else {
             video.current.pause();
+            videoControls.current.style.display = 'block'
+            videoContainer.current.style.cursor = "default";
+            videoHeader.current.style.display = 'block'
             return setIsPlaying(false);
           }
-          return;
         }}
         ref={videoContainer}
         onDoubleClick={() => {
@@ -215,18 +200,15 @@ function VideoDisplay(props) {
           height: containerDimensions.height,
         }}
       >
-        {showHideHeaderControls() && (
+        {containerDimensions.width && containerDimensions.height && (
           <>
-            <div
-              id="video-header"
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-            >
-              {viewItem.name}
-            </div>
+            <svg id="video-header" viewBox="0 0 25 25" ref={videoHeader}>
+              <text fill="currentColor" y="15" x='10' id="video-header-filename">
+                {viewItem.name}
+              </text>
+            </svg>
             <VideoControls
-              setShowHideOverlay={setShowHideOverlay}
+              videoControls={videoControls}
               videoPage={videoPage.current}
               video={video.current}
               videoContainer={videoContainer.current}
@@ -239,13 +221,15 @@ function VideoDisplay(props) {
         )}
         <video
           onCanPlay={() => {
+            if (!containerDimensions.width && !containerDimensions.height) {
+              video.current.volume = 0
+            }
             fitVideo();
           }}
           ref={video}
           className="viewitem--item"
           id="viewitem--video"
           src={viewItem.property}
-          on
         />
       </div>
     </div>

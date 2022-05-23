@@ -1,10 +1,8 @@
 import React from "react";
-import RandomChars from "../../../Helpers/RandomChars";
 
 export default function ImageGif(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  const { name, shorthandsize, fileextension, thumbnail, itemtype } =
-    item;
+  const { name, shorthandsize, fileextension, thumbnail, itemtype, bgColor } = item;
 
   return (
     thumbnail &&
@@ -27,9 +25,18 @@ export default function ImageGif(props) {
           className="renderfile--thumbnail"
           id="renderfile--image-thumbnail"
         />
-        <div id="custom-icon">
-          <div/>
-          <p id="custom-icon-text" style={{backgroundColor: '#' + RandomChars(6, '1234567890abcdef')}}>{fileextension.toUpperCase()}</p>
+        <div id="custom-icon-parent">
+          <p
+            id="custom-icon-text"
+            style={{
+              backgroundColor: bgColor,
+            }}
+          >
+            {fileextension.toUpperCase()}
+          </p>
+          <div id="custom-icon">
+            <div />
+          </div>
         </div>
         <p className="renderfile--text">{name}</p>
       </div>

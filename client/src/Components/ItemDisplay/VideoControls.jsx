@@ -23,9 +23,9 @@ export default function VideoControls(props) {
     setIsPlaying,
     isFullscreen,
     setIsFullscreen,
-    setShowHideOverlay,
+    videoControls,
   } = props;
-
+  
   const container = useRef();
   const timelineContainer = container.current;
 
@@ -51,15 +51,15 @@ export default function VideoControls(props) {
     const percent =
       Math.min(Math.max(0, e.screenX - rect.x), rect.width) / rect.width;
     setIsScrubbing((e.buttons & 1) === 1);
+    video.currentTime = percent * video.duration;
     if (isScrubbing) {
-      video.pause();
-      setIsPlaying(false);
+      // video.pause();
+      // setIsPlaying(false);
     } else {
-      video.currentTime = percent * video.duration;
-      if (isPlaying) {
-        video.play();
-        setIsPlaying(true);
-      }
+      // if (isPlaying) {
+      //   video.play();
+      //   setIsPlaying(true);
+      // }
     }
 
     handleTimelineUpdate(e);
@@ -80,6 +80,7 @@ export default function VideoControls(props) {
   return (
     <div
       id="video-controls-container"
+      ref={videoControls}
       onMouseUp={(e) => {
         if (isScrubbing) {
           toggleScrubbing(e);
@@ -91,10 +92,9 @@ export default function VideoControls(props) {
         }
       }}
       onMouseEnter={(e) => {
-        setShowHideOverlay({
-          mouseMoving: true,
-          forceShowOverlay: true,
-        });
+        if (videoControls) {
+          videoControls.current.style.display = 'block'
+        }
         e.stopPropagation();
       }}
       onClick={(e) => {

@@ -18,15 +18,20 @@
   position: absolute;
   top: 0;
   width: 100%;
-  height: 5%;
+  height: 8%;
+  padding-top: 1%;
   z-index: 1;
   @include flexStyle(row);
   background-color: #222222ee;
   color: white;
-  font-family: akshar;
-  font-size: 2rem;
   transform-origin: top;
   animation: headerAndControls 150ms forwards;
+}
+
+#video-header-filename {
+  font-family: 'akshar';
+  text-anchor: middle;
+  font-size: 1em;
 }
 
 #video-controls-container {

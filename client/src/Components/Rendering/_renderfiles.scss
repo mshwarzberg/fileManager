@@ -23,17 +23,24 @@
   }
 }
 
-#custom-icon, #custom-icon-full {
+#custom-icon-parent, #custom-icon-full-parent {
   border-radius: 1px;
   height: 14%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1;
   max-height: 5rem;
-  position: relative;
-  top: -40%;
-  left: -40%;
-  background-color: #fff;
+  position: absolute;
+  top: 2%;
+  left: 2%;
   pointer-events: none;
-  clip-path: polygon(100% 0, 100% 77.5%, 70% 100%, 0 100%, 0 0);
+}
+
+#custom-icon, #custom-icon-full {
+  width: 80%;
+  clip-path: polygon(100% 0, 100% 75%, 70% 100%, 0 100%, 0 0);
+  height: 100%;
+  background-color: #fff;
+  position: relative;
+  left: 10%;
 }
 
 #custom-icon div, #custom-icon-full div {
@@ -45,7 +52,7 @@
   background-color: gray;
 }
 
-#custom-icon p, #custom-icon-full p {
+#custom-icon-parent p, #custom-icon-full-parent p {
  font-family: 'bebas neue';
  background-color: red;
  position: absolute;
@@ -54,23 +61,29 @@
  height: 40%;
  width: 70%;
  color: white;
+ z-index: 1;
+ padding-top: 1%;
 }
 
-#custom-icon-full {
+#custom-icon-full-parent {
   height: 85%;
+  width: 100%;
   max-height: none;
   position: relative;
   top: -5%;
   left: 0;
 }
-
-#custom-icon-full p {
+#custom-icon-full {
+  width: 75%;
+  left: 12.5%;
+}
+#custom-icon-full-parent p {
+  padding-top: 3%;
   height: 30%;
-  padding-top: 0.5rem;
+  left: 4%;
   font-size: 5em;
   letter-spacing: 0.5rem;
   @include flexStyle(row)
-  
 }
 #renderfile--image-thumbnail,
 #renderfile--video-thumbnail {

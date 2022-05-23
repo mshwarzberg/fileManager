@@ -3,7 +3,7 @@
 #navbar--sort-button {
   @include navbarBtn;
   position: absolute;
-  right: 5rem;
+  right: 5px;
   top: 0.4rem;
   z-index: 1;
   width: 5rem;
@@ -65,21 +65,25 @@
 
 #navbar--asc-desc {
   position: absolute;
-  right: 10.2rem;
+  right: 5.8rem;
   top: 0.4rem;
   padding: 3px;
   height: 3rem;
   font-size: 1.8rem;
+  @include flexStyle(row);
+}
+
+#navbar--asc-desc img {
+  max-width: 70%;
 }
 
 @media screen and (max-width: 768px) {
   #navbar--sort-button {
     width: 3rem;
-    right: 2rem;
+    right: 0;
     top: 0;
     font-size: 50%;
     border: 1px solid black;
-
   }
   #filter--list {
     margin-top: 1.8rem;
@@ -92,8 +96,9 @@
     width: 50vw;
   }
   #navbar--asc-desc {
-    right: 4rem;
+    right: 10%;
     top: 0;
     font-size: 1rem;
+    max-width: 10%;
   }
 }

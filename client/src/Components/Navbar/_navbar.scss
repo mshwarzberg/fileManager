@@ -13,16 +13,20 @@
 }
 
 #navbar--navigation {
-  display: flex;
-  flex-direction: row;
+  @include flexStyle(row);
   position: absolute;
   left: 6rem;
+  max-width: 30%;
 }
 
-#navbar--navigation > * {
-  font-size: 1.3rem;
+#navbar--navigation button {
+  @include flexStyle(row);
+  max-width: none;
 }
 
+.navbar--button img {
+  max-width: 50%;
+}
 .navbar--button {
   @include navbarBtn;
 }
@@ -70,7 +74,7 @@
   }
   #navbar--navigation {
     height: 2rem;
-    left: 2rem;
+    left: 3rem;
   }
   #navbar--current-directory-header {
     top: 2rem;

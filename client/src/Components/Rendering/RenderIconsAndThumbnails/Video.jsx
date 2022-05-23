@@ -1,12 +1,10 @@
 import React from "react";
-import RandomChars from "../../../Helpers/RandomChars";
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
 
 function Video(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  const { name, shorthandsize, fileextension, thumbnail, itemtype } =
-    item;
+  const { name, shorthandsize, fileextension, thumbnail, itemtype, bgColor } = item;
 
   return (
     thumbnail &&
@@ -41,10 +39,20 @@ function Video(props) {
           id="renderfile--play-icon"
           title={`Play "${name}"`}
         />
-        <div id="custom-icon">
-          <div/>
-          <p id="custom-icon-text" style={{backgroundColor: '#' + RandomChars(6, '1234567890abcdef')}}>{fileextension.toUpperCase()}</p>
+        <div id="custom-icon-parent">
+            <p
+              id="custom-icon-text"
+              style={{
+                backgroundColor: bgColor,
+              }}
+            >
+              {fileextension.toUpperCase()}
+            </p>
+          <div id="custom-icon">
+            <div />
+          </div>
         </div>
+        <p className="renderfile--text">{name}</p>
       </div>
     )
   );

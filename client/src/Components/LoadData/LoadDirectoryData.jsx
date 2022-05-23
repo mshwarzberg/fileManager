@@ -6,6 +6,7 @@ import Navbar from "../Navbar/Navbar";
 import RenderFiles from "../Rendering/RenderFiles";
 import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
 import CompareArray from "../../Helpers/CompareArray";
+import RandomChars from "../../Helpers/RandomChars";
 
 function LoadDirectoryData() {
   const changeItem = useUpdateDirectoryTree();
@@ -45,7 +46,10 @@ function LoadDirectoryData() {
     JSON.stringify({ path: state.currentDirectory })
   );
 
-  function fetchStuff(index) {
+  function fetchStuff(index, requestsMadeForThisItem) {
+    if (requestsMadeForThisItem >= 15) {
+      return
+    }
     fetch("/api/data/thumbs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -62,7 +66,7 @@ function LoadDirectoryData() {
             itemData[index].itemtype === "image" ||
             itemData[index].itemtype === "video"
           ) {
-            return fetchStuff(index);
+            return fetchStuff(index, requestsMadeForThisItem+1);
           }
         }
         let imageURL = URL.createObjectURL(response);
@@ -76,6 +80,7 @@ function LoadDirectoryData() {
                 res.headers.get("suffix") === item.fileextension
                   ? imageURL
                   : item.thumbnail,
+              bgColor: '#' + RandomChars(6, 'abcdef1234567890')
             };
             return newData;
           });
@@ -90,7 +95,7 @@ function LoadDirectoryData() {
       if (!CompareArray(itemData, directoryItems)) {
         setDirectoryItems(itemData);
         for (let i = 0; i < itemData.length; i++) {
-          fetchStuff(i);
+          fetchStuff(i, 0);
         }
       }
     }
