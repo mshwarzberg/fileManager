@@ -18,31 +18,66 @@
   text-align: center;
   &:hover {
     cursor: default;
-    background-color: #111;
+    background-color: #00000000;
     border: 1.5px solid $accentColor;
   }
 }
 
-#renderfile--corner-icon {
-  height: 10%;
+#custom-icon, #custom-icon-full {
+  border-radius: 1px;
+  height: 14%;
+  aspect-ratio: 3 / 4;
   max-height: 5rem;
-  position: absolute;
-  top: 2%;
-  left: 2%;
+  position: relative;
+  top: -40%;
+  left: -40%;
+  background-color: #fff;
+  pointer-events: none;
+  clip-path: polygon(100% 0, 100% 77.5%, 70% 100%, 0 100%, 0 0);
 }
 
+#custom-icon div, #custom-icon-full div {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  aspect-ratio: 1 /1;
+  background-color: gray;
+}
+
+#custom-icon p, #custom-icon-full p {
+ font-family: 'bebas neue';
+ background-color: red;
+ position: absolute;
+ left: 0%;
+ top: 20%;
+ height: 40%;
+ width: 70%;
+ color: white;
+}
+
+#custom-icon-full {
+  height: 85%;
+  max-height: none;
+  position: relative;
+  top: -5%;
+  left: 0;
+}
+
+#custom-icon-full p {
+  height: 30%;
+  padding-top: 0.5rem;
+  font-size: 5em;
+  letter-spacing: 0.5rem;
+  @include flexStyle(row)
+  
+}
 #renderfile--image-thumbnail,
 #renderfile--video-thumbnail {
   max-height: 90%;
   max-width: 90%;
   position: absolute;
   cursor: pointer;
-}
-
-#renderfile--image-thumbnail:hover {
-  transform: scale(1.05);
-  transition: 500ms;
-  z-index: 2;
 }
 
 .renderfile--text {

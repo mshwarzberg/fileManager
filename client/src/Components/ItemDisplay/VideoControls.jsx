@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { formatDuration } from "../../Helpers/VideoControlHelpers";
 
 import {
@@ -23,67 +23,80 @@ export default function VideoControls(props) {
     setIsPlaying,
     isFullscreen,
     setIsFullscreen,
+    setShowHideOverlay,
   } = props;
+
+  const container = useRef();
+  const timelineContainer = container.current;
+
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState("0:00");
-  const [volumePosition, setVolumePosition] = useState(1);
+  const [volumePosition, setVolumePosition] = useState(0);
+  const [isScrubbing, setIsScrubbing] = useState(false);
 
-  useEffect(() => {
-    const timelineContainer = document.querySelector("#timeline-container");
-    // Timeline
-    timelineContainer.addEventListener("mousemove", handleTimelineUpdate);
-    timelineContainer.addEventListener("mousedown", toggleScrubbing);
-    document.addEventListener("mouseup", (e) => {
-      if (isScrubbing) toggleScrubbing(e);
-    });
-    document.addEventListener("mousemove", (e) => {
-      if (isScrubbing) handleTimelineUpdate(e);
-    });
-    let isScrubbing = false;
-    let wasPaused;
-    function toggleScrubbing(e) {
-      const rect = timelineContainer.getBoundingClientRect();
-      const percent =
-        Math.min(Math.max(0, e.x - rect.x), rect.width) / rect.width;
-      isScrubbing = (e.buttons & 1) === 1;
-      if (isScrubbing) {
-        wasPaused = video.paused;
-        video.pause();
-      } else {
-        video.currentTime = percent * video.duration;
-        if (!wasPaused) video.play();
-      }
-
-      handleTimelineUpdate(e);
-    }
-
-    function handleTimelineUpdate(e) {
-      const rect = timelineContainer.getBoundingClientRect();
+  function handleTimelineUpdate(e) {
+    if (timelineContainer) {
+      const rect = timelineContainer?.getBoundingClientRect();
       const percent =
         Math.min(Math.max(0, e.x - rect.x), rect.width) / rect.width;
       timelineContainer.style.setProperty("--preview-position", percent);
 
       if (isScrubbing) {
-        e.preventDefault();
         timelineContainer.style.setProperty("--progress-position", percent);
       }
     }
+  }
+
+  function toggleScrubbing(e) {
+    const rect = timelineContainer.getBoundingClientRect();
+    const percent =
+      Math.min(Math.max(0, e.screenX - rect.x), rect.width) / rect.width;
+    setIsScrubbing((e.buttons & 1) === 1);
+    if (isScrubbing) {
+      video.pause();
+      setIsPlaying(false);
+    } else {
+      video.currentTime = percent * video.duration;
+      if (isPlaying) {
+        video.play();
+        setIsPlaying(true);
+      }
+    }
+
+    handleTimelineUpdate(e);
+  }
+
+  useEffect(() => {
     video.addEventListener("timeupdate", () => {
       setCurrentPlaybackTime(formatDuration(video.currentTime));
       const percent = video.currentTime / video.duration;
-      timelineContainer.style.setProperty("--progress-position", percent);
+      timelineContainer?.style?.setProperty("--progress-position", percent);
     });
+
     return () => {
       video.removeEventListener("timeupdate", () => {});
-      timelineContainer.removeEventListener("mousemove", () => {});
-      timelineContainer.removeEventListener("mousedown", () => {});
-      document.removeEventListener("mousemove", () => {});
-      document.removeEventListener("mouseup", () => {});
     };
   });
 
   return (
     <div
       id="video-controls-container"
+      onMouseUp={(e) => {
+        if (isScrubbing) {
+          toggleScrubbing(e);
+        }
+      }}
+      onMouseMove={(e) => {
+        if (isScrubbing) {
+          handleTimelineUpdate(e);
+        }
+      }}
+      onMouseEnter={(e) => {
+        setShowHideOverlay({
+          mouseMoving: true,
+          forceShowOverlay: true,
+        });
+        e.stopPropagation();
+      }}
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -91,16 +104,27 @@ export default function VideoControls(props) {
         e.stopPropagation();
       }}
     >
-      <div id="timeline-container">
+      <div
+        id="timeline-container"
+        onMouseDown={(e) => {
+          toggleScrubbing(e);
+          e.stopPropagation();
+        }}
+        onMouseMove={(e) => {
+          handleTimelineUpdate(e);
+          e.stopPropagation();
+        }}
+        ref={container}
+      >
         <div id="timeline" />
       </div>
       <div id="controls">
         <button id="play-pause">
           {isPlaying ? (
             <img
+              id="pause-icon"
               className="control--icon"
               src={pause}
-              id="pause-icon"
               alt="pause"
               onClick={(e) => {
                 video.pause();
@@ -110,9 +134,9 @@ export default function VideoControls(props) {
             />
           ) : (
             <img
+              id="play-icon"
               className="control--icon"
               src={play}
-              id="play-icon"
               alt="play"
               onClick={(e) => {
                 video.play();
@@ -135,21 +159,17 @@ export default function VideoControls(props) {
               }
             }}
           >
-            {video.volume > 0.65 && (
+            {volumePosition > 0.65 && (
               <img
                 className="control--icon"
                 src={volumehigh}
                 alt="volumehigh"
               />
             )}
-            {video.volume <= 0.65 && video.volume > 0 && (
-              <img
-                className="control--icon"
-                src={volumelow}
-                alt="volumelow"
-              />
+            {volumePosition <= 0.65 && volumePosition > 0 && (
+              <img className="control--icon" src={volumelow} alt="volumelow" />
             )}
-            {video.volume === 0 && (
+            {volumePosition === 0 && (
               <img
                 className="control--icon"
                 src={volumemute}
@@ -157,18 +177,27 @@ export default function VideoControls(props) {
               />
             )}
           </button>
-          <input id="volume-slider" type='range' min='0' max='1' step='any' onInput={(e)=> {
-            setVolumePosition(e.target.value)
-            video.volume = e.target.value
-          }} value={volumePosition}/>
+          <input
+            id="volume-slider"
+            type="range"
+            min="0"
+            max="1"
+            step="any"
+            onInput={(e) => {
+              setVolumePosition(e.target.value);
+              video.volume = e.target.value;
+              e.stopPropagation();
+            }}
+            value={volumePosition}
+          />
         </div>
         <svg id="duration-container" viewBox="0 0 90 25">
-          <text x='0' y='18' fill="currentColor">
+          <text x="0" y="18" fill="currentColor">
             {currentPlaybackTime}/{formatDuration(video.duration) || "0:00"}
           </text>
         </svg>
         <svg id="playback-speed" viewBox="0 0 15 25">
-          <text x='0' y='18' fill="currentColor">
+          <text x="0" y="18" fill="currentColor">
             1X
           </text>
         </svg>
@@ -178,26 +207,28 @@ export default function VideoControls(props) {
         <button id="full-screen-control">
           {!isFullscreen && (
             <img
+              id="maximize"
               className="control--icon"
               src={fullscreen}
-              id="maximize"
               alt="enter fullscreen"
-              onClick={() => {
+              onClick={(e) => {
                 videoPage.classList.remove("mini-player");
                 videoContainer.requestFullscreen();
                 setIsFullscreen(true);
+                e.stopPropagation();
               }}
             />
           )}
           {isFullscreen && (
             <img
+              id="minimize"
               className="control--icon"
               src={minimize}
-              id="minimize"
               alt="exit fullscreen"
-              onClick={() => {
+              onClick={(e) => {
                 document.exitFullscreen();
                 setIsFullscreen(false);
+                e.stopPropagation();
               }}
             />
           )}

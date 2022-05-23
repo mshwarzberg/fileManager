@@ -9,11 +9,10 @@ import ParentDirectoriesToArray from "../../../../Helpers/ParentDirectoriesToArr
 import { RenderPath } from "../../../../Helpers/RenderPath";
 import useUpdateDirectoryTree from "../../../../Hooks/useUpdateDirectoryTree";
 // import { IsLastInArray } from "../../../../Helpers/RenderPath";
-// import HoverOverPathID from "../../../../Helpers/HoverOverPathID";
 import { DirectoryStateContext } from "../../../../App";
 
 export default function ParentDir(props) {
-  const { openDirectoryName, openDirectory, path } = props;
+  const { openDirectoryName, openDirectory, path, HoverOverPathID } = props;
   const parentPosition = useRef();
   const changeItem = useUpdateDirectoryTree();
   const { state, dispatch } = useContext(DirectoryStateContext);

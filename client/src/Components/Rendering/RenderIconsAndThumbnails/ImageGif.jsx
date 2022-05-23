@@ -1,21 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
+import RandomChars from "../../../Helpers/RandomChars";
 
 export default function ImageGif(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  const { name, shorthandsize, fileextension, thumbnail, itemtype, isFile } =
+  const { name, shorthandsize, fileextension, thumbnail, itemtype } =
     item;
-
-  const [displayCornerIcon, setDisplayCornerIcon] = useState();
-
-  if (!displayCornerIcon && isFile) {
-    import(`../../../Assets/images/Icons/${fileextension.toLowerCase()}.png`)
-      .then((image) => setDisplayCornerIcon(image.default))
-      .catch(() => {
-        import(`../../../Assets/images/blank.png`).then((image) => {
-          setDisplayCornerIcon(image.default);
-        });
-      });
-  }
 
   return (
     thumbnail &&
@@ -38,11 +27,10 @@ export default function ImageGif(props) {
           className="renderfile--thumbnail"
           id="renderfile--image-thumbnail"
         />
-        <img
-          src={displayCornerIcon}
-          alt="imageicon"
-          id="renderfile--corner-icon"
-        />
+        <div id="custom-icon">
+          <div/>
+          <p id="custom-icon-text" style={{backgroundColor: '#' + RandomChars(6, '1234567890abcdef')}}>{fileextension.toUpperCase()}</p>
+        </div>
         <p className="renderfile--text">{name}</p>
       </div>
     )

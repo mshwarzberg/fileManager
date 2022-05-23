@@ -1,6 +1,8 @@
-export default function RandomChars(length = 5) {
-  let chars =
+export default function RandomChars(length, chars) {
+  if (!chars) {
+    chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  }
 
   let str = "";
   for (let i = 0; i < length; i++) {

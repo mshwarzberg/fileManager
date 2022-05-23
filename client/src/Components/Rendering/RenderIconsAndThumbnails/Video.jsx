@@ -1,24 +1,13 @@
-import React, { useState } from "react";
-
+import React from "react";
+import RandomChars from "../../../Helpers/RandomChars";
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
 
 function Video(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  const { name, shorthandsize, fileextension, thumbnail, itemtype, isFile } =
+  const { name, shorthandsize, fileextension, thumbnail, itemtype } =
     item;
 
-  const [displayCornerIcon, setDisplayCornerIcon] = useState();
-
-  if (!displayCornerIcon && isFile) {
-    import(`../../../Assets/images/Icons/${fileextension.toLowerCase()}.png`)
-      .then((image) => setDisplayCornerIcon(image.default))
-      .catch(() => {
-        import(`../../../Assets/images/blank.png`).then((image) => {
-          setDisplayCornerIcon(image.default);
-        });
-      });
-  }
   return (
     thumbnail &&
     itemtype === "video" && (
@@ -52,12 +41,10 @@ function Video(props) {
           id="renderfile--play-icon"
           title={`Play "${name}"`}
         />
-        <img
-          src={displayCornerIcon}
-          alt="imageicon"
-          id="renderfile--corner-icon"
-        />
-        <p className="renderfile--text">{name}</p>
+        <div id="custom-icon">
+          <div/>
+          <p id="custom-icon-text" style={{backgroundColor: '#' + RandomChars(6, '1234567890abcdef')}}>{fileextension.toUpperCase()}</p>
+        </div>
       </div>
     )
   );

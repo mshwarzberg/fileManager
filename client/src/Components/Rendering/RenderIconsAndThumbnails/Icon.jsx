@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { DirectoryStateContext } from "../../../App";
-
+import RandomChars from "../../../Helpers/RandomChars";
 function Icon(props) {
   const { state, dispatch } = useContext(DirectoryStateContext);
 
@@ -11,15 +11,7 @@ function Icon(props) {
 
   const [displayIcon, setDisplayIcon] = useState();
 
-  if (!displayIcon && isFile) {
-    import(`../../../Assets/images/Icons/${fileextension.toLowerCase()}.png`)
-      .then((image) => setDisplayIcon(image.default))
-      .catch(() => {
-        import(`../../../Assets/images/blank.png`).then((image) => {
-          setDisplayIcon(image.default);
-        });
-      });
-  } else if (!displayIcon) {
+  if (!displayIcon && !isFile) {
     import(`../../../Assets/images/folder.png`).then((image) => {
       setDisplayIcon(image.default);
     });
@@ -33,17 +25,24 @@ function Icon(props) {
           if (itemtype === "folder") {
             dispatch({
               type: "openDirectory",
-              value: `${state.currentDirectory}${name && '/' + name}`,
+              value: `${state.currentDirectory}${name && "/" + name}`,
             });
           }
           changeFolderOrViewFiles(itemtype, name, directoryItems.indexOf(item));
         }}
       >
-        <img
-          src={displayIcon}
-          alt="fileicon"
-          className="renderfile--full-icon"
-        />
+        {isFile ? (
+          <div id="custom-icon-full">
+          <div/>
+          <p id="custom-icon-text" style={{backgroundColor: '#' + RandomChars(6, '1234567890abcdef')}}>{fileextension.toUpperCase()}</p>
+        </div>
+        ) : (
+          <img
+            src={displayIcon}
+            alt="fileicon"
+            className="renderfile--full-icon"
+          />
+        )}
         <p className="renderfile--text">{name}</p>
       </div>
     )

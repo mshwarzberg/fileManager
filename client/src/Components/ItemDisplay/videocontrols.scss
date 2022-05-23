@@ -3,12 +3,15 @@
 #video-container {
   @include flexStyle(column);
   position: relative;
-  height: 96%;
-  width: 96%;
 }
 
-#video-container:focus-within #video-header, #video-container:focus-within #video-controls-container {
-  transform: scaleY(1);
+@keyframes headerAndControls {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
 }
 
 #video-header {
@@ -17,27 +20,25 @@
   width: 100%;
   height: 5%;
   z-index: 1;
-  text-align: center;
+  @include flexStyle(row);
   background-color: #222222ee;
   color: white;
   font-family: akshar;
-  font-size: 2em;
-  transform: scaleY(0);
+  font-size: 2rem;
   transform-origin: top;
-  transition: transform 100ms ;
+  animation: headerAndControls 150ms forwards;
 }
 
 #video-controls-container {
   background-color: #222222ee;
-  width: 100.1%;
+  width: 100%;
   height: 25%;
   max-height: 8rem;
   position: absolute;
   bottom: 0;
   z-index: 1;
-  transform: scaleY(0);
   transform-origin: bottom;
-  transition: transform 100ms ;
+  animation: headerAndControls 150ms forwards;
 }
 
 #controls {

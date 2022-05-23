@@ -8,10 +8,9 @@ import RightArrowWhite from "../../../../Assets/images/directorytree/right-arrow
 import RightArrowAccented from "../../../../Assets/images/directorytree/right-arrow-accented.png";
 import FolderIcon from "../../../../Assets/images/folder.png";
 // import { RenderPath, IsLastInArray } from "../../../../Helpers/RenderPath";
-// import HoverOverPathID from "../../../../Helpers/HoverOverPathID";
 
 export default function ChildDir(props) {
-  const { addToPath, subItem } = props;
+  const { addToPath, subItem, HoverOverPathID } = props;
   const { state, dispatch } = useContext(DirectoryStateContext);
   const childPosition = useRef();
 
