@@ -1,11 +1,11 @@
 import React from "react";
-import ColorizeIcons from "../../../Helpers/ColorizeIcons";
+// import ColorizeIcons from "../../../Helpers/ColorizeIcons";
 
 export default function CornerIcon(props) {
   return (
     <svg viewBox="0 0 100 100" width="60" height="60" id="custom-icon-small">
-      <rect
-        fill="grey"
+      {/* <rect
+        fill="white"
         x="10"
         y="-5"
         width="80"
@@ -24,7 +24,7 @@ export default function CornerIcon(props) {
       <rect
         width="25"
         height="25"
-        fill="white"
+        fill="grey"
         y="70"
         x="65"
         clipPath="polygon(0 0, 0% 100%, 100% 0)"
@@ -38,7 +38,7 @@ export default function CornerIcon(props) {
         id="custom-icon-small-text"
       >
         {props.fileextension.toUpperCase()}
-      </text>
+      </text> */}
     </svg>
   );
 }

@@ -6,7 +6,6 @@ import Navbar from "../Navbar/Navbar";
 import RenderFiles from "../Rendering/RenderFiles";
 import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
 import CompareArray from "../../Helpers/CompareArray";
-import RandomChars from "../../Helpers/RandomChars";
 
 function LoadDirectoryData() {
   const changeItem = useUpdateDirectoryTree();

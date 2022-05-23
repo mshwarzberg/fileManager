@@ -1,7 +1,8 @@
 import React from "react";
+import CornerIcon from "./CornerIcon";
+import videoicon from '../../../Assets/images/video.png'
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
-import CornerIcon from "./CornerIcon";
 
 function Video(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
@@ -21,13 +22,13 @@ function Video(props) {
             directoryItems.indexOf(item)
           );
         }}
+        onMouseEnter={(e) => {
+          e.currentTarget.firstChild.style.display = 'block'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.firstChild.style.display = 'none'
+        }}
       >
-        <img
-          src={thumbnail}
-          alt="gifthumb"
-          className="renderfile--thumbnail"
-          id="renderfile--video-thumbnail"
-        />
         <img
           src={playIcon}
           onMouseEnter={(e) => {
@@ -40,7 +41,15 @@ function Video(props) {
           alt="playvideo"
           id="renderfile--play-icon"
           title={`Play "${name}"`}
+          style={{display: 'none', zIndex: 1}}
         />
+        <img
+          src={thumbnail}
+          alt="gifthumb"
+          className="renderfile--thumbnail"
+          id="renderfile--video-thumbnail"
+        />
+        <img src={videoicon} alt="video" id="video-icon"/>
         <p className="renderfile--text">{name}</p>
         <CornerIcon fileextension={fileextension} />
       </div>
