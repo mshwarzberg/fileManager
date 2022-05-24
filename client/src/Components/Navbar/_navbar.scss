@@ -1,15 +1,14 @@
 @import '../SCSS\ General/variables';
 
 #navbar--component {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  @include flexStyle(row);
   width: $fullscreenWidth;
   position: sticky;
   top: 0;
   z-index: 10;
   background-color: #111;
-  height: 4rem;
+  height: 3rem;
+  width: 100%;
 }
 
 #navbar--navigation {
@@ -29,6 +28,8 @@
 }
 .navbar--button {
   @include navbarBtn;
+  background-color: #00000000;
+  border: none;
 }
 
 #reload--icon {
@@ -39,23 +40,25 @@
 
 #navbar--current-directory-header {
   cursor: default;
-  background-color: $accentColor;
+  background-color: white;
   position: sticky;
-  top: 4rem;
+  top: 3rem;
   @include flexStyle(column);
   align-items: flex-start;
   padding-left: 0.5rem;
   font-size: 1.1em;
   text-align: left;
   z-index: 5;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100vw;
+  overflow: scroll;
   font-family: Bitter;
   font-weight: bold;
   padding-left: 1rem;
-  padding-right: 1.5rem;
+  width: 100%;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+    -ms-overflow-style: none;
+  }
 }
 
 @media screen and (max-width: 768px) {

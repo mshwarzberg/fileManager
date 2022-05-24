@@ -23,21 +23,22 @@
 #directorytree--button-showhide {
   position: absolute;
   z-index: 10;
-  top: 0.5rem;
+  top: 0rem;
   height: 3rem;
   width: 5rem;
   left: 5px;
   max-width: 10%;
+  font-size: 1.2em;
 }
 
 #directorytree--body {
   z-index: 10;
-  height: calc(100vh - 4rem);
+  height: calc(100vh - 3rem);
   width: 35%;
   background-color: #111;
   position: absolute;
   left: -5px;
-  top: 4rem;
+  top: 3rem;
   overflow-y: auto;
   overflow-x: auto;
   padding: 0 0.7rem 4rem 1.4rem;

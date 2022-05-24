@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { formatDuration } from "../../../Helpers/VideoControlHelpers";
+import formatDuration from "../../../Helpers/FormatVideoTime";
 
 import {
   play,

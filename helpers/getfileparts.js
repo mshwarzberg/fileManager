@@ -1,6 +1,6 @@
 const fs = require("fs");
-const {checkIfFileOrDir} = require('./isfileordirectory')
-const { checkType} = require('../helpers/verifiers')
+const { checkIfFileOrDir } = require("./isfileordirectory");
+const { checkType } = require("../helpers/verifiers");
 
 function getFileNameParts(file, directory) {
 
@@ -42,4 +42,4 @@ function getFileNameParts(file, directory) {
   return filteredData;
 }
 
-module.exports = { getFileNameParts, checkIfFileOrDir }
+module.exports = { getFileNameParts, checkIfFileOrDir };

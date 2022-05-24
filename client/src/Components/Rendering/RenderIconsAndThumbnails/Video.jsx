@@ -1,20 +1,29 @@
 import React from "react";
-import CornerIcon from "./CornerIcon";
-import videoicon from '../../../Assets/images/video.png'
+
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
+import formatDuration from "../../../Helpers/FormatVideoTime";
+import Filename from "./Filename";
 
+let abc
 function Video(props) {
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-  const { name, shorthandsize, fileextension, thumbnail, itemtype } =
-    item;
+  const {
+    name,
+    shorthandsize,
+    fileextension,
+    thumbnail,
+    itemtype,
+    height,
+    width,
+    duration,
+  } = item;
 
   return (
     thumbnail &&
     itemtype === "video" && (
       <div
         className="renderfile--block"
-        title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
         onClick={() => {
           return changeFolderOrViewFiles(
             itemtype,
@@ -23,10 +32,10 @@ function Video(props) {
           );
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.firstChild.style.display = 'block'
+          e.currentTarget.firstChild.style.display = "block";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.firstChild.style.display = 'none'
+          e.currentTarget.firstChild.style.display = "none";
         }}
       >
         <img
@@ -40,18 +49,33 @@ function Video(props) {
           }}
           alt="playvideo"
           id="renderfile--play-icon"
-          title={`Play "${name}"`}
-          style={{display: 'none', zIndex: 1}}
+          style={{ display: "none", zIndex: 1 }}
         />
         <img
+          id="renderfile--video-thumbnail"
+          className="renderfile--thumbnail"
           src={thumbnail}
           alt="gifthumb"
-          className="renderfile--thumbnail"
-          id="renderfile--video-thumbnail"
+          title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nDuration: ${formatDuration(
+            duration
+          )}`}
         />
-        <img src={videoicon} alt="video" id="video-icon"/>
-        <p className="renderfile--text">{name}</p>
-        <CornerIcon fileextension={fileextension} />
+        <svg
+          viewBox="0 0 100 100"
+          fill="#000000de"
+          style={{ zIndex: 1, pointerEvents: "none", position: "absolute" }}
+        >
+          <rect width="25" height="9" y="86" x="70" style={{ zIndex: 2 }} />
+          <text
+            y="93"
+            x="82"
+            fill="white"
+            style={{ fontSize: "0.5em", textAnchor: "middle" }}
+          >
+            {formatDuration(duration)}
+          </text>
+        </svg>
+        <Filename name={name} />
       </div>
     )
   );

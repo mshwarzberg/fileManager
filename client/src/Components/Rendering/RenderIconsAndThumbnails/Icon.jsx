@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { DirectoryStateContext } from "../../../App";
 import ColorizeIcons from "../../../Helpers/ColorizeIcons";
+import Filename from "./Filename";
 
 function Icon(props) {
   const { state, dispatch } = useContext(DirectoryStateContext);
@@ -34,7 +35,7 @@ function Icon(props) {
         }}
       >
         {isFile ? (
-          <svg viewBox="0 0 100 100">
+          <svg viewBox="0 0 100 100" style={{position: 'absolute'}}>
             <rect
               fill="grey"
               x="10"
@@ -60,7 +61,7 @@ function Icon(props) {
               x="65"
               clipPath="polygon(0 0, 0% 100%, 100% 0)"
             />
-            <text fill="white" x="13" y="38" width="25" height="25">
+            <text fill="white" x="13" y="38" width="25" height="25" id="custom-icon-text">
               {fileextension.toUpperCase()}
             </text>
           </svg>
@@ -71,7 +72,7 @@ function Icon(props) {
             className="renderfile--full-icon"
           />
         )}
-        <p className="renderfile--text">{name}</p>
+        <Filename name={name}/>
       </div>
     )
   );

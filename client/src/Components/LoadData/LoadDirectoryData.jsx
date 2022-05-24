@@ -47,7 +47,7 @@ function LoadDirectoryData() {
 
   function fetchStuff(index, requestsMadeForThisItem) {
     if (requestsMadeForThisItem >= 15) {
-      return
+      return;
     }
     fetch("/api/data/thumbs", {
       method: "POST",
@@ -65,20 +65,23 @@ function LoadDirectoryData() {
             itemData[index].itemtype === "image" ||
             itemData[index].itemtype === "video"
           ) {
-            return fetchStuff(index, requestsMadeForThisItem+1);
+            return fetchStuff(index, requestsMadeForThisItem + 1);
           }
         }
         let imageURL = URL.createObjectURL(response);
         setDirectoryItems((prevItem) => {
           return prevItem.map((item) => {
+            const doesMatch =
+              res.headers.get("prefix") === item.prefix &&
+              res.headers.get("suffix") === item.fileextension;
+
             const newData = {
               ...item,
               shorthandsize: shortHandFileSize(item.size),
-              thumbnail:
-                res.headers.get("prefix") === item.prefix &&
-                res.headers.get("suffix") === item.fileextension
-                  ? imageURL
-                  : item.thumbnail
+              ...(doesMatch && { thumbnail: imageURL }),
+              ...(doesMatch && { width: res.headers.get("width") }),
+              ...(doesMatch && { height: res.headers.get("height") }),
+              ...(doesMatch && { duration: res.headers.get("duration") }),
             };
             return newData;
           });
@@ -124,9 +127,7 @@ function LoadDirectoryData() {
 
   return (
     <div>
-      <Navbar
-        setDirectoryItems={setDirectoryItems}
-      />
+      <Navbar setDirectoryItems={setDirectoryItems} />
       <span id="navbar--current-directory-header">
         {state.currentDirectory}
       </span>
