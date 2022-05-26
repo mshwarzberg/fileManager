@@ -35,11 +35,11 @@ function Icon(props) {
         }}
       >
         {isFile ? (
-          <svg viewBox="0 0 100 100" style={{position: 'absolute'}}>
+          <svg viewBox="0 0 100 100" style={{ position: "absolute" }}>
             <rect
-              fill="grey"
+              fill="#bbbbbb"
               x="10"
-              y='-5'
+              y="-5"
               width="80"
               height="100"
               clipPath="polygon(100% 0, 100% 75%, 69% 100%, 0 100%, 0 0)"
@@ -50,7 +50,7 @@ function Icon(props) {
               width="50"
               height="25"
               fill={ColorizeIcons(fileextension)}
-              rx="1" 
+              rx="1"
               ry="1"
             />
             <rect
@@ -61,7 +61,22 @@ function Icon(props) {
               x="65"
               clipPath="polygon(0 0, 0% 100%, 100% 0)"
             />
-            <text fill="white" x="13" y="38" width="25" height="25" id="custom-icon-text">
+            <rect
+              width="25"
+              height="25"
+              fill="#9f9f9f"
+              y="70"
+              x="40"
+              clipPath="polygon(100% 0, 0% 100%, 100% 100%)"
+            />
+            <text
+              fill={
+                ColorizeIcons(fileextension) === "white" ? "black" : "white"
+              }
+              x="27"
+              y="40"
+              id="custom-icon-text"
+            >
               {fileextension.toUpperCase()}
             </text>
           </svg>
@@ -72,7 +87,7 @@ function Icon(props) {
             className="renderfile--full-icon"
           />
         )}
-        <Filename name={name}/>
+        <Filename name={name} />
       </div>
     )
   );

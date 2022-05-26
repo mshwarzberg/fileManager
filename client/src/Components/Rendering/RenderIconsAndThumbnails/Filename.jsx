@@ -1,35 +1,42 @@
 import React, { useRef } from "react";
 
-let IntervalAnimation
+let IntervalAnimation;
 export default function Filename(props) {
   const svgBody = useRef();
   const svgText = useRef();
 
   return (
     <svg
-    style={{position: 'absolute', bottom: '1%'}}
+      style={{ position: "absolute", bottom: "1%" }}
       ref={svgBody}
-      viewBox="0 0 150 102"
+      viewBox="0 0 150 15"
       onMouseEnter={() => {
-        if (svgBody.current && props.name.length > 25) {
+        if (svgBody.current && props.name.length > 30) {
           svgText.current.style.textAnchor = "";
           svgText.current.x.baseVal[0].value = 145;
           IntervalAnimation = setInterval(() => {
             svgText.current.x.baseVal[0].value -= 1;
-          }, 15);
+          }, 16);
         }
       }}
       onMouseLeave={() => {
         clearInterval(IntervalAnimation);
-        svgText.current.style.textAnchor = "middle";
-        svgText.current.x.baseVal[0].value = 75;
+        if (props.name.length < 30) {
+          svgText.current.style.textAnchor = "middle";
+          svgText.current.x.baseVal[0].value = 75;
+        } else {
+          svgText.current.x.baseVal[0].value = 5;
+        }
       }}
     >
       <text
         ref={svgText}
-        x="75"
-        y="99"
-        style={{ fontSize: "0.75em", textAnchor: "middle" }}
+        x={props.name.length < 30 ? 75 : 5}
+        y="10"
+        style={{
+          fontSize: "0.75em",
+          ...(props.name.length < 30 && { textAnchor: "middle" }),
+        }}
         fill="white"
       >
         {props.name}

@@ -6,9 +6,7 @@ import Forward from "../../Assets/images/navigate-forwards.png";
 function DocumentDisplay(props) {
   const {
     viewItem,
-    fullscreen,
     changeFolderOrViewFiles,
-    isNavigating,
     enterExitFullscreen,
   } = props;
 
@@ -47,16 +45,6 @@ function DocumentDisplay(props) {
           />
         </>
       )}
-      {!fullscreen && isNavigating.visible && (
-        <h1
-          id="navigating--indicator"
-          title={`Press "Tab" to toggle the visibility of this message`}
-        >
-          {isNavigating.value
-            ? `Navigation Enabled: "CapsLock" to disable`
-            : `Navigation Disabled: "CapsLock" to enable`}
-        </h1>
-      )}
       <textarea
         className="viewitem--item"
         id="viewitem--document"
@@ -68,6 +56,7 @@ function DocumentDisplay(props) {
           enterExitFullscreen();
         }}
         spellCheck={false}
+        resize={false}
       />
     </div>
   );

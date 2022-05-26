@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 // component import
 import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
@@ -9,6 +9,9 @@ import VideoDisplay from "../ItemDisplay/Video/VideoDisplay";
 import DocumentDisplay from "../ItemDisplay/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
 import DisplayHeaderAndClose from "../ItemDisplay/DisplayHeaderAndClose";
+
+import Scrollbar from "../../Components/General/Scrollbar";
+import useShowScrollbar from "../../Hooks/useShowScrollbar";
 
 function RenderFiles(props) {
   const { directoryItems } = props;
@@ -26,6 +29,9 @@ function RenderFiles(props) {
   });
 
   const [fullscreen, setFullscreen] = useState(false);
+
+  const renderPage = useRef();
+  const { showScrollbar } = useShowScrollbar(renderPage.current);
 
   function enterExitFullscreen() {
     const item = document.querySelector("#fullscreen");
@@ -182,7 +188,8 @@ function RenderFiles(props) {
     return "";
   });
   return (
-    <div id="renderfile--page">
+    <div id="renderfile--page" ref={renderPage}>
+      {showScrollbar && <Scrollbar />}
       {renderItems}
       {viewItem.property && (
         <>
@@ -194,6 +201,7 @@ function RenderFiles(props) {
                   viewItem={viewItem}
                   setViewItem={setViewItem}
                   setFullscreen={setFullscreen}
+                  isNavigating={isNavigating}
                 />
                 <VideoDisplay
                   enterExitFullscreen={enterExitFullscreen}
@@ -209,6 +217,7 @@ function RenderFiles(props) {
             {viewItem.type === "document" && (
               <>
                 <DisplayHeaderAndClose
+                  isNavigating={isNavigating}
                   fullscreen={fullscreen}
                   viewItem={viewItem}
                   setViewItem={setViewItem}
@@ -232,11 +241,11 @@ function RenderFiles(props) {
                   viewItem={viewItem}
                   setViewItem={setViewItem}
                   setFullscreen={setFullscreen}
+                  isNavigating={isNavigating}
                 />
                 <ImageDisplay
                   enterExitFullscreen={enterExitFullscreen}
                   changeFolderOrViewFiles={changeFolderOrViewFiles}
-                  isNavigating={isNavigating}
                   fullscreen={fullscreen}
                   viewItem={viewItem}
                 />

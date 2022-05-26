@@ -7,7 +7,7 @@ export const DirectoryStateContext = createContext();
 function reducer(state, action) {
   switch (action.type) {
     case "openDirectory": {
-      let newNavigatedDirectories = [...state.navigatedDirectories]
+      let newNavigatedDirectories = [...state.navigatedDirectories];
       if (state.navigatedIndex + 1 < state.navigatedDirectories.length) {
         newNavigatedDirectories = state.navigatedDirectories.slice(
           0,
@@ -27,8 +27,8 @@ function reducer(state, action) {
         ...state,
         currentDirectory: action.value,
         navigatedDirectories: [...state.navigatedDirectories, action.value],
-        navigatedIndex: state.navigatedIndex + 1
-      }
+        navigatedIndex: state.navigatedIndex + 1,
+      };
     case "backDirectory":
       return {
         ...state,
@@ -54,22 +54,22 @@ function reducer(state, action) {
       };
     case "updateDirectoryTree":
       return {
-        ...state, 
-        directoryTree: action.value
-      }
+        ...state,
+        directoryTree: action.value,
+      };
     default:
       return state;
   }
 }
 
 export default function App() {
+
   const [state, dispatch] = useReducer(reducer, {
     currentDirectory: "./root",
     directoryTree: [],
     navigatedDirectories: ["./root"],
     navigatedIndex: 0,
   });
-
 
   return (
     <>

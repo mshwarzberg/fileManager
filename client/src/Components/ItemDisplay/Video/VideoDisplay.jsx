@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import back from "../../../Assets/images/navigate-backwards.png";
 import forward from "../../../Assets/images/navigate-forwards.png";
 import useScreenDimensions from "../../../Hooks/useScreenDimensions";
@@ -14,17 +14,24 @@ function VideoDisplay(props) {
 
   const {fitVideo, containerDimensions} = useFitVideo()
 
-  const videoPage = useRef();
   const video = useRef();
   const videoContainer = useRef();
   const videoControls = useRef()
   const videoHeader = useRef()
-  //  video states
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  function togglePlay() {
+    if (video.current.paused) {
+      video.current.play();
+    } else {
+      video.current.pause();
+      videoControls.current.style.display = 'block'
+      videoContainer.current.style.cursor = "default";
+      videoHeader.current.style.display = 'block'
+    }
+  }
 
   return (
-    <div className="viewitem--block" id="viewitem--block-video" ref={videoPage}>
+    <div className="viewitem--block" id="viewitem--block-video">
       {screenWidth < 800 && (
         <>
           <img
@@ -71,6 +78,26 @@ function VideoDisplay(props) {
       )}
       <div
         id="video-container"
+        onKeyDown={(e) => {
+          console.log(e.key)
+          if (e.key === " ") {
+            togglePlay()
+          }
+          if (e.key === 'ArrowLeft'){
+            video.current.currentTime -= 5
+          }
+          if (e.key === 'ArrowRight'){
+            video.current.currentTime += 5
+          }
+          if (e.key === 'f') {
+            if (document.fullscreenElement) {
+              document.exitFullscreen()
+            } else {
+              return videoContainer.current.requestFullscreen()
+            }
+          }
+          e.stopPropagation()
+        }}
         onMouseMove={(e) => {
           clearTimeout(timeouts)
 
@@ -88,7 +115,7 @@ function VideoDisplay(props) {
             if (e.target.id !== 'viewitem--video') {
               return
             }
-            if (isPlaying && videoControls.current && videoHeader.current) {
+            if (!video.current.paused && videoControls.current && videoHeader.current) {
               timeouts = setTimeout(() => {
                 if (!videoContainer.current) {
                   return
@@ -101,31 +128,20 @@ function VideoDisplay(props) {
           e.stopPropagation();
         }}
         onMouseLeave={() => {
-          if (videoControls.current && isPlaying && videoHeader.current) {
+          if (videoControls.current && !video.current.paused && videoHeader.current) {
             videoControls.current.style.display = 'none'
             videoHeader.current.style.display = 'none'
           }
         }}
         onClick={() => {
-          if (video.current.paused) {
-            video.current.play();
-            return setIsPlaying(true);
-          } else {
-            video.current.pause();
-            videoControls.current.style.display = 'block'
-            videoContainer.current.style.cursor = "default";
-            videoHeader.current.style.display = 'block'
-            return setIsPlaying(false);
-          }
+          togglePlay()
         }}
         ref={videoContainer}
         onDoubleClick={() => {
           if (document.fullscreenElement == null) {
             videoContainer.current.requestFullscreen();
-            setIsFullscreen(true);
           } else {
             document.exitFullscreen();
-            setIsFullscreen(false);
           }
         }}
         style={{
@@ -141,14 +157,10 @@ function VideoDisplay(props) {
               </text>
             </svg>
             <VideoControls
+              togglePlay={togglePlay}
               videoControls={videoControls}
-              videoPage={videoPage.current}
               video={video.current}
               videoContainer={videoContainer.current}
-              isPlaying={isPlaying}
-              setIsPlaying={setIsPlaying}
-              isFullscreen={isFullscreen}
-              setIsFullscreen={setIsFullscreen}
             />
           </>
         )}

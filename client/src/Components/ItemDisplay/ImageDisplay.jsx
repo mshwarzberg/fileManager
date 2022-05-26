@@ -8,7 +8,6 @@ function ImageDisplay(props) {
     viewItem,
     fullscreen,
     changeFolderOrViewFiles,
-    isNavigating,
     enterExitFullscreen,
   } = props;
 
@@ -45,16 +44,6 @@ function ImageDisplay(props) {
             }}
           />
         </>
-      )}
-      {!fullscreen && isNavigating.visible && (
-        <h1
-          id="navigating--indicator"
-          title={`Press "Tab" to toggle the visibility of this message`}
-        >
-          {isNavigating.value
-            ? `Navigation Enabled: "CapsLock" to disable`
-            : `Navigation Disabled: "CapsLock" to enable`}
-        </h1>
       )}
       <img
         onDoubleClick={() => {

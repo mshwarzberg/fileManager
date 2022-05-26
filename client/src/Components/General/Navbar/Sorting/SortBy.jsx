@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import SortPopup from "./SortPopup";
 
-import downwards from "../../../Assets/images/navigation/downwardshover.png";
-import upwards from "../../../Assets/images/navigation/upwardshover.png";
+import downwards from "../../../../Assets/images/navigation/downwardshover.png";
+import upwards from "../../../../Assets/images/navigation/upwardshover.png";
 
 function SortBy(props) {
   const { setDirectoryItems } = props;

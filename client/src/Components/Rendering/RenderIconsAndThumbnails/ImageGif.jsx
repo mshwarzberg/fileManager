@@ -30,7 +30,6 @@ export default function ImageGif(props) {
         <img
           src={thumbnail}
           alt="imagethumb"
-          className="renderfile--thumbnail"
           id="renderfile--image-thumbnail"
           title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}`}
         />

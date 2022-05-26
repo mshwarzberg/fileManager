@@ -1,0 +1,43 @@
+@import '../SCSS\ General/variables.scss';
+
+#scrollbar--body {
+  position: fixed;
+  height: 100%;
+  z-index: 10;
+  background-color: #00000000;
+  top: 0;
+  right: 0;
+  @include flexStyle(column);
+}
+
+#scrollbar--track {
+  background-color: rgb(255, 0, 0);
+  width: 100%;
+}
+
+#scrollbar--piece {
+  background-color: grey;
+  position: fixed;
+  &:hover {
+    background-color: #666666;
+  }
+}
+
+#arrow--up, #arrow--down {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: black;
+  @include flexStyle(row);
+}
+
+#arrow--up img, #arrow--down img {
+  max-width: 50%;
+}
+#arrow--down {
+  bottom: 0;
+}
+@media screen and (min-width: 1000px) {
+  #scrollbar--body {
+    max-width: 4rem;
+  }
+}

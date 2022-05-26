@@ -4,8 +4,12 @@
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-auto-rows: calc((var(--screen-width) / 11.8));
-  grid-gap: 1rem;
-  margin: 1rem;
+  grid-gap: 1%;
+  margin: 1%;
+  overflow-y: auto;
+  position: fixed;
+  height: 90%;
+  width: 96%;
 }
 
 .renderfile--block {
@@ -15,11 +19,19 @@
   height: 100%;
   border-radius: 0.3rem;
   text-align: center;
+  padding-bottom: 7%;
   &:hover {
     cursor: default;
     background-color: #222222;
     border: 1.5px solid $accentColor;
   }
+}
+
+#custom-icon-text {
+  font-family: 'bebas neue';
+  font-size: 1.3em;
+  letter-spacing: 2px;
+  text-anchor: middle;
 }
 
 #renderfile--image-thumbnail,

@@ -1,5 +1,5 @@
 import React from "react";
-import DirectoryNavigation from "../DirectoryManagement/DirectoryNavigation";
+import DirectoryNavigation from "../../DirectoryManagement/DirectoryNavigation";
 import SortBy from "./Sorting/SortBy";
 
 function Navbar(props) {

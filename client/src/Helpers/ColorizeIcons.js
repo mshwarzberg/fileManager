@@ -1,4 +1,5 @@
 export default function ColorizeIcons(fileextension) {
+  fileextension = fileextension.toLowerCase()
   if (fileextension === 'jpg') return '#ff0000'
   if (fileextension === 'mp4') return 'blue'
   if (fileextension === 'json') return '#878372'
@@ -11,4 +12,5 @@ export default function ColorizeIcons(fileextension) {
   if (fileextension === 'db') return '#775832'
   if (fileextension === 'xcf') return 'green'
   if (fileextension === 'ion') return '#281010'
+  if (fileextension === 'gif') return 'white'
 }

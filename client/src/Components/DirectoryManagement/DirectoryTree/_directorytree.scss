@@ -21,9 +21,10 @@
 }
 
 #directorytree--button-showhide {
-  position: absolute;
+  @include navbarBtn;
+  position: fixed;
   z-index: 10;
-  top: 0rem;
+  top: 0;
   height: 3rem;
   width: 5rem;
   left: 5px;

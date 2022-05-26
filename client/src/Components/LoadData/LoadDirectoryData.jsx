@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { DirectoryStateContext } from "../../App";
 import useFetch from "../../Hooks/useFetch";
 import shortHandFileSize from "../../Helpers/FileSize";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../General/Navbar/Navbar";
 import RenderFiles from "../Rendering/RenderFiles";
 import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
 import CompareArray from "../../Helpers/CompareArray";

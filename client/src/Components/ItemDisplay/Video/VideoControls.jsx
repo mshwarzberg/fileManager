@@ -14,33 +14,29 @@ import {
   miniplayer,
 } from "../../../Assets/images/videocontrols/index.js";
 
+let scrubbing
 export default function VideoControls(props) {
   const {
     video,
     videoContainer,
-    videoPage,
-    isPlaying,
-    setIsPlaying,
-    isFullscreen,
-    setIsFullscreen,
     videoControls,
+    togglePlay,
   } = props;
-  
+
   const container = useRef();
   const timelineContainer = container.current;
 
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState("0:00");
   const [volumePosition, setVolumePosition] = useState(0);
-  const [isScrubbing, setIsScrubbing] = useState(false);
 
-  function handleTimelineUpdate(e) {
+  function handleTimelineUpdate(e, scrubbing) {
     if (timelineContainer) {
       const rect = timelineContainer?.getBoundingClientRect();
       const percent =
         Math.min(Math.max(0, e.x - rect.x), rect.width) / rect.width;
       timelineContainer.style.setProperty("--preview-position", percent);
 
-      if (isScrubbing) {
+      if (scrubbing) {
         timelineContainer.style.setProperty("--progress-position", percent);
       }
     }
@@ -50,19 +46,17 @@ export default function VideoControls(props) {
     const rect = timelineContainer.getBoundingClientRect();
     const percent =
       Math.min(Math.max(0, e.screenX - rect.x), rect.width) / rect.width;
-    setIsScrubbing((e.buttons & 1) === 1);
+    scrubbing = (e.buttons & 1) === 1
     video.currentTime = percent * video.duration;
-    if (isScrubbing) {
-      // video.pause();
-      // setIsPlaying(false);
-    } else {
-      // if (isPlaying) {
-      //   video.play();
-      //   setIsPlaying(true);
-      // }
-    }
+    // if (scrubbing) {
+    //   video.pause();
+    // } else {
+    //   if (!video.paused) {
+    //     video.play();
+    //   }
+    // }
 
-    handleTimelineUpdate(e);
+    handleTimelineUpdate(e, scrubbing);
   }
 
   useEffect(() => {
@@ -82,18 +76,18 @@ export default function VideoControls(props) {
       id="video-controls-container"
       ref={videoControls}
       onMouseUp={(e) => {
-        if (isScrubbing) {
+        if (scrubbing) {
           toggleScrubbing(e);
         }
       }}
       onMouseMove={(e) => {
-        if (isScrubbing) {
+        if (scrubbing) {
           handleTimelineUpdate(e);
         }
       }}
       onMouseEnter={(e) => {
         if (videoControls) {
-          videoControls.current.style.display = 'block'
+          videoControls.current.style.display = "block";
         }
         e.stopPropagation();
       }}
@@ -120,31 +114,14 @@ export default function VideoControls(props) {
       </div>
       <div id="controls">
         <button id="play-pause">
-          {isPlaying ? (
-            <img
-              id="pause-icon"
-              className="control--icon"
-              src={pause}
-              alt="pause"
-              onClick={(e) => {
-                video.pause();
-                setIsPlaying(false);
-                e.stopPropagation();
-              }}
-            />
-          ) : (
-            <img
-              id="play-icon"
-              className="control--icon"
-              src={play}
-              alt="play"
-              onClick={(e) => {
-                video.play();
-                setIsPlaying(true);
-                e.stopPropagation();
-              }}
-            />
-          )}
+          <img
+            className="control--icon"
+            src={video.paused ? play : pause}
+            alt="pause"
+            onClick={() => {
+              togglePlay();
+            }}
+          />
         </button>
         <div id="volume-container">
           <button
@@ -205,33 +182,15 @@ export default function VideoControls(props) {
           <img src={miniplayer} alt="" className="control--icon" />
         </button>
         <button id="full-screen-control">
-          {!isFullscreen && (
-            <img
-              id="maximize"
-              className="control--icon"
-              src={fullscreen}
-              alt="enter fullscreen"
-              onClick={(e) => {
-                videoPage.classList.remove("mini-player");
-                videoContainer.requestFullscreen();
-                setIsFullscreen(true);
-                e.stopPropagation();
-              }}
-            />
-          )}
-          {isFullscreen && (
-            <img
-              id="minimize"
-              className="control--icon"
-              src={minimize}
-              alt="exit fullscreen"
-              onClick={(e) => {
-                document.exitFullscreen();
-                setIsFullscreen(false);
-                e.stopPropagation();
-              }}
-            />
-          )}
+          <img
+            className="control--icon"
+            src={document.fullscreenElement ? minimize : fullscreen}
+            alt="fullscreen"
+            onClick={(e) => {
+              videoContainer.requestFullscreen();
+              e.stopPropagation();
+            }}
+          />
         </button>
       </div>
     </div>
