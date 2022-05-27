@@ -188,7 +188,6 @@ function RenderFiles(props) {
     return "";
   });
   return (
-    <div id="render-page">
     <div id="renderfile--page" ref={page}>
       {renderItems}
       {viewItem.property && (
@@ -254,8 +253,7 @@ function RenderFiles(props) {
           </div>
         </>
       )}
-    </div>
-    {false && <Scrollbar element={page?.current}/>}
+    {true && <Scrollbar element={page?.current}/>}
     </div>
   );
 }

@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import uparrow from "../../Assets/images/up-arrow-white.png";
 import downarrow from "../../Assets/images/down-arrow-white.png";
 
 export default function Scrollbar(props) {
+
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [scrollerHeight, setScrollerHeight] = useState(0);
   const [scrollerPosition, setScrollerPosition] = useState(0);
+
+  let scrollTop = props.element?.scrollTop
+  let totalScreenY = props.element?.scrollHeight
+  let visibleScreenY = props.element?.clientHeight;
+  let screenX = props.element?.clientWidth;
+  let pixelRatio = window.devicePixelRatio;
+
+  const ScrollerPiece = useRef()
   useEffect(() => {
     window.addEventListener("resize", () => {
       let screenX = props.element?.clientWidth;
@@ -13,17 +22,13 @@ export default function Scrollbar(props) {
       const adjustedWidth = 1800 / (screenX / pixelRatio) / pixelRatio;
       setScrollbarWidth(adjustedWidth);
     });
-    props.element?.addEventListener("scroll", () => {
-      console.log('object');
-      let scrollTop = props.element?.scrollTop
-      let totalScreenY = props.element?.scrollHeight
-      let visibleScreenY = props.element?.clientHeight;
-      let screenX = props.element?.clientWidth;
-      let pixelRatio = window.devicePixelRatio;
-      const adjustedWidth = 1800 / (screenX / pixelRatio) / pixelRatio;
+    props.element?.addEventListener("scroll", (e) => {
+      ScrollerPiece.current.style.top = scrollTop + (scrollTop * visibleScreenY / totalScreenY)
+      const adjustedWidth = 1800 / screenX;
       setScrollbarWidth(adjustedWidth);
-      // setScrollerPosition(totalScreenY / scrollTop)
-      setScrollerHeight((visibleScreenY / totalScreenY) * 100);
+      setScrollerPosition(scrollTop + (scrollTop * visibleScreenY / totalScreenY))
+      // console.log(scrollTop + (scrollTop * visibleScreenY / totalScreenY));
+      setScrollerHeight((visibleScreenY / totalScreenY) * visibleScreenY);
     });
     return () => {
       props.element?.removeEventListener("scroll", () => {});
@@ -35,7 +40,7 @@ export default function Scrollbar(props) {
       <div
         id="scrollbar--body"
         style={{
-          height: props.element?.clientHeight,
+          height: props.element?.scrollHeight,
           width: scrollbarWidth + "%",
         }}
       >
@@ -44,16 +49,13 @@ export default function Scrollbar(props) {
         </div>
         <div
           id="scrollbar--track"
-          style={{
-            height: 100 - scrollbarWidth + "%",
-            top: scrollbarWidth + "%",
-          }}
         >
           <div
+            ref={ScrollerPiece}
             id="scrollbar--piece"
             style={{
-              width: scrollbarWidth + '%',
-              height: scrollerHeight + "%",
+              height: scrollerHeight + 'px',
+              top: scrollerPosition + 'px'
             }}
           />
         </div>

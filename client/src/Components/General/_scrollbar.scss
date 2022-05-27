@@ -10,14 +10,14 @@
 
 #scrollbar--track {
   background-color: rgb(255, 0, 0);
+  height: 100%;
   width: 100%;
 }
 
 #scrollbar--piece {
   background-color: grey;
   position: absolute;
-  top: 0;
-  right: 0;
+  width: 100%;
   &:hover {
     background-color: #666666;
   }
@@ -28,10 +28,15 @@
   aspect-ratio: 1;
   background-color: black;
   @include flexStyle(row);
+  position: sticky;
+  z-index: 1;
 }
 
 #arrow--up img, #arrow--down img {
   max-width: 50%;
+}
+#arrow--up {
+  top: 0;
 }
 #arrow--down {
   bottom: 0;
