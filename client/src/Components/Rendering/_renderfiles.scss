@@ -12,14 +12,20 @@
   width: 96%;
 }
 
+#render-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+}
+
 .renderfile--block {
   position: relative;
   @include flexStyle(column);
   width: 100%;
   height: 100%;
-  border-radius: 0.3rem;
-  text-align: center;
   padding-bottom: 7%;
+  border: 1px solid grey;
   &:hover {
     cursor: default;
     background-color: #222222;

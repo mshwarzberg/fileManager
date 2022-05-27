@@ -2,42 +2,40 @@ import React, { useEffect, useState } from "react";
 import uparrow from "../../Assets/images/up-arrow-white.png";
 import downarrow from "../../Assets/images/down-arrow-white.png";
 
-export default function Scrollbar() {
+export default function Scrollbar(props) {
   const [scrollbarWidth, setScrollbarWidth] = useState(0);
   const [scrollerHeight, setScrollerHeight] = useState(0);
   const [scrollerPosition, setScrollerPosition] = useState(0);
-
   useEffect(() => {
     window.addEventListener("resize", () => {
-      let screenX = document.body.clientWidth;
+      let screenX = props.element?.clientWidth;
       let pixelRatio = window.devicePixelRatio;
       const adjustedWidth = 1800 / (screenX / pixelRatio) / pixelRatio;
       setScrollbarWidth(adjustedWidth);
     });
-    document.body.addEventListener("scroll", () => {
-
-      let scrollTop = document.body.scrollTop
-      let totalScreenY = document.body.scrollHeight
-      let visibleScreenY = document.body.clientHeight;
-      let screenX = document.body.clientWidth;
+    props.element?.addEventListener("scroll", () => {
+      console.log('object');
+      let scrollTop = props.element?.scrollTop
+      let totalScreenY = props.element?.scrollHeight
+      let visibleScreenY = props.element?.clientHeight;
+      let screenX = props.element?.clientWidth;
       let pixelRatio = window.devicePixelRatio;
-
       const adjustedWidth = 1800 / (screenX / pixelRatio) / pixelRatio;
       setScrollbarWidth(adjustedWidth);
       // setScrollerPosition(totalScreenY / scrollTop)
       setScrollerHeight((visibleScreenY / totalScreenY) * 100);
     });
     return () => {
-      document.body.removeEventListener("scroll", () => {});
+      props.element?.removeEventListener("scroll", () => {});
       window.removeEventListener("resize", () => {});
     };
   });
-
+  
   return (
       <div
         id="scrollbar--body"
         style={{
-          height: "100%",
+          height: props.element?.clientHeight,
           width: scrollbarWidth + "%",
         }}
       >
@@ -56,8 +54,6 @@ export default function Scrollbar() {
             style={{
               width: scrollbarWidth + '%',
               height: scrollerHeight + "%",
-              marginTop: scrollerPosition,
-              // display: 'none'
             }}
           />
         </div>

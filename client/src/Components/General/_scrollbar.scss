@@ -1,12 +1,10 @@
 @import '../SCSS\ General/variables.scss';
 
 #scrollbar--body {
-  position: fixed;
-  height: 100%;
-  z-index: 10;
-  background-color: #00000000;
-  top: 0;
+  position: absolute;
   right: 0;
+  top: 0;
+  z-index: 100;
   @include flexStyle(column);
 }
 
@@ -17,7 +15,9 @@
 
 #scrollbar--piece {
   background-color: grey;
-  position: fixed;
+  position: absolute;
+  top: 0;
+  right: 0;
   &:hover {
     background-color: #666666;
   }

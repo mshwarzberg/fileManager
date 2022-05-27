@@ -30,8 +30,8 @@ function RenderFiles(props) {
 
   const [fullscreen, setFullscreen] = useState(false);
 
-  const renderPage = useRef();
-  const { showScrollbar } = useShowScrollbar(renderPage.current);
+  const page = useRef();
+  const { showScrollbar } = useShowScrollbar(page.current);
 
   function enterExitFullscreen() {
     const item = document.querySelector("#fullscreen");
@@ -188,8 +188,8 @@ function RenderFiles(props) {
     return "";
   });
   return (
-    <div id="renderfile--page" ref={renderPage}>
-      {showScrollbar && <Scrollbar />}
+    <div id="render-page">
+    <div id="renderfile--page" ref={page}>
       {renderItems}
       {viewItem.property && (
         <>
@@ -202,7 +202,7 @@ function RenderFiles(props) {
                   setViewItem={setViewItem}
                   setFullscreen={setFullscreen}
                   isNavigating={isNavigating}
-                />
+                  />
                 <VideoDisplay
                   enterExitFullscreen={enterExitFullscreen}
                   changeFolderOrViewFiles={changeFolderOrViewFiles}
@@ -211,7 +211,7 @@ function RenderFiles(props) {
                   setFullscreen={setFullscreen}
                   viewItem={viewItem}
                   setViewItem={setViewItem}
-                />
+                  />
               </>
             )}
             {viewItem.type === "document" && (
@@ -222,7 +222,7 @@ function RenderFiles(props) {
                   viewItem={viewItem}
                   setViewItem={setViewItem}
                   setFullscreen={setFullscreen}
-                />
+                  />
                 <DocumentDisplay
                   enterExitFullscreen={enterExitFullscreen}
                   changeFolderOrViewFiles={changeFolderOrViewFiles}
@@ -231,7 +231,7 @@ function RenderFiles(props) {
                   setFullscreen={setFullscreen}
                   viewItem={viewItem}
                   setViewItem={setViewItem}
-                />
+                  />
               </>
             )}
             {viewItem.type === "imagegif" && (
@@ -242,18 +242,20 @@ function RenderFiles(props) {
                   setViewItem={setViewItem}
                   setFullscreen={setFullscreen}
                   isNavigating={isNavigating}
-                />
+                  />
                 <ImageDisplay
                   enterExitFullscreen={enterExitFullscreen}
                   changeFolderOrViewFiles={changeFolderOrViewFiles}
                   fullscreen={fullscreen}
                   viewItem={viewItem}
-                />
+                  />
               </>
             )}
           </div>
         </>
       )}
+    </div>
+    {false && <Scrollbar element={page?.current}/>}
     </div>
   );
 }
