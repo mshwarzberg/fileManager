@@ -33,6 +33,7 @@ function Icon(props) {
           }
           changeFolderOrViewFiles(itemtype, name, directoryItems.indexOf(item));
         }}
+        style={{cursor: isFile && itemtype !== 'document' ? 'not-allowed' : 'pointer'}}
       >
         {isFile ? (
           <svg viewBox="0 0 100 100" style={{ position: "absolute" }}>

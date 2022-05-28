@@ -3,6 +3,11 @@
   font: 1rem 'Times New Roman';
   margin: 0;
   padding: 0;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+    -ms-overflow-style: none;
+  }
 }
 
 html,
@@ -17,11 +22,6 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  // scrollbar-width: none;
-  // &::-webkit-scrollbar {
-  //   display: none;
-  //   -ms-overflow-style: none;
-  // }
 }
 
 :root {

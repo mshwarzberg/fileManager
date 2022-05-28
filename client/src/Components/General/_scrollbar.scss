@@ -1,43 +1,54 @@
-@import '../SCSS\ General/variables.scss';
-
-#scrollbar--body {
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 100;
-  @include flexStyle(column);
+.custom-scrollbars__container {
+  border: 1px solid #333;
+  border-radius: 12px;
+  display: grid;
+  height: 100%;
+  grid-template: auto / 1fr 50px;
+  overflow: hidden;
+  position: relative;
 }
 
-#scrollbar--track {
-  background-color: rgb(255, 0, 0);
-  width: 100%;
+.custom-scrollbars__content {
+  height: 90vh;
+  -ms-overflow-style: none;
+  overflow: auto;
+  padding: 0 1rem;
+  scrollbar-width: none;
 }
 
-#scrollbar--piece {
-  background-color: grey;
-  position: absolute;
-  top: 0;
-  right: 0;
-  &:hover {
-    background-color: #666666;
-  }
+.custom-scrollbars__content::-webkit-scrollbar {
+  display: none;
 }
 
-#arrow--up, #arrow--down {
-  width: 100%;
-  aspect-ratio: 1;
-  background-color: black;
-  @include flexStyle(row);
+.custom-scrollbars__scrollbar {
+  display: grid;
+  gap: 1rem;
+  grid-auto-flow: row;
+  grid-template: auto 1fr auto / 1fr;
+  padding: 1rem;
+  place-items: center;
 }
 
-#arrow--up img, #arrow--down img {
-  max-width: 50%;
+.custom-scrollbars__track-and-thumb {
+  display: block;
+  height: 100%;
+  position: relative;
+  width: 16px;
 }
-#arrow--down {
+
+.custom-scrollbars__track {
+  background-color: #ccc;
+  border-radius: 12px;
   bottom: 0;
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  width: 16px;
 }
-@media screen and (min-width: 1000px) {
-  #scrollbar--body {
-    max-width: 4rem;
-  }
+
+.custom-scrollbars__thumb {
+  border-radius: 12px;
+  background-color: #333;
+  position: absolute;
+  width: 16px;
 }

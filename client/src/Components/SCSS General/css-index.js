@@ -7,5 +7,6 @@ import display from '../ItemDisplay/_display.scss'
 import fonts from '../../Assets/fonts/fonts.css'
 import videocontrols from '../ItemDisplay/Video/videocontrols.scss'
 import scrollbar from '../General/_scrollbar.scss'
+import document from '../ItemDisplay/Document/_documentdisplay.scss'
 
-export { general, navbar, renderfiles, directorytree, sortby, display, fonts, videocontrols, scrollbar}
+export { general, navbar, renderfiles, directorytree, sortby, display, fonts, videocontrols, scrollbar, document}
