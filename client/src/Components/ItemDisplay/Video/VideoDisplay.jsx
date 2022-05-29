@@ -1,16 +1,11 @@
 import React, { useRef } from "react";
-import back from "../../../Assets/images/navigate-backwards.png";
-import forward from "../../../Assets/images/navigate-forwards.png";
-import useScreenDimensions from "../../../Hooks/useScreenDimensions";
 import VideoControls from "./VideoControls";
-import alerticon from "../../../Assets/images/alert.png";
 import useFitVideo from '../../../Hooks/useFitVideo'
 
 let timeouts
 
 function VideoDisplay(props) {
-  const { viewItem, fullscreen, changeFolderOrViewFiles, isNavigating } = props;
-  const { width: screenWidth } = useScreenDimensions();
+  const { viewItem } = props;
 
   const {fitVideo, containerDimensions} = useFitVideo()
 
@@ -32,54 +27,9 @@ function VideoDisplay(props) {
 
   return (
     <div className="viewitem--block" id="viewitem--block-video">
-      {screenWidth < 800 && (
-        <>
-          <img
-            id="button--backwards"
-            src={back}
-            alt="back"
-            onClick={() => {
-              changeFolderOrViewFiles(
-                viewItem.type,
-                viewItem.name,
-                viewItem.index,
-                "backwards"
-              );
-            }}
-          />
-          <img
-            id="button--forwards"
-            src={forward}
-            alt="forward"
-            onClick={() => {
-              changeFolderOrViewFiles(
-                viewItem.type,
-                viewItem.name,
-                viewItem.index,
-                "forwards"
-              );
-            }}
-          />
-        </>
-      )}
-      {!fullscreen && isNavigating.visible && (
-        <div id="navigating-indicator">
-          <img
-            src={alerticon}
-            alt=""
-            title={`Press "Tab" to toggle the visibility of this message`}
-          />
-          <h1 id="navigating-indicator-popup">
-            {isNavigating.value
-              ? `Navigation Enabled: "CapsLock" to disable`
-              : `Navigation Disabled: "CapsLock" to enable`}
-          </h1>
-        </div>
-      )}
       <div
         id="video-container"
         onKeyDown={(e) => {
-          console.log(e.key)
           if (e.key === " ") {
             togglePlay()
           }

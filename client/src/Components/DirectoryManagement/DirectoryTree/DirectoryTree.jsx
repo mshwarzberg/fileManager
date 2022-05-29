@@ -1,5 +1,4 @@
-import React, { useContext, useState, useRef } from "react";
-import { useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { DirectoryStateContext } from "../../../App";
 
 import ChildDir from "./ChildDir";
@@ -18,6 +17,7 @@ export default function DirectoryTree() {
       });
     });
   }
+
   useEffect(() => {
     const grab = document.querySelector("#resize--tree");
     function handleDrag(e) {
@@ -30,16 +30,10 @@ export default function DirectoryTree() {
         setIsDragging(false);
       });
       document.addEventListener("mousemove", handleDrag);
-      document.addEventListener("touchmove", handleDrag);
-      document.addEventListener("touchend", () => {
-        setIsDragging(false);
-      });
 
       return () => {
         document.removeEventListener("mousemove", handleDrag);
         document.removeEventListener("mouseup", () => {});
-        document.removeEventListener('touchend', () => {})
-        document.removeEventListener('touchmove', () => {})
       };
     }
   });
@@ -59,7 +53,7 @@ export default function DirectoryTree() {
       addToPath = `${path}/${openDirectoryName}`;
       if (path === "") {
         addToPath = openDirectoryName;
-        if (addToPath === "root") {
+        if (addToPath === "") {
           addToPath = "";
           openDirectoryName = "";
         }
@@ -73,7 +67,7 @@ export default function DirectoryTree() {
             treeID={treeID}
             subItem={subItem}
             addToPath={addToPath}
-            key={`./root${addToPath && "/" + addToPath}/${subItem}`}
+            key={`${addToPath && "/" + addToPath}/${subItem}`}
             HoverOverPathID={HoverOverPathID}
           />
         );
@@ -87,7 +81,7 @@ export default function DirectoryTree() {
         path={path}
         openDirectoryName={openDirectoryName}
         openDirectory={openDirectory}
-        key={`./root${path && "/" + path}/${openDirectoryName}`}
+        key={`${path && "/" + path}/${openDirectoryName}`}
         HoverOverPathID={HoverOverPathID}
       />
     );

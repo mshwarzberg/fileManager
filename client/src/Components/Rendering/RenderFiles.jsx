@@ -6,12 +6,9 @@ import Video from "./RenderIconsAndThumbnails/Video";
 import Icon from "./RenderIconsAndThumbnails/Icon";
 
 import VideoDisplay from "../ItemDisplay/Video/VideoDisplay";
-import DocumentDisplay from "../ItemDisplay/DocumentDisplay";
+import DocumentDisplay from "../ItemDisplay/Document/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
-import DisplayHeaderAndClose from "../ItemDisplay/DisplayHeaderAndClose";
-
-import Scrollbar from "../../Components/General/Scrollbar";
-import useShowScrollbar from "../../Hooks/useShowScrollbar";
+import DisplayControlsAndNavigation from "../ItemDisplay/DisplayControlsAndNavigation";
 
 function RenderFiles(props) {
   const { directoryItems } = props;
@@ -24,14 +21,14 @@ function RenderFiles(props) {
   });
 
   const [isNavigating, setIsNavigating] = useState({
-    value: true,
+    value: false,
     visible: true,
   });
-
+  
   const [fullscreen, setFullscreen] = useState(false);
 
   const page = useRef();
-  const { showScrollbar } = useShowScrollbar(page.current);
+  const openDocument = useRef()
 
   function enterExitFullscreen() {
     const item = document.querySelector("#fullscreen");
@@ -113,12 +110,12 @@ function RenderFiles(props) {
             reader.onload = function () {
               setViewItem({
                 type: "document",
-                property: reader.result,
+                property: reader.result || ' ',
                 index: index,
                 name: filename,
               });
             };
-            reader.readAsBinaryString(response);
+            reader.readAsText(response);
           }
         })
         .catch((err) => {
@@ -131,7 +128,7 @@ function RenderFiles(props) {
     // arrow functionality to navigate through the files while item is displayed
     if (direction) {
       if (direction === "forwards") {
-        for (let i = index + 1; i < directoryItems.length - 1; i++) {
+        for (let i = index + 1; i < directoryItems.length; i++) {
           type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
             filename = directoryItems[i].name;
@@ -140,7 +137,7 @@ function RenderFiles(props) {
           }
         }
       } else if (direction === "backwards") {
-        for (let i = index - 1; i > 0; i--) {
+        for (let i = index - 1; i > -1; i--) {
           type = directoryItems[i].itemtype;
           if (type === "video" || type === "image" || type === "document") {
             filename = directoryItems[i].name;
@@ -193,67 +190,34 @@ function RenderFiles(props) {
       {viewItem.property && (
         <>
           <div id="fullscreen">
-            {viewItem.type === "video" && (
-              <>
-                <DisplayHeaderAndClose
-                  fullscreen={fullscreen}
-                  viewItem={viewItem}
-                  setViewItem={setViewItem}
-                  setFullscreen={setFullscreen}
-                  isNavigating={isNavigating}
-                  />
-                <VideoDisplay
-                  enterExitFullscreen={enterExitFullscreen}
-                  changeFolderOrViewFiles={changeFolderOrViewFiles}
-                  isNavigating={isNavigating}
-                  fullscreen={fullscreen}
-                  setFullscreen={setFullscreen}
-                  viewItem={viewItem}
-                  setViewItem={setViewItem}
-                  />
-              </>
-            )}
+            {viewItem.type === "video" && <VideoDisplay viewItem={viewItem} />}
             {viewItem.type === "document" && (
-              <>
-                <DisplayHeaderAndClose
-                  isNavigating={isNavigating}
-                  fullscreen={fullscreen}
-                  viewItem={viewItem}
-                  setViewItem={setViewItem}
-                  setFullscreen={setFullscreen}
-                  />
-                <DocumentDisplay
-                  enterExitFullscreen={enterExitFullscreen}
-                  changeFolderOrViewFiles={changeFolderOrViewFiles}
-                  isNavigating={isNavigating}
-                  fullscreen={fullscreen}
-                  setFullscreen={setFullscreen}
-                  viewItem={viewItem}
-                  setViewItem={setViewItem}
-                  />
-              </>
+              <DocumentDisplay
+                setViewItem={setViewItem}
+                enterExitFullscreen={enterExitFullscreen}
+                viewItem={viewItem}
+                openDocument={openDocument}
+              />
             )}
             {viewItem.type === "imagegif" && (
-              <>
-                <DisplayHeaderAndClose
-                  fullscreen={fullscreen}
-                  viewItem={viewItem}
-                  setViewItem={setViewItem}
-                  setFullscreen={setFullscreen}
-                  isNavigating={isNavigating}
-                  />
-                <ImageDisplay
-                  enterExitFullscreen={enterExitFullscreen}
-                  changeFolderOrViewFiles={changeFolderOrViewFiles}
-                  fullscreen={fullscreen}
-                  viewItem={viewItem}
-                  />
-              </>
+              <ImageDisplay
+                enterExitFullscreen={enterExitFullscreen}
+                fullscreen={fullscreen}
+                viewItem={viewItem}
+              />
             )}
+            <DisplayControlsAndNavigation
+              fullscreen={fullscreen}
+              viewItem={viewItem}
+              setViewItem={setViewItem}
+              setFullscreen={setFullscreen}
+              isNavigating={isNavigating}
+              changeFolderOrViewFiles={changeFolderOrViewFiles}
+              openDocument={openDocument.current}
+            />
           </div>
         </>
       )}
-    {true && <Scrollbar element={page?.current}/>}
     </div>
   );
 }

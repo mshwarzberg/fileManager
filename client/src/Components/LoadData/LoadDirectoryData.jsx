@@ -14,6 +14,7 @@ function LoadDirectoryData() {
 
   const [directoryItems, setDirectoryItems] = useState();
   const [notFoundError, setNotFoundError] = useState(false);
+
   useEffect(() => {
     if (notFoundError === true) {
       setTimeout(() => {
@@ -29,20 +30,20 @@ function LoadDirectoryData() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ currentdirectory: state.currentDirectory }),
+      body: JSON.stringify({ currentdirectory: state.currentDirectory || '/' }),
     });
   }, [state.currentDirectory]);
 
   // get all items in the current directory
   const { data: itemData } = useFetch(
     "/api/data/data",
-    JSON.stringify({ currentdirectory: state.currentDirectory })
+    JSON.stringify({ currentdirectory: state.currentDirectory || '/' })
   );
 
   // get all subdirectories for the directory tree. This has no dependencies since reloading shouldn't affect the tree.
   const { data: directories } = useFetch(
     "/api/getdirectories",
-    JSON.stringify({ path: state.currentDirectory })
+    JSON.stringify({ path: state.currentDirectory || '/'})
   );
 
   function fetchStuff(index, requestsMadeForThisItem) {
@@ -55,7 +56,7 @@ function LoadDirectoryData() {
       body: JSON.stringify({
         prefix: itemData[index].prefix,
         suffix: itemData[index].fileextension,
-        currentdirectory: `${state.currentDirectory}`,
+        currentdirectory: state.currentDirectory || '/',
       }),
     })
       .then(async (res) => {
@@ -91,6 +92,7 @@ function LoadDirectoryData() {
         console.log(err);
       });
   }
+
   useEffect(() => {
     if (itemData) {
       if (!CompareArray(itemData, directoryItems)) {
@@ -100,7 +102,6 @@ function LoadDirectoryData() {
         }
       }
     }
-
     // eslint-disable-next-line
   }, [itemData, state.currentDirectory]);
 

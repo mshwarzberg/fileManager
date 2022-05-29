@@ -45,7 +45,7 @@ function reducer(state, action) {
       return {
         ...state,
         currentDirectory:
-          state.navigatedDirectories[state.navigatedIndex - 1] || "./root",
+          state.navigatedDirectories[state.navigatedIndex - 1] || "",
         navigatedIndex: state.navigatedIndex - 1,
         navigatedDirectories: state.navigatedDirectories.slice(
           0,
@@ -63,20 +63,18 @@ function reducer(state, action) {
 }
 
 export default function App() {
-
+  
   const [state, dispatch] = useReducer(reducer, {
-    currentDirectory: "./root",
-    directoryTree: [],
-    navigatedDirectories: ["./root"],
+    currentDirectory: "",
+    directoryTree: [''],
+    navigatedDirectories: [""],
     navigatedIndex: 0,
   });
 
   return (
-    <>
       <DirectoryStateContext.Provider value={{ state, dispatch }}>
         <LoadDirectoryData />
         <DirectoryTree />
       </DirectoryStateContext.Provider>
-    </>
   );
 }

@@ -13,4 +13,6 @@ export default function ColorizeIcons(fileextension) {
   if (fileextension === 'xcf') return 'green'
   if (fileextension === 'ion') return '#281010'
   if (fileextension === 'gif') return 'white'
+  if (fileextension === 'js' || fileextension === 'jsx') return 'purple'
+  if (fileextension === 'scss' || fileextension === 'css') return 'teal'
 }

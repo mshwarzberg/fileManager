@@ -27,7 +27,7 @@
 }
 
 #custom-icon-text {
-  font-family: 'bebas neue';
+  font-family: "bebas neue";
   font-size: 1.3em;
   letter-spacing: 2px;
   text-anchor: middle;
@@ -92,5 +92,27 @@ svg text {
   #renderfile--page {
     grid-template-columns: repeat(3, 1fr);
     grid-auto-rows: calc(100vw / 2.8);
+  }
+}
+
+#file--manage-body {
+  img {
+    position: absolute;
+    top: 4%;
+    width: 10%;
+    right: 3%;
+    &:hover {
+      rotate: -90deg;
+      transition: rotate 150ms ease;
+    }
+  }
+  div {
+    background-color: #fff;
+    position: absolute;
+    top: 15%;
+    right: 6%;
+    width: 80%;
+    height: 80%;
+    display: none;
   }
 }

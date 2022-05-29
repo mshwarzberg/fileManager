@@ -16,8 +16,8 @@ router.post("/file", (req, res) => {
   } else {
     type = 'document'
   }
-  return res.sendFile(`/${currentdirectory}/${req.body.file}`, {
-    root: "./",
+  return res.sendFile(`${currentdirectory}/${req.body.file}`, {
+    root: "/",
     headers: {
       type: type
     }

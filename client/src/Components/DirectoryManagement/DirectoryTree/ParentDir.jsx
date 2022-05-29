@@ -80,10 +80,10 @@ export default function ParentDir(props) {
       <p
         ref={parentPosition}
         className="tree--open-directory"
-        title={`./root${path && "/" + path}/${openDirectoryName}`}
+        title={`${path && "/" + path}/${openDirectoryName}`}
         onMouseEnter={(e) => {
           if (
-            `./root${path && "/" + path}/${openDirectoryName}` !==
+            `${path && "/" + path}/${openDirectoryName}` !==
               state.currentDirectory &&
             e.currentTarget.id !== "tree--in-path"
           ) {
@@ -94,7 +94,7 @@ export default function ParentDir(props) {
           e.currentTarget.firstChild.src = DownArrowBlack;
         }}
         id={
-          `./root${path && "/" + path}/${openDirectoryName}` ===
+          `${path && "/" + path}/${openDirectoryName}` ===
           state.currentDirectory
             ? "highlight--child"
             : isInPath
@@ -104,14 +104,14 @@ export default function ParentDir(props) {
         onClick={() => {
           dispatch({
             type: "openDirectory",
-            value: `./root${path && "/" + path}/${openDirectoryName}`,
+            value: `${path && "/" + path}/${openDirectoryName}`,
           });
         }}
       >
         <img
           onMouseEnter={(e) => {
             if (
-              `./root${path && "/" + path}/${openDirectoryName}` !==
+              `${path && "/" + path}/${openDirectoryName}` !==
                 state.currentDirectory &&
               e.currentTarget.offsetParent.id !== "tree--in-path"
             ) {
@@ -120,7 +120,7 @@ export default function ParentDir(props) {
           }}
           onMouseLeave={(e) => {
             if (
-              `./root${path && "/" + path}/${openDirectoryName}` !==
+              `${path && "/" + path}/${openDirectoryName}` !==
               state.currentDirectory && e.currentTarget.offsetParent.id !== 'tree--in-path'
             ) {
               e.target.src = DownArrowWhite;

@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 function verifyFolder(req, res, next) {
-  if (fs.existsSync(`./${req.body.currentdirectory}`)) {
+  if (fs.existsSync(`${'/' || req.body.currentdirectory}`)) {
     return next();
   }
   return res.send({ err: "ERROR: FOLDER DOES NOT EXIST" });
@@ -31,7 +31,10 @@ function checkType(type) {
     type === "ion",
     type === "docx",
     type === 'json',
-    type === 'ion'
+    type === 'ion',
+    type === 'jsx', 
+    type === 'js',
+    type === 'scss'
   ];
 
   if (checkIfImage.includes(true)) {

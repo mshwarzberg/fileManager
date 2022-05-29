@@ -16,7 +16,7 @@ export default function ChildDir(props) {
 
   const { data: directories } = useFetch(
     "/api/getdirectories",
-    JSON.stringify({ path: `./root${addToPath && "/" + addToPath}/${subItem}` })
+    JSON.stringify({ path: `${addToPath && "/" + addToPath}/${subItem}` })
   );
 
   const changeItem = useUpdateDirectoryTree();
@@ -25,7 +25,7 @@ export default function ChildDir(props) {
     if (toOpenDirectory) {
       dispatch({
         type: "openDirectory",
-        value: `./root${addToPath && "/" + addToPath}/${subItem}`,
+        value: `${addToPath && "/" + addToPath}/${subItem}`,
       });
     }
 
@@ -82,7 +82,7 @@ export default function ChildDir(props) {
         }}
         className="tree--closed-directory"
         id={
-          `./root${addToPath && "/" + addToPath}/${subItem}` ===
+          `${addToPath && "/" + addToPath}/${subItem}` ===
           state.currentDirectory
             ? "highlight--child"
             : ""
@@ -93,12 +93,12 @@ export default function ChildDir(props) {
       >
         <img
           onMouseEnter={(e) => {
-            if (`./root/${addToPath}/${subItem}` !== state.currentDirectory) {
+            if (`/${addToPath}/${subItem}` !== state.currentDirectory) {
               return (e.target.src = RightArrowAccented);
             }
           }}
           onMouseLeave={(e) => {
-            if (`./root/${addToPath}/${subItem}` !== state.currentDirectory) {
+            if (`/${addToPath}/${subItem}` !== state.currentDirectory) {
               return (e.target.src = RightArrowWhite);
             }
           }}
@@ -108,7 +108,7 @@ export default function ChildDir(props) {
           }}
           className="tree--arrow"
           src={
-            `./root/${addToPath}/${subItem}` === state.currentDirectory
+            `/${addToPath}/${subItem}` === state.currentDirectory
               ? RightArrowBlack
               : RightArrowWhite
           }

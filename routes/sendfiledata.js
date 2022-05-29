@@ -44,14 +44,10 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
 
 router.post("/data", verifyFolder, makeThumbnailDirectories, (req, res) => {
   const { currentdirectory } = req.body;
-
   // generate all the file in the current folder
   var result = fs
-    .readdirSync(`./${currentdirectory}`, { withFileTypes: true })
+    .readdirSync(`${currentdirectory}`, { withFileTypes: true })
     .map((file) => {
-      // return getVideoData(`./${currentdirectory}/${file.name}`).then(res => {
-      //   return getFileNameParts(file, currentdirectory);
-      // })
       return getFileNameParts(file, currentdirectory);
     });
   res.send(result);

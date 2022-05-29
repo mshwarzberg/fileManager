@@ -5,7 +5,6 @@ export default function useFetch(url, body, dependency) {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-      
       fetch(url, {
         method: "POST",
         headers: {

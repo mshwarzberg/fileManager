@@ -8,28 +8,27 @@ export default function Scrollbar(props) {
   const [scrollerHeight, setScrollerHeight] = useState(0);
   const [scrollerPosition, setScrollerPosition] = useState(0);
 
-  let scrollTop = props.element?.scrollTop
-  let totalScreenY = props.element?.scrollHeight
-  let visibleScreenY = props.element?.clientHeight;
+  let totalElementY = props.element?.scrollHeight
+  let visibleElementY = props.element?.clientHeight;
   let screenX = props.element?.clientWidth;
   let pixelRatio = window.devicePixelRatio;
-
+  
   const ScrollerPiece = useRef()
   useEffect(() => {
-    window.addEventListener("resize", () => {
-      let screenX = props.element?.clientWidth;
-      let pixelRatio = window.devicePixelRatio;
-      const adjustedWidth = 1800 / (screenX / pixelRatio) / pixelRatio;
-      setScrollbarWidth(adjustedWidth);
-    });
-    props.element?.addEventListener("scroll", (e) => {
-      ScrollerPiece.current.style.top = scrollTop + (scrollTop * visibleScreenY / totalScreenY)
-      const adjustedWidth = 1800 / screenX;
-      setScrollbarWidth(adjustedWidth);
-      setScrollerPosition(scrollTop + (scrollTop * visibleScreenY / totalScreenY))
-      // console.log(scrollTop + (scrollTop * visibleScreenY / totalScreenY));
-      setScrollerHeight((visibleScreenY / totalScreenY) * visibleScreenY);
-    });
+    if (props.element) {
+      window.addEventListener("resize", () => {
+        let screenX = props.element?.clientWidth;
+        const adjustedWidth = 1800 / screenX;
+        setScrollbarWidth(adjustedWidth);
+      });
+      props.element.addEventListener("scroll", () => {
+        let scrollTop = props.element?.scrollTop
+        const adjustedWidth = 1800 / screenX;
+        setScrollbarWidth(adjustedWidth);
+        setScrollerPosition(scrollTop + (scrollTop * visibleElementY / totalElementY))
+        setScrollerHeight((visibleElementY / totalElementY) * visibleElementY);
+      });
+    }
     return () => {
       props.element?.removeEventListener("scroll", () => {});
       window.removeEventListener("resize", () => {});
@@ -40,7 +39,7 @@ export default function Scrollbar(props) {
       <div
         id="scrollbar--body"
         style={{
-          height: props.element?.scrollHeight,
+          height: totalElementY,
           width: scrollbarWidth + "%",
         }}
       >
