@@ -24,10 +24,11 @@ function RenderFiles(props) {
     value: false,
     visible: true,
   });
-
+  
   const [fullscreen, setFullscreen] = useState(false);
 
   const page = useRef();
+  const openDocument = useRef()
 
   function enterExitFullscreen() {
     const item = document.querySelector("#fullscreen");
@@ -109,12 +110,12 @@ function RenderFiles(props) {
             reader.onload = function () {
               setViewItem({
                 type: "document",
-                property: reader.result,
+                property: reader.result || ' ',
                 index: index,
                 name: filename,
               });
             };
-            reader.readAsBinaryString(response);
+            reader.readAsText(response);
           }
         })
         .catch((err) => {
@@ -189,19 +190,13 @@ function RenderFiles(props) {
       {viewItem.property && (
         <>
           <div id="fullscreen">
-            <DisplayControlsAndNavigation
-              fullscreen={fullscreen}
-              viewItem={viewItem}
-              setViewItem={setViewItem}
-              setFullscreen={setFullscreen}
-              isNavigating={isNavigating}
-              changeFolderOrViewFiles={changeFolderOrViewFiles}
-            />
             {viewItem.type === "video" && <VideoDisplay viewItem={viewItem} />}
             {viewItem.type === "document" && (
               <DocumentDisplay
+                setViewItem={setViewItem}
                 enterExitFullscreen={enterExitFullscreen}
                 viewItem={viewItem}
+                openDocument={openDocument}
               />
             )}
             {viewItem.type === "imagegif" && (
@@ -211,6 +206,15 @@ function RenderFiles(props) {
                 viewItem={viewItem}
               />
             )}
+            <DisplayControlsAndNavigation
+              fullscreen={fullscreen}
+              viewItem={viewItem}
+              setViewItem={setViewItem}
+              setFullscreen={setFullscreen}
+              isNavigating={isNavigating}
+              changeFolderOrViewFiles={changeFolderOrViewFiles}
+              openDocument={openDocument.current}
+            />
           </div>
         </>
       )}

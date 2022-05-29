@@ -1,18 +1,67 @@
-import React from "react";
+import React, { useState } from "react";
 import Close from "../../Assets/images/close.png";
-import alerticon from '../../Assets/images/alert.png'
+import alerticon from "../../Assets/images/alert.png";
 import useScreenDimensions from "../../Hooks/useScreenDimensions";
 import Back from "../../Assets/images/navigate-backwards.png";
 import Forward from "../../Assets/images/navigate-forwards.png";
+import SaveDocument from "./Document/SaveDocument";
 
 export default function DisplayControlsAndNavigation(props) {
-  const { fullscreen,viewItem, setViewItem, setFullscreen, isNavigating, changeFolderOrViewFiles } = props;
-  
+  const {
+    fullscreen,
+    viewItem,
+    setViewItem,
+    setFullscreen,
+    isNavigating,
+    changeFolderOrViewFiles,
+    openDocument,
+  } = props;
+
   const { width } = useScreenDimensions();
-  
+
+  const [confirmExit, setConfirmExit] = useState();
+
   return (
     <>
-      <h1 id="viewitem--filename">{viewItem.name}</h1>
+      {confirmExit && (
+        <div id="confirmexit--body">
+          <div id="confirmexit--popup">
+            <p
+              onClick={() => {
+                setConfirmExit();
+              }}
+            >
+              x
+            </p>
+            <h1>You have unsaved changes. Are you sure you want to Exit?</h1>
+            <button
+              id="left"
+              onClick={() => {
+                setFullscreen(false);
+                URL.revokeObjectURL(viewItem.property);
+                setViewItem({
+                  type: null,
+                  property: null,
+                  index: null,
+                  name: null,
+                });
+              }}
+            >
+              Discard changes
+            </button>
+            <SaveDocument
+              viewItem={viewItem}
+              id="right"
+              openDocument={openDocument?.textContent}
+              setViewItem={setViewItem}
+              setConfirmExit={setConfirmExit}
+              setFullscreen={setFullscreen}
+              text='Save and exit'
+            />
+          </div>
+        </div>
+      )}
+
       {!fullscreen && isNavigating.visible && (
         <div id="navigating-indicator">
           <img
@@ -32,6 +81,9 @@ export default function DisplayControlsAndNavigation(props) {
         alt="close"
         className="viewitem--close"
         onClick={() => {
+          if (viewItem.property !== openDocument?.textContent && openDocument) {
+            return setConfirmExit(true);
+          }
           setFullscreen(false);
           URL.revokeObjectURL(viewItem.property);
           setViewItem({
@@ -41,6 +93,7 @@ export default function DisplayControlsAndNavigation(props) {
             name: null,
           });
         }}
+        draggable={false}
       />
       {width < 900 && (
         <>

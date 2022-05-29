@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { DirectoryStateContext } from "../../../App";
 import ColorizeIcons from "../../../Helpers/ColorizeIcons";
+import FileManagePopup from "./FileManagePopup";
 import Filename from "./Filename";
 
 function Icon(props) {
@@ -41,12 +42,12 @@ function Icon(props) {
               fill="#bbbbbb"
               x="10"
               y="-5"
-              width="80"
+              width="75"
               height="100"
               clipPath="polygon(100% 0, 100% 75%, 69% 100%, 0 100%, 0 0)"
             />
             <rect
-              x="5"
+              x="2"
               y="20"
               width="50"
               height="25"
@@ -59,15 +60,15 @@ function Icon(props) {
               height="25"
               fill="white"
               y="70"
-              x="65"
-              clipPath="polygon(0 0, 0% 100%, 100% 0)"
+              x="61.4"
+              clipPath="polygon(0 0, 0% 100%, 94% 0)"
             />
             <rect
               width="25"
               height="25"
               fill="#9f9f9f"
               y="70"
-              x="40"
+              x="36.3"
               clipPath="polygon(100% 0, 0% 100%, 100% 100%)"
             />
             <text
@@ -89,6 +90,7 @@ function Icon(props) {
           />
         )}
         <Filename name={name} />
+        <FileManagePopup />
       </div>
     )
   );
