@@ -8,7 +8,7 @@ export default function DirectoryTree() {
   const [showTree, setShowTree] = useState(false);
   const [treeWidth, setTreeWidth] = useState();
   const [isDragging, setIsDragging] = useState(false);
-  
+
   function HoverOverPathID(path, isHovering) {
     let children = document.querySelectorAll(path);
     children.forEach((child) => {
@@ -43,45 +43,40 @@ export default function DirectoryTree() {
   const treeID = useRef();
 
   function mapDirectoryTreeLoop(tree, path) {
-    let openDirectoryName = path;
-    let openDirectory;
-    let addToPath;
-    openDirectory = tree.map((subItem) => {
-      if (tree.indexOf(subItem) === 0 && typeof subItem === "string") {
-        openDirectoryName = subItem;
+    let parentDirectoryName;
+    let newPath = path;
+    let parentDirectory = tree.map((subItem) => {
+      if (tree.indexOf(subItem) === 0) {
+        parentDirectoryName = subItem;
+        return "";
       }
-      addToPath = `${path}/${openDirectoryName}`;
-      if (path === "") {
-        addToPath = openDirectoryName;
-        if (addToPath === "") {
-          addToPath = "";
-          openDirectoryName = "";
-        }
+      newPath = path;
+      if (subItem === "") {
+        return "";
       }
-      if (typeof subItem === "string") {
-        if (tree.indexOf(subItem) === 0) {
-          return "";
-        }
-        return (
-          <ChildDir
-            treeID={treeID}
-            subItem={subItem}
-            addToPath={addToPath}
-            key={`${addToPath && "/" + addToPath}/${subItem}`}
-            HoverOverPathID={HoverOverPathID}
-          />
-        );
-      } else {
-        return mapDirectoryTreeLoop(subItem, addToPath);
+      if (typeof subItem === "object") {
+        newPath += subItem[0] + "/";
+        return mapDirectoryTreeLoop(subItem, newPath);
       }
+      newPath += subItem;
+      return (
+        <ChildDir
+          treeID={treeID}
+          subItem={subItem}
+          path={newPath}
+          key={path + subItem}
+          HoverOverPathID={HoverOverPathID}
+        />
+      );
     });
+
     return (
       <ParentDir
         treeID={treeID}
-        path={path}
-        openDirectoryName={openDirectoryName}
-        openDirectory={openDirectory}
-        key={`${path && "/" + path}/${openDirectoryName}`}
+        path={newPath}
+        parentDirectoryName={parentDirectoryName}
+        parentDirectory={parentDirectory}
+        key={`${path && "/" + path}/${parentDirectoryName}`}
         HoverOverPathID={HoverOverPathID}
       />
     );
@@ -105,8 +100,7 @@ export default function DirectoryTree() {
             ref={treeID}
             style={{ width: treeWidth && treeWidth }}
           >
-            {mapDirectoryTreeLoop(state.directoryTree, "")}
-
+            {mapDirectoryTreeLoop(state.directoryTree, "/")}
           </div>
           <div
             id="resize--tree"

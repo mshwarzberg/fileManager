@@ -22,7 +22,7 @@ function DirectoryNavigation() {
           dispatch({ type: "upDirectory", value: uppedDirectory });
         }}
         className="navbar--button"
-        disabled={state.currentDirectory === "./root"}
+        disabled={state.currentDirectory === ""}
       >
         <img src={upwards} alt="up" />
       </button>

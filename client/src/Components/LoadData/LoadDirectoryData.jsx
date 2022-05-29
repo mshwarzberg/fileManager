@@ -130,7 +130,7 @@ function LoadDirectoryData() {
     <div>
       <Navbar setDirectoryItems={setDirectoryItems} />
       <span id="navbar--current-directory-header">
-        {state.currentDirectory}
+        {state.currentDirectory || '/'}
       </span>
 
       <RenderFiles directoryItems={directoryItems} />

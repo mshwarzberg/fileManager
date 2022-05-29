@@ -23,7 +23,7 @@ function ImageDisplay(props) {
   }
 
   useEffect(() => {
-    if (isDragging && image.current.style.scale > 1) {
+    if (isDragging && (image.current.style.scale > 1 || image.current.style.left !== '' || image.current.style.top !== '')) {
       window.addEventListener("blur", () => {
         if (image.current) {
           setIsDragging(false);
@@ -51,9 +51,9 @@ function ImageDisplay(props) {
     let size = image.current.style.scale;
 
     if (e.deltaY > 0 && size > 0.5) {
-      image.current.style.scale = 1 * size - 0.05;
+      image.current.style.scale = 1 * size - 0.1;
     } else if (e.deltaY < 0 && image.current && size < 5) {
-      image.current.style.scale = 1 * size + 0.05;
+      image.current.style.scale = 1 * size + 0.1;
     }
   }
 
@@ -69,6 +69,7 @@ function ImageDisplay(props) {
         image.current.style.left = "";
         image.current.style.top = "";
         image.current.style.cursor = "default";
+        image.current.style.position = "absolute";
       }}
     >
       <img
@@ -89,7 +90,7 @@ function ImageDisplay(props) {
             e.preventDefault();
             return;
           }
-          if (image.current.style.scale > 1) {
+          if (image.current.style.scale > 1 || image.current.style.left !== '' || image.current.style.top !== '') {
             image.current.style.cursor = "grabbing";
             setIsDragging(true);
           }
@@ -98,11 +99,9 @@ function ImageDisplay(props) {
           if (e.button === 1) {
             return;
           }
-          if (image.current.style.scale > 1) {
             setIsDragging(false);
             image.current.style.cursor = "grab";
             document.removeEventListener("mousemove", onMouseMove);
-          }
         }}
         onDragStart={(e) => {
           e.preventDefault();

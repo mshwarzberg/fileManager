@@ -18,7 +18,7 @@ export default function useFetch(url, body, dependency) {
             setData(response);
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {return});
   }, [url, body, dependency]);
   
  return { data }

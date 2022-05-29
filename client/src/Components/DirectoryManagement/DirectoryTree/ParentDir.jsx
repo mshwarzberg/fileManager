@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import DownArrowBlack from "../../../Assets/images/directorytree/down-arrow-black.png";
 import DownArrowAccented from "../../../Assets/images/directorytree/down-arrow-accented.png";
 import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-white.png";
@@ -7,83 +7,30 @@ import FolderIcon from "../../../Assets/images/folder.png";
 import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
 import { RenderPath } from "../../../Helpers/RenderPath";
 import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
-// import { IsLastInArray } from "../../../Helpers/RenderPath";
+
 import { DirectoryStateContext } from "../../../App";
 
 export default function ParentDir(props) {
-  const { openDirectoryName, openDirectory, path } = props;
-  const parentPosition = useRef();
+  const { parentDirectoryName, parentDirectory, path } = props;
+  
   const changeItem = useUpdateDirectoryTree();
   const { state, dispatch } = useContext(DirectoryStateContext);
 
-  // const [highlightedLine, setHighlightedLine] = useState({
-  //   height: 0,
-  //   top: 0,
-  // });
-
   const isInPath = RenderPath(
-    openDirectoryName,
-    `${path}/${openDirectoryName}`,
+    parentDirectoryName,
+    path,
     state.currentDirectory
   );
-
-  // useEffect(() => {
-  //   if (parentPosition.current.id) {
-  //     // position relative to the previous parent element
-  //     setHighlightedLine({
-  //       height: parentPosition.current.offsetParent.offsetTop - 15,
-  //       top: -parentPosition.current.offsetParent.offsetTop + 31,
-  //     });
-  //   }
-  // }, [parentPosition]);
 
   return (
     <div className="tree--expanded-chunk">
       <div className="line--down" />
-
-      {/* {isInPath && (
-        <div className="path--identifier-container">
-          {(IsLastInArray(state.currentDirectory, openDirectoryName) ||
-            isInPath) && (
-            <div
-              className="path--identifier-line"
-              style={{
-                height: highlightedLine.height,
-                top: highlightedLine.top,
-                left: props.treeID?.current?.offsetLeft - 2 || 1,
-              }}
-              onMouseEnter={() => {
-                props.HoverOverPathID(".path--identifier-container", true);
-              }}
-              onMouseLeave={() => {
-                props.HoverOverPathID(".path--identifier-container");
-              }}
-            />
-          )}
-          <div
-            className="path--identifier-curve"
-            style={{
-              position: "absolute",
-              left: props.treeID?.current?.offsetLeft - 2 || 1,
-              width: 22,
-              height: 32,
-            }}
-            onMouseEnter={() => {
-              props.HoverOverPathID(".path--identifier-container", true);
-            }}
-            onMouseLeave={() => {
-              props.HoverOverPathID(".path--identifier-container");
-            }}
-          />
-        </div>
-      )} */}
       <p
-        ref={parentPosition}
         className="tree--open-directory"
-        title={`${path && "/" + path}/${openDirectoryName}`}
+        title={path}
         onMouseEnter={(e) => {
           if (
-            `${path && "/" + path}/${openDirectoryName}` !==
+            path !==
               state.currentDirectory &&
             e.currentTarget.id !== "tree--in-path"
           ) {
@@ -94,7 +41,7 @@ export default function ParentDir(props) {
           e.currentTarget.firstChild.src = DownArrowBlack;
         }}
         id={
-          `${path && "/" + path}/${openDirectoryName}` ===
+          path ===
           state.currentDirectory
             ? "highlight--child"
             : isInPath
@@ -103,15 +50,15 @@ export default function ParentDir(props) {
         }
         onClick={() => {
           dispatch({
-            type: "openDirectory",
-            value: `${path && "/" + path}/${openDirectoryName}`,
+            type: "parentDirectory",
+            value: path,
           });
         }}
       >
-        <img
+        <img   
           onMouseEnter={(e) => {
             if (
-              `${path && "/" + path}/${openDirectoryName}` !==
+              path !==
                 state.currentDirectory &&
               e.currentTarget.offsetParent.id !== "tree--in-path"
             ) {
@@ -120,7 +67,7 @@ export default function ParentDir(props) {
           }}
           onMouseLeave={(e) => {
             if (
-              `${path && "/" + path}/${openDirectoryName}` !==
+              path !==
               state.currentDirectory && e.currentTarget.offsetParent.id !== 'tree--in-path'
             ) {
               e.target.src = DownArrowWhite;
@@ -131,9 +78,9 @@ export default function ParentDir(props) {
               type: "updateDirectoryTree",
               value: changeItem(
                 state.directoryTree,
-                ParentDirectoriesToArray(`${path}/${openDirectoryName}`),
+                ParentDirectoriesToArray(path),
                 0,
-                openDirectoryName
+                parentDirectoryName
               ),
             });
             e.stopPropagation();
@@ -143,9 +90,10 @@ export default function ParentDir(props) {
           alt="close tree"
         />
         <img src={FolderIcon} alt="folder" className="folder--icon" />
-        {openDirectoryName}
+        {parentDirectoryName}
       </p>
-      <div className="opendirectory--list">{openDirectory}</div>
+
+      <div className="opendirectory--list">{parentDirectory}</div>
     </div>
   );
 }

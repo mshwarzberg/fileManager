@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext } from "react";
 import { DirectoryStateContext } from "../../../App";
 import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
 import useFetch from "../../../Hooks/useFetch";
@@ -7,16 +7,14 @@ import RightArrowBlack from "../../../Assets/images/directorytree/right-arrow-bl
 import RightArrowWhite from "../../../Assets/images/directorytree/right-arrow-white.png";
 import RightArrowAccented from "../../../Assets/images/directorytree/right-arrow-accented.png";
 import FolderIcon from "../../../Assets/images/folder.png";
-// import { RenderPath, IsLastInArray } from "../../../Helpers/RenderPath";
 
 export default function ChildDir(props) {
-  const { addToPath, subItem } = props;
+  const { path, subItem } = props;
   const { state, dispatch } = useContext(DirectoryStateContext);
-  const childPosition = useRef();
-
+  
   const { data: directories } = useFetch(
     "/api/getdirectories",
-    JSON.stringify({ path: `${addToPath && "/" + addToPath}/${subItem}` })
+    JSON.stringify({ path: path })
   );
 
   const changeItem = useUpdateDirectoryTree();
@@ -25,16 +23,16 @@ export default function ChildDir(props) {
     if (toOpenDirectory) {
       dispatch({
         type: "openDirectory",
-        value: `${addToPath && "/" + addToPath}/${subItem}`,
+        value: path,
       });
     }
-
+    
     if (directories) {
       dispatch({
         type: "updateDirectoryTree",
         value: changeItem(
           state.directoryTree,
-          ParentDirectoriesToArray(`${addToPath}${subItem && "/" + subItem}`),
+          ParentDirectoriesToArray(path),
           0,
           directories.array
         ),
@@ -42,81 +40,41 @@ export default function ChildDir(props) {
     }
   }
 
-  // function renderPathLine() {
-  //   if (
-  // /    !RenderPath(subItem, `${addToPath}/${subItem}`, state.currentDirectory) ||
-  // /    !IsLastInArray(state.currentDirectory, subItem)
-  //   ) {
-  //     return;
-  //   }
-  //   return true;
-  // }
-
   return (
-    <>
-      {/* {renderPathLine() && childPosition?.current?.id && (
-        <div className="path--identifier-container">
-          {
-            <div
-              className="path--identifier-line"
-              style={{
-                height: childPosition.current.offsetTop - 5,
-                left: props.treeID?.current?.offsetLeft + 18,
-                top: 31,
-              }}
-              onMouseEnter={() => {
-                props.HoverOverPathID(".path--identifier-container", true);
-              }}
-              onMouseLeave={() => {
-                props.HoverOverPathID(".path--identifier-container");
-              }}
-            />
+    <div
+      onClick={(e) => {
+        expandDirectory(true);
+        e.stopPropagation();
+      }}
+      className="tree--closed-directory"
+      id={path === state.currentDirectory ? "highlight--child" : ""}
+      title={`Name: ${subItem}\nPath: ${path}`}
+    >
+      <img
+        onMouseEnter={(e) => {
+          if (path !== state.currentDirectory) {
+            return (e.target.src = RightArrowAccented);
           }
-        </div>
-      )} */}
-      <div
-        ref={childPosition}
+        }}
+        onMouseLeave={(e) => {
+          if (path !== state.currentDirectory) {
+            return (e.target.src = RightArrowWhite);
+          }
+        }}
         onClick={(e) => {
-          expandDirectory(true);
+          expandDirectory(false);
           e.stopPropagation();
         }}
-        className="tree--closed-directory"
-        id={
-          `${addToPath && "/" + addToPath}/${subItem}` ===
-          state.currentDirectory
-            ? "highlight--child"
-            : ""
+        className="tree--arrow"
+        src={
+          path === state.currentDirectory
+            ? RightArrowBlack
+            : RightArrowWhite
         }
-        title={`Name: ${subItem}\nPath: ${`./root${
-          addToPath && "/" + addToPath
-        }/${subItem}`}`}
-      >
-        <img
-          onMouseEnter={(e) => {
-            if (`/${addToPath}/${subItem}` !== state.currentDirectory) {
-              return (e.target.src = RightArrowAccented);
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (`/${addToPath}/${subItem}` !== state.currentDirectory) {
-              return (e.target.src = RightArrowWhite);
-            }
-          }}
-          onClick={(e) => {
-            expandDirectory(false);
-            e.stopPropagation();
-          }}
-          className="tree--arrow"
-          src={
-            `/${addToPath}/${subItem}` === state.currentDirectory
-              ? RightArrowBlack
-              : RightArrowWhite
-          }
-          alt=""
-        />
-        <img src={FolderIcon} alt="" className="folder--icon" />
-        {subItem}
-      </div>
-    </>
+        alt=""
+      />
+      <img src={FolderIcon} alt="" className="folder--icon" />
+      {subItem}
+    </div>
   );
 }
