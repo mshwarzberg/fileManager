@@ -30,15 +30,21 @@ function getFileNameParts(file, directory) {
       prefix += file.name[j];
     }
   }
+  let size
+  try {
+    size = fs.statSync(`${directory}/${file.name}`).size
+  } catch {
+    size = 0
+  }
 
   const filteredData = {
     ...item,
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
     fileextension: suffix || "Directory",
     prefix: encodeURIComponent(prefix),
-    size: fs.statSync(`${directory}/${file.name}`).size,
+    size: size,
   };
-
+  
   return filteredData;
 }
 

@@ -65,18 +65,16 @@ function reducer(state, action) {
 export default function App() {
 
   const [state, dispatch] = useReducer(reducer, {
-    currentDirectory: "./root",
+    currentDirectory: "",
     directoryTree: [],
-    navigatedDirectories: ["./root"],
+    navigatedDirectories: [""],
     navigatedIndex: 0,
   });
 
   return (
-    <>
       <DirectoryStateContext.Provider value={{ state, dispatch }}>
         <LoadDirectoryData />
         <DirectoryTree />
       </DirectoryStateContext.Provider>
-    </>
   );
 }

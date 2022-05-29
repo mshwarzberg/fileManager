@@ -14,7 +14,7 @@ function makeThumbnails(req, res, next) {
       if (files?.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
         // generate thumbnails for videos and gifs
         if (checkType(suffix) === "video" || checkType(suffix) === "gif") {
-          ffmpeg(`./${currentdirectory}/${prefix}.${suffix}`)
+          ffmpeg(`${currentdirectory}/${prefix}.${suffix}`)
             .thumbnails({
               count: 1,
               folder: `./thumbnails/${currentdirectory}`,
@@ -30,7 +30,7 @@ function makeThumbnails(req, res, next) {
         }
         // generate thumbnails for images
         else if (checkType(suffix) === "image" && suffix !== "xcf") {
-          sharp(`./${currentdirectory}/${prefix}.${suffix}`)
+          sharp(`${currentdirectory}/${prefix}.${suffix}`)
             .resize({ width: 400 })
             .toFile(
               `./thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`

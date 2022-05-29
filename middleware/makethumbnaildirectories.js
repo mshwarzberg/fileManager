@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require("fs");
 const { checkIfFileOrDir } = require("../helpers/getfileparts");
 
 // when a user enters a new folder create all the subdirectories for the thumbnails.
@@ -8,7 +8,7 @@ function makeThumbnailDirectories(req, res, next) {
   const makeDirectories = new Promise((resolve, reject) => {
     fs.mkdir(`./thumbnails/${currentdirectory}`, { recursive: true }, () => {
       fs.readdir(
-        `./${currentdirectory}`,
+        `${currentdirectory}`,
         { withFileTypes: true },
         (err, files) => {
           if (err) {
@@ -35,4 +35,4 @@ function makeThumbnailDirectories(req, res, next) {
   });
 }
 
-module.exports = { makeThumbnailDirectories }
+module.exports = { makeThumbnailDirectories };
