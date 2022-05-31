@@ -23,6 +23,7 @@ export default function DisplayControlsAndNavigation(props) {
 
   return (
     <>
+      {!fullscreen && viewItem.type !== 'video' && <h1 id="display--name">{viewItem.path}</h1>}
       {confirmExit && (
         <div id="confirmexit--body">
           <div id="confirmexit--popup">
@@ -44,6 +45,7 @@ export default function DisplayControlsAndNavigation(props) {
                   property: null,
                   index: null,
                   name: null,
+                  path: null,
                 });
               }}
             >
@@ -52,49 +54,15 @@ export default function DisplayControlsAndNavigation(props) {
             <SaveDocument
               viewItem={viewItem}
               id="right"
-              openDocument={openDocument?.textContent}
+              openDocumentText={openDocument?.textContent}
               setViewItem={setViewItem}
               setConfirmExit={setConfirmExit}
               setFullscreen={setFullscreen}
-              text='Save and exit'
+              text="Save and exit"
             />
           </div>
         </div>
       )}
-
-      {!fullscreen && isNavigating.visible && (
-        <div id="navigating-indicator">
-          <img
-            src={alerticon}
-            alt=""
-            title={`Press "Tab" to toggle the visibility of this message`}
-          />
-          <h1 id="navigating-indicator-popup">
-            {isNavigating.value
-              ? `Navigation Enabled: "CapsLock" to disable`
-              : `Navigation Disabled: "CapsLock" to enable`}
-          </h1>
-        </div>
-      )}
-      <img
-        src={Close}
-        alt="close"
-        className="viewitem--close"
-        onClick={() => {
-          if (viewItem.property?.current?.textContent !== openDocument?.textContent && openDocument) {
-            return setConfirmExit(true);
-          }
-          setFullscreen(false);
-          URL.revokeObjectURL(viewItem.property);
-          setViewItem({
-            type: null,
-            property: null,
-            index: null,
-            name: null,
-          });
-        }}
-        draggable={false}
-      />
       {width < 900 && (
         <>
           <img
@@ -125,6 +93,44 @@ export default function DisplayControlsAndNavigation(props) {
           />
         </>
       )}
+      {!fullscreen && isNavigating.visible && (
+        <div id="navigating-indicator">
+          <img
+            src={alerticon}
+            alt=""
+            title={`Press "Tab" to toggle the visibility of this message`}
+          />
+          <h1 id="navigating-indicator-popup">
+            {isNavigating.value
+              ? `Navigation Enabled: "CapsLock" to disable`
+              : `Navigation Disabled: "CapsLock" to enable`}
+          </h1>
+        </div>
+      )}
+      <img
+        src={Close}
+        alt="close"
+        className="viewitem--close"
+        onClick={() => {
+          if (
+            viewItem.property !== openDocument?.textContent &&
+            openDocument &&
+            viewItem.type === "document"
+          ) {
+            return setConfirmExit(true);
+          }
+          setFullscreen(false);
+          URL.revokeObjectURL(viewItem.property);
+          setViewItem({
+            type: null,
+            property: null,
+            index: null,
+            name: null,
+            path: null,
+          });
+        }}
+        draggable={false}
+      />
     </>
   );
 }

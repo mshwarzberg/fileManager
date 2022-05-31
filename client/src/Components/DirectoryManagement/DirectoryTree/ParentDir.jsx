@@ -12,15 +12,8 @@ import { DirectoryStateContext } from "../../../App";
 
 export default function ParentDir(props) {
   const { parentDirectoryName, parentDirectory, path } = props;
-  
   const changeItem = useUpdateDirectoryTree();
   const { state, dispatch } = useContext(DirectoryStateContext);
-
-  const isInPath = RenderPath(
-    parentDirectoryName,
-    path,
-    state.currentDirectory
-  );
 
   return (
     <div className="tree--expanded-chunk">
@@ -30,8 +23,7 @@ export default function ParentDir(props) {
         title={path}
         onMouseEnter={(e) => {
           if (
-            path !==
-              state.currentDirectory &&
+            path !== state.currentDirectory &&
             e.currentTarget.id !== "tree--in-path"
           ) {
             e.currentTarget.firstChild.src = DownArrowWhite;
@@ -41,25 +33,24 @@ export default function ParentDir(props) {
           e.currentTarget.firstChild.src = DownArrowBlack;
         }}
         id={
-          path ===
-          state.currentDirectory
+          path === state.currentDirectory
             ? "highlight--child"
-            : isInPath
+            : RenderPath(parentDirectoryName, path, state.currentDirectory)
             ? "tree--in-path"
             : ""
         }
-        onClick={() => {
+        onClick={(e) => {
           dispatch({
             type: "parentDirectory",
             value: path,
           });
+          e.stopPropagation();
         }}
       >
-        <img   
+        <img
           onMouseEnter={(e) => {
             if (
-              path !==
-                state.currentDirectory &&
+              path !== state.currentDirectory &&
               e.currentTarget.offsetParent.id !== "tree--in-path"
             ) {
               e.target.src = DownArrowAccented;
@@ -67,8 +58,8 @@ export default function ParentDir(props) {
           }}
           onMouseLeave={(e) => {
             if (
-              path !==
-              state.currentDirectory && e.currentTarget.offsetParent.id !== 'tree--in-path'
+              path !== state.currentDirectory &&
+              e.currentTarget.offsetParent.id !== "tree--in-path"
             ) {
               e.target.src = DownArrowWhite;
             }

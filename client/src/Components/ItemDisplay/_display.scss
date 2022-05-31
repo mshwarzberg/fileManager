@@ -1,5 +1,37 @@
 @import '../SCSS\ General/variables';
 
+@keyframes loadDisplay {
+  0% {
+      position: absolute;
+      opacity: 0.4;
+      transform: scale(0%);
+  }
+  100% {
+      opacity: 1;
+      position: absolute;
+      transform: scale(100%);
+  }
+}
+
+@keyframes fromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  } 100% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+@keyframes fromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  } 100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .viewitem--block {
   @include flexStyle(column);
   position: fixed;
@@ -19,7 +51,7 @@
   background-color: black;
 }
 
-.viewitem--item {
+.viewitem--item, #viewitem--video {
   height: $fullscreenHeight;
   width: $fullscreenWidth;
   object-fit: contain;
@@ -27,14 +59,35 @@
   max-height: 90%;
 }
 
+.viewitem--item.loaded {
+  animation: loadDisplay forwards ease-out 500ms;
+}
+.viewitem--item.fromright {
+  animation: fromRight 500ms forwards ease-in-out;
+}
+.viewitem--item.fromleft {
+  animation: fromLeft 500ms forwards ease-in-out;
+}
+
 #button--forwards, #button--backwards {
   position: fixed;
-  z-index: 26;
+  z-index: 25;
   height: 2%;
   max-height: 3rem;
   min-height: 0.5rem;
   cursor: pointer;
   top: calc(50vh - 1.5rem);
+}
+
+#display--name {
+  position: fixed;
+  top: 1%;
+  text-align: center;
+  width: 100%;
+  left: 0;
+  z-index: 25;
+  color: white;
+  font-family: 'roboto slab';
 }
 
 #button--forwards {

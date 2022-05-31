@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 
-// component import
 import ImageGif from "./RenderIconsAndThumbnails/ImageGif";
 import Video from "./RenderIconsAndThumbnails/Video";
 import Icon from "./RenderIconsAndThumbnails/Icon";
@@ -9,6 +8,7 @@ import VideoDisplay from "../ItemDisplay/Video/VideoDisplay";
 import DocumentDisplay from "../ItemDisplay/Document/DocumentDisplay";
 import ImageDisplay from "../ItemDisplay/ImageDisplay";
 import DisplayControlsAndNavigation from "../ItemDisplay/DisplayControlsAndNavigation";
+import { DirectoryStateContext } from "../../App";
 
 function RenderFiles(props) {
   const { directoryItems } = props;
@@ -18,17 +18,18 @@ function RenderFiles(props) {
     property: null,
     index: null,
     name: null,
+    path: null,
   });
-
+  const { state } = useContext(DirectoryStateContext);
   const [isNavigating, setIsNavigating] = useState({
     value: false,
     visible: true,
   });
-  
+
   const [fullscreen, setFullscreen] = useState(false);
 
   const page = useRef();
-  const openDocument = useRef()
+  const openDocument = useRef();
 
   function enterExitFullscreen() {
     const item = document.querySelector("#fullscreen");
@@ -84,6 +85,7 @@ function RenderFiles(props) {
         property: property,
         index: index,
         name: filename,
+        path: state.currentDirectory + "/" + filename,
       });
     } else if (type === "image" || type === "gif" || type === "document") {
       fetch(`/api/loadfiles/file`, {
@@ -104,15 +106,17 @@ function RenderFiles(props) {
               property: imageURL,
               index: index,
               name: filename,
+              path: state.currentDirectory + "/" + filename,
             });
           } else {
             const reader = new FileReader();
             reader.onload = function () {
               setViewItem({
                 type: "document",
-                property: reader.result || ' ',
+                property: reader.result || " ",
                 index: index,
                 name: filename,
+                path: state.currentDirectory + "/" + filename,
               });
             };
             reader.readAsText(response);
@@ -130,7 +134,12 @@ function RenderFiles(props) {
       if (direction === "forwards") {
         for (let i = index + 1; i < directoryItems.length; i++) {
           type = directoryItems[i].itemtype;
-          if (type === "video" || type === "image" || type === "document") {
+          if (
+            type === "video" ||
+            type === "image" ||
+            type === "document" ||
+            type === "gif"
+          ) {
             filename = directoryItems[i].name;
             index = i;
             break;
@@ -139,7 +148,12 @@ function RenderFiles(props) {
       } else if (direction === "backwards") {
         for (let i = index - 1; i > -1; i--) {
           type = directoryItems[i].itemtype;
-          if (type === "video" || type === "image" || type === "document") {
+          if (
+            type === "video" ||
+            type === "image" ||
+            type === "document" ||
+            type === "gif"
+          ) {
             filename = directoryItems[i].name;
             index = i;
             break;
@@ -188,35 +202,33 @@ function RenderFiles(props) {
     <div id="renderfile--page" ref={page}>
       {renderItems}
       {viewItem.property && (
-        <>
-          <div id="fullscreen">
-            {viewItem.type === "video" && <VideoDisplay viewItem={viewItem} />}
-            {viewItem.type === "document" && (
-              <DocumentDisplay
-                setViewItem={setViewItem}
-                enterExitFullscreen={enterExitFullscreen}
-                viewItem={viewItem}
-                openDocument={openDocument}
-              />
-            )}
-            {viewItem.type === "imagegif" && (
-              <ImageDisplay
-                enterExitFullscreen={enterExitFullscreen}
-                fullscreen={fullscreen}
-                viewItem={viewItem}
-              />
-            )}
-            <DisplayControlsAndNavigation
+        <div id="fullscreen">
+          {viewItem.type === "video" && <VideoDisplay viewItem={viewItem} />}
+          {viewItem.type === "document" && (
+            <DocumentDisplay
+              setViewItem={setViewItem}
+              enterExitFullscreen={enterExitFullscreen}
+              viewItem={viewItem}
+              openDocument={openDocument}
+            />
+          )}
+          {viewItem.type === "imagegif" && (
+            <ImageDisplay
+              enterExitFullscreen={enterExitFullscreen}
               fullscreen={fullscreen}
               viewItem={viewItem}
-              setViewItem={setViewItem}
-              setFullscreen={setFullscreen}
-              isNavigating={isNavigating}
-              changeFolderOrViewFiles={changeFolderOrViewFiles}
-              openDocument={openDocument.current}
             />
-          </div>
-        </>
+          )}
+          <DisplayControlsAndNavigation
+            fullscreen={fullscreen}
+            viewItem={viewItem}
+            setViewItem={setViewItem}
+            setFullscreen={setFullscreen}
+            isNavigating={isNavigating}
+            changeFolderOrViewFiles={changeFolderOrViewFiles}
+            openDocument={openDocument.current}
+          />
+        </div>
       )}
     </div>
   );

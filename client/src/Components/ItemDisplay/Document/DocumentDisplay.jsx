@@ -1,30 +1,24 @@
-import React, { useState, createContext, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SaveDocument from "./SaveDocument";
-
-export const MessageContext = createContext();
+import useDisplayAnimation from "../../../Hooks/useDisplayAnimation";
 
 function DocumentDisplay(props) {
   const { viewItem, enterExitFullscreen, setViewItem, openDocument } = props;
-
   const [newDocument, setNewDocument] = useState(
     viewItem.property === " " ? "" : viewItem.property
   );
+  useEffect(() => {
+    setNewDocument(viewItem.property);
+  }, [viewItem.property]);
 
   const [isEditing, setIsEditing] = useState(true);
   const [message, setMessage] = useState();
-  
+
   const saveButton = useRef();
+  useDisplayAnimation(openDocument)
+
   return (
-    <div
-      className="viewitem--block"
-      id="viewitem--block-document"
-      onKeyDown={(e) => {
-        if (e.key === 's' && e.ctrlKey) {
-          e.preventDefault()
-          console.log('first')
-        }
-      }}
-    >
+    <div className="viewitem--block" id="viewitem--block-document">
       <div id="document--header">
         <button
           id="document--edit"
@@ -40,18 +34,19 @@ function DocumentDisplay(props) {
         >
           {isEditing ? "Lock" : "Edit"}
         </button>
-        <MessageContext.Provider value={{ message, setMessage }}>
-          <SaveDocument
-            saveButton={saveButton}
-            setViewItem={setViewItem}
-            id=""
-            viewItem={viewItem}
-            openDocument={openDocument}
-            newDocument={newDocument}
-            disabled={viewItem.property === newDocument || !newDocument}
-            text="Save"
-          />
-        </MessageContext.Provider>
+        <SaveDocument
+          saveButton={saveButton}
+          setViewItem={setViewItem}
+          id=""
+          viewItem={viewItem}
+          openDocumentText={openDocument?.current?.textContent}
+          disabled={
+            viewItem.property === openDocument?.current?.textContent ||
+            !openDocument?.current?.textContent
+          }
+          text="Save"
+          setMessage={setMessage}
+        />
         <button
           onClick={() => {
             enterExitFullscreen();
@@ -62,12 +57,15 @@ function DocumentDisplay(props) {
       </div>
       <textarea
         ref={openDocument}
-        className="viewitem--item"
+        className="viewitem--item loaded"
         id="viewitem--document"
         value={newDocument}
         onChange={(e) => {
           setNewDocument(e.target.value);
-          if (saveButton.current && viewItem.property !== newDocument) {
+          if (
+            saveButton.current &&
+            viewItem.property !== openDocument?.current?.textContent
+          ) {
             saveButton.current.disabled = false;
           }
         }}

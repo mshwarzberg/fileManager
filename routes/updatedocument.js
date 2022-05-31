@@ -8,7 +8,7 @@ router.post('/', (req, res) => {
     flag: 'w',
   }, (err) => {
     if (err) {
-      return console.log(err)
+      console.log(err)
     } else {
       res.send({msg: req.body.document})
     }

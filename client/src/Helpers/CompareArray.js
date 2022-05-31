@@ -1,10 +1,12 @@
 export default function CompareArray(a, b) {
-  if (b === undefined) {
+  if (!b || !b[0] ) {
     return false
   }
   for (let i in a) {
-    if (a[i].name !== b[i].name || a[i].size !== b[i].size){
-      return false
+    if (b[i]) {
+      if (a[i].name !== b[i].name || a[i].size !== b[i].size){
+        return false
+      }
     }
   }
   return true

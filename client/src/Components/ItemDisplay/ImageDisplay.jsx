@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
+import useDisplayAnimation from '../../Hooks/useDisplayAnimation'
 
 function ImageDisplay(props) {
+  const { viewItem, fullscreen, enterExitFullscreen } = props;
   const [isDragging, setIsDragging] = useState(false);
 
   function moveAt(movementX, movementY) {
@@ -23,11 +25,16 @@ function ImageDisplay(props) {
   }
 
   useEffect(() => {
-    if (isDragging && (image.current.style.scale > 1 || image.current.style.left !== '' || image.current.style.top !== '')) {
+    if (
+      isDragging &&
+      (image.current.style.scale > 1 ||
+        image.current.style.left !== "" ||
+        image.current.style.top !== "")
+    ) {
       window.addEventListener("blur", () => {
         if (image.current) {
           setIsDragging(false);
-          image.current.style.cursor = 'default'
+          image.current.style.cursor = "default";
           document.removeEventListener("mousemove", onMouseMove);
         }
       });
@@ -47,6 +54,8 @@ function ImageDisplay(props) {
 
   const image = useRef();
 
+  const { itemClass } = useDisplayAnimation(image)
+
   function handleZoom(e) {
     let size = image.current.style.scale;
 
@@ -56,9 +65,6 @@ function ImageDisplay(props) {
       image.current.style.scale = 1 * size + 0.1;
     }
   }
-
-  const { viewItem, fullscreen, enterExitFullscreen } =
-    props;
 
   return (
     <div
@@ -78,7 +84,7 @@ function ImageDisplay(props) {
         }}
         ref={image}
         id={fullscreen ? "image-fullscreen" : ""}
-        className="viewitem--item"
+        className={itemClass}
         src={viewItem.property}
         alt={viewItem.name}
         onMouseDown={(e) => {
@@ -90,7 +96,11 @@ function ImageDisplay(props) {
             e.preventDefault();
             return;
           }
-          if (image.current.style.scale > 1 || image.current.style.left !== '' || image.current.style.top !== '') {
+          if (
+            image.current.style.scale > 1 ||
+            image.current.style.left !== "" ||
+            image.current.style.top !== ""
+          ) {
             image.current.style.cursor = "grabbing";
             setIsDragging(true);
           }
@@ -99,9 +109,9 @@ function ImageDisplay(props) {
           if (e.button === 1) {
             return;
           }
-            setIsDragging(false);
-            image.current.style.cursor = "grab";
-            document.removeEventListener("mousemove", onMouseMove);
+          setIsDragging(false);
+          image.current.style.cursor = "grab";
+          document.removeEventListener("mousemove", onMouseMove);
         }}
         onDragStart={(e) => {
           e.preventDefault();

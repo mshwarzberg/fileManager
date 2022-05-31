@@ -13,16 +13,6 @@ function LoadDirectoryData() {
   const { state, dispatch } = useContext(DirectoryStateContext);
 
   const [directoryItems, setDirectoryItems] = useState();
-  const [notFoundError, setNotFoundError] = useState(false);
-
-  useEffect(() => {
-    if (notFoundError === true) {
-      setTimeout(() => {
-        dispatch({ type: "directoryNotFoundError" });
-        setNotFoundError(false);
-      }, 3000);
-    }
-  }, [notFoundError, dispatch]);
 
   useEffect(() => {
     fetch("/api/loadfiles/setdirectorytocurrent", {
@@ -42,7 +32,7 @@ function LoadDirectoryData() {
 
   // get all subdirectories for the directory tree. This has no dependencies since reloading shouldn't affect the tree.
   const { data: directories } = useFetch(
-    "/api/getdirectories",
+    "/api/senddirectories",
     JSON.stringify({ path: state.currentDirectory || '/'})
   );
 
@@ -107,7 +97,7 @@ function LoadDirectoryData() {
 
   useEffect(() => {
     // the first time everydrag loads update the directory tree to load all the directories within the root directory
-    if (directories && !state.directoryTree[0]) {
+    if (directories && !state.directoryTree[0] && directories.array) {
       let parentDirs = state.currentDirectory
         .split("/")
         .slice(1, state.currentDirectory.length);
@@ -130,7 +120,7 @@ function LoadDirectoryData() {
     <div>
       <Navbar setDirectoryItems={setDirectoryItems} />
       <span id="navbar--current-directory-header">
-        {state.currentDirectory || '/'}
+        {state.currentDirectory}
       </span>
 
       <RenderFiles directoryItems={directoryItems} />

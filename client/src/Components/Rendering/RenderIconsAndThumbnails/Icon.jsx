@@ -1,16 +1,24 @@
 import React, { useState, useContext } from "react";
 import { DirectoryStateContext } from "../../../App";
 import ColorizeIcons from "../../../Helpers/ColorizeIcons";
-import FileManagePopup from "./FileManagePopup";
 import Filename from "./Filename";
+import shortHandFileSize from "../../../Helpers/FileSize";
 
 function Icon(props) {
   const { state, dispatch } = useContext(DirectoryStateContext);
+  const [directoryTitle, setDirectoryTitle] = useState({});
 
   const { item, changeFolderOrViewFiles, directoryItems } = props;
-
-  const { name, shorthandsize, fileextension, itemtype, thumbnail, isFile } =
-    item;
+  const {
+    name,
+    shorthandsize,
+    fileextension,
+    itemtype,
+    thumbnail,
+    isFile,
+    permission,
+    isDirectory,
+  } = item;
 
   const [displayIcon, setDisplayIcon] = useState();
 
@@ -20,13 +28,66 @@ function Icon(props) {
     });
   }
 
+  function displayTitle() {
+    const title = `Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`;
+    const notAllowed = `Name: ${name}\nNOT ALLOWED TO ACCESS`;
+
+    const directoryTitleFormatted = `Name: ${name}\nSize: ${
+      directoryTitle.bytes
+    }\nCount: ${
+      directoryTitle.filecount * 1 +
+      directoryTitle.foldercount * 1 +
+      ` items. (${directoryTitle.filecount} files, ${directoryTitle.foldercount} folders)`
+    }`;
+    if (isDirectory && permission) {
+      if (!directoryTitle.bytes) {
+        return "loading";
+      }
+      return directoryTitleFormatted;
+    }
+    if (!permission) {
+      return notAllowed;
+    }
+    return title;
+  }
   return (
     !thumbnail && (
       <div
+        onMouseEnter={(e) => {
+          if (isDirectory && permission && name !== directoryTitle.name) {
+            e.target.style.cursor = "progress";
+            fetch("/api/directorydata", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                path: state.currentDirectory + "/" + name,
+              }),
+            })
+              .then((res) => {
+                e.target.style.cursor = "default";
+                return res.json()
+              }).then((res) => {
+                setDirectoryTitle({
+                  bytes: shortHandFileSize(res.bytes),
+                  filecount: res.filecount,
+                  foldercount: res.foldercount,
+                  name: name
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+                e.target.style.cursor = 'default'
+              });
+          }
+        }}
+        onMouseLeave={() => {}}
         className="renderfile--block"
-        title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}`}
+        // if the item is a directory load the size of the directory first before displaying the title
+        title={displayTitle()}
         onClick={() => {
-          if (itemtype === "folder") {
+          if (itemtype === "folder" && permission) {
             dispatch({
               type: "openDirectory",
               value: `${state.currentDirectory}${name && "/" + name}`,
@@ -34,7 +95,11 @@ function Icon(props) {
           }
           changeFolderOrViewFiles(itemtype, name, directoryItems.indexOf(item));
         }}
-        style={{cursor: isFile && itemtype !== 'document' ? 'not-allowed' : 'pointer'}}
+        style={{
+          cursor: !permission ? "not-allowed" : "pointer",
+          backgroundColor: !permission ? "#ff7878c5" : "",
+          border: !permission ? "1.5px solid red" : "",
+        }}
       >
         {isFile ? (
           <svg viewBox="0 0 100 100" style={{ position: "absolute" }}>
@@ -76,8 +141,11 @@ function Icon(props) {
                 ColorizeIcons(fileextension) === "white" ? "black" : "white"
               }
               x="27"
-              y="40"
+              y={fileextension.length > 4 ? "36" : "40"}
               id="custom-icon-text"
+              style={{
+                fontSize: fileextension.length > 4 ? "0.6em" : "1.3em",
+              }}
             >
               {fileextension.toUpperCase()}
             </text>
@@ -90,7 +158,6 @@ function Icon(props) {
           />
         )}
         <Filename name={name} />
-        <FileManagePopup />
       </div>
     )
   );

@@ -2,12 +2,13 @@ import ParentDirectoriesToArray from "./ParentDirectoriesToArray";
 
 export function RenderPath(name, path, folderPath) {
   let parentArr = ParentDirectoriesToArray(path);
-  let comparePath = folderPath;
-  comparePath = comparePath.split("/").slice(2, comparePath.length);
+  parentArr.unshift('')
+  folderPath = folderPath.split("/").slice(2, folderPath.length);
+  
   if (
     parentArr.indexOf(name) ===
-    comparePath.indexOf(name)
-  ) {
+    folderPath.indexOf(name)
+    ) {
     return true;
   }
   if (name === "") {

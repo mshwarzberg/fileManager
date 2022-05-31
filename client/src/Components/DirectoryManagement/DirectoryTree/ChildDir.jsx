@@ -13,8 +13,8 @@ export default function ChildDir(props) {
   const { state, dispatch } = useContext(DirectoryStateContext);
   
   const { data: directories } = useFetch(
-    "/api/getdirectories",
-    JSON.stringify({ path: path })
+    "/api/senddirectories",
+    JSON.stringify({ path: path }), true
   );
 
   const changeItem = useUpdateDirectoryTree();

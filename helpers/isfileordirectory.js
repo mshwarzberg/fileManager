@@ -1,5 +1,13 @@
 function checkIfFileOrDir(file) {
-  var methods = ["isDirectory", "isFile"];
+  var methods = [
+    "isBlockDevice",
+    "isCharacterDevice",
+    "isDirectory",
+    "isFIFO",
+    "isFile",
+    "isSocket",
+    "isSymbolicLink",
+  ];
 
   // check if current item in directory is a file or a sub-directory
   var item = { name: file.name };
@@ -11,4 +19,4 @@ function checkIfFileOrDir(file) {
   return item;
 }
 
-module.exports = { checkIfFileOrDir }
+module.exports = { checkIfFileOrDir };

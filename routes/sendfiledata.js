@@ -16,7 +16,7 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
   const prefix = decodeURIComponent(req.body.prefix);
   ffmpeg.ffprobe(`${currentdirectory}/${prefix}.${suffix}`, (_, data) => {
     fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
-      if (err) console.log(err);
+      if (err) console.log('ffmpeg error');
       if (files?.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) !== -1) {
         
         const options = {

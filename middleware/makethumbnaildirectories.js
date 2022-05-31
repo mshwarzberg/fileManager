@@ -12,8 +12,7 @@ function makeThumbnailDirectories(req, res, next) {
         { withFileTypes: true },
         (err, files) => {
           if (err) {
-            console.log("cant make dir", err);
-            reject();
+            reject("cant make dir");
           }
           for (let i = 0; i < files?.length - 1; i++) {
             if (checkIfFileOrDir(files[i]).isDirectory) {

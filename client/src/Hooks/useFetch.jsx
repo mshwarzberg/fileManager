@@ -13,13 +13,22 @@ export default function useFetch(url, body, dependency) {
         body: body,
       })
         .then(async (res) => {
-          const response = await res.json()
+          const response = await res.json();
           if (!response.err) {
             setData(response);
           }
+          if (response.err) {
+            setData({
+              err: response.err
+            })
+          }
         })
-        .catch((err) => {return});
+        .catch(() => {
+          setData({
+            err: "Error occured"
+          })
+        });
   }, [url, body, dependency]);
-  
- return { data }
+
+  return { data };
 }

@@ -9,15 +9,6 @@ export default function DirectoryTree() {
   const [treeWidth, setTreeWidth] = useState();
   const [isDragging, setIsDragging] = useState(false);
 
-  function HoverOverPathID(path, isHovering) {
-    let children = document.querySelectorAll(path);
-    children.forEach((child) => {
-      child.childNodes.forEach((lineAndCurve) => {
-        lineAndCurve.style.backgroundColor = isHovering ? "#d6fd92" : "red";
-      });
-    });
-  }
-
   useEffect(() => {
     const grab = document.querySelector("#resize--tree");
     function handleDrag(e) {
@@ -65,19 +56,17 @@ export default function DirectoryTree() {
           subItem={subItem}
           path={newPath}
           key={path + subItem}
-          HoverOverPathID={HoverOverPathID}
         />
       );
     });
-
+    path = path.slice(0, path.length - 1)
     return (
       <ParentDir
         treeID={treeID}
-        path={newPath}
+        path={path}
         parentDirectoryName={parentDirectoryName}
         parentDirectory={parentDirectory}
         key={`${path && "/" + path}/${parentDirectoryName}`}
-        HoverOverPathID={HoverOverPathID}
       />
     );
   }

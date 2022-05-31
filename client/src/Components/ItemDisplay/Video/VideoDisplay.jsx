@@ -1,90 +1,100 @@
 import React, { useRef } from "react";
 import VideoControls from "./VideoControls";
-import useFitVideo from '../../../Hooks/useFitVideo'
+import useFitVideo from "../../../Hooks/useFitVideo";
+import useDisplayAnimation from "../../../Hooks/useDisplayAnimation";
 
-let timeouts
+let timeouts;
 
 function VideoDisplay(props) {
   const { viewItem } = props;
 
-  const {fitVideo, containerDimensions} = useFitVideo()
+  const { fitVideo, containerDimensions } = useFitVideo();
 
   const video = useRef();
   const videoContainer = useRef();
-  const videoControls = useRef()
-  const videoHeader = useRef()
+  const videoControls = useRef();
+  const videoHeader = useRef();
 
   function togglePlay() {
     if (video.current.paused) {
       video.current.play();
     } else {
       video.current.pause();
-      videoControls.current.style.display = 'block'
+      videoControls.current.style.display = "block";
       videoContainer.current.style.cursor = "default";
-      videoHeader.current.style.display = 'block'
+      videoHeader.current.style.display = "block";
     }
   }
-
+  const { itemClass } = useDisplayAnimation(videoContainer, 'load');
   return (
     <div className="viewitem--block" id="viewitem--block-video">
       <div
+        className={itemClass}
         id="video-container"
         onKeyDown={(e) => {
           if (e.key === " ") {
-            togglePlay()
+            togglePlay();
           }
-          if (e.key === 'ArrowLeft'){
-            video.current.currentTime -= 5
+          if (e.key === "ArrowLeft") {
+            video.current.currentTime -= 5;
           }
-          if (e.key === 'ArrowRight'){
-            video.current.currentTime += 5
+          if (e.key === "ArrowRight") {
+            video.current.currentTime += 5;
           }
-          if (e.key === 'f') {
+          if (e.key === "f") {
             if (document.fullscreenElement) {
-              document.exitFullscreen()
+              document.exitFullscreen();
             } else {
-              return videoContainer.current.requestFullscreen()
+              return videoContainer.current.requestFullscreen();
             }
           }
-          e.stopPropagation()
+          e.stopPropagation();
         }}
         onMouseMove={(e) => {
-          clearTimeout(timeouts)
+          clearTimeout(timeouts);
 
           if (videoControls.current) {
-            videoControls.current.style.display = 'block'
+            videoControls.current.style.display = "block";
             videoContainer.current.style.cursor = "default";
-            videoHeader.current.style.display = 'block'
+            videoHeader.current.style.display = "block";
           }
           if (
             containerDimensions.width !== video.current.videoWidth ||
             containerDimensions.height !== video.current.videoHeight
-            ) {
-              fitVideo(video.current, videoContainer.current);
-            }
-            if (e.target.id !== 'viewitem--video') {
-              return
-            }
-            if (!video.current.paused && videoControls.current && videoHeader.current) {
-              timeouts = setTimeout(() => {
-                if (!videoContainer.current) {
-                  return
-                }
-                videoContainer.current.style.cursor = "none";
-                videoControls.current.style.display = 'none'
-                videoHeader.current.style.display = 'none'
-              }, 2000)
-            }
+          ) {
+            fitVideo(video.current, videoContainer.current);
+          }
+          if (e.target.id !== "viewitem--video") {
+            return;
+          }
+          if (
+            !video.current.paused &&
+            videoControls.current &&
+            videoHeader.current
+          ) {
+            timeouts = setTimeout(() => {
+              if (!videoContainer.current) {
+                return;
+              }
+              videoContainer.current.style.cursor = "none";
+              videoControls.current.style.display = "none";
+              videoHeader.current.style.display = "none";
+            }, 2000);
+          }
           e.stopPropagation();
         }}
         onMouseLeave={() => {
-          if (videoControls.current && !video.current.paused && videoHeader.current) {
-            videoControls.current.style.display = 'none'
-            videoHeader.current.style.display = 'none'
+          if (
+            videoControls.current &&
+            !video.current.paused &&
+            videoHeader.current
+          ) {
+            videoControls.current.style.display = "none";
+            videoHeader.current.style.display = "none";
           }
         }}
         onClick={() => {
-          togglePlay()
+          togglePlay();
         }}
         ref={videoContainer}
         onDoubleClick={() => {
@@ -102,7 +112,12 @@ function VideoDisplay(props) {
         {containerDimensions.width && containerDimensions.height && (
           <>
             <svg id="video-header" viewBox="0 0 25 25" ref={videoHeader}>
-              <text fill="currentColor" y="15" x='10' id="video-header-filename">
+              <text
+                fill="currentColor"
+                y="15"
+                x="10"
+                id="video-header-filename"
+              >
                 {viewItem.name}
               </text>
             </svg>
@@ -117,12 +132,11 @@ function VideoDisplay(props) {
         <video
           onCanPlay={() => {
             if (!containerDimensions.width && !containerDimensions.height) {
-              video.current.volume = 0
+              video.current.volume = 0;
             }
             fitVideo(video.current, videoContainer.current);
           }}
           ref={video}
-          className="viewitem--item"
           id="viewitem--video"
           src={viewItem.property}
         />
