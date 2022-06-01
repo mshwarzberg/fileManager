@@ -1,0 +1,155 @@
+@import "../../Main/MainSCSS/variables.scss";
+
+@keyframes loadDisplay {
+  0% {
+    position: absolute;
+    opacity: 0.4;
+    transform: scale(0%);
+  }
+  100% {
+    opacity: 1;
+    position: absolute;
+    transform: scale(100%);
+  }
+}
+
+@keyframes fromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0%);
+  }
+}
+
+@keyframes fromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.viewitem--block {
+  @include flexStyle(column);
+  position: fixed;
+  left: 0;
+  background-color: #0f0f0ff9;
+  @include maxSize;
+  top: 0;
+  z-index: 25;
+  .viewitem--item,
+  #viewitem--video {
+    height: $fullscreenHeight;
+    width: $fullscreenWidth;
+    object-fit: contain;
+    max-width: 90%;
+    max-height: 90%;
+    &.loaded {
+      animation: loadDisplay forwards ease-out 500ms;
+    }
+    &.fromright {
+      animation: fromRight 500ms forwards ease-in-out;
+    }
+    &.fromleft {
+      animation: fromLeft 500ms forwards ease-in-out;
+    }
+  }
+}
+
+#image-fullscreen {
+  max-width: 100%;
+  max-height: 100%;
+  background-color: black;
+}
+
+#display--miscellaneous {
+  #display--name {
+    position: fixed;
+    top: 1%;
+    text-align: center;
+    width: 100%;
+    left: 0;
+    z-index: 25;
+    color: white;
+    font-family: "roboto slab";
+  }
+  #button--forwards,
+  #button--backwards {
+    position: fixed;
+    z-index: 25;
+    height: 2%;
+    max-height: 3rem;
+    min-height: 0.5rem;
+    cursor: pointer;
+    top: calc(50vh - 1.5rem);
+  }
+  #button--forwards {
+    right: 1rem;
+  }
+
+  #button--backwards {
+    left: 1rem;
+  }
+  .viewitem--close {
+    position: fixed;
+    top: 1%;
+    right: 1%;
+    width: 3%;
+    max-width: 2.5rem;
+    aspect-ratio: 1;
+    z-index: 26;
+    &:hover {
+      transform: scale(1.1);
+      transition: 100ms ease-in;
+    }
+  }
+  @mixin slideEffect {
+    border-top-left-radius: 1.5rem;
+    border-bottom-left-radius: 1.5rem;
+    transform: scaleX(1);
+  }
+
+  #navigating-indicator {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    left: 1%;
+    top: 1%;
+    width: 3%;
+    max-width: 2.5rem;
+    aspect-ratio: 1;
+    z-index: 26;
+    &:hover {
+      #navigating-indicator-popup {
+        @include slideEffect;
+      }
+    }
+    img {
+      position: absolute;
+      width: 100%;
+    }
+  }
+  #navigating-indicator-popup {
+    width: max-content;
+    font-family: "bebas neue";
+    font-size: 1.3rem;
+    z-index: 1;
+    background-color: black;
+    height: 100%;
+    @include flexStyle(row);
+    color: white;
+    position: absolute;
+    left: 125%;
+    padding: 5% 1.5rem 0 1.5rem;
+    top: 2%;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: width 150ms ease-in-out, transform 150ms ease-in-out;
+  }
+}

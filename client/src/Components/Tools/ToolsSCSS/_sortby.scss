@@ -1,0 +1,24 @@
+@import '../../Main/MainSCSS/variables.scss';
+
+#navbar--sort-button {
+  @include navbarBtn;
+  position: absolute;
+  right: 5px;
+  top: 0;
+  z-index: 1;
+  width: 5rem;
+}
+
+#navbar--asc-desc {
+  position: absolute;
+  top: 0;
+  right: 5.8rem;
+  padding: 3px;
+  height: 2.5rem;
+  @include flexStyle(row);
+  aspect-ratio: 1;
+}
+
+// #filter--list {
+//   display: none;
+// }
