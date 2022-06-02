@@ -19,7 +19,7 @@ export default function ParentDir(props) {
       <div className="line--down" />
       <p
         className="tree--open-directory"
-        title={path}
+        title={path || '/'}
         onMouseEnter={(e) => {
           IsInPath(parentDirectoryName, path, state.currentDirectory)
           if (
@@ -65,13 +65,14 @@ export default function ParentDir(props) {
             }
           }}
           onClick={(e) => {
+            let dirName = typeof parentDirectoryName === 'object' ? parentDirectoryName[0] : parentDirectoryName
             dispatch({
               type: "updateDirectoryTree",
               value: changeItem(
                 state.directoryTree,
                 ParentDirectoriesToArray(path),
                 0,
-                parentDirectoryName
+                dirName
               ),
             });
             e.stopPropagation();
@@ -81,7 +82,7 @@ export default function ParentDir(props) {
           alt="close tree"
         />
         <img src={FolderIcon} alt="folder" className="folder--icon" />
-        {parentDirectoryName}
+        {parentDirectoryName || '/'}
       </p>
 
       <div className="opendirectory--list">{parentDirectory}</div>

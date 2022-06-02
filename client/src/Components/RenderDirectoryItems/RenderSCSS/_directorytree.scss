@@ -117,7 +117,7 @@
       background-color: $accentColor;
       color: #000;
     }
-
+    
     #tree--in-path {
       background-color: darken($accentColor, 50%);
       &:hover {
@@ -129,6 +129,13 @@
     .tree--closed-directory {
       background-color: #222;
       color: white;
+      &.no-permission {
+        background-color: #ff7878c5;
+        border: 1.5px solid red;
+        cursor: not-allowed;
+        transform: none;
+        color: #000;
+      }
     }
   }
 }

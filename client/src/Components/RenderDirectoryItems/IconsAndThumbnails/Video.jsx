@@ -7,11 +7,11 @@ import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Filename";
 
 function Video(props) {
-  const { item, changeFolderOrViewFiles, directoryItems } = props;
+  const { item } = props;
 
   const container = useRef();
   const thumbnailItem = useRef();
-  const nameInput = useRef()
+  const nameInput = useRef();
 
   const {
     name,
@@ -22,6 +22,7 @@ function Video(props) {
     height,
     width,
     duration,
+    path,
   } = item;
 
   let positionX =
@@ -55,14 +56,7 @@ function Video(props) {
       <>
         <div
           ref={container}
-          className="renderfile--block"
-          onClick={() => {
-            return changeFolderOrViewFiles(
-              itemtype,
-              name,
-              directoryItems.indexOf(item)
-            );
-          }}
+          className="renderitem--block"
           onMouseEnter={(e) => {
             e.currentTarget.firstChild.style.display = "block";
           }}
@@ -80,17 +74,17 @@ function Video(props) {
               e.currentTarget.src = playIcon;
             }}
             alt="playvideo"
-            id="renderfile--play-icon"
+            className="renderitem--play-icon"
             style={{ display: "none", zIndex: 1 }}
           />
           <img
             ref={thumbnailItem}
-            className="renderfile--thumbnail"
+            className="renderitem--thumbnail"
             src={thumbnail}
             alt="gifthumb"
             title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nDuration: ${formatDuration(
               duration
-            )}`}
+            )}\nPath: ${path}`}
           />
           <svg
             viewBox="0 0 100 100"
@@ -105,14 +99,18 @@ function Video(props) {
             />
             <text
               fill="white"
-              style={{ fontSize: "0.5em", textAnchor: "middle", fontFamily: 'akshar' }}
+              style={{
+                fontSize: "0.5em",
+                textAnchor: "middle",
+                fontFamily: "akshar",
+              }}
               x={durationPosition.textX}
               y={durationPosition.textY}
             >
               {formatDuration(duration)}
             </text>
           </svg>
-          <Filename name={name} nameRef={nameInput}/>
+          <Filename name={name} nameRef={nameInput} />
         </div>
       </>
     )

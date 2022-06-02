@@ -68,7 +68,7 @@ export default function DirectoryTree() {
         path={path}
         parentDirectoryName={parentDirectoryName}
         parentDirectory={parentDirectory}
-        key={`${path && "/" + path}/${parentDirectoryName}`}
+        key={path}
       />
     );
   }

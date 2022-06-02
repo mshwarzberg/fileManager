@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import { useReducer } from "react";
 
 function reducer(state, action) {
   
@@ -46,7 +46,7 @@ function reducer(state, action) {
         navigatedIndex: state.navigatedIndex - 1,
         navigatedDirectories: state.navigatedDirectories.slice(
           0,
-          state.navigatedIndex + 1
+          state.navigatedIndex
         ),
       };
     case "updateDirectoryTree":
@@ -60,15 +60,6 @@ function reducer(state, action) {
 }
 
 export default function useDirectoryContextManager() {
-  useEffect(() => {
-    window.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      return false
-    });
-    return ()  => {
-      window.removeEventListener("contextmenu", () => {});
-    }
-  });
 
   const [state, dispatch] = useReducer(reducer, {
     currentDirectory: "",

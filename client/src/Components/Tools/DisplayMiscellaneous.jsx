@@ -66,7 +66,7 @@ export default function DisplayMiscellaneous(props) {
       {width < 900 && (
         <>
           <img
-            id="button--backwards"
+            id="display--nav-back"
             src={Back}
             alt="back"
             onClick={() => {
@@ -79,7 +79,7 @@ export default function DisplayMiscellaneous(props) {
             }}
           />
           <img
-            id="button--forwards"
+            id="display--nav-forwards"
             src={Forward}
             alt="forward"
             onClick={() => {
@@ -94,13 +94,13 @@ export default function DisplayMiscellaneous(props) {
         </>
       )}
       {!fullscreen && isNavigating.visible && (
-        <div id="navigating-indicator">
+        <div id="display--is-navigating">
           <img
             src={alerticon}
             alt=""
             title={`Press "Tab" to toggle the visibility of this message`}
           />
-          <h1 id="navigating-indicator-popup">
+          <h1 id="display--is-navigating-popup">
             {isNavigating.value
               ? `Navigation Enabled: "CapsLock" to disable`
               : `Navigation Disabled: "CapsLock" to enable`}
@@ -110,7 +110,7 @@ export default function DisplayMiscellaneous(props) {
       <img
         src={Close}
         alt="close"
-        className="viewitem--close"
+        id="display--close"
         onClick={() => {
           if (
             viewItem.property !== openDocument?.textContent &&

@@ -4,13 +4,12 @@ const fastFolderSize = require('../helpers/fast-folder-data')
 
 router.post("/", (req, res) => {
   try {
-    fastFolderSize(req.body.path, (err, data) => {
-      if (err) {
-        console.log(err)
-      }
-      
-      res.send(data)
-    })
+      fastFolderSize(req.body.path, (err, data) => {
+        if (err) {
+          res.end()
+        }
+        res.send(data)
+      })
   } catch {
     res.end()
   }

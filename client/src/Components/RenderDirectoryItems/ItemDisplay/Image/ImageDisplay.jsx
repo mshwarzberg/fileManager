@@ -110,7 +110,7 @@ function ImageDisplay(props) {
             return;
           }
           setIsDragging(false);
-          image.current.style.cursor = "grab";
+          image.current.style.cursor = image.current.style.scale > 1 ? 'grab' : 'default'
           document.removeEventListener("mousemove", onMouseMove);
         }}
         onDragStart={(e) => {

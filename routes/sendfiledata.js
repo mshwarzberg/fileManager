@@ -10,6 +10,18 @@ const {
   makeThumbnailDirectories,
 } = require("../middleware/makethumbnaildirectories");
 
+
+router.post("/data", verifyFolder, makeThumbnailDirectories, (req, res) => {
+  const { currentdirectory } = req.body;
+  // generate all the file in the current folder
+  var result = fs
+  .readdirSync(`${currentdirectory}`, { withFileTypes: true })
+  .map((file) => {
+    return getFileNameParts(file, currentdirectory);
+  });
+  res.send(result);
+});
+
 router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
   const { currentdirectory, suffix } = req.body;
 
@@ -41,16 +53,4 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
     });
   });
 });
-
-router.post("/data", verifyFolder, makeThumbnailDirectories, (req, res) => {
-  const { currentdirectory } = req.body;
-  // generate all the file in the current folder
-  var result = fs
-    .readdirSync(`${currentdirectory}`, { withFileTypes: true })
-    .map((file) => {
-      return getFileNameParts(file, currentdirectory);
-    });
-  res.send(result);
-});
-
 module.exports = router;

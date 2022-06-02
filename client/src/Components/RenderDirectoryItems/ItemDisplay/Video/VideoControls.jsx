@@ -14,14 +14,9 @@ import {
   miniplayer,
 } from "../../../../Assets/images/videocontrols/index.js";
 
-let scrubbing
+let scrubbing;
 export default function VideoControls(props) {
-  const {
-    video,
-    videoContainer,
-    videoControls,
-    togglePlay,
-  } = props;
+  const { video, videoContainer, videoControls, togglePlay } = props;
 
   const container = useRef();
   const timelineContainer = container.current;
@@ -46,7 +41,7 @@ export default function VideoControls(props) {
     const rect = timelineContainer.getBoundingClientRect();
     const percent =
       Math.min(Math.max(0, e.screenX - rect.x), rect.width) / rect.width;
-    scrubbing = (e.buttons & 1) === 1
+    scrubbing = (e.buttons & 1) === 1;
     video.currentTime = percent * video.duration;
     // if (scrubbing) {
     //   video.pause();
@@ -170,6 +165,7 @@ export default function VideoControls(props) {
         </div>
         <svg id="duration-container" viewBox="0 0 90 25">
           <text x="0" y="18" fill="currentColor">
+          <title>{formatDuration(video.duration - video.currentTime)} remaining</title>
             {currentPlaybackTime}/{formatDuration(video.duration) || "0:00"}
           </text>
         </svg>
@@ -187,7 +183,11 @@ export default function VideoControls(props) {
             src={document.fullscreenElement ? minimize : fullscreen}
             alt="fullscreen"
             onClick={(e) => {
-              videoContainer.requestFullscreen();
+              if (!document.fullscreenElement) {
+                videoContainer.requestFullscreen();
+              } else {
+                document.exitFullscreen();
+              }
               e.stopPropagation();
             }}
           />

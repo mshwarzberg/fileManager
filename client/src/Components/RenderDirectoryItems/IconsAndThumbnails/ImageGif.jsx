@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import Filename from "./Filename";
 
 export default function ImageGif(props) {
-  const { item, changeFolderOrViewFiles, directoryItems } = props;
+  const { item } = props;
   const {
     name,
     shorthandsize,
@@ -11,6 +11,7 @@ export default function ImageGif(props) {
     itemtype,
     height,
     width,
+    path
   } = item;
   const nameInput = useRef()
   return (
@@ -18,21 +19,14 @@ export default function ImageGif(props) {
     (itemtype === "image" || itemtype === "gif") && (
       <>
         <div
-          className="renderfile--block"
-          id="renderfile--image-block"
-          onClick={() => {
-            return changeFolderOrViewFiles(
-              itemtype,
-              name,
-              directoryItems.indexOf(item)
-            );
-          }}
+          className="renderitem--block"
+          id="renderitem--image-block"
         >
           <img
             src={thumbnail}
             alt="imagethumb"
-            className="renderfile--thumbnail"
-            title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}`}
+            className="renderitem--thumbnail"
+            title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nPath: ${path}`}
           />
           <Filename name={name} nameRef={nameInput}/>
         </div>

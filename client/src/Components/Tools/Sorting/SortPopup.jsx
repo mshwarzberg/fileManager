@@ -2,20 +2,15 @@ import React, { useState } from "react";
 
 function SortPopup(props) {
   const { setDirectoryItems, descending } = props;
-  
+
   const [showSubSort, setShowSubSort] = useState(false);
-  const [isFolderSorted, setIsFolderSorted] = useState(false);
 
   function mySort(sortMethod, type) {
     setDirectoryItems((prevItems) => {
-
       let sortedArray = [];
       let sortDirection = descending;
 
       if (sortMethod === "folder") {
-        if (isFolderSorted) {
-          return prevItems;
-        }
         prevItems.sort((item) => {
           return item.itemtype !== "folder";
         });
@@ -33,7 +28,8 @@ function SortPopup(props) {
         });
       } else if (type) {
         prevItems.sort((item) => {
-          return item.fileextension !== type;
+          console.log(item);
+          return item.fileextension === type;
         });
       }
 
@@ -42,28 +38,53 @@ function SortPopup(props) {
       });
 
       if (sortedArray === prevItems) {
-        return prevItems
+        return prevItems;
       }
       return sortDirection ? sortedArray : sortedArray.reverse();
     });
-    if (sortMethod === 'folder') {
-      setIsFolderSorted(true)
-    } else {
-      setIsFolderSorted(false)
-    }
   }
+
+  const arrayOfFileTypes = [
+    "avi",
+    "avif",
+    "bmp",
+    "css",
+    "cur",
+    "docx",
+    "ico",
+    "ion",
+    "jpeg",
+    "jpg",
+    "js",
+    "json",
+    "jsx",
+    "md",
+    "mkv",
+    "mp4",
+    "png",
+    "py",
+    "rtf",
+    "scss",
+    "svg",
+    "tiff",
+    "txt",
+    "webm",
+    "wmv"
+  ]
+
+  const fileTypes = arrayOfFileTypes.map(type => {
+    return <li key={type} onClick={() => {
+      mySort('type', type)
+    }}>
+      {type}
+    </li>
+  })
 
   return (
     <ol
       id="filter--list"
-      className="navbar--button"
-      onDoubleClick={(e) => {
-        e.stopPropagation();
-      }}
     >
       <li
-        className="filter--list-item"
-        id="filter--by-folder-first"
         onClick={() => {
           mySort("folder");
         }}
@@ -71,8 +92,6 @@ function SortPopup(props) {
         ...Folders First
       </li>
       <li
-        className="filter--list-item"
-        id="filter--by-folder-second"
         onClick={() => {
           mySort("name");
         }}
@@ -80,17 +99,14 @@ function SortPopup(props) {
         ...Name
       </li>
       <li
-        className="filter--list-item"
-        id="filter--by-folder-third"
         onClick={() => {
           mySort("size");
         }}
       >
         ...File Size
       </li>
+      <li>...Date</li>
       <li
-        className="filter--list-item"
-        id="filter--by-folder-fourth"
         onMouseEnter={() => {
           setShowSubSort(true);
         }}
@@ -100,68 +116,10 @@ function SortPopup(props) {
       >
         ...File Type
         {showSubSort && (
-          <ol className="filter--sublist">
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "jpg");
-              }}
-            >
-              jpg
-            </li>
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "mp4");
-              }}
-            >
-              mp4
-            </li>
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "png");
-              }}
-            >
-              png
-            </li>
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "txt");
-              }}
-            >
-              txt
-            </li>
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "gif");
-              }}
-            >
-              gif
-            </li>
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "xcf");
-              }}
-            >
-              xcf
-            </li>
-            <li
-              className="filter--list-item"
-              onClick={() => {
-                mySort("type", "rtf");
-              }}
-            >
-              rtf
-            </li>
+          <ol>
+            {fileTypes}
           </ol>
         )}
-      </li>
-      <li className="filter--list-item" id="filter--by-folder-fifth">
-        ...Date
       </li>
     </ol>
   );

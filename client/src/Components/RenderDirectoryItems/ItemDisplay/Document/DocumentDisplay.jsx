@@ -18,10 +18,9 @@ function DocumentDisplay(props) {
   useDisplayAnimation(openDocument)
 
   return (
-    <div className="viewitem--block" id="viewitem--block-document">
+    <div className="viewitem--block" id="document--body">
       <div id="document--header">
         <button
-          id="document--edit"
           onClick={() => {
             if (isEditing) {
               openDocument.current.disabled = true;
@@ -58,7 +57,7 @@ function DocumentDisplay(props) {
       <textarea
         ref={openDocument}
         className="viewitem--item loaded"
-        id="viewitem--document"
+        id="document"
         value={newDocument}
         onChange={(e) => {
           setNewDocument(e.target.value);
@@ -73,7 +72,7 @@ function DocumentDisplay(props) {
         resize="false"
         disabled={!isEditing}
       />
-      {message && <h1 id="document--message">{message}</h1>}
+      {message && <h1 id="document--message" style={{fontSize: '2rem'}}>{message}</h1>}
     </div>
   );
 }

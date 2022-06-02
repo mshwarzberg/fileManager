@@ -36,9 +36,10 @@ function getFileNameParts(file, directory) {
     size = 0;
     permission = false;
   }
-
+  
   const filteredData = {
     ...item,
+    path: `${directory === '/' ? directory : directory + '/'}${file.name}`,
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
     fileextension: suffix || "Directory",
     prefix: encodeURIComponent(prefix),

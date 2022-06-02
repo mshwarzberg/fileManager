@@ -1,12 +1,61 @@
-@import '../../Main/MainSCSS/variables.scss';
+@import "../../Main/MainSCSS/variables.scss";
 
 #navbar--sort-button {
   @include navbarBtn;
   position: absolute;
-  right: 5px;
+  right: 0;
   top: 0;
   z-index: 1;
   width: 5rem;
+  transform: scale(1);
+  opacity: 1;
+  &:hover {
+    transform: scale(1);
+    transition: none;
+    font-family: "bebas neue";
+  }
+  * {
+    font-family: "bebas neue";
+    font-size: 1.1em;
+  }
+  #filter--list {
+    opacity: 1;
+    right: 0rem;
+    top: 2.49rem;
+    position: fixed;
+    height: 15rem;
+    width: 15rem;
+    list-style: none;
+    background-color: #222;
+    opacity: 1;
+    li {
+      color: white;
+      &:hover {
+        color: $accentColor;
+      }
+    }
+    & > li {
+      @include flexStyle(row);
+      opacity: 1;
+      width: 100%;
+      border-top: 0.75px solid white;
+      border-bottom: 1.5px solid white;
+      height: 20%;
+    }
+    ol {
+      list-style: none;
+      position: absolute;
+      bottom: -12rem;
+      left: -4.9rem;
+      width: 5rem;
+      height: 18rem;
+      background-color: #222;
+      overflow-y: scroll;
+      & > li {
+        height: calc(1 / 7 * 100%);
+      }
+    }
+  }
 }
 
 #navbar--asc-desc {
@@ -18,7 +67,3 @@
   @include flexStyle(row);
   aspect-ratio: 1;
 }
-
-// #filter--list {
-//   display: none;
-// }

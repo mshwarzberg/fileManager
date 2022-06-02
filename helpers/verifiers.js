@@ -37,12 +37,14 @@ function checkType(type) {
     type === "ion",
     type === "docx",
     type === 'json',
-    type === 'ion',
     type === 'jsx', 
     type === 'js',
     type === 'scss',
     type === 'md',
     type === 'py',
+    type === 'css',
+    type === 'html',
+    type === 'xhtml'
   ];
 
   if (checkIfImage.includes(true)) {

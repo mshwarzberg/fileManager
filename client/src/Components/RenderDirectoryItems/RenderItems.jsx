@@ -4,16 +4,12 @@ import ImageGif from "./IconsAndThumbnails/ImageGif";
 import Video from "./IconsAndThumbnails/Video";
 import Icon from "./IconsAndThumbnails/Icon";
 
-import VideoDisplay from "./ItemDisplay/Video/VideoDisplay";
-import DocumentDisplay from "./ItemDisplay/Document/DocumentDisplay";
-import ImageDisplay from "./ItemDisplay/Image/ImageDisplay";
-import DisplayMiscellaneous from "../Tools/DisplayMiscellaneous";
-
 import { DirectoryContext } from "../Main/App";
+import ItemDisplay from "./ItemDisplay/ItemDisplay";
 
-export default function RenderItems(props) {
+export default function RenderItems() {
+  const { directoryItems, state } = useContext(DirectoryContext);
 
-  const {directoryItems} = useContext(DirectoryContext)
   const [viewItem, setViewItem] = useState({
     type: null,
     property: null,
@@ -21,27 +17,12 @@ export default function RenderItems(props) {
     name: null,
     path: null,
   });
-  const { state } = useContext(DirectoryContext);
   const [isNavigating, setIsNavigating] = useState({
     value: false,
     visible: true,
   });
 
-  const [fullscreen, setFullscreen] = useState(false);
-
   const page = useRef();
-  const openDocument = useRef();
-
-  function enterExitFullscreen() {
-    const item = document.querySelector("#fullscreen");
-    if (document.fullscreenElement == null) {
-      item.requestFullscreen();
-      setFullscreen(true);
-    } else {
-      setFullscreen(false);
-      document.exitFullscreen();
-    }
-  }
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
@@ -125,7 +106,7 @@ export default function RenderItems(props) {
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log('RenderItems.jsx displayfiles', err);
         });
     }
   }
@@ -173,66 +154,48 @@ export default function RenderItems(props) {
       );
     }
   }
-  
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
-    const { name, fileextension, size } = item;
+    const { name, fileextension, size, itemtype } = item;
     if (name) {
       return (
-        <div key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}>
+        <div
+          key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
+          onClick={() => {
+            return changeFolderOrViewFiles(
+              itemtype,
+              name,
+              directoryItems.indexOf(item)
+            );
+          }}
+        >
           <Video
-            directoryItems={directoryItems}
-            changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
           />
           <ImageGif
-            directoryItems={directoryItems}
-            changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
           />
           <Icon
-            directoryItems={directoryItems}
-            changeFolderOrViewFiles={changeFolderOrViewFiles}
             item={item}
           />
         </div>
       );
     }
+    if (item.msg) {
+      return <h1 key={item.msg}>{item.msg}</h1>;
+    }
     return "";
   });
-  
+
   return (
-    <div id="renderfile--page" ref={page}>
+    <div id="renderitem--page" ref={page}>
       {renderItems}
-      {viewItem.property && (
-        <div id="fullscreen">
-          {viewItem.type === "video" && <VideoDisplay viewItem={viewItem} />}
-          {viewItem.type === "document" && (
-            <DocumentDisplay
-              setViewItem={setViewItem}
-              enterExitFullscreen={enterExitFullscreen}
-              viewItem={viewItem}
-              openDocument={openDocument}
-            />
-          )}
-          {viewItem.type === "imagegif" && (
-            <ImageDisplay
-              enterExitFullscreen={enterExitFullscreen}
-              fullscreen={fullscreen}
-              viewItem={viewItem}
-            />
-          )}
-          <DisplayMiscellaneous
-            fullscreen={fullscreen}
-            viewItem={viewItem}
-            setViewItem={setViewItem}
-            setFullscreen={setFullscreen}
-            isNavigating={isNavigating}
-            changeFolderOrViewFiles={changeFolderOrViewFiles}
-            openDocument={openDocument.current}
-          />
-        </div>
-      )}
+      <ItemDisplay
+        changeFolderOrViewFiles={changeFolderOrViewFiles}
+        viewItem={viewItem}
+        setViewItem={setViewItem}
+        isNavigating={isNavigating}
+      />
     </div>
   );
 }

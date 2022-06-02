@@ -11,10 +11,10 @@ import FolderIcon from "../../../Assets/images/folder.png";
 export default function ChildDir(props) {
   const { path, subItem } = props;
   const { state, dispatch } = useContext(DirectoryContext);
-  
+
   const { data: directories } = useFetch(
     "/api/senddirectories",
-    JSON.stringify({ path: path }), true
+    JSON.stringify({ path: path })
   );
 
   const changeItem = useUpdateDirectoryTree();
@@ -26,7 +26,7 @@ export default function ChildDir(props) {
         value: path,
       });
     }
-    
+
     if (directories) {
       dispatch({
         type: "updateDirectoryTree",
@@ -43,12 +43,20 @@ export default function ChildDir(props) {
   return (
     <div
       onClick={(e) => {
-        expandDirectory(true);
+        if (!subItem.includes("*?<>")) {
+          expandDirectory(true);
+        }
         e.stopPropagation();
       }}
-      className="tree--closed-directory"
+      className={`tree--closed-directory ${
+        subItem.includes("*?<>") && "no-permission"
+      }`}
       id={path === state.currentDirectory ? "highlight--child" : ""}
-      title={`Name: ${subItem}\nPath: ${path}`}
+      title={`Name: ${
+        subItem.includes("*?<>") ? subItem.slice(0, subItem.length - 4) : path
+      }\nPath: ${
+        subItem.includes("*?<>") ? path.slice(0, path.length - 4) : path
+      }\n${subItem.includes('*?<>') && 'NO ACCESS'}`}
     >
       <img
         onMouseEnter={(e) => {
@@ -67,14 +75,14 @@ export default function ChildDir(props) {
         }}
         className="tree--arrow"
         src={
-          path === state.currentDirectory
-            ? RightArrowBlack
-            : RightArrowWhite
+          path === state.currentDirectory ? RightArrowBlack : RightArrowWhite
         }
-        alt=""
+        alt="expand directory"
       />
-      <img src={FolderIcon} alt="" className="folder--icon" />
-      {subItem}
+      <img src={FolderIcon} alt="folder" className="folder--icon" />
+      {subItem.includes("*?<>")
+        ? subItem.slice(0, subItem.length - 4)
+        : subItem}
     </div>
   );
 }

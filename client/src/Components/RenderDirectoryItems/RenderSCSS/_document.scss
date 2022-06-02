@@ -1,95 +1,57 @@
 @import '../../Main/MainSCSS/variables.scss';
 
-@keyframes message {
-  0% {
-    opacity: 0;
-    transform: scaleY(0) translateY(100%);
-  }
-  100% {
-    opacity: 1;
-    transform: scaleY(1) translateY(0);
-  }
-}
- 
-#viewitem--block-document {
+#document--body {
   background-color: #101010fe;
   width: 100%;
   height: 100%;
-}
-
-#viewitem--document {
-  position: absolute;
-  max-width: 96%;
-  padding: 4rem 1.5rem 10rem 1.5rem;
-  max-height: 93%; 
-  top: 4rem;
-  text-align: left;
-  font-size: 1.5rem;
-  color: white;
-  border: none;
-  outline: none;
-  resize: none;
-  cursor: default;
-  letter-spacing: 0.3px;
-  background-color: #222;
-  font-family: akshar;
-  &:focus {
-    outline-color: $accentColor;
-    outline-style: outset;
-    cursor: initial;
+  padding-bottom: 15%;
+  #document--header {
+    position: absolute;
+    height: 2rem;
+    top: 4rem;
+    width: 96%;
+    padding: 5px;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
   }
-  &::selection {
-    background-color: #ac4df666;
+  #document {
+    position: absolute;
+    max-width: 96%;
+    padding: 4rem 1.5rem 3rem 1.5rem;
+    max-height: 92%; 
+    top: 4rem;
+    text-align: left;
+    font-size: 1.1rem;
+    line-height: 1.3em;
     color: white;
-    cursor: pointer;
+    border: none;
+    outline: none;
+    resize: none;
+    cursor: default;
+    letter-spacing: 0.3px;
+    background-color: #222;
+    font-family: akshar;
+    &:focus {
+      outline-color: $accentColor;
+      outline-style: outset;
+      cursor: initial;
+    }
+    &::selection {
+      background-color: #ac4df666;
+      color: white;
+      cursor: pointer;
+    }
+    &:disabled {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      color: #999;
+      background-color: #333;
+    }
   }
-  &:disabled {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    color: #999;
-    background-color: #333;
-  }
-}
-
-#document--header {
-  position: absolute;
-  height: 2rem;
-  top: 4rem;
-  width: 96%;
-  padding: 5px;
-  z-index: 1;
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-}
-
-#document--name {
-  font-family: 'roboto slab';
-  color: white;
-}
-
-#document--message {
-  color: black;
-  font-size: 2rem;
-  font-family: 'bebas neue';
-  position: fixed;
-  z-index: 100;
-  bottom: 3%;
-  width: 35%;
-  max-width: 40rem;
-  cursor: pointer;
-  height: 15%;
-  max-height: 10rem;
-  @include flexStyle(row);
-  animation: 200ms forwards ease-in-out message;
-  background: repeating-radial-gradient(
-    $accentColor 0%,
-    $accentColor 30%,
-    rgba(0,0,0, 0) 65%,
-    rgba(0,0,0, 0) 100%
-  );
 }

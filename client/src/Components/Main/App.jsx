@@ -7,71 +7,18 @@ import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
 import CompareArray from "../../Helpers/CompareArray";
 
 import RenderItems from "../RenderDirectoryItems/RenderItems";
-import Navbar from './Navbar/Navbar'
+import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 
 export const DirectoryContext = createContext();
 
+let timeout;
 export default function App() {
-  
   const changeItem = useUpdateDirectoryTree();
 
-  const { state, dispatch } = DirectoryContextManager()
+  const { state, dispatch } = DirectoryContextManager();
 
   const [directoryItems, setDirectoryItems] = useState();
-
-  useEffect(() => {
-    fetch("/api/loadfiles/setdirectorytocurrent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ currentdirectory: state.currentDirectory || '/' }),
-    });
-  }, [state.currentDirectory]);
-
-  // get all items in the current directory
-  const { data: itemData } = useFetch(
-    "/api/data/data",
-    JSON.stringify({ currentdirectory: state.currentDirectory || '/' })
-  );
-  // get all subdirectories for the directory tree. This has no dependencies since reloading shouldn't affect the tree.
-  const { data: directories } = useFetch(
-    "/api/senddirectories",
-    JSON.stringify({ path: state.currentDirectory || '/'})
-  );
-
-  useEffect(() => {
-    if (itemData) {
-      if (!CompareArray(itemData, directoryItems)) {
-        setDirectoryItems(itemData);
-        for (let i = 0; i < itemData.length; i++) {
-          fetchStuff(i, 0);
-        }
-      }
-    }
-    // eslint-disable-next-line
-  }, [itemData, state.currentDirectory]);
-
-  useEffect(() => {
-    if (directories && !state.directoryTree[0] && directories.array) {
-      let parentDirs = state.currentDirectory
-        .split("/")
-        .slice(1, state.currentDirectory.length);
-      parentDirs = [...parentDirs, ...directories.array];
-
-      dispatch({
-        type: "updateDirectoryTree",
-        value: changeItem(
-          state.directoryTree,
-          parentDirs,
-          0,
-          directories.array
-        ),
-      });
-    }
-    // eslint-disable-next-line
-  }, [directories]);
 
   function fetchStuff(index, requestsMadeForThisItem) {
     if (requestsMadeForThisItem >= 15) {
@@ -83,7 +30,7 @@ export default function App() {
       body: JSON.stringify({
         prefix: itemData[index].prefix,
         suffix: itemData[index].fileextension,
-        currentdirectory: state.currentDirectory || '/',
+        currentdirectory: state.currentDirectory || "/",
       }),
     })
       .then(async (res) => {
@@ -116,10 +63,108 @@ export default function App() {
         });
       })
       .catch((err) => {
-        console.log(err);
+        console.log("App.jsx, Thumbnail", err);
       });
   }
+  useEffect(() => {
+    fetch("/api/loadfiles/setdirectorytocurrent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ currentdirectory: state.currentDirectory || "/" }),
+    });
+  }, [state.currentDirectory]);
 
+  // get all items in the current directory
+  const { data: itemData } = useFetch(
+    "/api/data/data",
+    JSON.stringify({ currentdirectory: state.currentDirectory || "/" })
+  );
+  // get all subdirectories for the directory tree. This has no dependencies since reloading shouldn't affect the tree.
+  const { data: directories } = useFetch(
+    "/api/senddirectories",
+    JSON.stringify({ path: state.currentDirectory || "/" })
+  );
+
+  useEffect(() => {
+    clearTimeout(timeout);
+    if (itemData && !itemData.err) {
+      if (!CompareArray(itemData, directoryItems)) {
+        setDirectoryItems(itemData);
+        for (let i = 0; i < itemData.length; i++) {
+          fetchStuff(i, 0);
+        }
+      }
+    }
+    if (itemData?.length === 0) {
+      setDirectoryItems([{ msg: "Folder is empty" }]);
+    } else if (itemData?.err) {
+      setDirectoryItems([{ msg: "Error Occurred" }]);
+      timeout = setTimeout(() => {
+        dispatch({ type: "directoryNotFoundError" });
+      }, 2000);
+    }
+    // eslint-disable-next-line
+  }, [itemData, state.currentDirectory]);
+
+  useEffect(() => {
+    if (directories && !state.directoryTree[0] && directories.array) {
+      let parentDirs = state.currentDirectory
+        .split("/")
+        .slice(1, state.currentDirectory.length);
+      parentDirs = [...parentDirs, ...directories.array];
+
+      dispatch({
+        type: "updateDirectoryTree",
+        value: changeItem(
+          state.directoryTree,
+          parentDirs,
+          0,
+          directories.array
+        ),
+      });
+    }
+    // eslint-disable-next-line
+  }, [directories]);
+
+  useEffect(() => {
+    if (itemData && !itemData.err) {
+      if (!CompareArray(itemData, directoryItems)) {
+        for (let i in itemData) {
+          fetch("/api/directorydata", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              path: itemData[i].path,
+            }),
+          })
+            .then((res) => {
+              return res.json();
+            })
+            .then((res) => {
+              setDirectoryItems((prevItem) => {
+                return prevItem.map((item) => {
+                  return {
+                    ...item,
+                    ...(item.name === itemData[i].name && {
+                      shorthandsize: shortHandFileSize(res.bytes),
+                      filecount: res.filecount,
+                      foldercount: res.foldercount,
+                    }),
+                  };
+                });
+              });
+            })
+            .catch(() => {
+              return;
+            });
+        }
+      }
+    }
+  });
 
   return (
     <DirectoryContext.Provider
