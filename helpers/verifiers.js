@@ -44,7 +44,9 @@ function checkType(type) {
     type === 'py',
     type === 'css',
     type === 'html',
-    type === 'xhtml'
+    type === 'xhtml',
+    type === 'ini',
+    type === 'lnk'
   ];
 
   if (checkIfImage.includes(true)) {

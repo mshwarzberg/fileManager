@@ -1,12 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { DirectoryContext } from "../../Main/App";
 import ColorizeIcons from "../../../Helpers/ColorizeIcons";
+import folder from '../../../Assets/images/folder.png'
+import symlink from '../../../Assets/images/symlink.png'
 import Filename from "./Filename";
 
 function Icon(props) {
   const { state, dispatch } = useContext(DirectoryContext);
 
-  const { item} = props;
+  const { item } = props;
   const {
     name,
     shorthandsize,
@@ -16,27 +18,30 @@ function Icon(props) {
     permission,
     isDirectory,
     path,
+    isSymbolicLink,
+    linkTo
   } = item;
 
-  const [displayIcon, setDisplayIcon] = useState();
-
-  if (!displayIcon && !isFile) {
-    import(`../../../Assets/images/folder.png`).then((image) => {
-      setDisplayIcon(image.default);
-    });
-  }
-  
   return (
     !thumbnail && (
       <>
         <div
           className="renderitem--block"
-          title={`Name: ${name}${shorthandsize ? '\nSize: ' + shorthandsize : ''}\nType: ${fileextension}\nPath: ${path}\n${!permission ? 'NO ACCESS': ''}`}
+          title={`Name: ${name}${
+            shorthandsize ? "\nSize: " + shorthandsize : ""
+          }\nType: ${fileextension}\nPath: ${path}\n${
+            !permission ? "NO ACCESS" : ""
+          }`}
           onClick={() => {
-            if (isDirectory && permission) {
+            if (isDirectory && permission && !isSymbolicLink) {
               dispatch({
                 type: "openDirectory",
                 value: `${state.currentDirectory}${name && "/" + name}`,
+              });
+            } if (isSymbolicLink && permission) {
+              dispatch({
+                type: "openDirectory",
+                value: `${linkTo}`,
               });
             }
           }}
@@ -97,7 +102,7 @@ function Icon(props) {
             </svg>
           ) : (
             <img
-              src={displayIcon}
+              src={isSymbolicLink ? symlink : folder}
               alt="fileicon"
               className="renderitem--full-icon"
             />

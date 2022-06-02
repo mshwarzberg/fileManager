@@ -4,7 +4,6 @@ const { checkType } = require("../helpers/verifiers");
 
 function getFileNameParts(file, directory) {
   const item = checkIfFileOrDir(file);
-
   let suffix = "";
   // get the file extension
   if (!item.isDirectory) {
@@ -18,6 +17,7 @@ function getFileNameParts(file, directory) {
       }
     }
   }
+  
   // get the filename without the extension
   let prefix = "";
   // if the item is a folder don't remove anything. keep the file as is (even if it has a period in the name)
@@ -29,9 +29,15 @@ function getFileNameParts(file, directory) {
     }
   }
   let size;
+  let symLink
   let permission = true
   try {
-    size = fs.statSync(`${directory}/${file.name}`).size;
+    size = fs.statSync(`${directory === '/' ? directory : directory + '/'}${file.name}`).size;
+    if (item.isSymbolicLink) {
+      symLink = fs.readlinkSync(`${directory === '/' ? directory : directory + '/'}${file.name}`)
+      symLink = symLink.slice(2, symLink.length)
+      symLink = symLink.replaceAll('\\', '/')
+    }
   } catch {
     size = 0;
     permission = false;
@@ -45,6 +51,7 @@ function getFileNameParts(file, directory) {
     prefix: encodeURIComponent(prefix),
     size: size,
     permission: permission,
+    ...(symLink && {linkTo: symLink})
   };
   return filteredData;
 }
