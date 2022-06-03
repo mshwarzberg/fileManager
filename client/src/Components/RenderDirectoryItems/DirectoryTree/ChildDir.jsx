@@ -6,7 +6,7 @@ import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray"
 import RightArrowBlack from "../../../Assets/images/directorytree/right-arrow-black.png";
 import RightArrowWhite from "../../../Assets/images/directorytree/right-arrow-white.png";
 import RightArrowAccented from "../../../Assets/images/directorytree/right-arrow-accented.png";
-import FolderIcon from "../../../Assets/images/folder.png";
+import directory from "../../../Assets/images/folder.png";
 
 export default function ChildDir(props) {
   const { path, subItem } = props;
@@ -79,7 +79,7 @@ export default function ChildDir(props) {
         }
         alt="expand directory"
       />
-      <img src={FolderIcon} alt="folder" className="folder--icon" />
+      <img src={localStorage.getItem('folder') || directory} alt="folder" className="directory--icon" />
       {subItem.includes("*?<>")
         ? subItem.slice(0, subItem.length - 4)
         : subItem}

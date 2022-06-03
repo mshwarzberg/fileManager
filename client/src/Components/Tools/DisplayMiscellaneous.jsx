@@ -96,7 +96,7 @@ export default function DisplayMiscellaneous(props) {
       {!fullscreen && isNavigating.visible && (
         <div id="display--is-navigating">
           <img
-            src={alerticon}
+            src={localStorage.getItem('alert') || alerticon}
             alt=""
             title={`Press "Tab" to toggle the visibility of this message`}
           />
@@ -108,7 +108,7 @@ export default function DisplayMiscellaneous(props) {
         </div>
       )}
       <img
-        src={Close}
+        src={localStorage.getItem('close') || Close}
         alt="close"
         id="display--close"
         onClick={() => {

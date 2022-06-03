@@ -9,6 +9,7 @@ import CompareArray from "../../Helpers/CompareArray";
 import RenderItems from "../RenderDirectoryItems/RenderItems";
 import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
+import useStoreImages from "../../Hooks/useStoreImages";
 
 export const DirectoryContext = createContext();
 
@@ -19,7 +20,6 @@ export default function App() {
   const { state, dispatch } = DirectoryContextManager();
 
   const [directoryItems, setDirectoryItems] = useState();
-
   function fetchStuff(index, requestsMadeForThisItem) {
     if (requestsMadeForThisItem >= 15) {
       return;
@@ -39,25 +39,26 @@ export default function App() {
           if (
             itemData[index].itemtype === "image" ||
             itemData[index].itemtype === "video"
-          ) {
-            return fetchStuff(index, requestsMadeForThisItem + 1);
+            ) {
+              return fetchStuff(index, requestsMadeForThisItem + 1);
+            }
           }
-        }
-        let imageURL = URL.createObjectURL(response);
-        setDirectoryItems((prevItem) => {
-          return prevItem.map((item) => {
-            const doesMatch =
+          let imageURL = URL.createObjectURL(response);
+          setDirectoryItems((prevItem) => {
+            return prevItem.map((item) => {
+              const doesMatch =
               res.headers.get("prefix") === item.prefix &&
               res.headers.get("suffix") === item.fileextension;
+              
+              const newData = {
+                ...item,
+                shorthandsize: shortHandFileSize(item.size),
+                ...(doesMatch && { thumbnail: imageURL }),
+                ...(doesMatch && { width: res.headers.get("width") }),
+                ...(doesMatch && { height: res.headers.get("height") }),
+                ...(doesMatch && { duration: res.headers.get("duration") }),
+              };
 
-            const newData = {
-              ...item,
-              shorthandsize: shortHandFileSize(item.size),
-              ...(doesMatch && { thumbnail: imageURL }),
-              ...(doesMatch && { width: res.headers.get("width") }),
-              ...(doesMatch && { height: res.headers.get("height") }),
-              ...(doesMatch && { duration: res.headers.get("duration") }),
-            };
             return newData;
           });
         });
@@ -86,7 +87,6 @@ export default function App() {
     "/api/senddirectories",
     JSON.stringify({ path: state.currentDirectory || "/" })
   );
-
   useEffect(() => {
     clearTimeout(timeout);
     if (itemData && !itemData.err) {
@@ -147,14 +147,16 @@ export default function App() {
             .then((res) => {
               setDirectoryItems((prevItem) => {
                 return prevItem.map((item) => {
-                  return {
+                  const newData = {
                     ...item,
                     ...(item.name === itemData[i].name && {
                       shorthandsize: shortHandFileSize(res.bytes),
                       filecount: res.filecount,
                       foldercount: res.foldercount,
+                      size: res.bytes
                     }),
-                  };
+                  }
+                  return newData
                 });
               });
             })
@@ -165,6 +167,8 @@ export default function App() {
       }
     }
   });
+  
+  useStoreImages()
 
   return (
     <DirectoryContext.Provider

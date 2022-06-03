@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import useDisplayAnimation from '../../../../Hooks/useDisplayAnimation'
+import useDisplayAnimation from "../../../../Hooks/useDisplayAnimation";
 
 function ImageDisplay(props) {
   const { viewItem, fullscreen, enterExitFullscreen } = props;
@@ -54,7 +54,7 @@ function ImageDisplay(props) {
 
   const image = useRef();
 
-  const { itemClass } = useDisplayAnimation(image)
+  const { itemClass } = useDisplayAnimation(image);
 
   function handleZoom(e) {
     let size = image.current.style.scale;
@@ -66,6 +66,21 @@ function ImageDisplay(props) {
     }
   }
 
+  useEffect(() => {
+    let hideCursor;
+    if (document.fullscreenElement) {
+      document.addEventListener("mousemove", () => {
+        image.current.style.cursor = "default";
+        hideCursor = setTimeout(() => {
+          image.current.style.cursor = "none";
+        }, 2000);
+      });
+    }
+    return () => {
+      document.removeEventListener("mousemove", () => {});
+      clearTimeout(hideCursor);
+    };
+  });
   return (
     <div
       className="viewitem--block"
@@ -110,7 +125,11 @@ function ImageDisplay(props) {
             return;
           }
           setIsDragging(false);
-          image.current.style.cursor = image.current.style.scale > 1 ? 'grab' : 'default'
+          if (document.fullscreenElement) {
+            return
+          }
+          image.current.style.cursor =
+            image.current.style.scale > 1 ? "grab" : "default";
           document.removeEventListener("mousemove", onMouseMove);
         }}
         onDragStart={(e) => {

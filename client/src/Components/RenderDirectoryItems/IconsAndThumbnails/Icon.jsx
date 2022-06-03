@@ -102,7 +102,7 @@ function Icon(props) {
             </svg>
           ) : (
             <img
-              src={isSymbolicLink ? symlink : folder}
+              src={isSymbolicLink ? (localStorage.getItem('symlink') || symlink) : (localStorage.getItem('folder') || folder)}
               alt="fileicon"
               className="renderitem--full-icon"
             />

@@ -93,7 +93,7 @@ export default function RenderItems() {
             });
           } else {
             const reader = new FileReader();
-            reader.onload = function () {
+            reader.onload = () => {
               setViewItem({
                 type: "document",
                 property: reader.result || " ",

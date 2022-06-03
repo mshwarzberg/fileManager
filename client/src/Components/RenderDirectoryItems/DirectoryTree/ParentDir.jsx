@@ -4,7 +4,7 @@ import DownArrowBlack from "../../../Assets/images/directorytree/down-arrow-blac
 import DownArrowAccented from "../../../Assets/images/directorytree/down-arrow-accented.png";
 import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-white.png";
 
-import FolderIcon from "../../../Assets/images/folder.png";
+import directory from "../../../Assets/images/folder.png";
 import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
 import { IsInPath } from "../../../Helpers/IsInPath";
 import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
@@ -81,7 +81,7 @@ export default function ParentDir(props) {
           src={DownArrowBlack}
           alt="close tree"
         />
-        <img src={FolderIcon} alt="folder" className="folder--icon" />
+        <img src={localStorage.getItem('folder') || directory} alt="folder" className="directory--icon" />
         {parentDirectoryName || '/'}
       </p>
 
