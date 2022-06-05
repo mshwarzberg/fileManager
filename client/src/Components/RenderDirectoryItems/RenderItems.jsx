@@ -153,7 +153,6 @@ export default function RenderItems() {
         }
       }
     }
-
     if (type !== "folder") {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
