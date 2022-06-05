@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import SaveDocument from "../../../Tools/SaveDocument";
-import useDisplayAnimation from "../../../../Hooks/useDisplayAnimation";
 
 function DocumentDisplay(props) {
   const { viewItem, enterExitFullscreen, setViewItem, openDocument } = props;
@@ -15,7 +14,6 @@ function DocumentDisplay(props) {
   const [message, setMessage] = useState();
 
   const saveButton = useRef();
-  useDisplayAnimation(openDocument)
 
   return (
     <div className="viewitem--block" id="document--body">
@@ -36,7 +34,6 @@ function DocumentDisplay(props) {
         <SaveDocument
           saveButton={saveButton}
           setViewItem={setViewItem}
-          id=""
           viewItem={viewItem}
           openDocumentText={openDocument?.current?.textContent}
           disabled={
@@ -56,7 +53,7 @@ function DocumentDisplay(props) {
       </div>
       <textarea
         ref={openDocument}
-        className="viewitem--item loaded"
+        className="viewitem--item"
         id="document"
         value={newDocument}
         onChange={(e) => {

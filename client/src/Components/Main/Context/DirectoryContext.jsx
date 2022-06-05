@@ -1,7 +1,6 @@
 import { useReducer } from "react";
 
 function reducer(state, action) {
-  
   switch (action.type) {
     case "openDirectory": {
       let newNavigatedDirectories = [...state.navigatedDirectories];
@@ -54,19 +53,24 @@ function reducer(state, action) {
         ...state,
         directoryTree: action.value,
       };
+    case "setDriveName":
+      return {
+        ...state,
+        drive: action.value,
+      };
     default:
       return state;
   }
 }
 
 export default function useDirectoryContextManager() {
-
   const [state, dispatch] = useReducer(reducer, {
+    drive: "",
     currentDirectory: "",
     directoryTree: [""],
     navigatedDirectories: [""],
     navigatedIndex: 0,
   });
-  
-  return {state, dispatch}
+
+  return { state, dispatch };
 }

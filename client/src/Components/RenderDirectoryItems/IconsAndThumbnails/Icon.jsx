@@ -6,9 +6,9 @@ import symlink from '../../../Assets/images/symlink.png'
 import Filename from "./Filename";
 
 function Icon(props) {
-  const { state, dispatch } = useContext(DirectoryContext);
+  const { dispatch } = useContext(DirectoryContext);
 
-  const { item } = props;
+  const { item } = props; 
   const {
     name,
     shorthandsize,
@@ -36,7 +36,7 @@ function Icon(props) {
             if (isDirectory && permission && !isSymbolicLink) {
               dispatch({
                 type: "openDirectory",
-                value: `${state.currentDirectory}${name && "/" + name}`,
+                value: path,
               });
             } if (isSymbolicLink && permission) {
               dispatch({
@@ -102,7 +102,7 @@ function Icon(props) {
             </svg>
           ) : (
             <img
-              src={isSymbolicLink ? symlink : folder}
+              src={isSymbolicLink ? (localStorage.getItem('symlink') || symlink) : (localStorage.getItem('folder') || folder)}
               alt="fileicon"
               className="renderitem--full-icon"
             />

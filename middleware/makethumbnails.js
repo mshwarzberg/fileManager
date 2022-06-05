@@ -1,54 +1,60 @@
-const fs = require('fs')
+const fs = require("fs");
 const ffmpeg = require("fluent-ffmpeg");
 const sharp = require("sharp");
 
-const {checkType} = require('../helpers/verifiers')
+const { checkType } = require("../helpers/verifiers");
 
 function makeThumbnails(req, res, next) {
-  const { currentdirectory, suffix } = req.body;
+  const { currentdirectory, suffix, drive } = req.body;
   const prefix = decodeURIComponent(req.body.prefix);
+  let restOfPath = currentdirectory.slice(
+    drive.length,
+    currentdirectory.length
+  );
+
   const makeThumbs = new Promise((resolve, reject) => {
     // before generating thumbnail check if it already exists
-    fs.readdir(`./thumbnails/${currentdirectory}`, (err, files) => {
-      if (err) reject();
-      if (files?.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
+    fs.readdir(`${drive}/thumbnails`, (err, files) => {
+      if (err) reject("readdir err");
+      if (files && files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
         // generate thumbnails for videos and gifs
         if (checkType(suffix) === "video" || checkType(suffix) === "gif") {
           ffmpeg(`${currentdirectory}/${prefix}.${suffix}`)
             .thumbnails({
               count: 1,
-              folder: `./thumbnails/${currentdirectory}`,
-              timestamps: ["70%"],
+              folder: `${drive}/thumbnails/${restOfPath}`,
+              timestamps: ["81%"],
               filename: `thumbnail-${prefix}${suffix}.jpeg`,
             })
             .on("end", () => {
-              resolve();
+              return resolve();
             })
-            .on("error", () => {
-              reject();
+            .on("error", (e) => {
+              return reject("ffmpeg err", prefix + suffix);
             });
         }
         // generate thumbnails for images
-        else if (checkType(suffix) === "image" && suffix !== "xcf") {
+        else if (checkType(suffix) === "image") {
           sharp(`${currentdirectory}/${prefix}.${suffix}`)
             .resize({ width: 400 })
             .toFile(
-              `./thumbnails/${currentdirectory}/thumbnail-${prefix}${suffix}.jpeg`
+              `${drive}/thumbnails/${restOfPath}/thumbnail-${prefix}${suffix}.jpeg`
             )
-            .then((res) => {
-              resolve();
+            .then(() => {
+              return resolve();
             })
-            .catch((err) => {
-              reject();
+            .catch(() => {
+              return reject("sharp err", prefix + suffix);
             });
         }
       }
+      resolve();
     });
   });
 
-  makeThumbs.then(next()).catch((err) => {
-    res.end();
+  return makeThumbs.then(next()).catch((e) => {
+    return res.end();
   });
 }
 
-module.exports = { makeThumbnails }
+module.exports = { makeThumbnails };

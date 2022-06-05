@@ -14,6 +14,7 @@ export default function ImageGif(props) {
     path
   } = item;
   const nameInput = useRef()
+  
   return (
     thumbnail &&
     (itemtype === "image" || itemtype === "gif") && (
@@ -24,6 +25,8 @@ export default function ImageGif(props) {
         >
           <img
             src={thumbnail}
+            width={512}
+            height={512}
             alt="imagethumb"
             className="renderitem--thumbnail"
             title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nPath: ${path}`}

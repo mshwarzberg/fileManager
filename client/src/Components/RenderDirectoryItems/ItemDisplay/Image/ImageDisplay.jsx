@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import useDisplayAnimation from '../../../../Hooks/useDisplayAnimation'
 
 function ImageDisplay(props) {
   const { viewItem, fullscreen, enterExitFullscreen } = props;
@@ -19,7 +18,7 @@ function ImageDisplay(props) {
       image.current.style.top = positionY + "px";
     }
   }
-
+  
   function onMouseMove(e) {
     moveAt(e.movementX, e.movementY);
   }
@@ -54,41 +53,57 @@ function ImageDisplay(props) {
 
   const image = useRef();
 
-  const { itemClass } = useDisplayAnimation(image)
-
-  function handleZoom(e) {
-    let size = image.current.style.scale;
-
-    if (e.deltaY > 0 && size > 0.5) {
-      image.current.style.scale = 1 * size - 0.1;
-    } else if (e.deltaY < 0 && image.current && size < 5) {
-      image.current.style.scale = 1 * size + 0.1;
+  useEffect(() => {
+    let hideCursor;
+    if (document.fullscreenElement) {
+      document.addEventListener("mousemove", () => {
+        if (image.current) {
+          image.current.style.cursor = "default";
+          hideCursor = setTimeout(() => {
+            image.current.style.cursor = "none";
+          }, 2000);
+        }
+      });
     }
-  }
-
+    return () => {
+      document.removeEventListener("mousemove", () => {});
+      clearTimeout(hideCursor);
+    };
+  });
   return (
     <div
       className="viewitem--block"
-      onWheel={handleZoom}
+      onWheel={(e) => {
+        let size = image.current.style.scale;
+        if (e.deltaY > 0 && size > 0.5) {
+          image.current.style.scale = 1 * size - 0.025;
+          image.current.style.transform = `scale(${1 * size + 0.1})`;
+        } else if (e.deltaY < 0 && image.current && size < 5) {
+          image.current.style.scale = 1 * size + 0.025;
+          image.current.style.transform = `scale(${1 * size + 0.1})`;
+        }
+      }}
       onLoad={() => {
         image.current.style.scale = 1;
+        image.current.style.transform = "";
         image.current.style.left = "";
         image.current.style.top = "";
         image.current.style.cursor = "default";
-        image.current.style.position = "absolute";
+        image.current.style.position = "fixed";
       }}
     >
       <img
+        ref={image}
         onDoubleClick={() => {
           enterExitFullscreen();
         }}
-        ref={image}
         id={fullscreen ? "image-fullscreen" : ""}
-        className={itemClass}
+        className={"viewitem--item"}
         src={viewItem.property}
         alt={viewItem.name}
         onMouseDown={(e) => {
           if (e.button === 1) {
+            image.current.style.transform = "";
             image.current.style.scale = 1;
             image.current.style.left = "";
             image.current.style.top = "";
@@ -110,7 +125,11 @@ function ImageDisplay(props) {
             return;
           }
           setIsDragging(false);
-          image.current.style.cursor = image.current.style.scale > 1 ? 'grab' : 'default'
+          if (document.fullscreenElement) {
+            return;
+          }
+          image.current.style.cursor =
+            image.current.style.scale > 1 ? "grab" : "default";
           document.removeEventListener("mousemove", onMouseMove);
         }}
         onDragStart={(e) => {
