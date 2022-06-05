@@ -8,7 +8,7 @@ import { DirectoryContext } from "../Main/App";
 import ItemDisplay from "./ItemDisplay/ItemDisplay";
 
 export default function RenderItems() {
-  const { directoryItems, state } = useContext(DirectoryContext);
+  const { directoryItems, dispatch } = useContext(DirectoryContext);
 
   const [viewItem, setViewItem] = useState({
     type: null,
@@ -50,32 +50,32 @@ export default function RenderItems() {
           viewItem.type,
           viewItem.name,
           viewItem.index,
-          direction
+          viewItem.property,
+          direction,
         );
       }
     }
     document.addEventListener("keydown", navigateImagesAndVideos);
-
     return () => {
       document.removeEventListener("keydown", navigateImagesAndVideos);
     };
   });
 
-  function renderViewItem(type, property, index, filename) {
+  function renderViewItem(type, property, index, filename, path) {
     if (type === "video") {
       return setViewItem({
         type: "video",
         property: property,
         index: index,
         name: filename,
-        path: state.currentDirectory + "/" + filename,
+        path: path,
       });
     } else if (type === "image" || type === "gif" || type === "document") {
       fetch(`/api/loadfiles/file`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          file: filename,
+          path: path,
           type: type,
         }),
       })
@@ -89,7 +89,7 @@ export default function RenderItems() {
               property: imageURL,
               index: index,
               name: filename,
-              path: state.currentDirectory + "/" + filename,
+              path: path,
             });
           } else {
             const reader = new FileReader();
@@ -99,19 +99,19 @@ export default function RenderItems() {
                 property: reader.result || " ",
                 index: index,
                 name: filename,
-                path: state.currentDirectory + "/" + filename,
+                path: path,
               });
             };
             reader.readAsText(response);
           }
         })
         .catch((err) => {
-          console.log('RenderItems.jsx displayfiles', err);
+          console.log("RenderItems.jsx displayfiles", err);
         });
     }
   }
 
-  function changeFolderOrViewFiles(type, filename, index, direction) {
+  function changeFolderOrViewFiles(type, filename, index, path, direction) {
     // arrow functionality to navigate through the files while item is displayed
     if (direction) {
       if (direction === "forwards") {
@@ -144,19 +144,21 @@ export default function RenderItems() {
         }
       }
     }
+    
     if (type !== "folder") {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
         type,
-        `/api/loadfiles/playvideo/${filename}`,
+        `/api/loadfiles/playvideo/${encodeURIComponent(path)}`,
         index,
-        filename
+        filename,
+        path
       );
     }
   }
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
-    const { name, fileextension, size, itemtype } = item;
+    const { name, fileextension, size, itemtype, path } = item;
     if (name) {
       return (
         <div
@@ -165,24 +167,29 @@ export default function RenderItems() {
             return changeFolderOrViewFiles(
               itemtype,
               name,
-              directoryItems.indexOf(item)
+              directoryItems.indexOf(item),
+              path,
+              null,
             );
           }}
         >
-          <Video
-            item={item}
-          />
-          <ImageGif
-            item={item}
-          />
-          <Icon
-            item={item}
-          />
+          <Video item={item} />
+          <ImageGif item={item} />
+          <Icon item={item} />
         </div>
       );
     }
     if (item.msg) {
       return <h1 key={item.msg}>{item.msg}</h1>;
+    }
+    if (!name) {
+      return (
+        <div className="renderitem--block" key={item} onClick={() => {
+          dispatch({type: 'openDirectory', value: item})
+        }}>
+          {item}
+        </div>
+      );
     }
     return "";
   });

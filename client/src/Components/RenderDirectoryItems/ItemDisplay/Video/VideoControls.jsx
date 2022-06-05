@@ -15,6 +15,7 @@ import {
 } from "../../../../Assets/images/videocontrols/index.js";
 
 let scrubbing;
+
 export default function VideoControls(props) {
   const { video, videoContainer, videoControls, togglePlay } = props;
 
@@ -24,6 +25,7 @@ export default function VideoControls(props) {
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState("0:00");
   const [volumePosition, setVolumePosition] = useState(0);
 
+  const [looping, setLooping] = useState(false)
   function handleTimelineUpdate(e, scrubbing) {
     if (timelineContainer) {
       const rect = timelineContainer?.getBoundingClientRect();
@@ -43,18 +45,16 @@ export default function VideoControls(props) {
       Math.min(Math.max(0, e.screenX - rect.x), rect.width) / rect.width;
     scrubbing = (e.buttons & 1) === 1;
     video.currentTime = percent * video.duration;
-    // if (scrubbing) {
-    //   video.pause();
-    // } else {
-    //   if (!video.paused) {
-    //     video.play();
-    //   }
-    // }
 
     handleTimelineUpdate(e, scrubbing);
   }
 
   useEffect(() => {
+    video.addEventListener('ended', () => {
+      if (looping) {
+        video.play()
+      }
+    })
     video.addEventListener("timeupdate", () => {
       setCurrentPlaybackTime(formatDuration(video.currentTime));
       const percent = video.currentTime / video.duration;
@@ -192,6 +192,9 @@ export default function VideoControls(props) {
             }}
           />
         </button>
+        <button onClick={() => {
+          setLooping(!looping)
+        }}>{looping ? 'no loop' : 'loop'}</button>
       </div>
     </div>
   );

@@ -14,7 +14,7 @@ export default function ChildDir(props) {
 
   const { data: directories } = useFetch(
     "/api/senddirectories",
-    JSON.stringify({ path: path })
+    JSON.stringify({ path: path }), path
   );
 
   const changeItem = useUpdateDirectoryTree();

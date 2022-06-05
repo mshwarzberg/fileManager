@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import VideoControls from "./VideoControls";
 import useFitVideo from "../../../../Hooks/useFitVideo";
-import useDisplayAnimation from "../../../../Hooks/useDisplayAnimation";
 
 let timeouts;
 
@@ -25,11 +24,11 @@ function VideoDisplay(props) {
       videoHeader.current.style.display = "block";
     }
   }
-  const { itemClass } = useDisplayAnimation(videoContainer, 'load');
+
   return (
     <div className="viewitem--block" id="viewitem--block-video">
       <div
-        className={itemClass}
+        className={'viewitem--item'}
         id="video-container"
         onKeyDown={(e) => {
           if (e.key === " ") {

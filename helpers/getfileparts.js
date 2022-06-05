@@ -17,11 +17,15 @@ function getFileNameParts(file, directory) {
       }
     }
   }
-  
+
   // get the filename without the extension
   let prefix = "";
   // if the item is a folder don't remove anything. keep the file as is (even if it has a period in the name)
-  for (let j = 0; j < file.name.length - (suffix ? suffix.length + 1 : 0); j++) {
+  for (
+    let j = 0;
+    j < file.name.length - (suffix ? suffix.length + 1 : 0);
+    j++
+  ) {
     if (prefix === "") {
       prefix = file.name[j];
     } else {
@@ -29,29 +33,35 @@ function getFileNameParts(file, directory) {
     }
   }
   let size;
-  let symLink
-  let permission = true
+  let symLink;
+  let permission = true;
   try {
-    size = fs.statSync(`${directory === '/' ? directory : directory + '/'}${file.name}`).size;
+    size = fs.statSync(
+      `${directory === "/" ? directory : directory + "/"}${file.name}`
+    ).size;
     if (item.isSymbolicLink) {
-      symLink = fs.readlinkSync(`${directory === '/' ? directory : directory + '/'}${file.name}`)
-      symLink = symLink.slice(2, symLink.length)
-      symLink = symLink.replaceAll('\\', '/')
+      symLink = fs.readlinkSync(
+        `${directory === "/" ? directory : directory + "/"}${file.name}`
+      );
+      symLink = symLink.slice(2, symLink.length);
+      symLink = symLink.replaceAll("\\", "/");
     }
   } catch {
     size = 0;
     permission = false;
   }
+ 
+  const isDrive = directory.match(/^.:\//gm)
   
   const filteredData = {
     ...item,
-    path: `${directory === '/' ? directory : directory + '/'}${file.name}`,
+    path: `${directory === isDrive[0] ? directory : directory + "/"}${file.name}`,
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
     fileextension: suffix || "Directory",
     prefix: encodeURIComponent(prefix),
     size: size,
     permission: permission,
-    ...(symLink && {linkTo: symLink})
+    ...(symLink && { linkTo: symLink }),
   };
   return filteredData;
 }

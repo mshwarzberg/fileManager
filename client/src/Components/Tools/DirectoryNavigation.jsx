@@ -13,10 +13,18 @@ function DirectoryNavigation() {
       <button
         onClick={() => {
           let uppedDirectory = state.currentDirectory;
-          for (let i = uppedDirectory.length - 1; i >= 0; i--) {
-            if (uppedDirectory[i] === "/") {
-              uppedDirectory = uppedDirectory.slice(0, i);
-              break;
+          if (
+            uppedDirectory.length === 3 &&
+            uppedDirectory[1] === ":" &&
+            uppedDirectory[2] === "/"
+          ) {
+            uppedDirectory = "";
+          } else {
+            for (let i = uppedDirectory.length - 1; i >= 0; i--) {
+              if (uppedDirectory[i] === "/") {
+                uppedDirectory = uppedDirectory.slice(0, i);
+                break;
+              }
             }
           }
           dispatch({ type: "upDirectory", value: uppedDirectory });
