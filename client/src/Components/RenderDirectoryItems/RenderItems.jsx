@@ -8,7 +8,7 @@ import { DirectoryContext } from "../Main/App";
 import ItemDisplay from "./ItemDisplay/ItemDisplay";
 
 export default function RenderItems() {
-  const { directoryItems, dispatch } = useContext(DirectoryContext);
+  const { directoryItems, dispatch, state } = useContext(DirectoryContext);
 
   const [viewItem, setViewItem] = useState({
     type: null,
@@ -38,7 +38,10 @@ export default function RenderItems() {
           visible: !isNavigating.visible,
         });
       }
-      if (viewItem.property) {
+      if (
+        viewItem.property &&
+        (e.key === "ArrowRight" || e.key === "ArrowLeft")
+      ) {
         let direction;
         if (e.key === "ArrowRight" && isNavigating.value) {
           direction = "forwards";
@@ -47,11 +50,11 @@ export default function RenderItems() {
           direction = "backwards";
         }
         changeFolderOrViewFiles(
-          viewItem.type,
           viewItem.name,
-          viewItem.index,
           viewItem.property,
-          direction,
+          viewItem.type,
+          viewItem.index,
+          direction
         );
       }
     }
@@ -61,7 +64,7 @@ export default function RenderItems() {
     };
   });
 
-  function renderViewItem(type, property, index, filename, path) {
+  function renderViewItem(filename, path, type, index, property) {
     if (type === "video") {
       return setViewItem({
         type: "video",
@@ -77,11 +80,11 @@ export default function RenderItems() {
         body: JSON.stringify({
           path: path,
           type: type,
+          drive: state.drive,
         }),
       })
         .then(async (res) => {
           const response = await res.blob();
-
           if (res.headers.get("type") === "imagegif") {
             const imageURL = URL.createObjectURL(response);
             return setViewItem({
@@ -111,7 +114,7 @@ export default function RenderItems() {
     }
   }
 
-  function changeFolderOrViewFiles(type, filename, index, path, direction) {
+  function changeFolderOrViewFiles(filename, path, type, index, direction) {
     // arrow functionality to navigate through the files while item is displayed
     if (direction) {
       if (direction === "forwards") {
@@ -124,6 +127,7 @@ export default function RenderItems() {
             type === "gif"
           ) {
             filename = directoryItems[i].name;
+            path = directoryItems[i].path;
             index = i;
             break;
           }
@@ -137,6 +141,7 @@ export default function RenderItems() {
             type === "document" ||
             type === "gif"
           ) {
+            path = directoryItems[i].path;
             filename = directoryItems[i].name;
             index = i;
             break;
@@ -144,15 +149,15 @@ export default function RenderItems() {
         }
       }
     }
-    
+
     if (type !== "folder") {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
-        type,
-        `/api/loadfiles/playvideo/${encodeURIComponent(path)}`,
-        index,
         filename,
-        path
+        path,
+        type,
+        index,
+        encodeURIComponent(path)
       );
     }
   }
@@ -165,11 +170,11 @@ export default function RenderItems() {
           key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
           onClick={() => {
             return changeFolderOrViewFiles(
-              itemtype,
               name,
-              directoryItems.indexOf(item),
               path,
-              null,
+              itemtype,
+              directoryItems.indexOf(item),
+              null
             );
           }}
         >
@@ -184,9 +189,14 @@ export default function RenderItems() {
     }
     if (!name) {
       return (
-        <div className="renderitem--block" key={item} onClick={() => {
-          dispatch({type: 'openDirectory', value: item})
-        }}>
+        <div
+          className="renderitem--block"
+          key={item}
+          onClick={() => {
+            dispatch({ type: "setDriveName", value: item });
+            dispatch({ type: "openDirectory", value: item });
+          }}
+        >
           {item}
         </div>
       );

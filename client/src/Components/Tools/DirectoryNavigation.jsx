@@ -13,6 +13,7 @@ function DirectoryNavigation() {
       <button
         onClick={() => {
           let uppedDirectory = state.currentDirectory;
+
           if (
             uppedDirectory.length === 3 &&
             uppedDirectory[1] === ":" &&
@@ -22,6 +23,10 @@ function DirectoryNavigation() {
           } else {
             for (let i = uppedDirectory.length - 1; i >= 0; i--) {
               if (uppedDirectory[i] === "/") {
+                if (uppedDirectory[i - 1] === ":") {
+                  uppedDirectory = uppedDirectory.slice(0, i + 1);
+                  break;
+                }
                 uppedDirectory = uppedDirectory.slice(0, i);
                 break;
               }

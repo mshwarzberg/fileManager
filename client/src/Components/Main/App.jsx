@@ -32,6 +32,7 @@ export default function App() {
         prefix: itemData[index].prefix,
         suffix: itemData[index].fileextension,
         currentdirectory: state.currentDirectory,
+        drive: state.drive,
       }),
     })
       .then(async (res) => {
@@ -39,8 +40,8 @@ export default function App() {
         if (response.size === 0) {
           if (
             itemData[index].itemtype === "image" ||
-            itemData[index].itemtype === "video" || 
-            itemData[index].itemtype === 'gif'
+            itemData[index].itemtype === "video" ||
+            itemData[index].itemtype === "gif"
           ) {
             return fetchStuff(index, requestsMadeForThisItem + 1);
           }
@@ -73,7 +74,10 @@ export default function App() {
 
   const { data: itemData } = useFetch(
     "/api/data/data",
-    JSON.stringify({ currentdirectory: state.currentDirectory }),
+    JSON.stringify({
+      currentdirectory: state.currentDirectory,
+      drive: state.drive,
+    }),
     state.currentDirectory
   );
 

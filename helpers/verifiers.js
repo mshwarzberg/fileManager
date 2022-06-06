@@ -1,25 +1,27 @@
 const fs = require("fs");
 
 function verifyFolder(req, res, next) {
-  if (fs.existsSync(`${'/' || req.body.currentdirectory}`)) {
+  if (fs.existsSync(`${"/" || req.body.currentdirectory}`)) {
     return next();
   }
   return res.send({ err: "ERROR: FOLDER DOES NOT EXIST" });
 }
 
 function checkType(type) {
-  type = type?.toLowerCase();
+  if (type) {
+    type = type.toLowerCase();
+  }
 
   const checkIfImage = [
     type === "jpg",
     type === "png",
     type === "jpeg",
-    type === 'ico',
-    type === 'avif',
-    type === 'svg',
-    type === 'tiff', 
-    type === 'bmp',
-    type === 'cur'
+    type === "ico",
+    type === "avif",
+    type === "svg",
+    type === "tiff",
+    type === "bmp",
+    type === "cur",
   ];
   const checkIfVideo = [
     type === "mp4",
@@ -36,17 +38,17 @@ function checkType(type) {
     type === "rtf",
     type === "ion",
     type === "docx",
-    type === 'json',
-    type === 'jsx', 
-    type === 'js',
-    type === 'scss',
-    type === 'md',
-    type === 'py',
-    type === 'css',
-    type === 'html',
-    type === 'xhtml',
-    type === 'ini',
-    type === 'lnk'
+    type === "json",
+    type === "jsx",
+    type === "js",
+    type === "scss",
+    type === "md",
+    type === "py",
+    type === "css",
+    type === "html",
+    type === "xhtml",
+    type === "ini",
+    type === "lnk",
   ];
 
   if (checkIfImage.includes(true)) {
@@ -65,4 +67,4 @@ function checkType(type) {
   }
 }
 
-module.exports = { verifyFolder, checkType }
+module.exports = { verifyFolder, checkType };

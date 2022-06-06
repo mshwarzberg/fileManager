@@ -28,7 +28,7 @@ function VideoDisplay(props) {
   return (
     <div className="viewitem--block" id="viewitem--block-video">
       <div
-        className={'viewitem--item'}
+        className={"viewitem--item"}
         id="video-container"
         onKeyDown={(e) => {
           if (e.key === " ") {
@@ -137,7 +137,7 @@ function VideoDisplay(props) {
           }}
           ref={video}
           id="viewitem--video"
-          src={viewItem.property}
+          src={`/api/loadfiles/playvideo/${viewItem.property}`}
         />
       </div>
     </div>

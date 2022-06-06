@@ -1,4 +1,5 @@
 const fs = require("fs");
+const os = require("os");
 const { checkIfFileOrDir } = require("./isfileordirectory");
 const { checkType } = require("../helpers/verifiers");
 
@@ -50,12 +51,17 @@ function getFileNameParts(file, directory) {
     size = 0;
     permission = false;
   }
- 
-  const isDrive = directory.match(/^.:\//gm)
-  
+
+  let isDrive = "";
+  if (os.platform() === "win32") {
+    isDrive = directory.match(/^.:\//gm);
+  }
+
   const filteredData = {
     ...item,
-    path: `${directory === isDrive[0] ? directory : directory + "/"}${file.name}`,
+    path: `${directory === isDrive[0] ? directory : directory + "/"}${
+      file.name
+    }`,
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
     fileextension: suffix || "Directory",
     prefix: encodeURIComponent(prefix),

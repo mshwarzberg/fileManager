@@ -3,12 +3,14 @@ const { checkIfFileOrDir } = require("../helpers/getfileparts");
 
 // when a user enters a new folder create all the subdirectories for the thumbnails.
 function makeThumbnailDirectories(req, res, next) {
-  const { currentdirectory } = req.body;
-  let root = currentdirectory.slice(0, 2)
-  let restOfPath = currentdirectory.slice(3, currentdirectory.length)
+  const { currentdirectory, drive } = req.body;
+  let restOfPath = currentdirectory.slice(
+    drive.length,
+    currentdirectory.length
+  );
   // create folder of the current directory within the thumbnails folder to store the thumbnails
   const makeDirectories = new Promise((resolve, reject) => {
-    fs.mkdir(`${root}/thumbnails`, { recursive: true }, () => {
+    fs.mkdir(`${drive}/thumbnails`, { recursive: true }, () => {
       fs.readdir(
         `${currentdirectory}`,
         { withFileTypes: true },
@@ -16,27 +18,32 @@ function makeThumbnailDirectories(req, res, next) {
           if (err) {
             reject("cant make dir");
           }
-          for (let i = 0; i < files?.length - 1; i++) {
-            if (checkIfFileOrDir(files[i]).isDirectory) {
-              fs.mkdir(
-                `${root}/thumbnails/${restOfPath}/${files[i].name}`, {recursive: true},
-                () => {
-                  resolve(`made ${root}/thumbnails/${restOfPath}/${files[i].name}`);
-                }
-              );
+          if (files) {
+            for (let i = 0; i < files.length; i++) {
+              if (checkIfFileOrDir(files[i]).isDirectory) {
+                fs.mkdirSync(
+                  `${drive}/thumbnails/${restOfPath}/${files[i].name}`,
+                  { recursive: true }
+                );
+                // console.log(
+                //   `made ${drive}/thumbnails/${restOfPath}/${files[i].name}`
+                // );
+              }
             }
           }
-          resolve()
+          resolve("Done");
         }
       );
     });
   });
 
-  makeDirectories.then(() => {
-    next()
-  }).catch((err) => {
-    console.log(err);
-  });
+  makeDirectories
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 }
 
 module.exports = { makeThumbnailDirectories };
