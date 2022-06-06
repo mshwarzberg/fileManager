@@ -26,6 +26,15 @@ export default function RenderItems() {
 
   useEffect(() => {
     function navigateImagesAndVideos(e) {
+      const isKeyForNavigating = [
+        e.key === "ArrowLeft",
+        e.key === "ArrowRight",
+        e.key === "Tab",
+        e.key === "CapsLock",
+      ];
+      if (!isKeyForNavigating.includes(true)) {
+        return;
+      }
       if (e.key === "CapsLock") {
         setIsNavigating({
           value: !isNavigating.value,
@@ -149,7 +158,6 @@ export default function RenderItems() {
         }
       }
     }
-
     if (type !== "folder") {
       // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
       return renderViewItem(
