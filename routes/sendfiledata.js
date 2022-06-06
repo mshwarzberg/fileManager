@@ -1,7 +1,6 @@
 const express = require("express");
 const fs = require("fs");
 const router = express.Router();
-const ffmpeg = require("fluent-ffmpeg");
 const child = require("child_process");
 const os = require("os");
 
@@ -11,6 +10,7 @@ const { makeThumbnails } = require("../middleware/makethumbnails");
 const {
   makeThumbnailDirectories,
 } = require("../middleware/makethumbnaildirectories");
+const { ffprobeMetadata } = require("../helpers/ffmpegfunctions");
 
 router.get("/choosedrive", (req, res) => {
   let drives;
@@ -70,7 +70,7 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
   ];
 
   if (isImageGifVideo.includes(true)) {
-    ffmpeg.ffprobe(`${currentdirectory}/${prefix}.${suffix}`, (_, data) => {
+    ffprobeMetadata(`${currentdirectory}/${prefix}.${suffix}`, (data) => {
       fs.readdir(`${drive}/thumbnails/${restOfPath}`, (_, files) => {
         if (
           files &&
@@ -81,10 +81,10 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
             headers: {
               prefix: encodeURIComponent(prefix),
               suffix: suffix,
-              width: data.streams[0].width || data.streams[1].width || "",
-              height: data.streams[0].height || data.streams[1].height || "",
-              ...(data.format.duration !== "N/A" && {
-                duration: data.format.duration || "",
+              width: data.width || "",
+              height: data.height || "",
+              ...(data.duration > 0.05 && {
+                duration: data.duration,
               }),
             },
           };

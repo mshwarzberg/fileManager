@@ -1,9 +1,9 @@
 const fs = require("fs");
-const ffmpeg = require("fluent-ffmpeg");
 const sharp = require("sharp");
-
+const { ffmpegThumbs } = require("../helpers/ffmpegfunctions");
 const { checkType } = require("../helpers/verifiers");
 
+let array = [];
 function makeThumbnails(req, res, next) {
   const { currentdirectory, suffix, drive } = req.body;
   const prefix = decodeURIComponent(req.body.prefix);
@@ -14,24 +14,21 @@ function makeThumbnails(req, res, next) {
 
   const makeThumbs = new Promise((resolve, reject) => {
     // before generating thumbnail check if it already exists
-    fs.readdir(`${drive}/thumbnails`, (err, files) => {
+    fs.readdir(`${drive}/thumbnails/${restOfPath}`, (err, files) => {
       if (err) reject("readdir err");
       if (files && files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
         // generate thumbnails for videos and gifs
         if (checkType(suffix) === "video" || checkType(suffix) === "gif") {
-          ffmpeg(`${currentdirectory}/${prefix}.${suffix}`)
-            .thumbnails({
-              count: 1,
-              folder: `${drive}/thumbnails/${restOfPath}`,
-              timestamps: ["81%"],
-              filename: `thumbnail-${prefix}${suffix}.jpeg`,
-            })
-            .on("end", () => {
-              return resolve();
-            })
-            .on("error", (e) => {
-              return reject("ffmpeg err", prefix + suffix);
-            });
+          const start = performance.now();
+          ffmpegThumbs(
+            `${currentdirectory}/${prefix}.${suffix}`,
+            `${drive}/thumbnails/${restOfPath}/thumbnail-${prefix}${suffix}.jpeg`,
+            () => {
+              resolve();
+            }
+          );
+          const end = performance.now();
+          array.push(end - start);
         }
         // generate thumbnails for images
         else if (checkType(suffix) === "image") {
@@ -51,7 +48,13 @@ function makeThumbnails(req, res, next) {
       resolve();
     });
   });
-
+  // let totalTime = 0;
+  // for (let i in array) {
+  //   totalTime += array[i];
+  // }
+  // if (!isNaN(totalTime / array.length)) {
+  //   console.log((totalTime / array.length).toString().slice(0, 5) + "ms");
+  // }
   return makeThumbs.then(next()).catch((e) => {
     return res.end();
   });
