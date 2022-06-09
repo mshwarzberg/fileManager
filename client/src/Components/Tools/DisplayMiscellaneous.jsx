@@ -4,7 +4,7 @@ import alerticon from "../../Assets/images/alert.png";
 import useScreenDimensions from "../../Hooks/useScreenDimensions";
 import Back from "../../Assets/images/navigate-backwards.png";
 import Forward from "../../Assets/images/navigate-forwards.png";
-import SaveDocument from '../Tools/SaveDocument';
+import SaveDocument from "../Tools/SaveDocument";
 
 export default function DisplayMiscellaneous(props) {
   const {
@@ -14,7 +14,7 @@ export default function DisplayMiscellaneous(props) {
     setFullscreen,
     isNavigating,
     changeFolderOrViewFiles,
-    openDocument,
+    currentDocument,
   } = props;
 
   const { width } = useScreenDimensions();
@@ -22,8 +22,10 @@ export default function DisplayMiscellaneous(props) {
   const [confirmExit, setConfirmExit] = useState();
 
   return (
-    <div id="display--miscellaneous">
-      {!fullscreen && viewItem.type !== 'video' && <h1 id="display--name">{viewItem.path}</h1>}
+    <>
+      {!fullscreen && viewItem.type !== "video" && (
+        <h1 id="display--name">{viewItem.path}</h1>
+      )}
       {confirmExit && (
         <div id="confirmexit--body">
           <div id="confirmexit--popup">
@@ -54,7 +56,7 @@ export default function DisplayMiscellaneous(props) {
             <SaveDocument
               viewItem={viewItem}
               id="right"
-              openDocumentText={openDocument?.textContent}
+              currentDocumentText={currentDocument?.textContent}
               setViewItem={setViewItem}
               setConfirmExit={setConfirmExit}
               setFullscreen={setFullscreen}
@@ -93,10 +95,10 @@ export default function DisplayMiscellaneous(props) {
           />
         </>
       )}
-      {!fullscreen && isNavigating.visible && (
+      {!fullscreen && isNavigating.visible && viewItem.type !== "video" && (
         <div id="display--is-navigating">
           <img
-            src={localStorage.getItem('alert') || alerticon}
+            src={localStorage.getItem("alert") || alerticon}
             alt=""
             title={`Press "Tab" to toggle the visibility of this message`}
           />
@@ -108,14 +110,17 @@ export default function DisplayMiscellaneous(props) {
         </div>
       )}
       <img
-        src={localStorage.getItem('close') || Close}
+        src={localStorage.getItem("close") || Close}
         alt="close"
         id="display--close"
         onClick={() => {
+          if (viewItem.type === "video") {
+            fetch("/api/loadfiles/closevideo");
+          }
           if (
-            viewItem.property !== openDocument?.textContent &&
-            openDocument &&
-            viewItem.type === "document"
+            viewItem.property !== currentDocument?.textContent &&
+            viewItem.type === "document" &&
+            currentDocument
           ) {
             return setConfirmExit(true);
           }
@@ -131,6 +136,6 @@ export default function DisplayMiscellaneous(props) {
         }}
         draggable={false}
       />
-    </div>
+    </>
   );
 }

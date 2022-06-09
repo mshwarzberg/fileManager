@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 
+const {
+  transcodeVideo,
+  cancelTranscode,
+} = require("../helpers/ffmpegfunctions");
+
 router.post("/file", (req, res) => {
   let { type, path, drive } = req.body;
   let currentdirectory = path.slice(drive.length, path.length);
@@ -9,9 +14,22 @@ router.post("/file", (req, res) => {
   if (type === "image" || type === "gif") {
     type = "imagegif";
   } else {
+    // console.time();
+    // let count = 0;
+    // fs.createReadStream(path)
+    //   .on("data", (chunk) => {
+    //     for (i in chunk) {
+    //       if (chunk[i] == 10) count++;
+    //     }
+    //   })
+    //   .on("end", () => {
+    //     console.log(count);
+    //     console.timeEnd();
+    //   });
     type = "document";
   }
-  return res.sendFile(`${currentdirectory}`, {
+
+  return res.sendFile(currentdirectory, {
     root: drive,
     headers: {
       type: type,
@@ -23,26 +41,35 @@ router.get("/playvideo/:video", (req, res) => {
   if (!req.params.video) {
     return res.end();
   }
+  let drive = req.params.video.split("/")[0] + "/";
+  transcodeVideo(req.params.video, drive, () => {
+    const filePath = decodeURIComponent(req.params.video);
+    const totalSize = fs.statSync(filePath).size;
+    const range = req.headers.range;
 
-  const filePath = decodeURIComponent(req.params.video);
-  const totalSize = fs.statSync(filePath).size;
-  const range = req.headers.range;
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : totalSize - 1;
 
-  const parts = range.replace(/bytes=/, "").split("-");
-  const start = parseInt(parts[0], 10);
-  const end = parts[1] ? parseInt(parts[1], 10) : totalSize - 1;
+    const chunksize = end - start + 1;
+    const file = fs.createReadStream(filePath, {
+      start,
+      end,
+    });
 
-  const chunksize = end - start + 1;
-  const file = fs.createReadStream(filePath, { start, end });
-
-  const head = {
-    "Content-Range": `bytes ${start}-${end}/${totalSize}`,
-    "Accept-Ranges": "bytes",
-    "Content-Length": chunksize,
-    "Content-Type": `video/mp4`,
-  };
-  res.writeHead(206, head);
-  file.pipe(res);
+    const head = {
+      "Content-Range": `bytes ${start}-${end}/${totalSize}`,
+      "Accept-Ranges": "bytes",
+      "Content-Length": chunksize,
+      "Content-Type": `video/mp4`,
+    };
+    res.writeHead(206, head);
+    file.pipe(res);
+  });
 });
 
+router.get("/closevideo", (req, res) => {
+  cancelTranscode();
+  res.end();
+});
 module.exports = router;

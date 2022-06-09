@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import VideoControls from "./VideoControls";
 import useFitVideo from "../../../../Hooks/useFitVideo";
+import useDrag from "../../../../Hooks/useDrag";
 
 let timeouts;
 
@@ -13,6 +14,9 @@ function VideoDisplay(props) {
   const videoContainer = useRef();
   const videoControls = useRef();
   const videoHeader = useRef();
+  const videoPage = useRef();
+
+  const { setIsDragging, onMouseMove } = useDrag(videoPage.current);
 
   function togglePlay() {
     if (video.current.paused) {
@@ -25,33 +29,33 @@ function VideoDisplay(props) {
     }
   }
 
+  const [miniPlayer, setMiniPlayer] = useState(false);
+
   return (
-    <div className="viewitem--block" id="viewitem--block-video">
+    <div
+      className={
+        miniPlayer ? "viewitem--block mini-player-body" : "viewitem--block"
+      }
+      id="viewitem--block-video"
+      ref={videoPage}
+      onMouseDown={(e) => {
+        if (miniPlayer && !document.fullscreenElement) {
+          setIsDragging(true);
+        }
+        e.stopPropagation();
+      }}
+      onMouseUp={(e) => {
+        setIsDragging(false);
+        document.removeEventListener("mousemove", onMouseMove);
+        e.stopPropagation();
+      }}
+    >
+      {props.children}
       <div
-        className={"viewitem--item"}
+        className={miniPlayer ? "viewitem--item mini-player" : "viewitem--item"}
         id="video-container"
-        onKeyDown={(e) => {
-          if (e.key === " ") {
-            togglePlay();
-          }
-          if (e.key === "ArrowLeft") {
-            video.current.currentTime -= 5;
-          }
-          if (e.key === "ArrowRight") {
-            video.current.currentTime += 5;
-          }
-          if (e.key === "f") {
-            if (document.fullscreenElement) {
-              document.exitFullscreen();
-            } else {
-              return videoContainer.current.requestFullscreen();
-            }
-          }
-          e.stopPropagation();
-        }}
         onMouseMove={(e) => {
           clearTimeout(timeouts);
-
           if (videoControls.current) {
             videoControls.current.style.display = "block";
             videoContainer.current.style.cursor = "default";
@@ -104,13 +108,24 @@ function VideoDisplay(props) {
           }
         }}
         style={{
-          width: containerDimensions.width,
-          height: containerDimensions.height,
+          width: miniPlayer
+            ? containerDimensions.width / 2.5
+            : containerDimensions.width,
+          height: miniPlayer
+            ? containerDimensions.height / 2.5
+            : containerDimensions.height,
         }}
       >
         {containerDimensions.width && containerDimensions.height && (
           <>
-            <svg id="video-header" viewBox="0 0 25 25" ref={videoHeader}>
+            <svg
+              id="video-header"
+              viewBox="0 0 25 25"
+              ref={videoHeader}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <text
                 fill="currentColor"
                 y="15"
@@ -125,6 +140,9 @@ function VideoDisplay(props) {
               videoControls={videoControls}
               video={video.current}
               videoContainer={videoContainer.current}
+              setMiniPlayer={setMiniPlayer}
+              miniPlayer={miniPlayer}
+              videoPage={videoPage.current}
             />
           </>
         )}

@@ -1,10 +1,5 @@
 @import "../../Main/MainSCSS/variables";
 
-#video-container {
-  @include flexStyle(column);
-  position: relative;
-}
-
 @keyframes headerAndControls {
   0% {
     transform: scaleY(0);
@@ -14,19 +9,44 @@
   }
 }
 
+@keyframes minifyPlayer {
+  0% {
+    position: fixed;
+    transform: scale(auto);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+#video-container {
+  @include flexStyle(column);
+  position: relative;
+  animation: none;
+  #viewitem--video {
+    @include maxSize;
+  }
+}
+
 #video-header {
   position: absolute;
   top: 0;
   width: 100%;
   height: 8%;
-  padding-top: 1%;
-  z-index: 1;
-  @include flexStyle(row);
-  background-color: #000;
-  border-bottom: 2px solid white;
+  background-color: red;
+  background: linear-gradient(
+    180deg,
+    black 0%,
+    black 80%,
+    rgba(0, 0, 0, 0) 99%,
+    rgba(0, 0, 0, 0) 100%
+  );
   color: white;
   transform-origin: top;
   animation: headerAndControls 150ms forwards;
+  text {
+    font-size: 0.65rem;
+  }
 }
 
 #video-header-filename {
@@ -35,10 +55,15 @@
 }
 
 #video-controls-container {
-  background-color: #000;
-  border-top: 2px solid white;
+  background: linear-gradient(
+    0deg,
+    black 0%,
+    black 70%,
+    rgba(0, 0, 0, 0) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
   width: 100%;
-  height: 25%;
+  height: 20%;
   max-height: 8rem;
   position: absolute;
   bottom: 0;
@@ -47,143 +72,198 @@
   animation: headerAndControls 150ms forwards;
   #controls {
     position: absolute;
-    bottom: 10%;
+    bottom: 15%;
     width: 100%;
     @include flexStyle(row);
-    justify-content: space-around;
-    #play-pause,
-    #mini-player,
-    #full-screen-control {
-      height: 3rem;
-      width: 3rem;
-      max-width: 20%;
-      max-height: 20%;
-      background-color: #00000000;
-      border: none;
-      img {
-        width: 100%;
-        height: 100%;
-        opacity: 0.85;
+    #left-side-controls {
+      @include flexStyle(row);
+      justify-content: space-between;
+      position: absolute;
+      bottom: 0;
+      left: 1.3%;
+      width: 50%;
+      max-width: 25rem;
+      #volume-container {
+        position: relative;
+        height: 2.2rem;
+        width: 2.2rem;
+        @include flexStyle(row);
+        &:focus-within,
         &:hover {
-          opacity: 1;
-          transform: scale(1.1);
-          transition: transform 100ms ease-out, opacity 100ms;
-          cursor: pointer;
+          #volume-slider {
+            position: absolute;
+            width: 10rem;
+            right: -10.3rem;
+            transform: scaleX(1);
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+          }
         }
+        #volume-control {
+          background-color: #00000000;
+          outline: none;
+          border: none;
+          @include maxSize;
+          img {
+            @include maxSize;
+          }
+        }
+        #volume-slider {
+          -webkit-appearance: none;
+          position: absolute;
+          width: 10rem;
+          height: 2rem;
+          right: -10.3rem;
+          outline: none;
+          transform-origin: left;
+          transform: scaleX(0);
+          transition: width 150ms ease-in-out, transform 150ms ease-in-out;
+          cursor: pointer;
+          background: linear-gradient(
+            0deg,
+            #00000000 35%,
+            white 36%,
+            white 64%,
+            #00000000 65%
+          );
+          &:hover {
+            &::before {
+              background-color: red;
+            }
+          }
+          &::-moz-range-thumb {
+            width: 10px;
+            height: 0.7rem;
+            background: darken($accentColor, 50%);
+            cursor: pointer;
+          }
+          &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 0.7rem;
+            background: darken($accentColor, 50%);
+            cursor: pointer;
+          }
+        }
+      }
+      #duration-container {
+        height: 2rem;
+        width: 12rem;
+        max-width: 40%;
+        text {
+          color: #fff;
+          font-family: "roboto slab";
+          font-size: 1rem;
+        }
+      }
+    }
+    #right-side-controls {
+      position: absolute;
+      right: 1.3%;
+      width: 10%;
+      max-width: 5rem;
+      #mini-player-button {
+        position: absolute;
+        right: 100%;
+        bottom: 0;
+        @include flexStyle(row);
+        img {
+          height: 140%;
+          width: 140%;
+          position: absolute;
+        }
+      }
+      #full-screen-control {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+      }
+    }
+  }
+  #timeline-container {
+    position: absolute;
+    top: 40%;
+    width: 98%;
+    margin-inline: 1%;
+    height: 7%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    #timeline {
+      background-color: rgba(100, 100, 100, 1);
+      height: 50%;
+      width: 100%;
+      position: relative;
+      &:hover {
+        transform: scaleY(1.3);
+        transition: 150ms linear;
+        background-color: rgba(150, 150, 150, 1);
+        &::after {
+          background-color: darken($accentColor, 20%);
+        }
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        height: 100%;
+        right: calc(100% - var(--progress-position) * 100%);
+        background-color: $accentColor;
       }
     }
   }
 }
 
-#volume-container {
-  position: relative;
-}
-
-#volume-control {
-  background-color: #00000000;
-  outline: none;
+.control--button {
+  height: 2rem;
+  width: 2rem;
+  background: none;
   border: none;
-}
-
-#volume-slider {
-  -webkit-appearance: none;
-  rotate: -90deg;
-  background-color: #222222ff;
-  position: absolute;
-  left: -75%;
-  top: -180%;
-  outline: none;
-  transform-origin: bottom;
-  transform: scaleX(0);
-  transition: width 150ms ease-in-out, transform 150ms ease-in-out;
-}
-
-#volume-container:hover #volume-slider,
-#volume-slider:focus-within {
-  transform: scaleX(1);
-  border: 5px solid white;
-  border-top-right-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-}
-
-#volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: darken($accentColor, 30%);
-  cursor: pointer;
-}
-
-#volume-slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: darken($accentColor, 30%);
-  cursor: pointer;
-}
-
-#timeline-container {
-  position: absolute;
-  top: 1.5rem;
-  width: 96%;
-  margin-inline: 2%;
-  height: 10%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  background-color: black;
-  border-radius: 2rem;
-}
-
-#duration-container, #playback-speed {
-  @include flexStyle(row);
-  height: 3rem;
-  width: 12rem;
-  max-width: 20%;
-  text {
-    color: #fff;
-    font-family: "bebas neue";
-    font-size: 1.1em;
+  img {
+    width: 100%;
+    height: 100%;
+    opacity: 0.85;
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+      transition: transform 100ms ease-out, opacity 100ms;
+      cursor: pointer;
+    }
   }
 }
 
-#playback-speed {
-  width: 6rem;
-  max-width: 10%;
-}
-
-#viewitem--video {
-  height: 100%;
-  width: 100%;
-  object-fit: contain;
-}
-
-#timeline {
-  background-color: rgba(100, 100, 100, 1);
-  height: 50%;
-  border-radius: 1rem;
-  width: 99%;
-  margin-inline: 0.5%;
-  position: relative;
-  &::before {
-    border-radius: 1rem;
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    right: calc(100% - var(--preview-position) * 100%);
-    background-color: rgb(150, 150, 150);
-    display: none;
+.mini-player-body {
+  background-color: #00000000;
+  width: auto;
+  height: auto;
+  animation: minifyPlayer forwards linear 1500ms;
+  #left-side-controls {
+    width: 45% !important;
+    @include flexStyle(row);
+    bottom: -7.5px !important;
+    #duration-container {
+      width: 100% !important;
+    }
   }
-  &::after {
-    border-radius: 1rem;
-    content: "";
+  .control--button {
+    height: 1.3rem !important;
+    width: 1.3rem !important;
+  }
+  #mini-player-button {
+    img {
+      width: 130% !important;
+      height: 130% !important;
+    }
+  }
+  .viewitem--item {
+    max-height: 100%;
+    max-width: 100%;
+  }
+  .mini-player {
     position: absolute;
-    left: 0;
     top: 0;
-    bottom: 0;
-    right: calc(100% - var(--progress-position) * 100%);
-    background-color: $accentColor;
+    left: 0;
+    aspect-ratio: 1;
   }
 }

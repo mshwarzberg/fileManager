@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { useEffect } from "react";
 
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
@@ -9,8 +8,6 @@ import Filename from "./Filename";
 function Video(props) {
   const { item } = props;
 
-  const container = useRef();
-  const thumbnailItem = useRef();
   const nameInput = useRef();
 
   const {
@@ -25,16 +22,6 @@ function Video(props) {
     path,
   } = item;
 
-  let positionX =
-    (thumbnailItem?.current?.clientWidth / container?.current?.clientWidth) *
-      100 +
-    0.7 *
-      (thumbnailItem?.current?.clientWidth / container?.current?.clientWidth);
-
-  let positionY =
-    (thumbnailItem?.current?.height / container?.current?.clientHeight) * 100 +
-    15 * (thumbnailItem?.current?.height / container?.current?.clientHeight);
-
   const [durationPosition, setDurationPosition] = useState({
     rectX: 0,
     rectY: 0,
@@ -42,20 +29,20 @@ function Video(props) {
     textY: 8,
   });
 
-  useEffect(() => {
+  function positionDuration(x, y) {
     setDurationPosition({
-      rectX: (100 + positionX) / 2 - 25 || 0,
-      rectY: (100 + positionY) / 2 - 11 || 0,
-      textX: (100 + positionX) / 2 - 12.5 || 12.5,
-      textY: (100 + positionY) / 2 - 3 || 8,
+      rectX: (100 + x) / 2 - 25,
+      rectY: (100 + y) / 2 - 10,
+      textX: (100 + x) / 2 - 12.5,
+      textY: (100 + y) / 2 - 2,
     });
-  }, [setDurationPosition, positionY, positionX]);
+  }
+
   return (
     thumbnail &&
     itemtype === "video" && (
       <>
         <div
-          ref={container}
           className="renderitem--block"
           onMouseEnter={(e) => {
             e.currentTarget.firstChild.style.display = "block";
@@ -78,13 +65,31 @@ function Video(props) {
             style={{ display: "none", zIndex: 1 }}
           />
           <img
-            ref={thumbnailItem}
             className="renderitem--thumbnail"
             src={thumbnail}
             alt="gifthumb"
             title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nDuration: ${formatDuration(
               duration
             )}\nPath: ${path}`}
+            onLoad={(e) => {
+              const currentThumbWidth =
+                e.currentTarget.getBoundingClientRect().width;
+              const currentThumbHeight =
+                e.currentTarget.getBoundingClientRect().height;
+              const currentContainerWidth =
+                e.currentTarget.parentElement.getBoundingClientRect().width;
+              const currentContainerHeight =
+                e.currentTarget.parentElement.getBoundingClientRect().height;
+
+              const X =
+                (currentThumbWidth / currentContainerWidth) * 100 +
+                0.7 * (currentThumbWidth / currentContainerWidth);
+              const Y =
+                (currentThumbHeight / currentContainerHeight) * 100 +
+                15 * (currentThumbHeight / currentContainerHeight);
+
+              positionDuration(X, Y);
+            }}
           />
           <svg
             viewBox="0 0 100 100"

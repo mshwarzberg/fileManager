@@ -28,7 +28,17 @@ export default function ItemDisplay({
   return (
     viewItem.property && (
       <div id="fullscreen">
-        {viewItem.type === "video" && <VideoDisplay viewItem={viewItem} />}
+        {viewItem.type === "video" && (
+          <VideoDisplay viewItem={viewItem}>
+            <DisplayMiscellaneous
+              viewItem={viewItem}
+              setViewItem={setViewItem}
+              isNavigating={isNavigating}
+              changeFolderOrViewFiles={changeFolderOrViewFiles}
+              setFullscreen={setFullscreen}
+            />
+          </VideoDisplay>
+        )}
         {viewItem.type === "document" && (
           <DocumentDisplay
             setViewItem={setViewItem}
@@ -44,15 +54,17 @@ export default function ItemDisplay({
             viewItem={viewItem}
           />
         )}
-        <DisplayMiscellaneous
-          fullscreen={fullscreen}
-          viewItem={viewItem}
-          setViewItem={setViewItem}
-          setFullscreen={setFullscreen}
-          isNavigating={isNavigating}
-          changeFolderOrViewFiles={changeFolderOrViewFiles}
-          openDocument={openDocument.current}
-        />
+        {viewItem.type !== "video" && (
+          <DisplayMiscellaneous
+            fullscreen={fullscreen}
+            viewItem={viewItem}
+            setViewItem={setViewItem}
+            setFullscreen={setFullscreen}
+            isNavigating={isNavigating}
+            changeFolderOrViewFiles={changeFolderOrViewFiles}
+            currentDocument={openDocument.current}
+          />
+        )}
       </div>
     )
   );

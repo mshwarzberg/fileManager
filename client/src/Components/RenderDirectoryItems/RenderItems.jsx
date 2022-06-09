@@ -106,15 +106,17 @@ export default function RenderItems() {
           } else {
             const reader = new FileReader();
             reader.onload = () => {
+              const arrayBuffer = new Uint8Array(reader.result);
+              console.log(arrayBuffer);
               setViewItem({
                 type: "document",
-                property: reader.result || " ",
+                property: arrayBuffer,
                 index: index,
                 name: filename,
                 path: path,
               });
             };
-            reader.readAsText(response);
+            reader.readAsArrayBuffer(response);
           }
         })
         .catch((err) => {
@@ -186,8 +188,10 @@ export default function RenderItems() {
             );
           }}
         >
-          <Video item={item} />
-          <ImageGif item={item} />
+          {itemtype === "video" && <Video item={item} />}
+          {(itemtype === "image" || itemtype === "gif") && (
+            <ImageGif item={item} />
+          )}
           <Icon item={item} />
         </div>
       );
@@ -203,6 +207,18 @@ export default function RenderItems() {
           onClick={() => {
             dispatch({ type: "setDriveName", value: item });
             dispatch({ type: "openDirectory", value: item });
+          }}
+          style={{
+            fontSize: "3rem",
+            fontFamily: "bebas neue",
+            letterSpacing: "0.3rem",
+            color: "white",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.color = "#d6fd92";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.color = "white";
           }}
         >
           {item}

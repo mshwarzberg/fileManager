@@ -15,6 +15,7 @@ function DocumentDisplay(props) {
 
   const saveButton = useRef();
 
+  console.log(viewItem.property);
   return (
     <div className="viewitem--block" id="document--body">
       <div id="document--header">
@@ -69,7 +70,11 @@ function DocumentDisplay(props) {
         resize="false"
         disabled={!isEditing}
       />
-      {message && <h1 id="document--message" style={{fontSize: '2rem'}}>{message}</h1>}
+      {message && (
+        <h1 id="document--message" style={{ fontSize: "2rem" }}>
+          {message}
+        </h1>
+      )}
     </div>
   );
 }

@@ -10,7 +10,6 @@ export default function useFitVideo() {
   });
 
   function fitVideo(video, videoContainer) {
-
     if (video) {
       const videoHeight = video.videoHeight;
       const videoWidth = video.videoWidth;
@@ -30,9 +29,9 @@ export default function useFitVideo() {
 
         if (larger === smaller) {
           return setContainerDimensions({
-            width: scaledWidth * 90 / 100,
-            height: scaledHeight * 90 / 100,
-          })
+            width: (scaledWidth * 90) / 100,
+            height: (scaledHeight * 90) / 100,
+          });
         }
         // ratio of video is greater or equal to the screens ratio. (taller or wider)
         if (larger / smaller >= screenWidth / screenHeight) {
@@ -85,5 +84,5 @@ export default function useFitVideo() {
       }
     }
   }
-  return {fitVideo, containerDimensions}
+  return { fitVideo, containerDimensions };
 }

@@ -6,37 +6,38 @@ import {
   pause,
   minimize,
   fullscreen,
-  // fastforward,
-  // rewind,
-  volumehigh,
-  volumelow,
-  volumemute,
   miniplayer,
+  repeat,
+  repeatactive,
 } from "../../../../Assets/images/videocontrols/index.js";
+import Volume from "./Volume";
 
 let scrubbing;
 
 export default function VideoControls(props) {
-  const { video, videoContainer, videoControls, togglePlay } = props;
+  const {
+    video,
+    videoContainer,
+    videoControls,
+    togglePlay,
+    setMiniPlayer,
+    miniPlayer,
+    videoPage,
+  } = props;
 
+  const playPauseButton = useRef();
   const container = useRef();
   const timelineContainer = container.current;
 
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState("0:00");
   const [volumePosition, setVolumePosition] = useState(0);
+  const [looping, setLooping] = useState(false);
 
-  const [looping, setLooping] = useState(false)
-  function handleTimelineUpdate(e, scrubbing) {
-    if (timelineContainer) {
-      const rect = timelineContainer?.getBoundingClientRect();
-      const percent =
-        Math.min(Math.max(0, e.x - rect.x), rect.width) / rect.width;
-      timelineContainer.style.setProperty("--preview-position", percent);
-
-      if (scrubbing) {
-        timelineContainer.style.setProperty("--progress-position", percent);
-      }
-    }
+  function handleTimelineUpdate(e) {
+    const rect = timelineContainer?.getBoundingClientRect();
+    const percent =
+      Math.min(Math.max(0, e.x - rect.x), rect.width) / rect.width;
+    timelineContainer.style.setProperty("--preview-position", percent);
   }
 
   function toggleScrubbing(e) {
@@ -50,19 +51,31 @@ export default function VideoControls(props) {
   }
 
   useEffect(() => {
-    video.addEventListener('ended', () => {
-      if (looping) {
-        video.play()
+    video.addEventListener("pause", () => {
+      if (playPauseButton && playPauseButton?.current) {
+        playPauseButton.current.src = play;
       }
-    })
+    });
+    video.addEventListener("play", () => {
+      if (playPauseButton && playPauseButton?.current) {
+        playPauseButton.current.src = pause;
+      }
+    });
+    video.addEventListener("ended", () => {
+      if (looping) {
+        video.play();
+      }
+    });
     video.addEventListener("timeupdate", () => {
       setCurrentPlaybackTime(formatDuration(video.currentTime));
       const percent = video.currentTime / video.duration;
       timelineContainer?.style?.setProperty("--progress-position", percent);
     });
-
     return () => {
       video.removeEventListener("timeupdate", () => {});
+      video.removeEventListener("pause", () => {});
+      video.removeEventListener("ended", () => {});
+      video.removeEventListener("play", () => {});
     };
   });
 
@@ -108,93 +121,78 @@ export default function VideoControls(props) {
         <div id="timeline" />
       </div>
       <div id="controls">
-        <button id="play-pause">
-          <img
-            className="control--icon"
-            src={video.paused ? play : pause}
-            alt="pause"
-            onClick={() => {
-              togglePlay();
-            }}
-          />
-        </button>
-        <div id="volume-container">
-          <button
-            id="volume-control"
-            onClick={() => {
-              if (volumePosition > 0) {
-                video.volume = 0;
-                setVolumePosition(0);
-              } else {
-                video.volume = 1;
-                setVolumePosition(1);
-              }
-            }}
-          >
-            {volumePosition > 0.65 && (
-              <img
-                className="control--icon"
-                src={volumehigh}
-                alt="volumehigh"
-              />
-            )}
-            {volumePosition <= 0.65 && volumePosition > 0 && (
-              <img className="control--icon" src={volumelow} alt="volumelow" />
-            )}
-            {volumePosition === 0 && (
-              <img
-                className="control--icon"
-                src={volumemute}
-                alt="volumemute"
-              />
-            )}
+        <div id="left-side-controls">
+          <div id="repeat-container" className="control--button">
+            <img
+              src={looping ? repeatactive : repeat}
+              onClick={() => {
+                setLooping(!looping);
+              }}
+              alt="loop video"
+            />
+          </div>
+          <button id="play-pause" className="control--button">
+            <img
+              ref={playPauseButton}
+              src={play}
+              alt="pause"
+              onClick={() => {
+                togglePlay();
+              }}
+            />
           </button>
-          <input
-            id="volume-slider"
-            type="range"
-            min="0"
-            max="1"
-            step="any"
-            onInput={(e) => {
-              setVolumePosition(e.target.value);
-              video.volume = e.target.value;
-              e.stopPropagation();
-            }}
-            value={volumePosition}
+          <Volume
+            video={video}
+            volumePosition={volumePosition}
+            setVolumePosition={setVolumePosition}
           />
+          <svg
+            id="duration-container"
+            viewBox="0 0 25 25"
+            className="control--button"
+          >
+            <text x="-30" y="17.5" fill="currentColor">
+              <title>
+                {formatDuration(video.duration - video.currentTime)} remaining
+              </title>
+              {currentPlaybackTime}/{formatDuration(video.duration) || "0:00"}
+            </text>
+          </svg>
         </div>
-        <svg id="duration-container" viewBox="0 0 90 25">
-          <text x="0" y="18" fill="currentColor">
-          <title>{formatDuration(video.duration - video.currentTime)} remaining</title>
-            {currentPlaybackTime}/{formatDuration(video.duration) || "0:00"}
-          </text>
-        </svg>
-        <svg id="playback-speed" viewBox="0 0 15 25">
-          <text x="0" y="18" fill="currentColor">
-            1X
-          </text>
-        </svg>
-        <button id="mini-player">
-          <img src={miniplayer} alt="" className="control--icon" />
-        </button>
-        <button id="full-screen-control">
-          <img
-            className="control--icon"
-            src={document.fullscreenElement ? minimize : fullscreen}
-            alt="fullscreen"
-            onClick={(e) => {
-              if (!document.fullscreenElement) {
-                videoContainer.requestFullscreen();
-              } else {
-                document.exitFullscreen();
+        <div id="right-side-controls">
+          <button
+            id="mini-player-button"
+            onClick={() => {
+              setMiniPlayer(!miniPlayer);
+              if (miniPlayer && videoPage) {
+                videoPage.style.top = "";
+                videoPage.style.left = "";
               }
-              e.stopPropagation();
             }}
-          />
-        </button>
-        <button onClick={() => {
-          setLooping(!looping)
-        }}>{looping ? 'no loop' : 'loop'}</button>
+            className="control--button"
+          >
+            <img
+              src={miniplayer}
+              alt="mini player"
+              className="control--button"
+            />
+          </button>
+          <button id="full-screen-control" className="control--button">
+            <img
+              src={document.fullscreenElement ? minimize : fullscreen}
+              alt="fullscreen"
+              onClick={(e) => {
+                if (!document.fullscreenElement) {
+                  setMiniPlayer(false);
+                  videoContainer.requestFullscreen();
+                } else {
+                  document.exitFullscreen();
+                }
+                e.stopPropagation();
+              }}
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

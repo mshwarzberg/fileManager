@@ -5,7 +5,7 @@ export default function SaveDocument(props) {
   const { state } = useContext(DirectoryContext);
 
   useEffect(() => {
-    if (openDocumentText && saveButton?.current) {
+    if (currentDocumentText && saveButton?.current) {
       document.addEventListener("keydown", (e) => {
         if (e.key === "s" && e.ctrlKey) {
           e.preventDefault();
@@ -13,7 +13,7 @@ export default function SaveDocument(props) {
         if (
           e.key === "s" &&
           e.ctrlKey &&
-          viewItem.property !== openDocumentText
+          viewItem.property !== currentDocumentText
         ) {
           saveDocument();
         }
@@ -26,7 +26,7 @@ export default function SaveDocument(props) {
 
   const {
     id,
-    openDocumentText,
+    currentDocumentText,
     viewItem,
     setConfirmExit,
     setFullscreen,
@@ -45,13 +45,13 @@ export default function SaveDocument(props) {
       },
       body: JSON.stringify({
         path: state.currentDirectory + "/" + viewItem.name,
-        document: openDocumentText,
+        document: currentDocumentText,
       }),
     }).catch(() => {
-      if (typeof setMessage === 'function') {
-        setMessage('Error occured.')
+      if (typeof setMessage === "function") {
+        setMessage("Error occured.");
         setTimeout(() => {
-          setMessage()
+          setMessage();
         }, 5000);
       }
     });
@@ -72,7 +72,7 @@ export default function SaveDocument(props) {
       setMessage("Successfully saved document");
       setViewItem((prevItem) => ({
         ...prevItem,
-        property: openDocumentText,
+        property: currentDocumentText,
       }));
       setTimeout(() => {
         setMessage();
@@ -80,7 +80,7 @@ export default function SaveDocument(props) {
       saveButton.current.disabled = true;
       setViewItem((prevItem) => ({
         ...prevItem,
-        property: openDocumentText,
+        property: currentDocumentText,
       }));
       if (saveButton.current) {
         saveButton.current.disabled = true;

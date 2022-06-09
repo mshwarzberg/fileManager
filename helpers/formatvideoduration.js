@@ -10,7 +10,7 @@ function formatDuration(time, value = 1) {
     percentage = percentage - 60;
     minutes += 1;
   }
-  let seconds = percentage;
+  let seconds = percentage || 0;
   if (hours < 10) {
     hours = `0${hours}`;
   }

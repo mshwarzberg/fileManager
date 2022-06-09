@@ -10,7 +10,7 @@ function makeThumbnailDirectories(req, res, next) {
   );
   // create folder of the current directory within the thumbnails folder to store the thumbnails
   const makeDirectories = new Promise((resolve, reject) => {
-    fs.mkdir(`${drive}/thumbnails`, { recursive: true }, () => {
+    fs.mkdir(`${drive}/thumbnails/temp`, { recursive: true }, () => {
       fs.readdir(
         `${currentdirectory}`,
         { withFileTypes: true },
