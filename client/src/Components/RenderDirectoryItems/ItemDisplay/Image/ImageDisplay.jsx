@@ -1,12 +1,20 @@
 import React, { useRef, useEffect } from "react";
 import useDrag from "../../../../Hooks/useDrag";
+import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
 
 function ImageDisplay(props) {
-  const { viewItem, fullscreen, enterExitFullscreen } = props;
+  const {
+    viewItem,
+    fullscreen,
+    enterExitFullscreen,
+    setViewItem,
+    setFullscreen,
+  } = props;
 
   const image = useRef();
 
   const { setIsDragging, onMouseMove } = useDrag(image?.current);
+
   useEffect(() => {
     let hideCursor;
     if (document.fullscreenElement) {
@@ -24,6 +32,7 @@ function ImageDisplay(props) {
       clearTimeout(hideCursor);
     };
   });
+
   return (
     <div
       className="viewitem--block"
@@ -46,6 +55,12 @@ function ImageDisplay(props) {
         image.current.style.position = "fixed";
       }}
     >
+      <DisplayMiscellaneous
+        viewItem={viewItem}
+        fullscreen={fullscreen}
+        setFullscreen={setFullscreen}
+        setViewItem={setViewItem}
+      />
       <img
         ref={image}
         onDoubleClick={() => {

@@ -5,10 +5,10 @@ import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
 
 export default function DirectoryTree() {
-  
   const [showTree, setShowTree] = useState(false);
   const [treeWidth, setTreeWidth] = useState();
   const [isDragging, setIsDragging] = useState(false);
+  const { state } = useContext(DirectoryContext);
 
   useEffect(() => {
     const grab = document.querySelector("#resize--tree");
@@ -20,7 +20,7 @@ export default function DirectoryTree() {
     if (grab) {
       document.addEventListener("mouseup", () => {
         setIsDragging(false);
-        document.body.style.cursor = 'default'
+        document.body.style.cursor = "default";
       });
       document.addEventListener("mousemove", handleDrag);
 
@@ -29,9 +29,7 @@ export default function DirectoryTree() {
         document.removeEventListener("mouseup", () => {});
       };
     }
-  });
-
-  const { state } = useContext(DirectoryContext);
+  }, [isDragging]);
 
   const treeID = useRef();
 
@@ -98,7 +96,7 @@ export default function DirectoryTree() {
             style={{ left: treeWidth && treeWidth - 5 }}
             onMouseDown={(e) => {
               setIsDragging(true);
-              document.body.style.cursor = 'grabbing'
+              document.body.style.cursor = "grabbing";
             }}
           />
         </>

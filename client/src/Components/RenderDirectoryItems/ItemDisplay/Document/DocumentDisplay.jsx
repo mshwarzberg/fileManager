@@ -1,78 +1,145 @@
-import React, { useState, useRef, useEffect } from "react";
-import SaveDocument from "../../../Tools/SaveDocument";
+import React, { useState, useRef, useEffect, useContext } from "react";
+import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
+import { DirectoryContext } from "../../../Main/App";
 
 function DocumentDisplay(props) {
-  const { viewItem, enterExitFullscreen, setViewItem, openDocument } = props;
+  const { viewItem, setViewItem, setFullscreen } = props;
+
+  const { state } = useContext(DirectoryContext);
   const [newDocument, setNewDocument] = useState(
     viewItem.property === " " ? "" : viewItem.property
   );
-  useEffect(() => {
-    setNewDocument(viewItem.property);
-  }, [viewItem.property]);
-
+  const [isEdited, setisEdited] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
-  const [message, setMessage] = useState();
+  const [message, setMessage] = useState({
+    msg: "",
+    isErr: false,
+  });
 
   const saveButton = useRef();
 
-  console.log(viewItem.property);
+  useEffect(() => {
+    setisEdited(viewItem.property !== newDocument);
+  }, [newDocument, setNewDocument, viewItem.property]);
+
+  function saveDocument(keepEditorOpen) {
+    fetch("/api/updatedocument", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        path: state.currentDirectory + "/" + viewItem.name,
+        document: newDocument,
+      }),
+    })
+      .then(async (res) => {
+        try {
+          if (await res.json()) {
+            setMessage({
+              msg: "Error occured.",
+              isErr: true,
+            });
+            setTimeout(() => {
+              setMessage({
+                msg: "",
+                isErr: null,
+              });
+            }, 5000);
+          }
+        } catch {
+          setMessage({
+            msg: "Successfully Saved!",
+            isErr: false,
+          });
+          setTimeout(() => {
+            setMessage({
+              msg: "",
+              isErr: null,
+            });
+          }, 5000);
+          if (keepEditorOpen) {
+            setViewItem({
+              ...viewItem,
+              property: newDocument,
+            });
+          }
+        }
+      })
+      .catch(() => {
+        setMessage("Error occured.");
+        setTimeout(() => {
+          setMessage();
+        }, 5000);
+      });
+  }
+
   return (
     <div className="viewitem--block" id="document--body">
+      <DisplayMiscellaneous
+        viewItem={viewItem}
+        setViewItem={setViewItem}
+        setFullscreen={setFullscreen}
+        confirmExit={() => {
+          if (isEdited) {
+            if (
+              window.confirm(
+                "You have unsaved changes. Are you sure you want to leave?"
+              )
+            ) {
+              saveDocument();
+            }
+          }
+        }}
+      />
       <div id="document--header">
         <button
-          onClick={() => {
+          onClick={(e) => {
             if (isEditing) {
-              openDocument.current.disabled = true;
+              e.currentTarget.offsetParent.nextSibling.disabled = true;
               return setIsEditing(false);
             } else {
-              openDocument.current.disabled = false;
+              e.currentTarget.offsetParent.nextSibling.disabled = false;
               setIsEditing(true);
             }
           }}
         >
           {isEditing ? "Lock" : "Edit"}
         </button>
-        <SaveDocument
-          saveButton={saveButton}
-          setViewItem={setViewItem}
-          viewItem={viewItem}
-          openDocumentText={openDocument?.current?.textContent}
-          disabled={
-            viewItem.property === openDocument?.current?.textContent ||
-            !openDocument?.current?.textContent
-          }
-          text="Save"
-          setMessage={setMessage}
-        />
         <button
           onClick={() => {
-            enterExitFullscreen();
+            if (isEdited) {
+              saveDocument(true);
+            }
           }}
+          disabled={!isEdited}
+          ref={saveButton}
         >
-          Fullscreen
+          Save
         </button>
       </div>
       <textarea
-        ref={openDocument}
         className="viewitem--item"
         id="document"
         value={newDocument}
         onChange={(e) => {
           setNewDocument(e.target.value);
-          if (
-            saveButton.current &&
-            viewItem.property !== openDocument?.current?.textContent
-          ) {
-            saveButton.current.disabled = false;
-          }
         }}
         spellCheck={false}
         resize="false"
         disabled={!isEditing}
       />
-      {message && (
-        <h1 id="document--message" style={{ fontSize: "2rem" }}>
-          {message}
+      {message.msg && (
+        <h1
+          id="document--message"
+          style={{
+            background: message.isErr
+              ? "repeating-radial-gradient(red 0%, red 30%, rgba(0, 0, 0, 0) 65%,rgba(0, 0, 0, 0) 100%)"
+              : "",
+            color: message.isErr ? "white" : "",
+          }}
+        >
+          {message.msg}
         </h1>
       )}
     </div>

@@ -1,6 +1,8 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  font: 1rem 'Times New Roman';
+  font: 1rem "Times New Roman";
   margin: 0;
   padding: 0;
   // scrollbar-width: none;

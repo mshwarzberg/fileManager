@@ -1,0 +1,25 @@
+@import "../../Main/MainSCSS/variables";
+
+#context-menu {
+  height: 15rem;
+  width: 15rem;
+  background-color: #fff;
+  position: fixed;
+  z-index: 50;
+  button {
+    width: 100%;
+    border: none;
+    height: 20%;
+    font-family: "bebas neue";
+    font-size: 1.7rem;
+    background-color: #222;
+    color: white;
+    border-top: 0.75px solid white;
+    border-bottom: 1.5px solid white;
+    &:hover {
+      cursor: pointer;
+      color: $accentColor;
+      background-color: #444;
+    }
+  }
+}

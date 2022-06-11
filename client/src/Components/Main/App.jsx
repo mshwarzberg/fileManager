@@ -10,6 +10,8 @@ import RenderItems from "../RenderDirectoryItems/RenderItems";
 import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import useStoreImages from "../../Hooks/useStoreImages";
+import ContextMenu from "../Tools/ContextMenu";
+import useScreenDimensions from "../../Hooks/useScreenDimensions";
 
 export const DirectoryContext = createContext();
 
@@ -20,6 +22,12 @@ export default function App() {
   const { state, dispatch } = DirectoryContextManager();
 
   const [directoryItems, setDirectoryItems] = useState();
+  const [showContextMenu, setShowContextMenu] = useState({
+    show: false,
+    posX: null,
+    posY: null,
+    targetName: null,
+  });
 
   function fetchStuff(index, requestsMadeForThisItem) {
     if (requestsMadeForThisItem >= 15) {
@@ -140,52 +148,47 @@ export default function App() {
     // eslint-disable-next-line
   }, [directories]);
 
-  // useEffect(() => {
-  //   if (itemData && !itemData.err) {
-  //     if (!CompareArray(itemData, directoryItems)) {
-  //       for (let i in itemData) {
-  //         fetch("/api/directorydata", {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({
-  //             path: itemData[i].path,
-  //           }),
-  //         })
-  //           .then((res) => {
-  //             return res.json();
-  //           })
-  //           .then((res) => {
-  //             setDirectoryItems((prevItem) => {
-  //               return prevItem.map((item) => {
-  //                 const newData = {
-  //                   ...item,
-  //                   ...(item.name === itemData[i].name && {
-  //                     shorthandsize: shortHandFileSize(res.bytes),
-  //                     filecount: res.filecount,
-  //                     foldercount: res.foldercount,
-  //                     size: res.bytes
-  //                   }),
-  //                 }
-  //                 return newData
-  //               });
-  //             });
-  //           })
-  //           .catch(() => {
-  //             return;
-  //           });
-  //       }
-  //     }
-  //   }
-  // });
-
   useStoreImages();
+
+  useEffect(() => {
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+    });
+    document.addEventListener("mousedown", (e) => {
+      if (e.button === 2) {
+        if (e.target.dataset.index) {
+          setShowContextMenu({
+            show: true,
+            posX: e.clientX,
+            posY: e.clientY,
+            targetIndex: e.target.dataset.index,
+          });
+          return;
+        }
+      }
+
+      if (e.button === 0 && e.target.id !== "context-menu-item") {
+        setShowContextMenu({});
+      }
+    });
+    return () => {
+      document.removeEventListener("contextmenu", () => {});
+      document.removeEventListener("mousedown", () => {});
+    };
+  }, []);
+
+  useScreenDimensions();
 
   return (
     <DirectoryContext.Provider
       value={{ state, dispatch, directoryItems, setDirectoryItems }}
     >
+      {showContextMenu.show && (
+        <ContextMenu
+          showContextMenu={showContextMenu}
+          setShowContextMenu={setShowContextMenu}
+        />
+      )}
       <Navbar />
       <RenderItems />
       <DirectoryTree />

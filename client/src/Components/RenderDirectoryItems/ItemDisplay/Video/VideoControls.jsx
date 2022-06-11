@@ -77,7 +77,7 @@ export default function VideoControls(props) {
       video.removeEventListener("ended", () => {});
       video.removeEventListener("play", () => {});
     };
-  });
+  }, [video, videoContainer, looping, timelineContainer?.style]);
 
   return (
     <div

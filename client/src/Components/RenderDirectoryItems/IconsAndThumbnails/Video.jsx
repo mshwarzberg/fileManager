@@ -6,7 +6,7 @@ import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Filename";
 
 function Video(props) {
-  const { item } = props;
+  const { item, index } = props;
 
   const nameInput = useRef();
 
@@ -66,6 +66,7 @@ function Video(props) {
           />
           <img
             className="renderitem--thumbnail"
+            data-index={index}
             src={thumbnail}
             alt="gifthumb"
             title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nDuration: ${formatDuration(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useState, useRef, useContext } from "react";
 
 import ImageGif from "./IconsAndThumbnails/ImageGif";
 import Video from "./IconsAndThumbnails/Video";
@@ -17,61 +17,8 @@ export default function RenderItems() {
     name: null,
     path: null,
   });
-  const [isNavigating, setIsNavigating] = useState({
-    value: false,
-    visible: true,
-  });
 
   const page = useRef();
-
-  useEffect(() => {
-    function navigateImagesAndVideos(e) {
-      const isKeyForNavigating = [
-        e.key === "ArrowLeft",
-        e.key === "ArrowRight",
-        e.key === "Tab",
-        e.key === "CapsLock",
-      ];
-      if (!isKeyForNavigating.includes(true)) {
-        return;
-      }
-      if (e.key === "CapsLock") {
-        setIsNavigating({
-          value: !isNavigating.value,
-          visible: isNavigating.visible,
-        });
-      }
-      if (e.key === "Tab") {
-        setIsNavigating({
-          value: isNavigating.value,
-          visible: !isNavigating.visible,
-        });
-      }
-      if (
-        viewItem.property &&
-        (e.key === "ArrowRight" || e.key === "ArrowLeft")
-      ) {
-        let direction;
-        if (e.key === "ArrowRight" && isNavigating.value) {
-          direction = "forwards";
-        }
-        if (e.key === "ArrowLeft" && isNavigating.value) {
-          direction = "backwards";
-        }
-        changeFolderOrViewFiles(
-          viewItem.name,
-          viewItem.property,
-          viewItem.type,
-          viewItem.index,
-          direction
-        );
-      }
-    }
-    document.addEventListener("keydown", navigateImagesAndVideos);
-    return () => {
-      document.removeEventListener("keydown", navigateImagesAndVideos);
-    };
-  });
 
   function renderViewItem(filename, path, type, index, property) {
     if (type === "video") {
@@ -83,6 +30,15 @@ export default function RenderItems() {
         path: path,
       });
     } else if (type === "image" || type === "gif" || type === "document") {
+      if (directoryItems[index].size > 25000000) {
+        if (
+          !window.confirm(
+            "File is too large to view. Do you want to download it instead?"
+          )
+        ) {
+          return;
+        }
+      }
       fetch(`/api/loadfiles/file`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,19 +60,24 @@ export default function RenderItems() {
               path: path,
             });
           } else {
-            const reader = new FileReader();
-            reader.onload = () => {
-              const arrayBuffer = new Uint8Array(reader.result);
-              console.log(arrayBuffer);
-              setViewItem({
-                type: "document",
-                property: arrayBuffer,
-                index: index,
-                name: filename,
-                path: path,
-              });
-            };
-            reader.readAsArrayBuffer(response);
+            if (directoryItems[index].size < 25000000) {
+              const reader = new FileReader();
+              reader.onload = () => {
+                setViewItem({
+                  type: "document",
+                  property: reader.result,
+                  index: index,
+                  name: filename,
+                  path: path,
+                });
+              };
+              return reader.readAsText(response);
+            }
+            const url = window.URL.createObjectURL(response);
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", directoryItems[index].name);
+            link.click();
           }
         })
         .catch((err) => {
@@ -174,6 +135,9 @@ export default function RenderItems() {
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
     const { name, fileextension, size, itemtype, path } = item;
+    if (path === state.drive + "thumbnails") {
+      return "";
+    }
     if (name) {
       return (
         <div
@@ -188,11 +152,13 @@ export default function RenderItems() {
             );
           }}
         >
-          {itemtype === "video" && <Video item={item} />}
-          {(itemtype === "image" || itemtype === "gif") && (
-            <ImageGif item={item} />
+          {itemtype === "video" && (
+            <Video item={item} index={directoryItems.indexOf(item)} />
           )}
-          <Icon item={item} />
+          {(itemtype === "image" || itemtype === "gif") && (
+            <ImageGif item={item} index={directoryItems.indexOf(item)} />
+          )}
+          <Icon item={item} index={directoryItems.indexOf(item)} />
         </div>
       );
     }
@@ -235,7 +201,6 @@ export default function RenderItems() {
         changeFolderOrViewFiles={changeFolderOrViewFiles}
         viewItem={viewItem}
         setViewItem={setViewItem}
-        isNavigating={isNavigating}
       />
     </div>
   );

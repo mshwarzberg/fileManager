@@ -1,6 +1,5 @@
 const { formatDuration } = require("./formatvideoduration");
 const child = require("child_process");
-const { unlinkSync, existsSync } = require("fs");
 
 function ffmpegThumbs(name, outputfile, callback) {
   try {
@@ -13,9 +12,8 @@ function ffmpegThumbs(name, outputfile, callback) {
       77
     )} -i "${name}" -vf "scale=400:-2" -vframes 1 "${outputfile}"`;
     child.execSync(createThumbs, { stdio: "ignore" });
-  } catch (e) {
-    console.log(e);
-    return;
+  } catch {
+    callback();
   }
   callback();
 }
@@ -33,17 +31,30 @@ function ffprobeMetadata(name, callback) {
   try {
     output = child.execSync(probeCommand, { stdio: "pipe" }).toString();
     output = JSON.parse(output);
-    if (!output["streams"][0].duration) {
-      alternateDuration = formatStreamDuration(
-        output["streams"][0].tags["DURATION"]
-      );
+    if (output["streams"]) {
+      output = output["streams"][0];
+    } else {
+      output = {
+        width: "",
+        height: "",
+        duration: "",
+      };
     }
-  } catch (e) {}
-  callback({
-    width: output["streams"][0].width || "",
-    height: output["streams"][0].height || "",
-    duration: output["streams"][0].duration || alternateDuration || "",
-  });
+    if (!output.duration) {
+      alternateDuration = formatStreamDuration(output.tags["DURATION"]);
+    }
+    callback({
+      width: output.width,
+      height: output.height,
+      duration: output.duration || alternateDuration,
+    });
+  } catch {
+    callback({
+      width: "",
+      height: "",
+      duration: "",
+    });
+  }
 }
 
 async function transcodeVideo(file, drive, callback) {

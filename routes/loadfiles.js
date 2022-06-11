@@ -14,18 +14,6 @@ router.post("/file", (req, res) => {
   if (type === "image" || type === "gif") {
     type = "imagegif";
   } else {
-    // console.time();
-    // let count = 0;
-    // fs.createReadStream(path)
-    //   .on("data", (chunk) => {
-    //     for (i in chunk) {
-    //       if (chunk[i] == 10) count++;
-    //     }
-    //   })
-    //   .on("end", () => {
-    //     console.log(count);
-    //     console.timeEnd();
-    //   });
     type = "document";
   }
 

@@ -3,7 +3,7 @@ import Filename from "./Filename";
 import formatDuration from "../../../Helpers/FormatVideoTime";
 
 export default function ImageGif(props) {
-  const { item } = props;
+  const { item, index } = props;
   const {
     name,
     shorthandsize,
@@ -24,10 +24,9 @@ export default function ImageGif(props) {
         <div className="renderitem--block" id="renderitem--image-block">
           <img
             src={thumbnail}
-            width={512}
-            height={512}
             alt="imagethumb"
             className="renderitem--thumbnail"
+            data-index={index}
             title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}${
               duration ? `\nDuration: ${formatDuration(duration)}` : ""
             }\nPath: ${path}`}

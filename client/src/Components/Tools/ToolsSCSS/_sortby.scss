@@ -29,9 +29,11 @@
     background-color: #222;
     opacity: 1;
     li {
+      @include flexStyle(row);
       color: white;
       &:hover {
         color: $accentColor;
+        background-color: #444;
       }
     }
     & > li {
@@ -52,7 +54,7 @@
       background-color: #222;
       overflow-y: scroll;
       & > li {
-        height: calc(1 / 7 * 100%);
+        height: calc(1 / 6 * 100%);
       }
     }
   }

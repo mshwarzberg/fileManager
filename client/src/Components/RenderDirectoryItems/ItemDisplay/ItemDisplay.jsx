@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import VideoDisplay from "./Video/VideoDisplay";
 import DocumentDisplay from "./Document/DocumentDisplay";
 import ImageDisplay from "./Image/ImageDisplay";
@@ -7,7 +7,6 @@ import DisplayMiscellaneous from "../../Tools/DisplayMiscellaneous";
 export default function ItemDisplay({
   viewItem,
   setViewItem,
-  isNavigating,
   changeFolderOrViewFiles,
 }) {
   const [fullscreen, setFullscreen] = useState(false);
@@ -23,8 +22,6 @@ export default function ItemDisplay({
     }
   }
 
-  const openDocument = useRef();
-
   return (
     viewItem.property && (
       <div id="fullscreen">
@@ -33,7 +30,6 @@ export default function ItemDisplay({
             <DisplayMiscellaneous
               viewItem={viewItem}
               setViewItem={setViewItem}
-              isNavigating={isNavigating}
               changeFolderOrViewFiles={changeFolderOrViewFiles}
               setFullscreen={setFullscreen}
             />
@@ -44,7 +40,7 @@ export default function ItemDisplay({
             setViewItem={setViewItem}
             enterExitFullscreen={enterExitFullscreen}
             viewItem={viewItem}
-            openDocument={openDocument}
+            setFullscreen={setFullscreen}
           />
         )}
         {viewItem.type === "imagegif" && (
@@ -52,17 +48,8 @@ export default function ItemDisplay({
             enterExitFullscreen={enterExitFullscreen}
             fullscreen={fullscreen}
             viewItem={viewItem}
-          />
-        )}
-        {viewItem.type !== "video" && (
-          <DisplayMiscellaneous
-            fullscreen={fullscreen}
-            viewItem={viewItem}
             setViewItem={setViewItem}
             setFullscreen={setFullscreen}
-            isNavigating={isNavigating}
-            changeFolderOrViewFiles={changeFolderOrViewFiles}
-            currentDocument={openDocument.current}
           />
         )}
       </div>

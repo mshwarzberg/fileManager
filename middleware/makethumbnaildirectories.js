@@ -3,7 +3,8 @@ const { checkIfFileOrDir } = require("../helpers/getfileparts");
 
 // when a user enters a new folder create all the subdirectories for the thumbnails.
 function makeThumbnailDirectories(req, res, next) {
-  const { currentdirectory, drive } = req.body;
+  let { currentdirectory, drive } = req.body;
+
   let restOfPath = currentdirectory.slice(
     drive.length,
     currentdirectory.length
