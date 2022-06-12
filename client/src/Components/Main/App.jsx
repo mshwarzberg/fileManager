@@ -3,7 +3,7 @@ import DirectoryContextManager from "./Context/DirectoryContext";
 
 import useFetch from "../../Hooks/useFetch";
 import shortHandFileSize from "../../Helpers/FileSize";
-import useUpdateDirectoryTree from "../../Hooks/useUpdateDirectoryTree";
+import changeItem from "../../Helpers/changeItemInTree";
 import CompareArray from "../../Helpers/CompareArray";
 
 import RenderItems from "../RenderDirectoryItems/RenderItems";
@@ -11,14 +11,10 @@ import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import useStoreImages from "../../Hooks/useStoreImages";
 import ContextMenu from "../Tools/ContextMenu";
-import useScreenDimensions from "../../Hooks/useScreenDimensions";
 
 export const DirectoryContext = createContext();
 
-let timeout;
 export default function App() {
-  const changeItem = useUpdateDirectoryTree();
-
   const { state, dispatch } = DirectoryContextManager();
 
   const [directoryItems, setDirectoryItems] = useState();
@@ -60,7 +56,6 @@ export default function App() {
             const doesMatch =
               res.headers.get("prefix") === item.prefix &&
               res.headers.get("suffix") === item.fileextension;
-
             const newData = {
               ...item,
               shorthandsize: shortHandFileSize(item.size),
@@ -96,7 +91,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (!state.currentDirectory) {
+    if (state.drive === "") {
       fetch("/api/data/choosedrive", {
         method: "GET",
       })
@@ -107,10 +102,12 @@ export default function App() {
         .catch((err) => {
           console.log("App.jsx choose drive", err);
         });
-    }
-    clearTimeout(timeout);
-    if (itemData && !itemData.err) {
-      if (!CompareArray(itemData, directoryItems)) {
+      return;
+    } else if (itemData && !itemData.err) {
+      if (
+        !CompareArray(itemData, directoryItems) &&
+        state.currentDirectory !== ""
+      ) {
         setDirectoryItems(itemData);
         for (let i = 0; i < itemData.length; i++) {
           fetchStuff(i, 0);
@@ -120,13 +117,13 @@ export default function App() {
     if (itemData?.length === 0) {
       setDirectoryItems([{ msg: "Folder is empty" }]);
     } else if (itemData?.err) {
-      setDirectoryItems([{ msg: "Error Occurred" }]);
-      timeout = setTimeout(() => {
+      setDirectoryItems([{ msg: itemData.err }]);
+      setTimeout(() => {
         dispatch({ type: "directoryNotFoundError" });
       }, 2000);
     }
     // eslint-disable-next-line
-  }, [itemData, state.currentDirectory]);
+  }, [itemData, state]);
 
   useEffect(() => {
     if (directories && !state.directoryTree[0] && directories.array) {
@@ -148,11 +145,12 @@ export default function App() {
     // eslint-disable-next-line
   }, [directories]);
 
-  useStoreImages();
-
   useEffect(() => {
     document.addEventListener("contextmenu", (e) => {
       e.preventDefault();
+    });
+    window.addEventListener("blur", () => {
+      setShowContextMenu({});
     });
     document.addEventListener("mousedown", (e) => {
       if (e.button === 2) {
@@ -168,16 +166,17 @@ export default function App() {
       }
 
       if (e.button === 0 && e.target.id !== "context-menu-item") {
-        setShowContextMenu({});
+        return setShowContextMenu({});
       }
     });
     return () => {
       document.removeEventListener("contextmenu", () => {});
       document.removeEventListener("mousedown", () => {});
+      window.removeEventListener("blur", () => {});
     };
   }, []);
 
-  useScreenDimensions();
+  useStoreImages();
 
   return (
     <DirectoryContext.Provider

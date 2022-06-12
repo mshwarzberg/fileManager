@@ -4,6 +4,7 @@ import { DirectoryContext } from "../Main/App";
 export default function ContextMenu({ showContextMenu, setShowContextMenu }) {
   const { directoryItems, state, setDirectoryItems } =
     useContext(DirectoryContext);
+
   return (
     <div
       id="context-menu"
@@ -18,9 +19,9 @@ export default function ContextMenu({ showContextMenu, setShowContextMenu }) {
           let oldItem = directoryItems[showContextMenu.targetIndex];
           const shouldUpdateThumbnail = [
             oldItem.isDirectory,
-            oldItem.oldItemtype === "video",
-            oldItem.oldItemtype === "image",
-            oldItem.oldItemtype === "gif",
+            oldItem.itemtype === "video",
+            oldItem.itemtype === "image",
+            oldItem.itemtype === "gif",
           ];
           if (!oldItem.permission) {
             return;
@@ -29,7 +30,11 @@ export default function ContextMenu({ showContextMenu, setShowContextMenu }) {
             `Enter a new ${oldItem.isDirectory ? "folder" : "file"} name`,
             decodeURI(oldItem.prefix)
           );
+
           if (prompt && prompt !== oldItem.name) {
+            let newName =
+              prompt +
+              (oldItem.fileextension ? "." + oldItem.fileextension : "");
             fetch("/api/manage/rename", {
               method: "POST",
               headers: {
@@ -38,20 +43,20 @@ export default function ContextMenu({ showContextMenu, setShowContextMenu }) {
               body: JSON.stringify({
                 path: oldItem.path,
                 oldname: oldItem.name,
-                newname:
-                  prompt +
-                  (oldItem.fileextension !== "Directory"
-                    ? "." + oldItem.fileextension
-                    : ""),
+                newname: newName,
                 drive: state.drive,
-                updatethumb: shouldUpdateThumbnail.includes(true),
-                oldthumbname:
-                  "thumbnail-" +
-                  decodeURI(oldItem.prefix) +
-                  oldItem.fileextension +
-                  ".jpeg",
-                newthumbname:
-                  "thumbnail-" + prompt + oldItem.fileextension + ".jpeg",
+                renameInThumbDirectory: shouldUpdateThumbnail.includes(true),
+                isdirectory: oldItem.isDirectory,
+                ...(shouldUpdateThumbnail.includes(true) &&
+                  !oldItem.isDirectory && {
+                    oldthumbname:
+                      "thumbnail-" +
+                      decodeURI(oldItem.prefix) +
+                      oldItem.fileextension +
+                      ".jpeg",
+                    newthumbname:
+                      "thumbnail-" + prompt + oldItem.fileextension + ".jpeg",
+                  }),
               }),
             })
               .then(async (res) => {
@@ -63,15 +68,14 @@ export default function ContextMenu({ showContextMenu, setShowContextMenu }) {
                   setDirectoryItems((prevItems) => {
                     return prevItems.map((item) => {
                       if (item === oldItem) {
-                        console.log("test");
                         let path = item.path.slice(
                           0,
                           item.path.length - item.name.length
                         );
                         return {
                           ...item,
-                          name: prompt + "." + item.fileextension,
-                          path: path + prompt + "." + item.fileextension,
+                          name: newName,
+                          path: path + newName,
                           prefix: encodeURI(prompt),
                         };
                       }
@@ -105,7 +109,16 @@ export default function ContextMenu({ showContextMenu, setShowContextMenu }) {
               body: JSON.stringify({
                 path: directoryItems[showContextMenu.targetIndex].path,
               }),
-            });
+            })
+              .then(async (res) => {
+                const response = await res.json();
+                if (response.err) {
+                  alert(response.err);
+                }
+              })
+              .catch(() => {
+                return;
+              });
           }
         }}
       >

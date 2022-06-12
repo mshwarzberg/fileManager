@@ -21,7 +21,7 @@ function SortBy() {
     return () => {
       document.removeEventListener("click", () => {});
     };
-  }, [setDirectoryItems, showPopup, setShowPopup]);
+  }, [showPopup]);
   return (
     <div>
       <button

@@ -24,7 +24,7 @@ export default function formatDuration(time) {
   if (seconds < 10) {
     seconds = `0${seconds}`;
   }
-  if (seconds.toString().length > 4) {
+  if (seconds.toString().length > 2) {
     seconds = seconds.toString().slice(0, 2);
   }
   return `${hours ? hours + ":" : ""}${minutes}:${seconds}`;

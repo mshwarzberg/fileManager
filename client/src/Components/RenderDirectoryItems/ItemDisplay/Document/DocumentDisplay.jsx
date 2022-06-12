@@ -67,7 +67,10 @@ function DocumentDisplay(props) {
         }
       })
       .catch(() => {
-        setMessage("Error occured.");
+        setMessage({
+          msg: "Error occured.",
+          isErr: true,
+        });
         setTimeout(() => {
           setMessage();
         }, 5000);

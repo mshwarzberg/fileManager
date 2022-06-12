@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { DirectoryContext } from "../../Main/App";
-import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
+import changeItem from "../../../Helpers/changeItemInTree";
 import useFetch from "../../../Hooks/useFetch";
 import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
 import RightArrowBlack from "../../../Assets/images/directorytree/right-arrow-black.png";
@@ -14,10 +14,10 @@ export default function ChildDir(props) {
 
   const { data: directories } = useFetch(
     "/api/senddirectories",
-    JSON.stringify({ path: path }), path
+    JSON.stringify({ path: path }),
+    path
   );
 
-  const changeItem = useUpdateDirectoryTree();
   function expandDirectory(toOpenDirectory) {
     // if a user clicks on the down caret don't open the directory. Instead just expand to the child directories
     if (toOpenDirectory) {
@@ -56,7 +56,7 @@ export default function ChildDir(props) {
         subItem.includes("*?<>") ? subItem.slice(0, subItem.length - 4) : path
       }\nPath: ${
         subItem.includes("*?<>") ? path.slice(0, path.length - 4) : path
-      }\n${subItem.includes('*?<>') && 'NO ACCESS'}`}
+      }\n${subItem.includes("*?<>") && "NO ACCESS"}`}
     >
       <img
         onMouseEnter={(e) => {
@@ -79,7 +79,11 @@ export default function ChildDir(props) {
         }
         alt="expand directory"
       />
-      <img src={localStorage.getItem('folder') || directory} alt="folder" className="directory--icon" />
+      <img
+        src={localStorage.getItem("folder") || directory}
+        alt="folder"
+        className="directory--icon"
+      />
       {subItem.includes("*?<>")
         ? subItem.slice(0, subItem.length - 4)
         : subItem}

@@ -19,9 +19,9 @@ function SortPopup(props) {
             return a > b;
           }),
         ];
-      } else if (sortMethod === "size") {
+      } else if (sortMethod === "size" || sortMethod === "duration") {
         prevItems.sort((a, b) => {
-          return b.size - a.size;
+          return b[sortMethod] * 1 - a[sortMethod] * 1;
         });
       } else if (type) {
         prevItems.sort((item) => {
@@ -75,7 +75,7 @@ function SortPopup(props) {
   });
 
   return (
-    <ol id="filter--list">
+    <ol id="filter--list" title="">
       <li
         onClick={() => {
           mySort("folder");
@@ -96,6 +96,14 @@ function SortPopup(props) {
         }}
       >
         ...File Size
+      </li>
+      <li
+        onClick={() => {
+          mySort("duration");
+        }}
+        title="For videos and gifs"
+      >
+        ...File Duration
       </li>
       <li>...Date</li>
       <li

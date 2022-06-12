@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const sendfiledata = require("./routes/sendfiledata");
+const sendstuffdata = require("./routes/sendstuffdata");
 const loadfiles = require("./routes/loadfiles");
 const senddirectories = require("./routes/senddirectories");
 const updatedocument = require("./routes/updatedocument");
@@ -10,7 +10,7 @@ const managestuff = require("./routes/managestuff");
 app.use(express.json());
 app.listen(5000);
 
-app.use("/api/data", sendfiledata);
+app.use("/api/data", sendstuffdata);
 app.use("/api/loadfiles", loadfiles);
 app.use("/api/senddirectories", senddirectories);
 app.use("/api/updatedocument", updatedocument);

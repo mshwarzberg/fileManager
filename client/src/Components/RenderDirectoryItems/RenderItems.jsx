@@ -2,7 +2,7 @@ import React, { useState, useRef, useContext } from "react";
 
 import ImageGif from "./IconsAndThumbnails/ImageGif";
 import Video from "./IconsAndThumbnails/Video";
-import Icon from "./IconsAndThumbnails/Icon";
+import Icon from "./IconsAndThumbnails/Icon/Icon";
 
 import { DirectoryContext } from "../Main/App";
 import ItemDisplay from "./ItemDisplay/ItemDisplay";
@@ -30,7 +30,10 @@ export default function RenderItems() {
         path: path,
       });
     } else if (type === "image" || type === "gif" || type === "document") {
-      if (directoryItems[index].size > 25000000) {
+      if (
+        directoryItems[index].size > 25000000 &&
+        directoryItems[index].itemtype === "document"
+      ) {
         if (
           !window.confirm(
             "File is too large to view. Do you want to download it instead?"
@@ -143,6 +146,11 @@ export default function RenderItems() {
         <div
           key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
           onClick={() => {
+            if (item.isDrive) {
+              dispatch({ type: "setDriveName", value: name });
+              dispatch({ type: "openDirectory", value: name });
+              return;
+            }
             return changeFolderOrViewFiles(
               name,
               path,
@@ -164,32 +172,6 @@ export default function RenderItems() {
     }
     if (item.msg) {
       return <h1 key={item.msg}>{item.msg}</h1>;
-    }
-    if (!name) {
-      return (
-        <div
-          className="renderitem--block"
-          key={item}
-          onClick={() => {
-            dispatch({ type: "setDriveName", value: item });
-            dispatch({ type: "openDirectory", value: item });
-          }}
-          style={{
-            fontSize: "3rem",
-            fontFamily: "bebas neue",
-            letterSpacing: "0.3rem",
-            color: "white",
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.color = "#d6fd92";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.color = "white";
-          }}
-        >
-          {item}
-        </div>
-      );
     }
     return "";
   });

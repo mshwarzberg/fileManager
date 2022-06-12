@@ -63,7 +63,7 @@ function getFileNameParts(file, directory) {
       file.name
     }`,
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
-    fileextension: suffix || "Directory",
+    fileextension: suffix || "",
     prefix: encodeURIComponent(prefix),
     size: size,
     permission: permission,

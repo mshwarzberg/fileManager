@@ -20,7 +20,11 @@ router.get("/choosedrive", (req, res) => {
     let test = drives.toString().split("\r\r\n");
     for (let i in test) {
       if (test[i].includes(":")) {
-        sortedDrives.push(test[i].trim() + "/");
+        sortedDrives.push({
+          name: test[i].trim() + "/",
+          permission: true,
+          isDrive: true,
+        });
       }
     }
   } else if (os.platform() === "linux") {
@@ -37,7 +41,7 @@ router.get("/choosedrive", (req, res) => {
     for (let i in drives) {
       drives[i] = drives[i].split("%")[1].trim();
       if (drives[i].includes("/media") || drives[i] === "/") {
-        sortedDrives.push(drives[i]);
+        sortedDrives.push({ name: drives[i], permission: true, isDrive: true });
       }
     }
   }

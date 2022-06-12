@@ -70,6 +70,7 @@ export default function DirectoryTree() {
       />
     );
   }
+  mapDirectoryTreeLoop(state.directoryTree, "/");
 
   return (
     <>
@@ -89,7 +90,7 @@ export default function DirectoryTree() {
             ref={treeID}
             style={{ width: treeWidth && treeWidth }}
           >
-            {mapDirectoryTreeLoop(state.directoryTree, "/")}
+            {/* {mapDirectoryTreeLoop(state.directoryTree, "/")} */}
           </div>
           <div
             id="resize--tree"

@@ -10,7 +10,7 @@ export default function Filename(props) {
       ref={svgBody}
       viewBox="0 0 150 15"
       onMouseEnter={() => {
-        if (svgBody.current && props.name.length > 25) {
+        if (svgBody.current && props.name.length > 30) {
           svgText.current.style.textAnchor = "";
           svgText.current.x.baseVal[0].value = 145;
           IntervalAnimation = setInterval(() => {
@@ -22,7 +22,7 @@ export default function Filename(props) {
       }}
       onMouseLeave={() => {
         clearInterval(IntervalAnimation);
-        if (props.name.length < 25) {
+        if (props.name.length < 30) {
           svgText.current.style.textAnchor = "middle";
           svgText.current.x.baseVal[0].value = 75;
         } else {

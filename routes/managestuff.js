@@ -10,9 +10,10 @@ router.post("/rename", (req, res) => {
     path: oldpath,
     oldname,
     newname,
-    updatethumb,
+    renameInThumbDirectory,
     oldthumbname,
     newthumbname,
+    isdirectory,
   } = req.body;
 
   let newpath;
@@ -22,30 +23,44 @@ router.post("/rename", (req, res) => {
       break;
     }
   }
-
   try {
-    if (fs.statSync(newpath)) {
-      return res.send({ err: "File already exists with that name" });
-    }
+    fs.statSync(newpath);
+    return res.send({ err: "File already exists with that name" });
   } catch (e) {
     try {
+      // rename things that don't need to be updated in the thumbnail directory
       fs.renameSync(oldpath, newpath);
-      if (updatethumb) {
-        oldpath =
-          drive +
-          "thumbnails/" +
-          oldpath.slice(drive.length, oldpath.length - oldname.length) +
-          oldthumbname;
-        newpath =
-          drive +
-          "thumbnails/" +
-          newpath.slice(drive.length, newpath.length - oldname.length) +
-          newthumbname;
+      if (renameInThumbDirectory) {
+        // if item is a directory or an item that has a thumbnail (gif, image or video)
+        if (!isdirectory) {
+          oldpath =
+            drive +
+            "thumbnails/" +
+            oldpath.slice(drive.length, oldpath.length - oldname.length) +
+            oldthumbname;
+          newpath =
+            drive +
+            "thumbnails/" +
+            newpath.slice(drive.length, newpath.length - oldname.length) +
+            newthumbname;
+          // rename directories in the thumbnail folder
+        } else {
+          oldpath =
+            drive +
+            "thumbnails/" +
+            oldpath.slice(drive.length, oldpath.length - oldname.length) +
+            oldname;
+          newpath =
+            drive +
+            "thumbnails/" +
+            newpath.slice(drive.length, newpath.length - newname.length) +
+            newname;
+        }
         fs.renameSync(oldpath, newpath);
       }
       return res.send({ msg: "successfully renamed" });
     } catch (e) {
-      console.log(e.toString());
+      console.log("managestuff rename", e.toString());
       return res.send({ err: "cannot change name" });
     }
   }
@@ -60,9 +75,12 @@ router.post("/delete", (req, res) => {
   )} "${req.body.path}"`;
   try {
     execSync(setPermission);
-    execSync(deleteItem, { stdio: "pipe" });
+    const output = execSync(deleteItem, { stdio: "pipe" }).toString();
+    if (output.trim() === "Error") {
+      return res.send({ err: output.trim() });
+    }
   } catch (e) {
-    console.log(e.toString());
+    return res.send({ err: e.toString() });
   }
   res.end();
 });

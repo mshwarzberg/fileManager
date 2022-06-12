@@ -7,11 +7,11 @@ import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-whit
 import directory from "../../../Assets/images/folder.png";
 import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
 import { IsInPath } from "../../../Helpers/IsInPath";
-import useUpdateDirectoryTree from "../../../Hooks/useUpdateDirectoryTree";
+import changeItem from "../../../Helpers/changeItemInTree";
 
 export default function ParentDir(props) {
   const { parentDirectoryName, parentDirectory, path } = props;
-  const changeItem = useUpdateDirectoryTree();
+
   const { state, dispatch } = useContext(DirectoryContext);
 
   return (
@@ -19,9 +19,9 @@ export default function ParentDir(props) {
       <div className="line--down" />
       <p
         className="tree--open-directory"
-        title={path || '/'}
+        title={path || "/"}
         onMouseEnter={(e) => {
-          IsInPath(parentDirectoryName, path, state.currentDirectory)
+          IsInPath(parentDirectoryName, path, state.currentDirectory);
           if (
             path !== state.currentDirectory &&
             e.currentTarget.id !== "tree--in-path"
@@ -65,7 +65,10 @@ export default function ParentDir(props) {
             }
           }}
           onClick={(e) => {
-            let dirName = typeof parentDirectoryName === 'object' ? parentDirectoryName[0] : parentDirectoryName
+            let dirName =
+              typeof parentDirectoryName === "object"
+                ? parentDirectoryName[0]
+                : parentDirectoryName;
             dispatch({
               type: "updateDirectoryTree",
               value: changeItem(
@@ -81,8 +84,12 @@ export default function ParentDir(props) {
           src={DownArrowBlack}
           alt="close tree"
         />
-        <img src={localStorage.getItem('folder') || directory} alt="folder" className="directory--icon" />
-        {parentDirectoryName || '/'}
+        <img
+          src={localStorage.getItem("folder") || directory}
+          alt="folder"
+          className="directory--icon"
+        />
+        {parentDirectoryName || "/"}
       </p>
 
       <div className="opendirectory--list">{parentDirectory}</div>

@@ -9,6 +9,7 @@ function makeThumbnailDirectories(req, res, next) {
     drive.length,
     currentdirectory.length
   );
+
   // create folder of the current directory within the thumbnails folder to store the thumbnails
   const makeDirectories = new Promise((resolve, reject) => {
     fs.mkdir(`${drive}/thumbnails/temp`, { recursive: true }, () => {
@@ -17,6 +18,10 @@ function makeThumbnailDirectories(req, res, next) {
         { withFileTypes: true },
         (err, files) => {
           if (err) {
+            console.log(err);
+            if (err.code === "ENOENT") {
+              reject("Folder doesn't exist");
+            }
             reject("cant make dir");
           }
           if (files) {
@@ -26,13 +31,10 @@ function makeThumbnailDirectories(req, res, next) {
                   `${drive}/thumbnails/${restOfPath}/${files[i].name}`,
                   { recursive: true }
                 );
-                // console.log(
-                //   `made ${drive}/thumbnails/${restOfPath}/${files[i].name}`
-                // );
               }
             }
           }
-          resolve("Done");
+          resolve();
         }
       );
     });
@@ -44,6 +46,7 @@ function makeThumbnailDirectories(req, res, next) {
     })
     .catch((err) => {
       console.log(err);
+      return res.send({ err: err });
     });
 }
 
