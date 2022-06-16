@@ -2,3 +2,4 @@ import "./_sortby.scss";
 import "./_directorynavigation.scss";
 import "./_displaymiscellaneous.scss";
 import "./_contextmenu.scss";
+import "./_fileproperties.scss";

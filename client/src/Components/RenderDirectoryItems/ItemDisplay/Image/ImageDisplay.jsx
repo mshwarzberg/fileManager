@@ -13,7 +13,7 @@ function ImageDisplay(props) {
 
   const image = useRef();
 
-  const { setIsDragging, onMouseMove } = useDrag(image?.current);
+  const { setIsDragging, onMouseMove } = useDrag(image.current);
 
   useEffect(() => {
     let hideCursor;

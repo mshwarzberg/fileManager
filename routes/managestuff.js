@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const { execSync } = require("child_process");
+const { getFileNameParts } = require("../helpers/getfileparts");
 
 router.post("/rename", (req, res) => {
   let {
@@ -31,7 +33,8 @@ router.post("/rename", (req, res) => {
       // rename things that don't need to be updated in the thumbnail directory
       fs.renameSync(oldpath, newpath);
       if (renameInThumbDirectory) {
-        // if item is a directory or an item that has a thumbnail (gif, image or video)
+        // if item is a directory or an item that has a thumbnail
+        // if item is gif, image or video
         if (!isdirectory) {
           oldpath =
             drive +
@@ -41,7 +44,7 @@ router.post("/rename", (req, res) => {
           newpath =
             drive +
             "thumbnails/" +
-            newpath.slice(drive.length, newpath.length - oldname.length) +
+            newpath.slice(drive.length, newpath.length - newname.length) +
             newthumbname;
           // rename directories in the thumbnail folder
         } else {
@@ -77,11 +80,59 @@ router.post("/delete", (req, res) => {
     execSync(setPermission);
     const output = execSync(deleteItem, { stdio: "pipe" }).toString();
     if (output.trim() === "Error") {
-      return res.send({ err: output.trim() });
+      return res.send({ err: output.trim() }).status(404);
     }
   } catch (e) {
     return res.send({ err: e.toString() });
   }
-  res.end();
+  res.send({ msg: "Successfully deleted" });
+});
+
+router.post("/transfer", (req, res) => {
+  let { mode, path, destination, name, isDirectory } = req.body;
+  let transferItem;
+  try {
+    fs.statSync(destination + "/" + name);
+    return res.send({ err: "File already exists with that name" });
+  } catch {
+    try {
+      if (mode === "copy") {
+        if (os.platform() === "win32") {
+          let completePath = `"${path}" "${
+            destination + "/" + name
+          }"`.replaceAll("/", "\\");
+          transferItem = `copy ${completePath}`;
+          if (isDirectory) {
+            transferItem = `xcopy ${completePath}\\ /s /h /e`;
+          }
+        } else if (os.platform() === "linux") {
+          transferItem = `cp "${path}" "${destination + "/" + name}"`;
+        }
+        execSync(transferItem);
+      }
+      if (mode === "cut") {
+        if (os.platform() === "win32") {
+          let completePath = `"${path}" "${
+            destination + "/" + name
+          }"`.replaceAll("/", "\\");
+          transferItem = `move ${completePath} `;
+        }
+        execSync(transferItem);
+      }
+    } catch (e) {
+      console.log(e.toString());
+      return res.send({ err: "Something went wrong" });
+    }
+
+    const result = fs
+      .readdirSync(destination, { withFileTypes: true })
+      .map((item) => {
+        if (item.name === name) {
+          return getFileNameParts(item, destination);
+        }
+      });
+
+    res.send(result.filter((item) => item && item)[0]);
+  }
 });
 module.exports = router;

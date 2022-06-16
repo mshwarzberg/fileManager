@@ -16,13 +16,13 @@ function makeThumbnails(req, res, next) {
     // before generating thumbnail check if it already exists
     fs.readdir(`${drive}/thumbnails/${restOfPath}`, (err, files) => {
       if (err) reject("readdir err");
-      if (files && files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) === -1) {
+      if (files && files.indexOf(`${prefix}${suffix}.jpeg`) === -1) {
         // generate thumbnails for videos and gifs
         if (checkType(suffix) === "video" || checkType(suffix) === "gif") {
           const start = performance.now();
           ffmpegThumbs(
             `${currentdirectory}/${prefix}.${suffix}`,
-            `${drive}/thumbnails/${restOfPath}/thumbnail-${prefix}${suffix}.jpeg`,
+            `${drive}/thumbnails/${restOfPath}/${prefix}${suffix}.jpeg`,
             () => {
               resolve();
             }
@@ -34,9 +34,7 @@ function makeThumbnails(req, res, next) {
         else if (checkType(suffix) === "image") {
           sharp(`${currentdirectory}/${prefix}.${suffix}`)
             .resize({ width: 400 })
-            .toFile(
-              `${drive}/thumbnails/${restOfPath}/thumbnail-${prefix}${suffix}.jpeg`
-            )
+            .toFile(`${drive}/thumbnails/${restOfPath}/${prefix}${suffix}.jpeg`)
             .then(() => {
               return resolve();
             })

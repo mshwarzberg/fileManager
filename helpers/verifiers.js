@@ -4,7 +4,7 @@ function verifyFolder(req, res, next) {
   if (fs.existsSync(`${"/" || req.body.currentdirectory}`)) {
     return next();
   }
-  return res.send({ err: "ERROR: FOLDER DOES NOT EXIST" });
+  return res.send({ err: "ERROR: FOLDER DOES NOT EXIST" }).status(404);
 }
 
 function checkType(type) {

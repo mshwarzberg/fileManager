@@ -12,7 +12,7 @@ const {
 } = require("../middleware/makethumbnaildirectories");
 const { ffprobeMetadata } = require("../helpers/ffmpegfunctions");
 
-router.get("/choosedrive", (req, res) => {
+router.get("/choosedrive", (_, res) => {
   let drives;
   let sortedDrives = [];
   if (os.platform() === "win32") {
@@ -61,12 +61,13 @@ router.post("/data", verifyFolder, makeThumbnailDirectories, (req, res) => {
 
 router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
   const { currentdirectory, suffix, drive } = req.body;
+  const prefix = decodeURIComponent(req.body.prefix);
+
   let restOfPath = currentdirectory.slice(
     drive.length,
     currentdirectory.length
   );
 
-  const prefix = decodeURIComponent(req.body.prefix);
   const isImageGifVideo = [
     checkType(suffix) === "video",
     checkType(suffix) === "gif",
@@ -75,11 +76,9 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
 
   if (isImageGifVideo.includes(true)) {
     ffprobeMetadata(`${currentdirectory}/${prefix}.${suffix}`, (data) => {
-      fs.readdir(`${drive}/thumbnails/${restOfPath}`, (_, files) => {
-        if (
-          files &&
-          files.indexOf(`thumbnail-${prefix}${suffix}.jpeg`) !== -1
-        ) {
+      fs.readdir(`${drive}/thumbnails/${restOfPath}`, (err, files) => {
+        if (err) return res.send({ err: err }).status(404);
+        if (files && files.indexOf(`${prefix}${suffix}.jpeg`) !== -1) {
           const options = {
             root: drive,
             headers: {
@@ -93,7 +92,7 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
             },
           };
           return res.sendFile(
-            `/thumbnails/${restOfPath}/thumbnail-${prefix}${suffix}.jpeg`,
+            `/thumbnails/${restOfPath}/${prefix}${suffix}.jpeg`,
             options
           );
         } else {

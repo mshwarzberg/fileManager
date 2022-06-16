@@ -9,24 +9,25 @@
   background-color: rgb(16, 16, 16);
   height: 2.5rem;
   width: 100%;
-  h1 {
+  #navbar--dir-info {
     cursor: default;
     background-color: white;
     position: absolute;
     top: 2.5rem;
-    @include flexStyle(column);
-    align-items: flex-start;
-    font-size: 1.1em;
+    @include flexStyle(row);
+    justify-content: space-between;
     overflow: scroll;
-    font-family: Bitter;
-    font-weight: bold;
-    padding-left: 0.5rem;
-    width: max-content;
+    padding-inline: 0.5rem;
     width: 100%;
     height: 1.5rem;
     scrollbar-width: none;
     &::-webkit-scrollbar {
       display: none;
+    }
+    h1 {
+      font-family: Bitter;
+      font-weight: bold;
+      font-size: 1.1em;
     }
   }
 }

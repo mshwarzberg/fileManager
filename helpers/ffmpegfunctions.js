@@ -12,11 +12,14 @@ function ffmpegThumbs(name, outputfile, callback) {
       77
     )} -i "${name}" -vf "scale=400:-2" -vframes 1 "${outputfile}"`;
     child.execSync(createThumbs, { stdio: "ignore" });
-  } catch (e) {
-    console.log("ffmpegfunctions ffmpegthumbs", e.stderr.toString());
     callback();
+  } catch (e) {
+    callback({
+      width: "",
+      height: "",
+      duration: "",
+    });
   }
-  callback();
 }
 
 function ffprobeMetadata(name, callback) {
@@ -32,7 +35,6 @@ function ffprobeMetadata(name, callback) {
       duration: output["format"].duration,
     });
   } catch (e) {
-    console.log("ffmpegfunctions ffprobeMetadata", e.stderr.toString());
     callback({
       width: "",
       height: "",

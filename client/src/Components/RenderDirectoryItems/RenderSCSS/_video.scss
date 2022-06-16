@@ -23,6 +23,7 @@
   @include flexStyle(column);
   position: relative;
   animation: none;
+  background-color: black;
   #viewitem--video {
     @include maxSize;
   }

@@ -1,6 +1,5 @@
 import React from "react";
 import Close from "../../Assets/images/close.png";
-import useScreenDimensions from "../../Hooks/useScreenDimensions";
 import Back from "../../Assets/images/navigate-backwards.png";
 import Forward from "../../Assets/images/navigate-forwards.png";
 
@@ -14,14 +13,12 @@ export default function DisplayMiscellaneous(props) {
     confirmExit,
   } = props;
 
-  const { width } = useScreenDimensions();
-
   return (
     <>
       {!fullscreen && viewItem.type !== "video" && (
         <h1 id="display--name">{viewItem.path}</h1>
       )}
-      {width < 900 && (
+      {window.innerWidth < 900 && (
         <>
           <img
             id="display--nav-back"

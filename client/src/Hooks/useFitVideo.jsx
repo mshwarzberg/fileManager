@@ -1,8 +1,8 @@
 import { useState } from "react";
-import useScreenDimensions from "./useScreenDimensions";
 
 export default function useFitVideo() {
-  const { height: screenHeight, width: screenWidth } = useScreenDimensions();
+  const screenHeight = window.innerHeight;
+  const screenWidth = window.innerWidth;
 
   const [containerDimensions, setContainerDimensions] = useState({
     width: 0,

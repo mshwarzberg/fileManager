@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import { DirectoryContext } from "../../Main/App";
-import changeItem from "../../../Helpers/changeItemInTree";
-import useFetch from "../../../Hooks/useFetch";
-import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
+// import changeItem from "../../../Helpers/ChangeItemInTree";
+// import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
 import RightArrowBlack from "../../../Assets/images/directorytree/right-arrow-black.png";
 import RightArrowWhite from "../../../Assets/images/directorytree/right-arrow-white.png";
 import RightArrowAccented from "../../../Assets/images/directorytree/right-arrow-accented.png";
@@ -11,12 +10,6 @@ import directory from "../../../Assets/images/folder.png";
 export default function ChildDir(props) {
   const { path, subItem } = props;
   const { state, dispatch } = useContext(DirectoryContext);
-
-  const { data: directories } = useFetch(
-    "/api/senddirectories",
-    JSON.stringify({ path: path }),
-    path
-  );
 
   function expandDirectory(toOpenDirectory) {
     // if a user clicks on the down caret don't open the directory. Instead just expand to the child directories
@@ -27,17 +20,17 @@ export default function ChildDir(props) {
       });
     }
 
-    if (directories) {
-      dispatch({
-        type: "updateDirectoryTree",
-        value: changeItem(
-          state.directoryTree,
-          ParentDirectoriesToArray(path),
-          0,
-          directories.array
-        ),
-      });
-    }
+    // if (directories) {
+    //   dispatch({
+    //     type: "updateDirectoryTree",
+    //     value: changeItem(
+    //       state.directoryTree,
+    //       ParentDirectoriesToArray(path),
+    //       0,
+    //       directories.array
+    //     ),
+    //   });
+    // }
   }
 
   return (

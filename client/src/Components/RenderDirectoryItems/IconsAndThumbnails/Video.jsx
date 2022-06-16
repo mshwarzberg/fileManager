@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import playIcon from "../../../Assets/images/play.png";
 import PlayIconHover from "../../../Assets/images/playhover.png";
 import formatDuration from "../../../Helpers/FormatVideoTime";
-import Filename from "./Filename";
+import Filename from "./Icon/Filename";
 
 function Video(props) {
   const { item, index } = props;
@@ -12,14 +12,14 @@ function Video(props) {
 
   const {
     name,
-    shorthandsize,
-    fileextension,
+    formattedSize,
     thumbnail,
     itemtype,
     height,
     width,
     duration,
     path,
+    permission,
   } = item;
 
   const [durationPosition, setDurationPosition] = useState({
@@ -50,6 +50,12 @@ function Video(props) {
           onMouseLeave={(e) => {
             e.currentTarget.firstChild.style.display = "none";
           }}
+          style={{
+            cursor: !permission ? "not-allowed" : "pointer",
+            backgroundColor: !permission ? "#ff7878c5" : "",
+            border: !permission ? "1.5px solid red" : "",
+            opacity: !permission ? 0.5 : 1,
+          }}
         >
           <img
             src={playIcon}
@@ -63,13 +69,19 @@ function Video(props) {
             alt="playvideo"
             className="renderitem--play-icon"
             style={{ display: "none", zIndex: 1 }}
+            data-index={index}
+            data-permission={permission}
           />
           <img
+            style={{
+              cursor: !permission ? "not-allowed" : "pointer",
+            }}
             className="renderitem--thumbnail"
             data-index={index}
+            data-permission={permission}
             src={thumbnail}
             alt="gifthumb"
-            title={`Name: ${name}\nSize: ${shorthandsize}\nType: ${fileextension}\nDimensions: ${width}x${height}\nDuration: ${formatDuration(
+            title={`Name: ${name}\nSize: ${formattedSize}\nDimensions: ${width}x${height}\nDuration: ${formatDuration(
               duration
             )}\nPath: ${path}`}
             onLoad={(e) => {

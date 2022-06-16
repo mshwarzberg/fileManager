@@ -135,9 +135,10 @@ export default function RenderItems() {
       );
     }
   }
+
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
-    const { name, fileextension, size, itemtype, path } = item;
+    const { name, fileextension, size, itemtype, path, permission } = item;
     if (path === state.drive + "thumbnails") {
       return "";
     }
@@ -151,13 +152,15 @@ export default function RenderItems() {
               dispatch({ type: "openDirectory", value: name });
               return;
             }
-            return changeFolderOrViewFiles(
-              name,
-              path,
-              itemtype,
-              directoryItems.indexOf(item),
-              null
-            );
+            if (permission) {
+              return changeFolderOrViewFiles(
+                name,
+                path,
+                itemtype,
+                directoryItems.indexOf(item),
+                null
+              );
+            }
           }}
         >
           {itemtype === "video" && (

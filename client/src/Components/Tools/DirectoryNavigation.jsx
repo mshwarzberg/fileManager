@@ -6,14 +6,16 @@ import backwards from "../../Assets/images/navigation/backwardshover.png";
 import upwards from "../../Assets/images/navigation/upwardshover.png";
 
 function DirectoryNavigation() {
-  const { state, dispatch } = useContext(DirectoryContext);
+  const { state, dispatch, controllers } = useContext(DirectoryContext);
 
   return (
     <div id="navbar--navigation">
       <button
         onClick={() => {
+          for (let i in controllers) {
+            controllers[i].abort();
+          }
           let uppedDirectory = state.currentDirectory;
-
           if (
             uppedDirectory.length === 3 &&
             uppedDirectory[1] === ":" &&
@@ -43,6 +45,9 @@ function DirectoryNavigation() {
         id="navbar--backwards"
         className="navbar--button"
         onClick={() => {
+          for (let i in controllers) {
+            controllers[i].abort();
+          }
           dispatch({ type: "backDirectory" });
         }}
         disabled={state.navigatedIndex === 0}
@@ -51,6 +56,9 @@ function DirectoryNavigation() {
       </button>
       <button
         onClick={() => {
+          for (let i in controllers) {
+            controllers[i].abort();
+          }
           dispatch({ type: "forwardDirectory" });
         }}
         id="navbar--forwards"

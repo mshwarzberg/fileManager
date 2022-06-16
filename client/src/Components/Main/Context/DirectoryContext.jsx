@@ -1,4 +1,4 @@
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useState } from "react";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -47,14 +47,14 @@ function reducer(state, action) {
           lastNavigated && {
             drive: "",
           }),
-        ...(!lastNavigated && { drive: drive }),
+        ...(lastNavigated === "" && { drive: drive || "" }),
       };
     case "forwardDirectory":
       return {
         ...state,
         currentDirectory: state.navigatedDirectories[state.navigatedIndex + 1],
         navigatedIndex: state.navigatedIndex + 1,
-        ...(state.currentDirectory === "" && {
+        ...(!state.currentDirectory && {
           drive: state.navigatedDirectories[state.navigatedIndex + 1],
         }),
       };
@@ -95,6 +95,8 @@ export default function useDirectoryContextManager() {
     navigatedIndex: localStorage.getItem("navigatedIndex") * 1 || 0,
   });
 
+  const [controllers, setControllers] = useState([]);
+
   useEffect(() => {
     localStorage.setItem("drive", state.drive);
     localStorage.setItem("currentDirectory", state.currentDirectory);
@@ -106,5 +108,5 @@ export default function useDirectoryContextManager() {
     localStorage.setItem("navigatedIndex", state.navigatedIndex * 1);
   }, [state, dispatch]);
 
-  return { state, dispatch };
+  return { state, dispatch, controllers, setControllers };
 }

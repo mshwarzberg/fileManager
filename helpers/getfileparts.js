@@ -2,6 +2,7 @@ const fs = require("fs");
 const os = require("os");
 const { checkIfFileOrDir } = require("./isfileordirectory");
 const { checkType } = require("../helpers/verifiers");
+const { formatSize } = require("../helpers/formatsize");
 
 function getFileNameParts(file, directory) {
   const item = checkIfFileOrDir(file);
@@ -33,13 +34,18 @@ function getFileNameParts(file, directory) {
       prefix += file.name[j];
     }
   }
-  let size;
+  let sizeOf;
   let symLink;
   let permission = true;
   try {
-    size = fs.statSync(
+    var { size, birthtimeMs, mtimeMs, atimeMs } = fs.statSync(
       `${directory === "/" ? directory : directory + "/"}${file.name}`
-    ).size;
+    );
+    dateAccessed = atimeMs;
+    dateModified = mtimeMs;
+    dateCreated = birthtimeMs;
+    sizeOf = size;
+
     if (item.isSymbolicLink) {
       symLink = fs.readlinkSync(
         `${directory === "/" ? directory : directory + "/"}${file.name}`
@@ -48,7 +54,7 @@ function getFileNameParts(file, directory) {
       symLink = symLink.replaceAll("\\", "/");
     }
   } catch {
-    size = 0;
+    sizeOf = 0;
     permission = false;
   }
 
@@ -65,8 +71,16 @@ function getFileNameParts(file, directory) {
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
     fileextension: suffix || "",
     prefix: encodeURIComponent(prefix),
-    size: size,
     permission: permission,
+    ...(permission && {
+      ...(!item.isDirectory && {
+        size: sizeOf,
+        formattedSize: formatSize(sizeOf),
+      }),
+      accessed: dateAccessed,
+      modified: dateModified,
+      created: dateCreated,
+    }),
     ...(symLink && { linkTo: symLink }),
   };
   return filteredData;

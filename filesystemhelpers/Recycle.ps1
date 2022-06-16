@@ -12,5 +12,5 @@
       } 
     }
     catch {
-      Write-Output 'Error'
+      Write-Output $_
     }

@@ -1,14 +1,21 @@
 import React from "react";
 import ColorizeIcons from "../../../../Helpers/ColorizeIcons";
 
-export default function CustomIcon({ index, fileextension }) {
+export default function CustomIcon({
+  index,
+  fileextension,
+  title,
+  permission,
+}) {
   return (
     <svg
       viewBox="0 0 100 100"
       style={{ position: "absolute" }}
       className="svg--icon"
       data-index={index}
+      data-permission={permission}
     >
+      <title>{title()}</title>
       <rect
         fill="#bbbbbb"
         x="12.5"
@@ -18,6 +25,7 @@ export default function CustomIcon({ index, fileextension }) {
         clipPath="polygon(100% 0, 100% 75%, 69% 100%, 0 100%, 0 0)"
         className="svg--icon"
         data-index={index}
+        data-permission={permission}
       />
       <rect
         x="4.5"
@@ -28,6 +36,8 @@ export default function CustomIcon({ index, fileextension }) {
         rx="1"
         ry="1"
         className="svg--icon"
+        data-index={index}
+        data-permission={permission}
       />
       <rect
         width="25"
@@ -38,6 +48,7 @@ export default function CustomIcon({ index, fileextension }) {
         clipPath="polygon(0 0, 0% 100%, 94% 0)"
         className="svg--icon"
         data-index={index}
+        data-permission={permission}
       />
       <rect
         width="25"
@@ -48,6 +59,7 @@ export default function CustomIcon({ index, fileextension }) {
         clipPath="polygon(100% 0, 0% 100%, 100% 100%)"
         className="svg--icon"
         data-index={index}
+        data-permission={permission}
       />
       <text
         fill={ColorizeIcons(fileextension) === "white" ? "black" : "white"}
@@ -55,6 +67,7 @@ export default function CustomIcon({ index, fileextension }) {
         y={fileextension.length > 4 ? "36" : "40"}
         className="custom-icon-text"
         data-index={index}
+        data-permission={permission}
         style={{
           fontSize: fileextension.length > 4 ? "0.6em" : "1.3em",
         }}

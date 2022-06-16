@@ -1,10 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import VideoControls from "./VideoControls";
 import useFitVideo from "../../../../Hooks/useFitVideo";
 import useDrag from "../../../../Hooks/useDrag";
 
 let timeouts;
-
 function VideoDisplay(props) {
   const { viewItem } = props;
 
@@ -15,6 +14,20 @@ function VideoDisplay(props) {
   const videoControls = useRef();
   const videoHeader = useRef();
   const videoPage = useRef();
+
+  useEffect(() => {
+    let timeout;
+    window.addEventListener("resize", () => {
+      timeout = setTimeout(() => {
+        fitVideo(video.current, videoContainer.current);
+        return;
+      }, 0);
+    });
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener("resize", () => {});
+    };
+  }, [fitVideo]);
 
   const { setIsDragging, onMouseMove } = useDrag(videoPage.current);
 

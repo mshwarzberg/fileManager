@@ -20,6 +20,9 @@ export function toDataURL(url, callback) {
 }
 export default function useStoreImages() {
   useEffect(() => {
+    if (navigator.userAgent.includes("Firefox")) {
+      sessionStorage.clear();
+    }
     if (!localStorage.getItem("foldericon")) {
       localStorage.setItem("folder", folder);
     }

@@ -5,9 +5,9 @@ import DownArrowAccented from "../../../Assets/images/directorytree/down-arrow-a
 import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-white.png";
 
 import directory from "../../../Assets/images/folder.png";
-import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
 import { IsInPath } from "../../../Helpers/IsInPath";
-import changeItem from "../../../Helpers/changeItemInTree";
+// import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
+// import changeItem from "../../../Helpers/ChangeItemInTree";
 
 export default function ParentDir(props) {
   const { parentDirectoryName, parentDirectory, path } = props;
@@ -65,20 +65,20 @@ export default function ParentDir(props) {
             }
           }}
           onClick={(e) => {
-            let dirName =
-              typeof parentDirectoryName === "object"
-                ? parentDirectoryName[0]
-                : parentDirectoryName;
-            dispatch({
-              type: "updateDirectoryTree",
-              value: changeItem(
-                state.directoryTree,
-                ParentDirectoriesToArray(path),
-                0,
-                dirName
-              ),
-            });
-            e.stopPropagation();
+            // let dirName =
+            //   typeof parentDirectoryName === "object"
+            //     ? parentDirectoryName[0]
+            //     : parentDirectoryName;
+            // dispatch({
+            //   type: "updateDirectoryTree",
+            //   value: changeItem(
+            //     state.directoryTree,
+            //     ParentDirectoriesToArray(path),
+            //     0,
+            //     dirName
+            //   ),
+            // });
+            // e.stopPropagation();
           }}
           className="tree--arrow"
           src={DownArrowBlack}
