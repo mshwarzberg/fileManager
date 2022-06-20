@@ -75,7 +75,7 @@ function SortPopup(props) {
   });
 
   return (
-    <ol id="filter--list" title="">
+    <ol id="filter--list" data-title="">
       <li
         onClick={() => {
           mySort("folder");
@@ -101,7 +101,7 @@ function SortPopup(props) {
         onClick={() => {
           mySort("duration");
         }}
-        title="For videos and gifs"
+        data-title="For videos and gifs"
       >
         ...File Duration
       </li>
@@ -113,8 +113,10 @@ function SortPopup(props) {
         onMouseLeave={() => {
           setShowSubSort(false);
         }}
+        id="filetype-hover"
       >
-        ...File Type
+        <p>←</p>
+        <p>...File Type</p>
         {showSubSort && <ol>{fileTypes}</ol>}
       </li>
     </ol>

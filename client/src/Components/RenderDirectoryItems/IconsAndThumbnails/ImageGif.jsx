@@ -1,34 +1,44 @@
 import React, { useRef } from "react";
 import Filename from "./Icon/Filename";
-import formatDuration from "../../../Helpers/FormatVideoTime";
+import useDrag from "../../../Hooks/useDrag";
 
 export default function ImageGif(props) {
-  const { item, index } = props;
-  const {
-    name,
-    formattedSize,
-    thumbnail,
-    itemtype,
-    height,
-    width,
-    path,
-    duration,
-    permission,
-  } = item;
+  const { item, index, getTitle } = props;
+  const { name, thumbnail, path, permission } = item;
+
   const nameInput = useRef();
+  const blockRef = useRef();
+  const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
 
   return (
-    thumbnail &&
-    (itemtype === "image" || itemtype === "gif") && (
+    thumbnail && (
       <div
         className="renderitem--block"
         id="renderitem--image-block"
+        data-srcpath={path}
+        data-name={name}
         style={{
           cursor: !permission ? "not-allowed" : "pointer",
           backgroundColor: !permission ? "#ff7878c5" : "",
           border: !permission ? "1.5px solid red" : "",
-          opacity: !permission ? 0.6 : 1,
+          opacity: !permission ? 0.6 : "",
+          ...((XY.x || XY.y) && {
+            top: XY.y,
+            left: XY.x,
+            zIndex: 100,
+            pointerEvents: "none",
+            backgroundColor: "black",
+            border: "2px solid pink",
+          }),
         }}
+        onMouseDown={(e) => {
+          if (e.button === 0) {
+            setIsDragging(true);
+            e.stopPropagation();
+            return;
+          }
+        }}
+        ref={blockRef}
       >
         <img
           style={{ cursor: !permission ? "not-allowed" : "pointer" }}
@@ -37,9 +47,7 @@ export default function ImageGif(props) {
           className="renderitem--thumbnail"
           data-index={index}
           data-permission={permission}
-          title={`Name: ${name}\nSize: ${formattedSize}\nDimensions: ${width}x${height}${
-            duration ? `\nDuration: ${formatDuration(duration)}` : ""
-          }\nPath: ${path}`}
+          data-title={getTitle()}
         />
         <Filename name={name} nameRef={nameInput} />
       </div>

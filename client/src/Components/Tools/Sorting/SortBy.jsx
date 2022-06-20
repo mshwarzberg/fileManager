@@ -37,7 +37,7 @@ function SortBy() {
             return newArray.reverse();
           });
         }}
-        title={`Click to sort ${descending ? "ascending" : "descending"}`}
+        data-title={`Click to sort ${descending ? "ascending" : "descending"}`}
       >
         {descending ? (
           <img src={downwards} alt="ascending or descending" />
@@ -51,7 +51,7 @@ function SortBy() {
         onClick={() => {
           setShowPopup(!showPopup);
         }}
-        title="Click here and press 'r' to sort randomly"
+        data-title="Click here and press 'r' to sort randomly"
         onKeyDown={(e) => {
           let key = e.key.toLowerCase();
           if (key === "r") {

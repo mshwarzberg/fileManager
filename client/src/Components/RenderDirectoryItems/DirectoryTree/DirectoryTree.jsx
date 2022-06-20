@@ -1,37 +1,23 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { DirectoryContext } from "../../Main/App";
-
+import useDrag from "../../../Hooks/useDrag";
 import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
 
 export default function DirectoryTree() {
   const [showTree, setShowTree] = useState(false);
-  const [treeWidth, setTreeWidth] = useState();
-  const [isDragging, setIsDragging] = useState(false);
   const { state } = useContext(DirectoryContext);
 
-  useEffect(() => {
-    const grab = document.querySelector("#resize--tree");
-    function handleDrag(e) {
-      if (isDragging) {
-        setTreeWidth(e.x);
-      }
-    }
-    if (grab) {
-      document.addEventListener("mouseup", () => {
-        setIsDragging(false);
-        document.body.style.cursor = "default";
-      });
-      document.addEventListener("mousemove", handleDrag);
-
-      return () => {
-        document.removeEventListener("mousemove", handleDrag);
-        document.removeEventListener("mouseup", () => {});
-      };
-    }
-  }, [isDragging]);
-
   const treeID = useRef();
+  const treeBody = useRef();
+
+  const { setIsDragging, XY } = useDrag(
+    treeBody.current,
+    true,
+    false,
+    true,
+    "X"
+  );
 
   function mapDirectoryTreeLoop(tree, path) {
     let parentDirectoryName;
@@ -84,23 +70,28 @@ export default function DirectoryTree() {
         {showTree ? "Hide Tree" : "Show Tree"}
       </button>
       {showTree && (
-        <>
+        <div style={{ width: XY.x, pointerEvents: "none" }} ref={treeBody}>
           <div
             id="directorytree--body"
             ref={treeID}
-            style={{ width: treeWidth && treeWidth }}
+            style={{ width: XY.x, pointerEvents: "all" }}
           >
             {/* {mapDirectoryTreeLoop(state.directoryTree, "/")} */}
           </div>
           <div
+            style={{
+              pointerEvents: "all",
+              left: XY.x || "30rem",
+              cursor: "grab",
+            }}
             id="resize--tree"
-            style={{ left: treeWidth && treeWidth - 5 }}
             onMouseDown={(e) => {
               setIsDragging(true);
-              document.body.style.cursor = "grabbing";
+              e.target.style.cursor = "grabbing";
+              e.stopPropagation();
             }}
           />
-        </>
+        </div>
       )}
     </>
   );

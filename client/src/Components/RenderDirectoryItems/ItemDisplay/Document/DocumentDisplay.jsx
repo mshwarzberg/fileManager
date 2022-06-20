@@ -3,14 +3,14 @@ import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
 import { DirectoryContext } from "../../../Main/App";
 
 function DocumentDisplay(props) {
-  const { viewItem, setViewItem, setFullscreen } = props;
+  const { viewItem, setViewItem } = props;
 
   const { state } = useContext(DirectoryContext);
   const [newDocument, setNewDocument] = useState(
     viewItem.property === " " ? "" : viewItem.property
   );
   const [isEdited, setisEdited] = useState(false);
-  const [isEditing, setIsEditing] = useState(true);
+
   const [message, setMessage] = useState({
     msg: "",
     isErr: false,
@@ -82,7 +82,6 @@ function DocumentDisplay(props) {
       <DisplayMiscellaneous
         viewItem={viewItem}
         setViewItem={setViewItem}
-        setFullscreen={setFullscreen}
         confirmExit={() => {
           if (isEdited) {
             if (
@@ -97,19 +96,6 @@ function DocumentDisplay(props) {
       />
       <div id="document--header">
         <button
-          onClick={(e) => {
-            if (isEditing) {
-              e.currentTarget.offsetParent.nextSibling.disabled = true;
-              return setIsEditing(false);
-            } else {
-              e.currentTarget.offsetParent.nextSibling.disabled = false;
-              setIsEditing(true);
-            }
-          }}
-        >
-          {isEditing ? "Lock" : "Edit"}
-        </button>
-        <button
           onClick={() => {
             if (isEdited) {
               saveDocument(true);
@@ -121,17 +107,24 @@ function DocumentDisplay(props) {
           Save
         </button>
       </div>
-      <textarea
-        className="viewitem--item"
-        id="document"
-        value={newDocument}
-        onChange={(e) => {
-          setNewDocument(e.target.value);
-        }}
-        spellCheck={false}
-        resize="false"
-        disabled={!isEditing}
-      />
+      <div className="viewitem--item" id="document">
+        <div
+          onChange={(e) => {
+            setNewDocument(e.target.value);
+          }}
+          spellCheck={false}
+          resize="false"
+        >
+          <textarea
+            value={newDocument}
+            onChange={(e) => {
+              setNewDocument(e.target.value);
+            }}
+            spellCheck={false}
+            resize="false"
+          />
+        </div>
+      </div>
       {message.msg && (
         <h1
           id="document--message"

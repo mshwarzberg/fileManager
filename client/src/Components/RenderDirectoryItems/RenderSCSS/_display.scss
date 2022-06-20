@@ -2,17 +2,14 @@
 
 @keyframes loadDisplay {
   0% {
-    position: absolute;
     opacity: 0.4;
     transform: scale(0);
   }
   100% {
-    position: absolute;
     opacity: 1;
     transform: scale(1);
   }
 }
-
 .viewitem--block {
   @include flexStyle(column);
   position: fixed;
@@ -27,11 +24,13 @@
     object-fit: contain;
     max-width: 95%;
     max-height: 95%;
-    animation: loadDisplay ease-out 500ms;
+  }
+  #image-display {
+    animation: loadDisplay 300ms ease-in-out;
   }
 }
 
-#image-fullscreen {
-  @include maxSize;
+.image-fullscreen {
+  @include maxSize(!important);
   background-color: black;
 }

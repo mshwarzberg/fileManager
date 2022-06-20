@@ -1,41 +1,62 @@
 import { useState, useEffect, useCallback } from "react";
 
-export default function useDrag(item, enableSnapping) {
+export default function useDrag(
+  element,
+  snapToMousePosition,
+  resetOnUp,
+  scaling,
+  axisLocked
+) {
   const [isDragging, setIsDragging] = useState(false);
+  const [XY, setXY] = useState({
+    x: null,
+    y: null,
+  });
 
   const onMouseMove = useCallback(
     (e) => {
       moveAt(e.movementX, e.movementY);
       function moveAt(movementX, movementY) {
-        if (item) {
-          let positionX = item.style.left;
+        if (element) {
+          let positionX = !scaling ? element.style.left : element.style.width;
           positionX = positionX.split("px")[0];
           positionX = movementX * 1 + positionX * 1;
 
-          let positionY = item.style.top;
+          let positionY = !scaling ? element.style.top : element.style.height;
           positionY = positionY.split("px")[0];
           positionY = movementY * 1 + positionY * 1;
-          if ((positionX <= 0 || positionY <= 0) && enableSnapping) {
+
+          if ((positionX <= 0 || positionY <= 0) && snapToMousePosition) {
             positionX = e.clientX;
             positionY = e.clientY;
           }
-          item.style.left = positionX + "px";
-          item.style.top = positionY + "px";
+
+          setXY({
+            x: (axisLocked === "X" || !axisLocked) && positionX + "px",
+            y: (axisLocked === "Y" || !axisLocked) && positionY + "px",
+          });
         }
       }
     },
-    [item, enableSnapping]
+    // eslint-disable-next-line
+    [element]
   );
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener("mouseup", () => {
+      document.addEventListener("mouseup", (e) => {
         setIsDragging(false);
+        if (resetOnUp && isDragging) {
+          setXY({
+            x: "",
+            y: "",
+          });
+        }
       });
       window.addEventListener("blur", () => {
-        if (item) {
+        if (element) {
           setIsDragging(false);
-          item.style.cursor = "default";
+          element.style.cursor = "default";
           document.removeEventListener("mousemove", onMouseMove);
         }
       });
@@ -52,7 +73,8 @@ export default function useDrag(item, enableSnapping) {
       document.removeEventListener("dragstart", () => {});
       document.removeEventListener("mouseup", () => {});
     };
-  }, [isDragging, setIsDragging, item, onMouseMove]);
+    // eslint-disable-next-line
+  }, [isDragging, setIsDragging, element]);
 
-  return { setIsDragging, onMouseMove, isDragging };
+  return { setIsDragging, isDragging, XY, onMouseMove };
 }

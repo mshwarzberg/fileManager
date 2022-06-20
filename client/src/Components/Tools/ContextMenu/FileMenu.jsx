@@ -16,8 +16,8 @@ export default function FileMenu({
     <div
       id="menu"
       style={{
-        top: contextMenu.posY,
-        left: contextMenu.posX,
+        top: contextMenu.y,
+        left: contextMenu.x,
       }}
     >
       <Rename originalItem={directoryItems[contextMenu.targetIndex]} />

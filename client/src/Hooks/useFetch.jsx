@@ -18,15 +18,19 @@ export default function useFetch(url, body, dependency) {
             setData(response);
           }
           if (response.err) {
-            setData({
-              err: response.err,
-            });
+            setData([
+              {
+                err: response.err,
+              },
+            ]);
           }
         })
         .catch(() => {
-          setData({
-            err: "Error occured",
-          });
+          setData([
+            {
+              err: "Error occured",
+            },
+          ]);
         });
     }
   }, [url, body, dependency]);

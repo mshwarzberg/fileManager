@@ -15,7 +15,7 @@ export default function PageDirectoryMenu({
     useContext(DirectoryContext);
 
   return (
-    <div id="menu" style={{ top: contextMenu.posY, left: contextMenu.posX }}>
+    <div id="menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
       {!contextMenu.isDirectory && (
         <button className="context-menu-item">New Folder</button>
       )}
@@ -39,7 +39,7 @@ export default function PageDirectoryMenu({
           <Delete contextMenu={contextMenu} path={contextMenu.targetPath} />
         </>
       )}
-      {contextMenu.path && (
+      {contextMenu.targetPath && (
         <button
           className="context-menu-item"
           onClick={() => {

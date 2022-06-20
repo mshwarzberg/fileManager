@@ -4,8 +4,8 @@ import ColorizeIcons from "../../../../Helpers/ColorizeIcons";
 export default function CustomIcon({
   index,
   fileextension,
-  title,
   permission,
+  getTitle,
 }) {
   return (
     <svg
@@ -14,8 +14,8 @@ export default function CustomIcon({
       className="svg--icon"
       data-index={index}
       data-permission={permission}
+      data-title={getTitle()}
     >
-      <title>{title()}</title>
       <rect
         fill="#bbbbbb"
         x="12.5"

@@ -8,7 +8,7 @@ import RenderItems from "../RenderDirectoryItems/RenderItems";
 import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import useStoreImages from "../../Hooks/useStoreImages";
-import ContextMenu from "../Tools/ContextMenu/ContextMenu";
+import GeneralUI from "../Tools/GeneralUI";
 
 export const DirectoryContext = createContext();
 
@@ -28,13 +28,18 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (state.drive) {
+    if (state.drive && state.currentDirectory) {
       if (
         !CompareArray(itemData, directoryItems) &&
         state.currentDirectory !== ""
       ) {
+        for (let i of controllers) {
+          i.abort();
+        }
         setControllers([]);
         setDirectoryItems(itemData);
+      } else if (itemData.length === 0) {
+        setDirectoryItems([]);
       }
     } else {
       fetch("/api/data/choosedrive", {
@@ -64,10 +69,10 @@ export default function App() {
         setControllers,
       }}
     >
-      <ContextMenu />
       <Navbar />
       <RenderItems />
       <DirectoryTree />
+      <GeneralUI />
     </DirectoryContext.Provider>
   );
 }

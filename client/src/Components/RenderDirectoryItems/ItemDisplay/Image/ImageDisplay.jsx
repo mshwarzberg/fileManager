@@ -1,37 +1,16 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import useDrag from "../../../../Hooks/useDrag";
 import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
+import useFullscreenElement from "../../../../Hooks/useFullscreenElement";
 
 function ImageDisplay(props) {
-  const {
-    viewItem,
-    fullscreen,
-    enterExitFullscreen,
-    setViewItem,
-    setFullscreen,
-  } = props;
+  const { viewItem, setViewItem } = props;
 
   const image = useRef();
 
-  const { setIsDragging, onMouseMove } = useDrag(image.current);
+  const { setIsDragging, XY } = useDrag(image.current);
 
-  useEffect(() => {
-    let hideCursor;
-    if (document.fullscreenElement) {
-      document.addEventListener("mousemove", () => {
-        if (image.current) {
-          image.current.style.cursor = "default";
-          hideCursor = setTimeout(() => {
-            image.current.style.cursor = "none";
-          }, 2000);
-        }
-      });
-    }
-    return () => {
-      document.removeEventListener("mousemove", () => {});
-      clearTimeout(hideCursor);
-    };
-  });
+  const { fullscreenControl, fullscreen } = useFullscreenElement();
 
   return (
     <div
@@ -55,19 +34,16 @@ function ImageDisplay(props) {
         image.current.style.position = "fixed";
       }}
     >
-      <DisplayMiscellaneous
-        viewItem={viewItem}
-        fullscreen={fullscreen}
-        setFullscreen={setFullscreen}
-        setViewItem={setViewItem}
-      />
+      <DisplayMiscellaneous viewItem={viewItem} setViewItem={setViewItem} />
       <img
         ref={image}
-        onDoubleClick={() => {
-          enterExitFullscreen();
+        style={{ left: XY.x, top: XY.y }}
+        onLoad={(e) => {
+          e.target.id = "image-display";
         }}
-        id={fullscreen ? "image-fullscreen" : ""}
-        className={"viewitem--item"}
+        className={
+          fullscreen ? "viewitem--item image-fullscreen" : "viewitem--item"
+        }
         src={viewItem.property}
         alt={viewItem.name}
         onMouseDown={(e) => {
@@ -89,14 +65,12 @@ function ImageDisplay(props) {
             setIsDragging(true);
           }
         }}
-        onMouseUp={(e) => {
-          setIsDragging(false);
-          if (document.fullscreenElement) {
-            return;
-          }
+        onMouseUp={() => {
           image.current.style.cursor =
             image.current.style.scale > 1 ? "grab" : "default";
-          document.removeEventListener("mousemove", onMouseMove);
+        }}
+        onDoubleClick={() => {
+          fullscreenControl();
         }}
       />
     </div>

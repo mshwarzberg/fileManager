@@ -45,7 +45,7 @@ export default function ChildDir(props) {
         subItem.includes("*?<>") && "no-permission"
       }`}
       id={path === state.currentDirectory ? "highlight--child" : ""}
-      title={`Name: ${
+      data-title={`Name: ${
         subItem.includes("*?<>") ? subItem.slice(0, subItem.length - 4) : path
       }\nPath: ${
         subItem.includes("*?<>") ? path.slice(0, path.length - 4) : path

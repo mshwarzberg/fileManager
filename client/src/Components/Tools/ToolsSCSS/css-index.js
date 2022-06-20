@@ -3,3 +3,4 @@ import "./_directorynavigation.scss";
 import "./_displaymiscellaneous.scss";
 import "./_contextmenu.scss";
 import "./_fileproperties.scss";
+import "./_customtitle.scss";

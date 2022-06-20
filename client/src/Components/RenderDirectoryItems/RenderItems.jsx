@@ -6,17 +6,12 @@ import Icon from "./IconsAndThumbnails/Icon/Icon";
 
 import { DirectoryContext } from "../Main/App";
 import ItemDisplay from "./ItemDisplay/ItemDisplay";
+import formatDuration from "../../Helpers/FormatVideoTime";
 
 export default function RenderItems() {
   const { directoryItems, dispatch, state } = useContext(DirectoryContext);
 
-  const [viewItem, setViewItem] = useState({
-    type: null,
-    property: null,
-    index: null,
-    name: null,
-    path: null,
-  });
+  const [viewItem, setViewItem] = useState({});
 
   const page = useRef();
 
@@ -138,9 +133,32 @@ export default function RenderItems() {
 
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
-    const { name, fileextension, size, itemtype, path, permission } = item;
-    if (path === state.drive + "thumbnails") {
-      return "";
+    const {
+      name,
+      fileextension,
+      size,
+      itemtype,
+      path,
+      permission,
+      thumbnail,
+      formattedSize,
+      duration,
+      width,
+      height,
+    } = item;
+    function getTitle() {
+      if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
+        return `Name: ${name}\nPath: ${path}\nSize: ${
+          formattedSize || ""
+        }\nDimensions: ${width + "x" + height}\n${
+          duration ? `Duration: ${formatDuration(duration)}` : ""
+        }`;
+      }
+      if (itemtype === "folder") {
+        return `Name:${name}\nPath: ${path}`;
+      } else {
+        return `Name:${name}\nPath: ${path}\nSize: ${formattedSize || ""}`;
+      }
     }
     if (name) {
       return (
@@ -163,13 +181,27 @@ export default function RenderItems() {
             }
           }}
         >
+          {!thumbnail && (
+            <Icon
+              item={item}
+              index={directoryItems.indexOf(item)}
+              getTitle={getTitle}
+            />
+          )}
           {itemtype === "video" && (
-            <Video item={item} index={directoryItems.indexOf(item)} />
+            <Video
+              item={item}
+              index={directoryItems.indexOf(item)}
+              getTitle={getTitle}
+            />
           )}
           {(itemtype === "image" || itemtype === "gif") && (
-            <ImageGif item={item} index={directoryItems.indexOf(item)} />
+            <ImageGif
+              item={item}
+              index={directoryItems.indexOf(item)}
+              getTitle={getTitle}
+            />
           )}
-          <Icon item={item} index={directoryItems.indexOf(item)} />
         </div>
       );
     }
@@ -181,7 +213,11 @@ export default function RenderItems() {
 
   return (
     <div id="renderitem--page" ref={page}>
-      {renderItems}
+      {renderItems?.length > 0 ? (
+        renderItems
+      ) : (
+        <h1 style={{ pointerEvents: "none" }}>Folder is empty</h1>
+      )}
       <ItemDisplay
         changeFolderOrViewFiles={changeFolderOrViewFiles}
         viewItem={viewItem}

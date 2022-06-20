@@ -36,12 +36,14 @@ function DirectoryNavigation() {
           }
           dispatch({ type: "upDirectory", value: uppedDirectory });
         }}
+        data-title="Go Up"
         className="navbar--button"
         disabled={state.currentDirectory === ""}
       >
         <img src={upwards} alt="up" />
       </button>
       <button
+        data-title="Go Back"
         id="navbar--backwards"
         className="navbar--button"
         onClick={() => {
@@ -55,6 +57,7 @@ function DirectoryNavigation() {
         <img src={backwards} alt="up" />
       </button>
       <button
+        data-title="Go Forwards"
         onClick={() => {
           for (let i in controllers) {
             controllers[i].abort();

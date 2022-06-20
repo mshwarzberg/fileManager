@@ -19,7 +19,7 @@ export default function ParentDir(props) {
       <div className="line--down" />
       <p
         className="tree--open-directory"
-        title={path || "/"}
+        data-title={path || "/"}
         onMouseEnter={(e) => {
           IsInPath(parentDirectoryName, path, state.currentDirectory);
           if (

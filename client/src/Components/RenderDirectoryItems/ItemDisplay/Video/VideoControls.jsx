@@ -150,11 +150,11 @@ export default function VideoControls(props) {
             id="duration-container"
             viewBox="0 0 25 25"
             className="control--button"
+            data-title={
+              formatDuration(video.duration - video.currentTime) + " remaining"
+            }
           >
             <text x="-30" y="17.5" fill="currentColor">
-              <title>
-                {formatDuration(video.duration - video.currentTime)} remaining
-              </title>
               {currentPlaybackTime}/{formatDuration(video.duration) || "0:00"}
             </text>
           </svg>

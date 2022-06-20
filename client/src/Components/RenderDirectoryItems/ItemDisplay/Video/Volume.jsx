@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import {
   volumehigh,
   volumelow,
@@ -7,6 +8,16 @@ import {
 } from "../../../../Assets/images/videocontrols/index.js";
 export default function Volume(props) {
   const { volumePosition, setVolumePosition, video } = props;
+  useEffect(() => {
+    video.addEventListener("volumechange", () => {
+      if (video.volume > 0 && !video.muted) {
+        setVolumePosition(video.volume);
+      } else if (video.volume === 0 || video.muted) {
+        setVolumePosition(0);
+      }
+    });
+  }, [volumePosition]);
+
   return (
     <div id="volume-container">
       <button
@@ -35,7 +46,7 @@ export default function Volume(props) {
         {volumePosition < 0.3 && volumePosition > 0 && (
           <img className="control--icon" src={volumelow} alt="volumelow" />
         )}
-        {volumePosition <= 0 && (
+        {volumePosition === 0 && (
           <img className="control--icon" src={volumemute} alt="volumemute" />
         )}
       </button>
@@ -46,6 +57,9 @@ export default function Volume(props) {
         max="1"
         step="any"
         onInput={(e) => {
+          if (e.target.value > 0) {
+            video.muted = false;
+          }
           setVolumePosition(e.target.value);
           video.volume = e.target.value;
           e.stopPropagation();

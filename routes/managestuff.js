@@ -121,7 +121,7 @@ router.post("/transfer", (req, res) => {
       }
     } catch (e) {
       console.log(e.toString());
-      return res.send({ err: "Something went wrong" });
+      return res.send({ err: e.toString() });
     }
 
     const result = fs

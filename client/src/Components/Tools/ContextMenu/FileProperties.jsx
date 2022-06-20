@@ -14,7 +14,7 @@ export default function FileProperties({
   const { directoryItems } = useContext(DirectoryContext);
 
   const properties = useRef();
-  const { setIsDragging, onMouseMove } = useDrag(properties.current, true);
+  const { setIsDragging, XY } = useDrag(properties.current, true);
 
   useEffect(() => {
     if (contextMenu.targetIndex) {
@@ -29,7 +29,6 @@ export default function FileProperties({
         }),
       })
         .then(async (res) => {
-          setContextMenu({});
           const response = await res.json();
           setItemProperties((prevProps) => ({
             ...prevProps,
@@ -73,13 +72,12 @@ export default function FileProperties({
     <div
       id="file-properties"
       ref={properties}
-      onMouseDown={() => {
-        setIsDragging(true);
+      onMouseDown={(e) => {
+        if (e.button === 0) {
+          setIsDragging(true);
+        }
       }}
-      onMouseUp={() => {
-        setIsDragging(false);
-        document.removeEventListener("mousemove", onMouseMove);
-      }}
+      style={{ left: XY.x, top: XY.y }}
     >
       <button
         onClick={() => {

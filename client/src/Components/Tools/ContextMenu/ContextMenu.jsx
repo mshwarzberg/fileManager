@@ -4,15 +4,9 @@ import FileMenu from "./FileMenu";
 import FileProperties from "./FileProperties";
 import PageDirectoryMenu from "./PageDirectoryMenu";
 
-export default function ContextMenu() {
+export default function ContextMenu({ contextMenu, setContextMenu }) {
   const [showProperties, setShowProperties] = useState(false);
   const [clipboardData, setClipboardData] = useState();
-  const [contextMenu, setContextMenu] = useState({
-    show: false,
-    posX: null,
-    posY: null,
-    targetIndex: null,
-  });
 
   const { state } = useContext(DirectoryContext);
 
@@ -25,29 +19,34 @@ export default function ContextMenu() {
     });
     document.addEventListener("mousedown", (e) => {
       if (e.button === 2) {
-        if (e.target.dataset.index && e.target.dataset.permission === "true") {
-          setShowProperties(false);
-          setContextMenu({
-            type: "icon",
-            posX: e.clientX,
-            posY: e.clientY,
-            targetIndex: e.target.dataset.index,
-          });
-          return;
-        }
-        if (e.target.id === "renderitem--page" || e.target.dataset.path) {
-          setContextMenu({
-            targetPath: e.target.dataset.path || state.currentDirectory,
-            posX: e.clientX,
-            posY: e.clientY,
-            isDirectory: e.target.id !== "renderitem--page",
-            directoryIndex: e.target.dataset.index,
-            ...(clipboardData && { ...clipboardData }),
-          });
-        }
+        setTimeout(() => {
+          if (
+            e.target.dataset.index &&
+            e.target.dataset.permission === "true"
+          ) {
+            setShowProperties(false);
+            setContextMenu({
+              type: "icon",
+              x: e.clientX,
+              y: e.clientY,
+              targetIndex: e.target.dataset.index,
+            });
+          }
+          if (e.target.id === "renderitem--page" || e.target.dataset.path) {
+            setShowProperties(false);
+            setContextMenu({
+              targetPath: e.target.dataset.path || state.currentDirectory,
+              x: e.clientX,
+              y: e.clientY,
+              isDirectory: e.target.id !== "renderitem--page",
+              directoryIndex: e.target.dataset.index,
+              ...(clipboardData && { ...clipboardData }),
+            });
+          }
+        }, 0);
       }
       if (e.button === 0 && e.target.className !== "context-menu-item") {
-        return setContextMenu({});
+        setContextMenu({});
       }
     });
     return () => {
@@ -55,6 +54,7 @@ export default function ContextMenu() {
       document.removeEventListener("mousedown", () => {});
       window.removeEventListener("blur", () => {});
     };
+    // eslint-disable-next-line
   }, [clipboardData, state.currentDirectory]);
 
   return (
@@ -67,14 +67,6 @@ export default function ContextMenu() {
           setContextMenu={setContextMenu}
         />
       )}
-      {showProperties && (
-        <FileProperties
-          contextMenu={contextMenu}
-          setContextMenu={setContextMenu}
-          setShowProperties={setShowProperties}
-          index={contextMenu.targetIndex}
-        />
-      )}
       {contextMenu.targetPath && (
         <PageDirectoryMenu
           contextMenu={contextMenu}
@@ -82,6 +74,14 @@ export default function ContextMenu() {
           setClipboardData={setClipboardData}
           clipboardData={clipboardData}
           setContextMenu={setContextMenu}
+        />
+      )}
+      {showProperties && (
+        <FileProperties
+          contextMenu={contextMenu}
+          setContextMenu={setContextMenu}
+          setShowProperties={setShowProperties}
+          index={contextMenu.targetIndex}
         />
       )}
     </>

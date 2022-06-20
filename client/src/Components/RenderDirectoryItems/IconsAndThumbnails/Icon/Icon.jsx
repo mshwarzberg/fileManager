@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { DirectoryContext } from "../../../Main/App";
 import folder from "../../../../Assets/images/folder.png";
 import symlink from "../../../../Assets/images/symlink.png";
 import drive from "../../../../Assets/images/drive.png";
 import Filename from "./Filename";
 import CustomIcon from "./CustomIcon";
+import useDrag from "../../../../Hooks/useDrag";
 
 function Icon(props) {
   const {
@@ -16,11 +17,10 @@ function Icon(props) {
     controllers,
   } = useContext(DirectoryContext);
 
-  const { item, index } = props;
+  const { item, index, getTitle } = props;
 
   const {
     name,
-    shorthandsize,
     fileextension,
     thumbnail,
     isFile,
@@ -31,6 +31,9 @@ function Icon(props) {
     isDirectory,
     isDrive,
   } = item;
+
+  const blockRef = useRef();
+  const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
 
   function fetchStuff() {
     const controller = new AbortController();
@@ -81,7 +84,9 @@ function Icon(props) {
         });
       })
       .catch((err) => {
-        // console.log("App.jsx, Thumbnail", err);
+        if (!err.toString().includes("AbortError")) {
+          console.log("App.jsx, Thumbnail", err.toString());
+        }
       });
   }
 
@@ -120,11 +125,7 @@ function Icon(props) {
           fileextension={fileextension}
           index={index}
           permission={permission}
-          title={() => {
-            return `Name: ${name}${
-              shorthandsize ? "\nSize: " + shorthandsize : ""
-            }\nPath: ${path}\n${!permission ? "NO ACCESS" : ""}`;
-          }}
+          getTitle={getTitle}
         />
       );
     }
@@ -142,9 +143,7 @@ function Icon(props) {
             !isSymbolicLink && permission ? directoryItems.indexOf(item) : ""
           }
           className="renderitem--full-icon"
-          title={`Name: ${name}\nPath: ${path}\n${
-            isSymbolicLink ? `Link To: ${linkTo}` : ""
-          }`}
+          data-title={getTitle()}
           onClick={() => {
             for (let i in controllers) {
               controllers[i].abort();
@@ -162,35 +161,48 @@ function Icon(props) {
   }
 
   return (
-    !thumbnail && (
-      <>
-        <div
-          className="renderitem--block"
-          onClick={() => {
-            if (isDirectory && permission && !isSymbolicLink) {
-              dispatch({
-                type: "openDirectory",
-                value: path,
-              });
-            }
-            if (isSymbolicLink && permission) {
-              dispatch({
-                type: "openDirectory",
-                value: `${linkTo}`,
-              });
-            }
-          }}
-          style={{
-            cursor: !permission ? "not-allowed" : "pointer",
-            backgroundColor: !permission ? "#ff7878c5" : "",
-            border: !permission ? "1.5px solid red" : "",
-          }}
-        >
-          {displayIcon()}
-          <Filename name={name} />
-        </div>
-      </>
-    )
+    <div
+      className="renderitem--block"
+      onClick={() => {
+        if (isDirectory && permission && !isSymbolicLink) {
+          dispatch({
+            type: "openDirectory",
+            value: path,
+          });
+        }
+        if (isSymbolicLink && permission) {
+          dispatch({
+            type: "openDirectory",
+            value: `${linkTo}`,
+          });
+        }
+      }}
+      data-name={name}
+      style={{
+        cursor: !permission ? "not-allowed" : "pointer",
+        backgroundColor: !permission ? "#ff7878c5" : "",
+        border: !permission ? "1.5px solid red" : "",
+        ...((XY.x || XY.y) && {
+          top: XY.y,
+          left: XY.x,
+          zIndex: 100,
+          pointerEvents: "none",
+          backgroundColor: "black",
+          border: "2px solid pink",
+        }),
+      }}
+      onMouseDown={(e) => {
+        if (e.button === 0) {
+          setIsDragging(true);
+          e.stopPropagation();
+          return;
+        }
+      }}
+      ref={blockRef}
+    >
+      {displayIcon()}
+      <Filename name={name} />
+    </div>
   );
 }
 

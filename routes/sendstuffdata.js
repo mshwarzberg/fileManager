@@ -17,11 +17,11 @@ router.get("/choosedrive", (_, res) => {
   let sortedDrives = [];
   if (os.platform() === "win32") {
     drives = child.execSync("wmic logicaldisk get name");
-    let test = drives.toString().split("\r\r\n");
-    for (let i in test) {
-      if (test[i].includes(":")) {
+    let listOfDrives = drives.toString().split("\r\r\n");
+    for (let i in listOfDrives) {
+      if (listOfDrives[i].includes(":")) {
         sortedDrives.push({
-          name: test[i].trim() + "/",
+          name: listOfDrives[i].trim() + "/",
           permission: true,
           isDrive: true,
         });
@@ -49,12 +49,12 @@ router.get("/choosedrive", (_, res) => {
 });
 
 router.post("/data", verifyFolder, makeThumbnailDirectories, (req, res) => {
-  let { currentdirectory } = req.body;
+  const { currentdirectory, drive } = req.body;
   // generate all the file in the current folder
   var result = fs
     .readdirSync(`${currentdirectory}`, { withFileTypes: true })
     .map((file) => {
-      return getFileNameParts(file, currentdirectory);
+      return getFileNameParts(file, currentdirectory, drive);
     });
   res.send(result);
 });

@@ -4,7 +4,7 @@ const { checkIfFileOrDir } = require("./isfileordirectory");
 const { checkType } = require("../helpers/verifiers");
 const { formatSize } = require("../helpers/formatsize");
 
-function getFileNameParts(file, directory) {
+function getFileNameParts(file, directory, drive) {
   const item = checkIfFileOrDir(file);
   let suffix = "";
   // get the file extension
@@ -63,6 +63,9 @@ function getFileNameParts(file, directory) {
     isDrive = directory.match(/^.:\//gm);
   }
 
+  if (file.name === "thumbnails" && item.isDirectory && directory === drive) {
+    return {};
+  }
   const filteredData = {
     ...item,
     path: `${directory === isDrive[0] ? directory : directory + "/"}${

@@ -49,7 +49,7 @@ function makeThumbnailDirectories(req, res, next) {
     })
     .catch((err) => {
       console.log(err);
-      return res.send({ err: err });
+      return res.send({ err: err }).status(404);
     });
 }
 

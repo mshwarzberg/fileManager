@@ -1,56 +1,16 @@
 import React from "react";
 import Close from "../../Assets/images/close.png";
-import Back from "../../Assets/images/navigate-backwards.png";
-import Forward from "../../Assets/images/navigate-forwards.png";
 
 export default function DisplayMiscellaneous(props) {
-  const {
-    fullscreen,
-    viewItem,
-    setViewItem,
-    setFullscreen,
-    changeFolderOrViewFiles,
-    confirmExit,
-  } = props;
+  const { viewItem, setViewItem, confirmExit } = props;
 
   return (
     <>
-      {!fullscreen && viewItem.type !== "video" && (
+      {document.fullscreenElement && viewItem.type !== "video" && (
         <h1 id="display--name">{viewItem.path}</h1>
       )}
-      {window.innerWidth < 900 && (
-        <>
-          <img
-            id="display--nav-back"
-            src={Back}
-            alt="back"
-            onClick={() => {
-              changeFolderOrViewFiles(
-                viewItem.type,
-                viewItem.name,
-                viewItem.index,
-                "backwards"
-              );
-            }}
-          />
-          <img
-            id="display--nav-forwards"
-            src={Forward}
-            alt="forward"
-            onClick={() => {
-              changeFolderOrViewFiles(
-                viewItem.type,
-                viewItem.name,
-                viewItem.index,
-                "forwards"
-              );
-            }}
-          />
-        </>
-      )}
-      <img
-        src={localStorage.getItem("close") || Close}
-        alt="close"
+
+      <div
         id="display--close"
         onClick={() => {
           if (typeof confirmExit === "function") {
@@ -59,7 +19,6 @@ export default function DisplayMiscellaneous(props) {
           if (viewItem.type === "video") {
             fetch("/api/loadfiles/closevideo");
           }
-          setFullscreen(false);
           URL.revokeObjectURL(viewItem.property);
           setViewItem({
             type: null,
@@ -69,8 +28,13 @@ export default function DisplayMiscellaneous(props) {
             path: null,
           });
         }}
-        draggable={false}
-      />
+      >
+        <img
+          src={localStorage.getItem("close") || Close}
+          alt="close"
+          draggable={false}
+        />
+      </div>
     </>
   );
 }

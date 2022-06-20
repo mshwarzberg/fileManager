@@ -117,7 +117,7 @@
       background-color: $accentColor;
       color: #000;
     }
-    
+
     #tree--in-path {
       background-color: darken($accentColor, 50%);
       &:hover {
@@ -145,15 +145,10 @@
   height: 5rem;
   position: absolute;
   bottom: 50%;
-  left: calc(35% - 0.3rem);
+  right: 0;
+  transform: translateY(50%);
   background-color: red;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
   z-index: 10;
-  &:hover {
-    cursor: grab;
-  }
-  &:active {
-    cursor: grabbing;
-  }
 }

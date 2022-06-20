@@ -36,6 +36,10 @@
         background-color: #444;
       }
     }
+    #filetype-hover {
+      justify-content: space-between;
+      margin-inline: 20%;
+    }
     & > li {
       @include flexStyle(row);
       opacity: 1;

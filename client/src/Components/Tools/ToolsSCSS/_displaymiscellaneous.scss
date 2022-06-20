@@ -2,14 +2,14 @@
 
 #display--name {
   position: fixed;
-  top: 0;
+  top: 0.5rem;
   text-align: center;
   width: 100%;
   left: 0;
   z-index: 25;
   color: white;
   font-family: "roboto slab";
-  font-size: 1.3rem;
+  font-size: 1.2rem;
 }
 #display--nav-forwards,
 #display--nav-back {
@@ -29,67 +29,21 @@
 }
 #display--close {
   position: fixed;
-  top: 1%;
-  right: 1%;
-  width: 3%;
-  max-width: 2.5rem;
+  top: 0;
+  right: 0;
+  width: 5%;
+  max-width: 3rem;
   aspect-ratio: 1;
   z-index: 25;
-  &:hover {
-    transform: scale(1.1);
-    transition: 100ms ease-in;
-  }
-}
-@mixin slideEffect {
-  border-top-left-radius: 1.5rem;
-  border-bottom-left-radius: 1.5rem;
-  transform: scaleX(1);
-}
-#display--is-navigating {
-  display: flex;
-  align-items: center;
-  position: fixed;
-  left: 1%;
-  top: 1%;
-  width: 3%;
-  max-width: 2.5rem;
-  aspect-ratio: 1;
-  z-index: 25;
-  &:hover {
-    #display--is-navigating-popup {
-      @include slideEffect;
-    }
-  }
-  img {
-    position: absolute;
-    width: 100%;
-  }
-}
-#display--is-navigating-popup {
-  width: max-content;
-  height: 100%;
-  font-family: "bebas neue";
-  font-size: 1.3rem;
-  z-index: 0;
-  background-color: black;
+  opacity: 0.8;
   @include flexStyle(row);
-  color: white;
-  position: absolute;
-  left: 125%;
-  padding: 5% 1.5rem 0 1.5rem;
-  top: 2%;
-  transform-origin: left;
-  transform: scaleX(0);
-  transition: width 150ms ease-in-out, transform 150ms ease-in-out;
-}
-
-#display--miscellaneous {
-  background-color: #fff;
-  #display--close {
-    position: absolute;
-    width: 5%;
+  img {
+    max-width: 50%;
   }
-  #display--is-navigating {
-    display: none;
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+    opacity: 1;
+    transition: 75ms ease-in-out transform, 75ms ease-in-out opacity;
   }
 }

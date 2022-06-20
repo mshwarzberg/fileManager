@@ -2,18 +2,32 @@ import React, { useRef, useState, useEffect } from "react";
 import VideoControls from "./VideoControls";
 import useFitVideo from "../../../../Hooks/useFitVideo";
 import useDrag from "../../../../Hooks/useDrag";
+import useFullscreenElement from "../../../../Hooks/useFullscreenElement";
+import { expand } from "../../../../Assets/images/videocontrols/index.js";
+import useMouseOrKey from "../../../../Hooks/useMouseOrKey";
 
 let timeouts;
 function VideoDisplay(props) {
   const { viewItem } = props;
-
-  const { fitVideo, containerDimensions } = useFitVideo();
 
   const video = useRef();
   const videoContainer = useRef();
   const videoControls = useRef();
   const videoHeader = useRef();
   const videoPage = useRef();
+
+  const [miniPlayer, setMiniPlayer] = useState(false);
+
+  useMouseOrKey(video.current, "keydown", "video", videoContainer.current, [
+    miniPlayer,
+    setMiniPlayer,
+  ]);
+
+  const { fullscreenControl, fullscreen } = useFullscreenElement(
+    videoContainer.current
+  );
+  const { fitVideo, containerDimensions } = useFitVideo();
+  const { setIsDragging, isDragging, XY } = useDrag(videoPage.current);
 
   useEffect(() => {
     let timeout;
@@ -29,20 +43,34 @@ function VideoDisplay(props) {
     };
   }, [fitVideo]);
 
-  const { setIsDragging, onMouseMove } = useDrag(videoPage.current);
-
   function togglePlay() {
     if (video.current.paused) {
       video.current.play();
     } else {
       video.current.pause();
-      videoControls.current.style.display = "block";
-      videoContainer.current.style.cursor = "default";
-      videoHeader.current.style.display = "block";
     }
   }
 
-  const [miniPlayer, setMiniPlayer] = useState(false);
+  useEffect(() => {
+    let header = document.querySelector("#video-header");
+    let headername = document.querySelector("#video-header-filename");
+    if (!isDragging && header && headername) {
+      header.style.cursor = "grab";
+      headername.style.cursor = "grab";
+    }
+  }, [isDragging, setIsDragging]);
+
+  function showHideHeaderControls(isShowing) {
+    videoContainer.current.style.cursor = isShowing ? "default" : "none";
+    videoControls.current.style.transform =
+      videoHeader.current.style.transform = `scaleY(${isShowing ? 1 : 0})`;
+
+    videoControls.current.style.transformOrigin = "bottom";
+    videoHeader.current.style.transformOrigin = "top";
+
+    videoControls.current.style.transition =
+      videoHeader.current.style.transition = "transform 150ms ease-in-out";
+  }
 
   return (
     <div
@@ -51,28 +79,27 @@ function VideoDisplay(props) {
       }
       id="viewitem--block-video"
       ref={videoPage}
-      onMouseDown={(e) => {
-        if (miniPlayer && !document.fullscreenElement) {
-          setIsDragging(true);
+      style={{ left: XY.x, top: XY.y }}
+      onWheel={(e) => {
+        if (e.deltaY < 0) {
+          video.current.volume <= 0.97
+            ? (video.current.volume += 0.03)
+            : (video.current.volume = 1);
+        } else {
+          video.current.volume >= 0.03
+            ? (video.current.volume -= 0.03)
+            : (video.current.volume = 0);
         }
-        e.stopPropagation();
-      }}
-      onMouseUp={(e) => {
-        setIsDragging(false);
-        document.removeEventListener("mousemove", onMouseMove);
-        e.stopPropagation();
       }}
     >
-      {props.children}
+      {!miniPlayer && props.children}
       <div
         className={miniPlayer ? "viewitem--item mini-player" : "viewitem--item"}
         id="video-container"
         onMouseMove={(e) => {
           clearTimeout(timeouts);
           if (videoControls.current) {
-            videoControls.current.style.display = "block";
-            videoContainer.current.style.cursor = "default";
-            videoHeader.current.style.display = "block";
+            showHideHeaderControls(true);
           }
           if (
             containerDimensions.width !== video.current.videoWidth ||
@@ -80,6 +107,7 @@ function VideoDisplay(props) {
           ) {
             fitVideo(video.current, videoContainer.current);
           }
+          // If a user is hovering over the header or video controls don't hide the cursor and other stuff
           if (e.target.id !== "viewitem--video") {
             return;
           }
@@ -92,12 +120,9 @@ function VideoDisplay(props) {
               if (!videoContainer.current) {
                 return;
               }
-              videoContainer.current.style.cursor = "none";
-              videoControls.current.style.display = "none";
-              videoHeader.current.style.display = "none";
-            }, 2000);
+              showHideHeaderControls(false);
+            }, 1000);
           }
-          e.stopPropagation();
         }}
         onMouseLeave={() => {
           if (
@@ -105,21 +130,20 @@ function VideoDisplay(props) {
             !video.current.paused &&
             videoHeader.current
           ) {
-            videoControls.current.style.display = "none";
-            videoHeader.current.style.display = "none";
+            showHideHeaderControls(false);
           }
         }}
         onClick={() => {
           togglePlay();
         }}
-        ref={videoContainer}
         onDoubleClick={() => {
-          if (document.fullscreenElement == null) {
-            videoContainer.current.requestFullscreen();
-          } else {
-            document.exitFullscreen();
+          fullscreenControl();
+          if (!fullscreen) {
+            setMiniPlayer(false);
+            videoPage.current.style.left = videoPage.current.style.top = "";
           }
         }}
+        ref={videoContainer}
         style={{
           width: miniPlayer
             ? containerDimensions.width / 2.5
@@ -129,7 +153,9 @@ function VideoDisplay(props) {
             : containerDimensions.height,
         }}
       >
-        {containerDimensions.width && containerDimensions.height && (
+        {containerDimensions.width &&
+        containerDimensions.height &&
+        !miniPlayer ? (
           <>
             <svg
               id="video-header"
@@ -156,6 +182,41 @@ function VideoDisplay(props) {
               setMiniPlayer={setMiniPlayer}
               miniPlayer={miniPlayer}
               videoPage={videoPage.current}
+            />
+          </>
+        ) : (
+          <>
+            <img
+              src={expand}
+              onClick={(e) => {
+                setMiniPlayer(false);
+                videoPage.current.style.left = videoPage.current.style.top = "";
+                e.stopPropagation();
+              }}
+              style={{
+                width: "6%",
+                position: "absolute",
+                left: "0.5rem",
+                top: "0.5rem",
+                cursor: "pointer",
+              }}
+            />
+            <div
+              style={{
+                width: "3%",
+                height: "3%",
+                backgroundColor: "red",
+                position: "absolute",
+                cursor: "grab",
+                top: "1%",
+              }}
+              onMouseDown={(e) => {
+                setIsDragging(true);
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
             />
           </>
         )}
