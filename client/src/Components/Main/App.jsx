@@ -38,7 +38,7 @@ export default function App() {
         }
         setControllers([]);
         setDirectoryItems(itemData);
-      } else if (itemData.length === 0) {
+      } else if (itemData?.length === 0 || !itemData) {
         setDirectoryItems([]);
       }
     } else {

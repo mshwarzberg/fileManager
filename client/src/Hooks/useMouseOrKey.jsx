@@ -6,13 +6,13 @@ export default function useMouseOrKey(
   listener,
   type,
   alternateControlledElement,
-  customStateChanges
+  props
 ) {
   const { fullscreenControl } = useFullscreenElement(
     alternateControlledElement ? alternateControlledElement : element
   );
   function videoListeners(e) {
-    const [miniPlayer, setMiniPlayer] = customStateChanges;
+    const [miniPlayer, setMiniPlayer] = props;
     const { key } = e;
     switch (key) {
       case " ":
@@ -44,6 +44,21 @@ export default function useMouseOrKey(
       case "i":
         miniPlayer ? setMiniPlayer(false) : setMiniPlayer(true);
         break;
+      case "l":
+        element.loop = true;
+        break;
+      default:
+        break;
+    }
+  }
+  function documentListeners(e) {
+    const { key } = e;
+    switch (key) {
+      case "f":
+        if (e.ctrlKey) {
+          e.preventDefault();
+        }
+        break;
       default:
         break;
     }
@@ -53,7 +68,12 @@ export default function useMouseOrKey(
       if (type === "video" && element) {
         return videoListeners(e);
       }
+      if (type === "document" && element) {
+        return documentListeners(e);
+      }
     });
     return document.removeEventListener(listener, () => {});
+
+    // eslint-disable-next-line
   }, [element]);
 }

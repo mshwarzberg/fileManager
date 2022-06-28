@@ -63,7 +63,11 @@ function getFileNameParts(file, directory, drive) {
     isDrive = directory.match(/^.:\//gm);
   }
 
-  if (file.name === "thumbnails" && item.isDirectory && directory === drive) {
+  if (
+    (file.name === "thumbnails" || file.name === "$RECYCLE.BIN") &&
+    item.isDirectory &&
+    directory === drive
+  ) {
     return {};
   }
   const filteredData = {
@@ -75,15 +79,11 @@ function getFileNameParts(file, directory, drive) {
     fileextension: suffix || "",
     prefix: encodeURIComponent(prefix),
     permission: permission,
-    ...(permission && {
-      ...(!item.isDirectory && {
-        size: sizeOf,
-        formattedSize: formatSize(sizeOf),
-      }),
-      accessed: dateAccessed,
-      modified: dateModified,
-      created: dateCreated,
-    }),
+    size: sizeOf || 0,
+    formattedSize: formatSize(sizeOf) || 0,
+    accessed: dateAccessed || 0,
+    modified: dateModified || 0,
+    created: dateCreated || 0,
     ...(symLink && { linkTo: symLink }),
   };
   return filteredData;

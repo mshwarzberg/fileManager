@@ -85,27 +85,29 @@ function reducer(state, action) {
 }
 
 export default function useDirectoryContextManager() {
+  const initState = JSON.parse(localStorage.getItem("state"));
+
   const [state, dispatch] = useReducer(reducer, {
-    drive: localStorage.getItem("drive") || "",
-    currentDirectory: localStorage.getItem("currentDirectory") || "",
-    directoryTree: JSON.parse(localStorage.getItem("directoryTree")) || [""],
-    navigatedDirectories: JSON.parse(
-      localStorage.getItem("navigatedDirectories")
-    ) || [""],
-    navigatedIndex: localStorage.getItem("navigatedIndex") * 1 || 0,
+    drive: initState?.drive || "",
+    currentDirectory: initState?.currentDirectory || "",
+    directoryTree: initState?.directoryTree || [""],
+    navigatedDirectories: initState?.navigatedDirectories || [""],
+    navigatedIndex: initState?.navigatedIndex || 0,
   });
 
   const [controllers, setControllers] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("drive", state.drive);
-    localStorage.setItem("currentDirectory", state.currentDirectory);
-    localStorage.setItem("directoryTree", JSON.stringify(state.directoryTree));
     localStorage.setItem(
-      "navigatedDirectories",
-      JSON.stringify(state.navigatedDirectories)
+      "state",
+      JSON.stringify({
+        drive: state.drive,
+        currentDirectory: state.currentDirectory,
+        directoryTree: state.directoryTree,
+        navigatedDirectories: state.navigatedDirectories,
+        navigatedIndex: state.navigatedIndex,
+      })
     );
-    localStorage.setItem("navigatedIndex", state.navigatedIndex * 1);
   }, [state, dispatch]);
 
   return { state, dispatch, controllers, setControllers };

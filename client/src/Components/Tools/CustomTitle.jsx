@@ -5,7 +5,6 @@ let titleTimeout;
 export default function CustomTitle({ title, setTitle, contextMenu }) {
   useEffect(() => {
     document.addEventListener("mousemove", (e) => {
-      e.target.style.cursor = "";
       clearTimeout(titleTimeout);
       setTitle({});
       if (e.target.dataset?.title || e.target.parentElement?.dataset.title) {
@@ -19,13 +18,16 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
             x: e.clientX,
             y: e.clientY,
           });
-          e.target.style.cursor = "none";
         }, 500);
       }
       e.stopPropagation();
     });
+    document.addEventListener("click", () => {
+      setTitle({});
+    });
     return () => {
       document.removeEventListener("mousemove", () => {});
+      document.removeEventListener("click", () => {});
     };
     // eslint-disable-next-line
   }, [title.title, contextMenu.x, contextMenu.y]);

@@ -10,7 +10,7 @@
     transform: scale(1);
   }
 }
-.viewitem--block {
+.display--block {
   @include flexStyle(column);
   position: fixed;
   left: 0;

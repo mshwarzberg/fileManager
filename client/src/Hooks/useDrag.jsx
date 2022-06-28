@@ -44,7 +44,7 @@ export default function useDrag(
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener("mouseup", (e) => {
+      document.addEventListener("mouseup", () => {
         setIsDragging(false);
         if (resetOnUp && isDragging) {
           setXY({

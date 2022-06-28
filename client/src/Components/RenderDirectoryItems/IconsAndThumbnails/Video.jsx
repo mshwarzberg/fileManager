@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import useDrag from "../../../Hooks/useDrag";
 
 import playIcon from "../../../Assets/images/play.png";
-import PlayIconHover from "../../../Assets/images/playhover.png";
 import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Icon/Filename";
 
@@ -18,8 +17,8 @@ function Video(props) {
   const [durationPosition, setDurationPosition] = useState({
     rectX: 0,
     rectY: 0,
-    textX: 12.5,
-    textY: 8,
+    textX: 0,
+    textY: 0,
   });
 
   function positionDuration(x, y) {
@@ -67,14 +66,7 @@ function Video(props) {
         }}
       >
         <img
-          src={PlayIconHover}
-          onMouseEnter={(e) => {
-            e.currentTarget.src = playIcon;
-            e.stopPropagation();
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.src = PlayIconHover;
-          }}
+          src={playIcon}
           alt="playvideo"
           className="renderitem--play-icon"
           style={{ display: "none", zIndex: 1 }}
@@ -112,27 +104,32 @@ function Video(props) {
             positionDuration(X, Y);
           }}
         />
-        <svg viewBox="0 0 100 100" style={{ zIndex: 1, pointerEvents: "none" }}>
-          <rect
-            fill="#000000de"
-            width="25%"
-            height="10%"
-            x={durationPosition.rectX}
-            y={durationPosition.rectY}
-          />
-          <text
-            fill="white"
-            style={{
-              fontSize: "0.5em",
-              textAnchor: "middle",
-              fontFamily: "akshar",
-            }}
-            x={durationPosition.textX}
-            y={durationPosition.textY}
+        {durationPosition.rectX && durationPosition.rectY && (
+          <svg
+            viewBox="0 0 100 100"
+            style={{ zIndex: 1, pointerEvents: "none" }}
           >
-            {formatDuration(duration)}
-          </text>
-        </svg>
+            <rect
+              fill="#000000de"
+              width="25%"
+              height="10%"
+              x={durationPosition.rectX}
+              y={durationPosition.rectY}
+            />
+            <text
+              fill="white"
+              style={{
+                fontSize: "0.5em",
+                textAnchor: "middle",
+                fontFamily: "akshar",
+              }}
+              x={durationPosition.textX}
+              y={durationPosition.textY}
+            >
+              {formatDuration(duration)}
+            </text>
+          </svg>
+        )}
         <Filename name={name} nameRef={nameInput} />
       </div>
     )

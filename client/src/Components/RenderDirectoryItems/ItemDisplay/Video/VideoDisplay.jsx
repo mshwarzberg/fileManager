@@ -3,12 +3,14 @@ import VideoControls from "./VideoControls";
 import useFitVideo from "../../../../Hooks/useFitVideo";
 import useDrag from "../../../../Hooks/useDrag";
 import useFullscreenElement from "../../../../Hooks/useFullscreenElement";
+
 import { expand } from "../../../../Assets/images/videocontrols/index.js";
+import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
 import useMouseOrKey from "../../../../Hooks/useMouseOrKey";
 
 let timeouts;
 function VideoDisplay(props) {
-  const { viewItem } = props;
+  const { viewItem, setViewItem } = props;
 
   const video = useRef();
   const videoContainer = useRef();
@@ -75,9 +77,9 @@ function VideoDisplay(props) {
   return (
     <div
       className={
-        miniPlayer ? "viewitem--block mini-player-body" : "viewitem--block"
+        miniPlayer ? "display--block mini-player-body" : "display--block"
       }
-      id="viewitem--block-video"
+      id="display--block-video"
       ref={videoPage}
       style={{ left: XY.x, top: XY.y }}
       onWheel={(e) => {
@@ -92,7 +94,13 @@ function VideoDisplay(props) {
         }
       }}
     >
-      {!miniPlayer && props.children}
+      {!miniPlayer && (
+        <DisplayMiscellaneous
+          viewItem={viewItem}
+          setViewItem={setViewItem}
+          element={video.current}
+        />
+      )}
       <div
         className={miniPlayer ? "viewitem--item mini-player" : "viewitem--item"}
         id="video-container"
@@ -193,6 +201,7 @@ function VideoDisplay(props) {
                 videoPage.current.style.left = videoPage.current.style.top = "";
                 e.stopPropagation();
               }}
+              alt="expand"
               style={{
                 width: "6%",
                 position: "absolute",

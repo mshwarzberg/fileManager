@@ -1,4 +1,4 @@
-export default function FormatDate(itemDate) {
+export default function FormatDate(itemDate, getCustom) {
   let month =
     itemDate.getMonth().toString().length === 1
       ? "0" + (1 * itemDate.getMonth() + 1)
@@ -19,6 +19,35 @@ export default function FormatDate(itemDate) {
     itemDate.getSeconds().toString().length === 1
       ? "0" + itemDate.getSeconds()
       : itemDate.getSeconds();
+  if (getCustom) {
+    let day = itemDate.getDay();
+    let months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    let week = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
 
+    return `${week[day]}, ${
+      months[parseInt(month) - 1]
+    } ${date} ${itemDate.getFullYear()} at ${hours}:${minutes}:${seconds}`;
+  }
   return `${month}/${date}/${itemDate.getFullYear()} at ${hours}:${minutes}:${seconds}`;
 }

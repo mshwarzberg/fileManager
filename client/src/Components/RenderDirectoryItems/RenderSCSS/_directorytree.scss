@@ -22,7 +22,7 @@
 
 #directorytree--button-showhide {
   @include navbarBtn;
-  position: fixed;
+  position: absolute;
   z-index: 10;
   top: 0;
   height: 2.5rem;
@@ -39,7 +39,7 @@
   background-color: #111;
   position: absolute;
   left: -5px;
-  top: 2.5rem;
+  top: 0rem;
   overflow-y: auto;
   overflow-x: auto;
   padding: 0 0.7rem 4rem 1.4rem;
@@ -144,11 +144,11 @@
   width: 0.5rem;
   height: 5rem;
   position: absolute;
-  bottom: 50%;
-  right: 0;
-  transform: translateY(50%);
+  top: 50vw;
+  transform: translateY(-50%);
+  left: 34.7%;
   background-color: red;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
-  z-index: 10;
+  z-index: 1;
 }

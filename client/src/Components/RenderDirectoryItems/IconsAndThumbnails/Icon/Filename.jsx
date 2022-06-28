@@ -3,7 +3,10 @@ import React, { useRef } from "react";
 export default function Filename(props) {
   const svgText = useRef();
   const svgBody = useRef();
-
+  let { name } = props;
+  if (name.length > 30) {
+    name = name.slice(0, 27) + "...";
+  }
   return (
     <svg
       style={{ position: "absolute", bottom: "1%" }}
@@ -16,16 +19,17 @@ export default function Filename(props) {
     >
       <text
         ref={svgText}
-        x={props.name.length < 30 ? 75 : 5}
+        x={name.length < 30 ? 75 : 5}
         y="10"
         style={{
           fontSize: "0.75em",
           fontFamily: "akshar",
-          ...(props.name.length < 30 && { textAnchor: "middle" }),
+          ...(name.length < 30 && { textAnchor: "middle" }),
+          textOverflow: "ellipsis",
         }}
         fill="white"
       >
-        {props.name}
+        {name}
       </text>
     </svg>
   );

@@ -70,18 +70,25 @@ export default function DirectoryTree() {
         {showTree ? "Hide Tree" : "Show Tree"}
       </button>
       {showTree && (
-        <div style={{ width: XY.x, pointerEvents: "none" }} ref={treeBody}>
+        <div
+          style={{ width: XY.x, pointerEvents: "none", position: "relative" }}
+          ref={treeBody}
+        >
           <div
             id="directorytree--body"
             ref={treeID}
-            style={{ width: XY.x, pointerEvents: "all" }}
+            style={{
+              width: XY.x,
+              pointerEvents: "all",
+              position: "absolute",
+            }}
           >
             {/* {mapDirectoryTreeLoop(state.directoryTree, "/")} */}
           </div>
           <div
             style={{
               pointerEvents: "all",
-              left: XY.x || "30rem",
+              left: XY.x,
               cursor: "grab",
             }}
             id="resize--tree"

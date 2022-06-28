@@ -28,7 +28,11 @@
     list-style: none;
     background-color: #222;
     opacity: 1;
+    & > * {
+      font-size: 1.3rem;
+    }
     li {
+      position: relative;
       @include flexStyle(row);
       color: white;
       &:hover {
@@ -36,9 +40,15 @@
         background-color: #444;
       }
     }
-    #filetype-hover {
-      justify-content: space-between;
-      margin-inline: 20%;
+    #left-arrow {
+      position: absolute;
+      left: 0;
+      height: 100%;
+      aspect-ratio: 1;
+      @include flexStyle(row);
+      img {
+        height: 45%;
+      }
     }
     & > li {
       @include flexStyle(row);
@@ -52,9 +62,12 @@
       list-style: none;
       position: absolute;
       bottom: -12rem;
-      left: -4.9rem;
+      left: -5rem;
       width: 5rem;
       height: 18rem;
+      border-radius: 5px;
+      border: 1.5px solid white;
+      border-right: none;
       background-color: #222;
       overflow-y: scroll;
       & > li {

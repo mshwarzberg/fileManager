@@ -1,26 +1,28 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
-import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
+import React, { useState, useEffect, createContext, useContext } from "react";
+import DocumentControls from "./DocumentControls";
+import useMouseOrKey from "../../../../Hooks/useMouseOrKey";
 import { DirectoryContext } from "../../../Main/App";
+
+export const DocumentContext = createContext();
 
 function DocumentDisplay(props) {
   const { viewItem, setViewItem } = props;
-
   const { state } = useContext(DirectoryContext);
-  const [newDocument, setNewDocument] = useState(
-    viewItem.property === " " ? "" : viewItem.property
-  );
+
+  const [font, setFont] = useState({});
+  const [newDocument, setNewDocument] = useState(viewItem.property);
   const [isEdited, setisEdited] = useState(false);
-
-  const [message, setMessage] = useState({
-    msg: "",
-    isErr: false,
-  });
-
-  const saveButton = useRef();
+  const [message, setMessage] = useState({});
 
   useEffect(() => {
     setisEdited(viewItem.property !== newDocument);
   }, [newDocument, setNewDocument, viewItem.property]);
+
+  useMouseOrKey(
+    document.getElementsByClassName("document-page"),
+    "keydown",
+    "document"
+  );
 
   function saveDocument(keepEditorOpen) {
     fetch("/api/updatedocument", {
@@ -45,7 +47,7 @@ function DocumentDisplay(props) {
                 msg: "",
                 isErr: null,
               });
-            }, 5000);
+            }, 4000);
           }
         } catch {
           setMessage({
@@ -57,7 +59,7 @@ function DocumentDisplay(props) {
               msg: "",
               isErr: null,
             });
-          }, 5000);
+          }, 4000);
           if (keepEditorOpen) {
             setViewItem({
               ...viewItem,
@@ -73,72 +75,45 @@ function DocumentDisplay(props) {
         });
         setTimeout(() => {
           setMessage();
-        }, 5000);
+        }, 4000);
       });
   }
 
   return (
-    <div className="viewitem--block" id="document--body">
-      <DisplayMiscellaneous
-        viewItem={viewItem}
-        setViewItem={setViewItem}
-        confirmExit={() => {
-          if (isEdited) {
-            if (
-              window.confirm(
-                "You have unsaved changes. Are you sure you want to leave?"
-              )
-            ) {
-              saveDocument();
-            }
-          }
-        }}
-      />
-      <div id="document--header">
-        <button
-          onClick={() => {
-            if (isEdited) {
-              saveDocument(true);
-            }
-          }}
-          disabled={!isEdited}
-          ref={saveButton}
-        >
-          Save
-        </button>
-      </div>
-      <div className="viewitem--item" id="document">
-        <div
-          onChange={(e) => {
-            setNewDocument(e.target.value);
-          }}
-          spellCheck={false}
-          resize="false"
-        >
+    <DocumentContext.Provider
+      value={{ newDocument, setNewDocument, font, setFont }}
+    >
+      <div className="display--block" id="document--body">
+        <DocumentControls
+          viewItem={viewItem}
+          setViewItem={setViewItem}
+          isEdited={isEdited}
+          newDocument={newDocument}
+          saveDocument={saveDocument}
+          message={message}
+        />
+        <div className="viewitem--item" id="document">
           <textarea
-            value={newDocument}
+            className="document-page"
+            spellCheck={false}
+            data-context-menu="true"
             onChange={(e) => {
               setNewDocument(e.target.value);
             }}
-            spellCheck={false}
-            resize="false"
+            style={{
+              fontFamily: font.family,
+              fontWeight: font.bold ? "bold" : "",
+              fontSize: font.size + "px",
+              fontStyle: font.italic ? "italic" : "",
+              textDecoration:
+                (font.underline ? "underline " : "") +
+                (font.strikethrough ? "line-through" : ""),
+            }}
+            value={newDocument}
           />
         </div>
       </div>
-      {message.msg && (
-        <h1
-          id="document--message"
-          style={{
-            background: message.isErr
-              ? "repeating-radial-gradient(red 0%, red 30%, rgba(0, 0, 0, 0) 65%,rgba(0, 0, 0, 0) 100%)"
-              : "",
-            color: message.isErr ? "white" : "",
-          }}
-        >
-          {message.msg}
-        </h1>
-      )}
-    </div>
+    </DocumentContext.Provider>
   );
 }
 

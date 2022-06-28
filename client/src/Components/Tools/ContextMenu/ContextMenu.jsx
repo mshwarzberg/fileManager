@@ -12,6 +12,9 @@ export default function ContextMenu({ contextMenu, setContextMenu }) {
 
   useEffect(() => {
     document.addEventListener("contextmenu", (e) => {
+      if (e.target.dataset?.contextMenu) {
+        return;
+      }
       e.preventDefault();
     });
     window.addEventListener("blur", () => {

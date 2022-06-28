@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import leftArrow from "../../../Assets/images/navigate-backwards.png";
+import leftHover from "../../../Assets/images/menu.png";
 
 function SortPopup(props) {
   const { setDirectoryItems, descending } = props;
@@ -12,21 +14,27 @@ function SortPopup(props) {
           return item.itemtype !== "folder";
         });
       } else if (sortMethod === "name") {
-        prevItems = [
-          ...prevItems.sort((a, b) => {
-            a = a.name.toLowerCase();
-            b = b.name.toLowerCase();
-            return a > b;
-          }),
-        ];
+        prevItems.sort((a, b) => {
+          a = a.name.toLowerCase();
+          b = b.name.toLowerCase();
+          return a > b;
+        });
       } else if (sortMethod === "size" || sortMethod === "duration") {
         prevItems.sort((a, b) => {
-          return b[sortMethod] * 1 - a[sortMethod] * 1;
+          return b[sortMethod] - a[sortMethod];
         });
+      } else if (sortMethod === "date") {
+        prevItems
+          .sort((a, b) => {
+            return a.modified > b.modified;
+          })
+          .reverse();
       } else if (type) {
-        prevItems.sort((item) => {
-          return item.fileextension === type;
-        });
+        prevItems
+          .sort((item) => {
+            return item.fileextension === type;
+          })
+          .reverse();
       }
       let sortedArray = [...prevItems];
       return descending ? sortedArray : sortedArray.reverse();
@@ -75,7 +83,7 @@ function SortPopup(props) {
   });
 
   return (
-    <ol id="filter--list" data-title="">
+    <ol id="filter--list">
       <li
         onClick={() => {
           mySort("folder");
@@ -105,17 +113,35 @@ function SortPopup(props) {
       >
         ...File Duration
       </li>
-      <li>...Date</li>
       <li
-        onMouseEnter={() => {
-          setShowSubSort(true);
+        onClick={() => {
+          mySort("date");
         }}
-        onMouseLeave={() => {
-          setShowSubSort(false);
-        }}
-        id="filetype-hover"
       >
-        <p>←</p>
+        ...Date Added
+      </li>
+      <li
+        id="hide"
+        style={{ fontSize: "1rem" }}
+        onMouseOver={(e) => {
+          if (e.target.id === "hide") {
+            setShowSubSort(false);
+          }
+        }}
+      >
+        <div id="left-arrow">
+          <img
+            src={leftArrow}
+            alt="expand types"
+            onMouseEnter={(e) => {
+              setShowSubSort(true);
+              e.target.src = leftHover;
+            }}
+            onMouseLeave={(e) => {
+              e.target.src = leftArrow;
+            }}
+          />
+        </div>
         <p>...File Type</p>
         {showSubSort && <ol>{fileTypes}</ol>}
       </li>

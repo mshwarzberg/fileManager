@@ -14,7 +14,7 @@ function ImageDisplay(props) {
 
   return (
     <div
-      className="viewitem--block"
+      className="display--block"
       onWheel={(e) => {
         let size = image.current.style.scale;
         if (e.deltaY > 0 && size > 0.5) {

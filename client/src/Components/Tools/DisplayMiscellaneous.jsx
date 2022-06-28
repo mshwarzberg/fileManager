@@ -16,17 +16,11 @@ export default function DisplayMiscellaneous(props) {
           if (typeof confirmExit === "function") {
             confirmExit();
           }
-          if (viewItem.type === "video") {
-            fetch("/api/loadfiles/closevideo");
+          if (props.element) {
+            props.element.src = "";
           }
+          setViewItem({});
           URL.revokeObjectURL(viewItem.property);
-          setViewItem({
-            type: null,
-            property: null,
-            index: null,
-            name: null,
-            path: null,
-          });
         }}
       >
         <img
