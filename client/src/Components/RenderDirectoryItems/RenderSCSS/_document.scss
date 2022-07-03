@@ -14,10 +14,6 @@
 
 #document--body {
   background-color: #101010fe;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding-bottom: 4rem;
   #document--header {
     position: relative;
     height: 4rem;
@@ -75,35 +71,40 @@
       }
     }
   }
-  #document {
-    margin-top: 2rem;
-    height: 90%;
-    min-height: 90vh;
-    width: auto;
-    aspect-ratio: 210/297;
-    cursor: default;
+  .container {
+    width: 8.5in;
     position: relative;
-    background-color: #222;
-    @include flexStyle(row);
-    .document-page {
-      cursor: text;
-      position: absolute;
-      width: 90%;
-      height: 90%;
-      margin: auto;
+    .ql-editor {
+      width: 100%;
+      height: 90vh;
+      padding: 0.5in;
+      box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
       background-color: #222;
-      overflow-y: auto;
-      word-wrap: break-word;
       color: white;
-      letter-spacing: 0.3px;
-      font-family: akshar;
-      resize: none;
+    }
+
+    .ql-container {
       border: none;
-      outline: none;
-      &::selection {
-        background-color: #ac4df666;
-        color: white;
+    }
+    .ql-toolbar {
+      .save-button {
+        height: 24px;
+        color: #444;
+        vertical-align: middle;
+        width: min-content;
+        padding-top: 2px;
       }
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      width: 100%;
+      top: -2.5rem;
+      height: 2.5rem;
+      background-color: #f3f3f3;
+      z-index: 1;
+      color: white;
+      border: none;
+      box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
     }
   }
 }

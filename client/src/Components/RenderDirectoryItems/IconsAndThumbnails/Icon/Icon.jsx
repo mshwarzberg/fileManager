@@ -189,6 +189,7 @@ function Icon(props) {
           pointerEvents: "none",
           backgroundColor: "black",
           border: "2px solid pink",
+          opacity: 0.8,
         }),
       }}
       onMouseDown={(e) => {

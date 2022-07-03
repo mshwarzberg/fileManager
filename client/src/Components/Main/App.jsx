@@ -9,6 +9,12 @@ import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import useStoreImages from "../../Hooks/useStoreImages";
 import GeneralUI from "../Tools/GeneralUI";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 export const DirectoryContext = createContext();
 
@@ -44,35 +50,53 @@ export default function App() {
     } else {
       fetch("/api/data/choosedrive", {
         method: "GET",
-      })
-        .then(async (res) => {
-          const response = await res.json();
-          setDirectoryItems(response);
-        })
-        .catch((err) => {
-          setDirectoryItems([{ name: err.toString() }]);
-        });
+      }).then(async (res) => {
+        const response = await res.json();
+        setDirectoryItems(response);
+      });
+    }
+    try {
+      if (itemData && itemData[0].err) {
+        setTimeout(() => {
+          dispatch({ type: "openDirectory", value: "" });
+        }, 3000);
+      }
+    } catch {
+      return;
     }
     // eslint-disable-next-line
-  }, [state.currentDirectory, itemData]);
+  }, [itemData]);
 
   useStoreImages();
 
   return (
-    <DirectoryContext.Provider
-      value={{
-        state,
-        dispatch,
-        directoryItems,
-        setDirectoryItems,
-        controllers,
-        setControllers,
-      }}
-    >
-      <Navbar />
-      <RenderItems />
-      <DirectoryTree />
-      <GeneralUI />
-    </DirectoryContext.Provider>
+    <Router>
+      <Routes>
+        <Route
+          path={encodeURI(state.currentDirectory)}
+          element={
+            <DirectoryContext.Provider
+              value={{
+                state,
+                dispatch,
+                directoryItems,
+                setDirectoryItems,
+                controllers,
+                setControllers,
+              }}
+            >
+              <Navbar />
+              <RenderItems />
+              <DirectoryTree />
+              <GeneralUI />
+            </DirectoryContext.Provider>
+          }
+        />
+        <Route
+          path="*"
+          element={<Navigate to={encodeURI(state.currentDirectory)} />}
+        />
+      </Routes>
+    </Router>
   );
 }

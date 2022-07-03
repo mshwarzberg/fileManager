@@ -64,7 +64,7 @@ function getFileNameParts(file, directory, drive) {
   }
 
   if (
-    (file.name === "thumbnails" || file.name === "$RECYCLE.BIN") &&
+    (file.name === "temp" || file.name === "$RECYCLE.BIN") &&
     item.isDirectory &&
     directory === drive
   ) {

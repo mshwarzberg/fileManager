@@ -25,7 +25,8 @@ export default function useFetch(url, body, dependency) {
             ]);
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           setData([
             {
               err: "Error occured",

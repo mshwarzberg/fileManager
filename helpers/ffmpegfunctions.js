@@ -43,34 +43,7 @@ function ffprobeMetadata(name, callback) {
   }
 }
 
-async function transcodeVideo(file, drive, callback) {
-  // const video = `ffmpeg -y -i "${file}" -movflags +faststart -vf scale=-2:720,format=yuv420p "${drive}/thumbnails/temp/temp.mp4"`;
-  // if (existsSync(`${drive}/thumbnails/temp/temp.mp4`)) {
-  //   unlinkSync(`${drive}/thumbnails/temp/temp.mp4`);
-  // }
-  callback();
-  // child.exec(video, (error, stdout, stderr) => {
-  //   if (error) {
-  //     console.error(`exec error: ${error}`);
-  //     return;
-  //   }
-  //   console.log(`stdout: ${stdout}`);
-  //   console.error(`stderr: ${stderr}`);
-  // });
-}
-
-function cancelTranscode() {
-  const killffmpeg = "taskkill /IM ffmpeg.exe /F";
-  try {
-    child.execSync(killffmpeg, { stdio: "ignore" });
-  } catch (e) {
-    // console.log(e.stderr.toString());
-  }
-}
-
 module.exports = {
   ffmpegThumbs,
   ffprobeMetadata,
-  transcodeVideo,
-  cancelTranscode,
 };

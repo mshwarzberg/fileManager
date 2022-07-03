@@ -5,7 +5,7 @@ export default function useDrag(
   snapToMousePosition,
   resetOnUp,
   scaling,
-  axisLocked
+  axisLockedTo
 ) {
   const [isDragging, setIsDragging] = useState(false);
   const [XY, setXY] = useState({
@@ -32,8 +32,8 @@ export default function useDrag(
           }
 
           setXY({
-            x: (axisLocked === "X" || !axisLocked) && positionX + "px",
-            y: (axisLocked === "Y" || !axisLocked) && positionY + "px",
+            x: (axisLockedTo === "X" || !axisLockedTo) && positionX + "px",
+            y: (axisLockedTo === "Y" || !axisLockedTo) && positionY + "px",
           });
         }
       }
@@ -63,7 +63,6 @@ export default function useDrag(
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("dragstart", (e) => {
         e.preventDefault();
-        return false;
       });
     }
 

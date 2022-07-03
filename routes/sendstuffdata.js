@@ -76,7 +76,7 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
 
   if (isImageGifVideo.includes(true)) {
     ffprobeMetadata(`${currentdirectory}/${prefix}.${suffix}`, (data) => {
-      fs.readdir(`${drive}/thumbnails/${restOfPath}`, (err, files) => {
+      fs.readdir(`${drive}/temp/${restOfPath}`, (err, files) => {
         if (err) return res.send({ err: err }).status(404);
         if (files && files.indexOf(`${prefix}${suffix}.jpeg`) !== -1) {
           const options = {
@@ -92,7 +92,7 @@ router.post("/thumbs", verifyFolder, makeThumbnails, (req, res) => {
             },
           };
           return res.sendFile(
-            `/thumbnails/${restOfPath}/${prefix}${suffix}.jpeg`,
+            `/temp/${restOfPath}/${prefix}${suffix}.jpeg`,
             options
           );
         } else {

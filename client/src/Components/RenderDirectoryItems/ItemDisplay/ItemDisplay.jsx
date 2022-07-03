@@ -2,7 +2,7 @@ import React from "react";
 import VideoDisplay from "./Video/VideoDisplay";
 import DocumentDisplay from "./Document/DocumentDisplay";
 import ImageDisplay from "./Image/ImageDisplay";
-import DisplayMiscellaneous from "../../Tools/DisplayMiscellaneous";
+
 export default function ItemDisplay({ viewItem, setViewItem }) {
   return (
     viewItem.property && (

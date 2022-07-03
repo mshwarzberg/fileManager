@@ -38,24 +38,24 @@ router.post("/rename", (req, res) => {
         if (!isdirectory) {
           oldpath =
             drive +
-            "thumbnails/" +
+            "temp/" +
             oldpath.slice(drive.length, oldpath.length - oldname.length) +
             oldthumbname;
           newpath =
             drive +
-            "thumbnails/" +
+            "temp/" +
             newpath.slice(drive.length, newpath.length - newname.length) +
             newthumbname;
           // rename directories in the thumbnail folder
         } else {
           oldpath =
             drive +
-            "thumbnails/" +
+            "temp/" +
             oldpath.slice(drive.length, oldpath.length - oldname.length) +
             oldname;
           newpath =
             drive +
-            "thumbnails/" +
+            "temp/" +
             newpath.slice(drive.length, newpath.length - newname.length) +
             newname;
         }

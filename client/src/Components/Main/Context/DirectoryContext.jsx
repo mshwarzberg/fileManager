@@ -58,17 +58,6 @@ function reducer(state, action) {
           drive: state.navigatedDirectories[state.navigatedIndex + 1],
         }),
       };
-    case "directoryNotFoundError":
-      return {
-        ...state,
-        currentDirectory:
-          state.navigatedDirectories[state.navigatedIndex - 1] || "",
-        navigatedIndex: state.navigatedIndex - 1,
-        navigatedDirectories: state.navigatedDirectories.slice(
-          0,
-          state.navigatedIndex
-        ),
-      };
     case "updateDirectoryTree":
       return {
         ...state,

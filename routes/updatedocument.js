@@ -6,7 +6,7 @@ router.post("/", (req, res) => {
   try {
     fs.accessSync(req.body.path, fs.constants.R_OK);
   } catch {
-    return res.send({ err: "Error Occurred" });
+    return res.send({ err: "Error Occurred" }).status(401);
   }
   fs.writeFile(
     req.body.path,

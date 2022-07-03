@@ -46,7 +46,7 @@ function Video(props) {
           cursor: !permission ? "not-allowed" : "pointer",
           backgroundColor: !permission ? "#ff7878c5" : "",
           border: !permission ? "1.5px solid red" : "",
-          opacity: !permission ? 0.5 : "",
+          opacity: !permission ? 0.6 : "",
           ...((XY.x || XY.y) && {
             top: XY.y,
             left: XY.x,
@@ -54,6 +54,7 @@ function Video(props) {
             pointerEvents: "none",
             backgroundColor: "black",
             border: "2px solid pink",
+            opacity: 0.8,
           }),
         }}
         ref={blockRef}

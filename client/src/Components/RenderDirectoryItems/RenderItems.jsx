@@ -15,68 +15,41 @@ export default function RenderItems() {
 
   const page = useRef();
 
-  function renderViewItem(filename, path, type, index, property) {
+  function renderViewItem(filename, path, type, property) {
+    if (type === "document") {
+      return setViewItem({
+        type: "document",
+        property: property,
+        name: filename,
+        path: path,
+      });
+    }
     if (type === "video") {
       return setViewItem({
         type: "video",
         property: property,
-        index: index,
         name: filename,
         path: path,
       });
-    } else if (type === "image" || type === "gif" || type === "document") {
-      if (
-        directoryItems[index].size > 25000000 &&
-        directoryItems[index].itemtype === "document"
-      ) {
-        if (
-          !window.confirm(
-            "File is too large to view. Do you want to download it instead?"
-          )
-        ) {
-          return;
-        }
-      }
-      fetch(`/api/loadfiles/file`, {
+    }
+    if (type === "image" || type === "gif") {
+      fetch("/api/loadfiles/file", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           path: path,
-          type: type,
           drive: state.drive,
         }),
       })
         .then(async (res) => {
           const response = await res.blob();
-          if (res.headers.get("type") === "imagegif") {
-            const imageURL = URL.createObjectURL(response);
-            return setViewItem({
-              type: "imagegif",
-              property: imageURL,
-              index: index,
-              name: filename,
-              path: path,
-            });
-          } else {
-            if (directoryItems[index].size < 25000000) {
-              const reader = new FileReader();
-              reader.onload = () => {
-                setViewItem({
-                  type: "document",
-                  property: reader.result,
-                  index: index,
-                  name: filename,
-                  path: path,
-                });
-              };
-              return reader.readAsText(response);
-            }
-            const url = window.URL.createObjectURL(response);
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", directoryItems[index].name);
-            link.click();
-          }
+          const imageURL = URL.createObjectURL(response);
+          return setViewItem({
+            type: "imagegif",
+            property: imageURL,
+            name: filename,
+            path: path,
+          });
         })
         .catch((err) => {
           console.log("RenderItems.jsx displayfiles", err);
@@ -84,51 +57,9 @@ export default function RenderItems() {
     }
   }
 
-  function changeFolderOrViewFiles(filename, path, type, index, direction) {
-    // arrow functionality to navigate through the files while item is displayed
-    if (direction) {
-      if (direction === "forwards") {
-        for (let i = index + 1; i < directoryItems.length; i++) {
-          type = directoryItems[i].itemtype;
-          if (
-            type === "video" ||
-            type === "image" ||
-            type === "document" ||
-            type === "gif"
-          ) {
-            filename = directoryItems[i].name;
-            path = directoryItems[i].path;
-            index = i;
-            break;
-          }
-        }
-      } else if (direction === "backwards") {
-        for (let i = index - 1; i > -1; i--) {
-          type = directoryItems[i].itemtype;
-          if (
-            type === "video" ||
-            type === "image" ||
-            type === "document" ||
-            type === "gif"
-          ) {
-            path = directoryItems[i].path;
-            filename = directoryItems[i].name;
-            index = i;
-            break;
-          }
-        }
-      }
-    }
-    if (type !== "folder") {
-      // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
-      return renderViewItem(
-        filename,
-        path,
-        type,
-        index,
-        encodeURIComponent(path)
-      );
-    }
+  function displayItem(filename, path, type) {
+    // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
+    return renderViewItem(filename, path, type, encodeURIComponent(path));
   }
 
   // render the file data and thumbnails
@@ -146,6 +77,7 @@ export default function RenderItems() {
       width,
       height,
     } = item;
+
     function getTitle() {
       if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
         return `Name: ${name}\nPath: ${path}\nSize: ${
@@ -160,6 +92,7 @@ export default function RenderItems() {
         return `Name:${name}\nPath: ${path}\nSize: ${formattedSize || ""}`;
       }
     }
+
     if (name) {
       return (
         <div
@@ -171,7 +104,7 @@ export default function RenderItems() {
               return;
             }
             if (permission) {
-              return changeFolderOrViewFiles(
+              return displayItem(
                 name,
                 path,
                 itemtype,
@@ -205,8 +138,12 @@ export default function RenderItems() {
         </div>
       );
     }
-    if (item.msg) {
-      return <h1 key={item.msg}>{item.msg}</h1>;
+    if (item.err) {
+      return (
+        <h1 key={item.err} style={{ color: "red" }}>
+          {item.err}
+        </h1>
+      );
     }
     return "";
   });
@@ -218,11 +155,7 @@ export default function RenderItems() {
       ) : (
         <h1 style={{ pointerEvents: "none" }}>Folder is empty</h1>
       )}
-      <ItemDisplay
-        changeFolderOrViewFiles={changeFolderOrViewFiles}
-        viewItem={viewItem}
-        setViewItem={setViewItem}
-      />
+      <ItemDisplay viewItem={viewItem} setViewItem={setViewItem} />
     </div>
   );
 }
