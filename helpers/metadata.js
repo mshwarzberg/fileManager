@@ -1,10 +1,10 @@
 const fs = require("fs");
 const os = require("os");
 const { checkIfFileOrDir } = require("./isfileordirectory");
-const { checkType } = require("../helpers/verifiers");
-const { formatSize } = require("../helpers/formatsize");
+const { checkType } = require("./verifiers");
+const { formatSize } = require("./formatsize");
 
-function getFileNameParts(file, directory, drive) {
+function Metadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
   let suffix = "";
   // get the file extension
@@ -89,4 +89,4 @@ function getFileNameParts(file, directory, drive) {
   return filteredData;
 }
 
-module.exports = { getFileNameParts, checkIfFileOrDir };
+module.exports = Metadata;

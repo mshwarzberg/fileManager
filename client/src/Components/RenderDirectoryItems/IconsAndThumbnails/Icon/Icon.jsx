@@ -38,7 +38,7 @@ function Icon(props) {
   function fetchStuff() {
     const controller = new AbortController();
     setControllers((prevControllers) => [...prevControllers, controller]);
-    fetch("/api/data/thumbs", {
+    fetch("/api/getthumbnails", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

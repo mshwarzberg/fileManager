@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 
-const { checkIfFileOrDir } = require("../helpers/isfileordirectory");
+const { checkIfFileOrDir } = require("../../helpers/isfileordirectory");
 
 router.post("/", (req, res) => {
   if (!req.body.path) {
@@ -13,13 +13,15 @@ router.post("/", (req, res) => {
     let dirArray = [];
     for (let i in files) {
       if (checkIfFileOrDir(files[i]).isDirectory) {
-        let folderName = files[i].name
+        let folderName = files[i].name;
         try {
-          fs.statSync(`${req.body.path === "/" ? req.body.path : req.body.path + "/"}${
-            files[i].name
-          }`)
+          fs.statSync(
+            `${req.body.path === "/" ? req.body.path : req.body.path + "/"}${
+              files[i].name
+            }`
+          );
         } catch {
-          folderName = folderName + '*?<>'
+          folderName = folderName + "*?<>";
         }
         dirArray.push(folderName);
       }

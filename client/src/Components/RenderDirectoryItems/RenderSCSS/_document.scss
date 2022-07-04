@@ -71,40 +71,22 @@
       }
     }
   }
-  .container {
+  #document-container {
     width: 8.5in;
+    height: 11in;
     position: relative;
-    .ql-editor {
+    #document {
+      position: absolute;
+      outline: none;
       width: 100%;
-      height: 90vh;
+      height: 100%;
       padding: 0.5in;
       box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
       background-color: #222;
       color: white;
-    }
-
-    .ql-container {
-      border: none;
-    }
-    .ql-toolbar {
-      .save-button {
-        height: 24px;
-        color: #444;
-        vertical-align: middle;
-        width: min-content;
-        padding-top: 2px;
-      }
-      display: flex;
-      justify-content: space-between;
-      position: absolute;
-      width: 100%;
-      top: -2.5rem;
-      height: 2.5rem;
-      background-color: #f3f3f3;
-      z-index: 1;
-      color: white;
-      border: none;
-      box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+      cursor: text;
+      font-family: akshar;
+      overflow-y: auto;
     }
   }
 }

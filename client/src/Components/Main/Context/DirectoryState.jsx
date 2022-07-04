@@ -73,7 +73,7 @@ function reducer(state, action) {
   }
 }
 
-export default function useDirectoryContextManager() {
+export default function DirectoryState() {
   const initState = JSON.parse(localStorage.getItem("state"));
 
   const [state, dispatch] = useReducer(reducer, {

@@ -21,7 +21,7 @@ export default function FileProperties({
       setItemProperties(directoryItems[contextMenu.targetIndex]);
       setContextMenu({});
     } else if (contextMenu.targetPath) {
-      fetch("/api/directorydata", {
+      fetch("/api/directorydata/getdatedata", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

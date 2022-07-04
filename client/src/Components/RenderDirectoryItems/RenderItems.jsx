@@ -16,14 +16,6 @@ export default function RenderItems() {
   const page = useRef();
 
   function renderViewItem(filename, path, type, property) {
-    if (type === "document") {
-      return setViewItem({
-        type: "document",
-        property: property,
-        name: filename,
-        path: path,
-      });
-    }
     if (type === "video") {
       return setViewItem({
         type: "video",
@@ -31,8 +23,7 @@ export default function RenderItems() {
         name: filename,
         path: path,
       });
-    }
-    if (type === "image" || type === "gif") {
+    } else {
       fetch("/api/loadfiles/file", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,12 +35,25 @@ export default function RenderItems() {
         .then(async (res) => {
           const response = await res.blob();
           const imageURL = URL.createObjectURL(response);
-          return setViewItem({
-            type: "imagegif",
-            property: imageURL,
-            name: filename,
-            path: path,
-          });
+          if (type === "image" || type === "gif") {
+            return setViewItem({
+              type: "imagegif",
+              property: imageURL,
+              name: filename,
+              path: path,
+            });
+          } else {
+            const reader = new FileReader();
+            reader.onload = () => {
+              setViewItem({
+                type: "document",
+                property: reader.result,
+                name: filename,
+                path: path,
+              });
+            };
+            return reader.readAsText(response);
+          }
         })
         .catch((err) => {
           console.log("RenderItems.jsx displayfiles", err);
@@ -66,7 +70,6 @@ export default function RenderItems() {
   const renderItems = directoryItems?.map((item) => {
     const {
       name,
-      fileextension,
       size,
       itemtype,
       path,
@@ -96,11 +99,14 @@ export default function RenderItems() {
     if (name) {
       return (
         <div
-          key={`Name: ${name}\nSize: ${size}\nType: ${fileextension}`}
+          key={`Name: ${name}\nSize: ${size}`}
           onClick={() => {
             if (item.isDrive) {
               dispatch({ type: "setDriveName", value: name });
               dispatch({ type: "openDirectory", value: name });
+              return;
+            }
+            if (item.isDirectory) {
               return;
             }
             if (permission) {

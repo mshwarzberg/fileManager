@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { checkIfFileOrDir } = require("../helpers/getfileparts");
+const { checkIfFileOrDir } = require("../helpers/isfileordirectory");
 
 // when a user enters a new folder create all the subdirectories for the thumbnails.
 function makeThumbnailDirectories(req, res, next) {

@@ -3,11 +3,11 @@ const child = require("child_process");
 
 function ffmpegThumbs(name, outputfile, callback) {
   try {
-    const getDuration = `ffprobe -show_format -print_format json "${name}"`;
+    const getDuration = `ffprobe.exe -show_format -print_format json "${name}"`;
     let output = child.execSync(getDuration, { stdio: "pipe" }).toString();
     output = JSON.parse(output);
     let duration = output["format"].duration * 1;
-    const createThumbs = `ffmpeg -ss ${formatDuration(
+    const createThumbs = `ffmpeg.exe -ss ${formatDuration(
       duration,
       77
     )} -i "${name}" -vf "scale=400:-2" -vframes 1 "${outputfile}"`;
@@ -23,7 +23,7 @@ function ffmpegThumbs(name, outputfile, callback) {
 }
 
 function ffprobeMetadata(name, callback) {
-  const probeCommand = `ffprobe -show_streams -show_format -print_format json "${name}"`;
+  const probeCommand = `ffprobe.exe -show_streams -show_format -print_format json "${name}"`;
   let output;
   try {
     output = child.execSync(probeCommand, { stdio: "pipe" }).toString();
