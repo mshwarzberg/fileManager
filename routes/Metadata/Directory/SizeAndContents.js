@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const fastFolderSize = require("../../../filesystemhelpers/fast-folder-data");
+const fastFolderSize = require("./fast-folder-data");
 
 const { formatSize } = require("../../../helpers/formatsize");
 

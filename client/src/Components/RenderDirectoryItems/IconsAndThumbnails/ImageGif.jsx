@@ -1,37 +1,20 @@
 import React, { useRef } from "react";
 import Filename from "./Icon/Filename";
 import useDrag from "../../../Hooks/useDrag";
+import IconStyle from "../../../Helpers/IconStyle";
 
 export default function ImageGif(props) {
-  const { item, index, getTitle } = props;
-  const { name, thumbnail, path, permission } = item;
+  const { name, thumbnail, permission } = props.item;
 
-  const nameInput = useRef();
   const blockRef = useRef();
   const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
 
   return (
     thumbnail && (
       <div
-        className="renderitem--block"
+        className="block-container"
         id="renderitem--image-block"
-        data-srcpath={path}
-        data-name={name}
-        style={{
-          cursor: !permission ? "not-allowed" : "pointer",
-          backgroundColor: !permission ? "#ff7878c5" : "",
-          border: !permission ? "1.5px solid red" : "",
-          opacity: !permission ? 0.6 : "",
-          ...((XY.x || XY.y) && {
-            top: XY.y,
-            left: XY.x,
-            zIndex: 100,
-            pointerEvents: "none",
-            backgroundColor: "black",
-            border: "2px solid pink",
-            opacity: 0.8,
-          }),
-        }}
+        style={IconStyle(permission, XY)}
         onMouseDown={(e) => {
           if (e.button === 0) {
             setIsDragging(true);
@@ -46,11 +29,8 @@ export default function ImageGif(props) {
           src={thumbnail}
           alt="imagethumb"
           className="renderitem--thumbnail"
-          data-index={index}
-          data-permission={permission}
-          data-title={getTitle()}
         />
-        <Filename name={name} nameRef={nameInput} />
+        <Filename name={name} />
       </div>
     )
   );

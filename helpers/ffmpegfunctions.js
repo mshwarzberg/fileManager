@@ -9,7 +9,7 @@ function ffmpegThumbs(name, outputfile, callback) {
     let duration = output["format"].duration * 1;
     const createThumbs = `ffmpeg.exe -ss ${formatDuration(
       duration,
-      77
+      94
     )} -i "${name}" -vf "scale=400:-2" -vframes 1 "${outputfile}"`;
     child.execSync(createThumbs, { stdio: "ignore" });
     callback();

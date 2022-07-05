@@ -1,3 +1,5 @@
+@import "../../Main/MainSCSS/variables.scss";
+
 @keyframes opacityStuff {
   0% {
     opacity: 0;
@@ -7,17 +9,21 @@
   }
 }
 #custom-title {
-  padding: 7px 12px 7px 12px;
-  font-size: 0.8rem;
-  background: #fff;
-  outline: 1.5px solid black;
-  border-radius: 2px;
-  font-family: lato;
+  padding: 4px 1rem 4px 4px;
+  font-size: 0.7rem;
+  background: #000000fc;
+  color: white;
+  outline: 1.5px solid $accentColor;
+  border-radius: 1px;
+  font-family: bitter;
+  font-weight: bold;
   z-index: 1000;
   position: fixed;
   transform-origin: left;
   animation: opacityStuff 170ms ease-in-out;
   line-height: 1.2rem;
-  text-decoration: underline 1% grey;
-  text-underline-offset: 3px;
+  letter-spacing: 0.3px;
+  text-decoration: underline 10% #ffffff;
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
 }

@@ -1,31 +1,33 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
-import formatDuration from "../../../Helpers/FormatVideoTime";
-import { DirectoryContext } from "../../Main/App";
-import FormatDate from "../../../Helpers/FormatDate";
-import loading from "../../../Assets/images/loading.png";
-import useDrag from "../../../Hooks/useDrag";
+import React, { useEffect, useState } from "react";
+import formatDuration from "../../../../Helpers/FormatVideoTime";
+import FormatDate from "../../../../Helpers/FormatDate";
+import loading from "../../../../Assets/images/loading.png";
+import close from "../../../../Assets/images/close.png";
 
-export default function FileProperties({
+export default function Properties({
+  contextMenu,
   setShowProperties,
   setContextMenu,
-  contextMenu,
 }) {
-  const [itemProperties, setItemProperties] = useState({});
-  const { directoryItems } = useContext(DirectoryContext);
-
-  const properties = useRef();
-  const { setIsDragging, XY } = useDrag(properties.current, true);
+  const [itemProperties, setItemProperties] = useState(contextMenu?.info);
 
   useEffect(() => {
-    if (contextMenu.targetIndex) {
-      setItemProperties(directoryItems[contextMenu.targetIndex]);
+    if (Object.entries(itemProperties)) {
       setContextMenu({});
-    } else if (contextMenu.targetPath) {
+    }
+    if (itemProperties.isDirectory) {
+      console.log(itemProperties);
+      if (
+        itemProperties.formattedSize &&
+        itemProperties.formattedSize !== "0B"
+      ) {
+        return;
+      }
       fetch("/api/directorydata/getdatedata", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          path: contextMenu.targetPath,
+          path: itemProperties.path,
         }),
       })
         .then(async (res) => {
@@ -38,11 +40,12 @@ export default function FileProperties({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              path: contextMenu.targetPath,
+              path: itemProperties.path,
             }),
           })
             .then(async (res) => {
               const response = await res.json();
+
               setItemProperties((prevProps) => ({
                 ...prevProps,
                 formattedSize: response.bytes,
@@ -60,7 +63,7 @@ export default function FileProperties({
         });
     }
     // eslint-disable-next-line
-  }, [contextMenu]);
+  }, [itemProperties, setItemProperties]);
 
   let lastTimeAccessed = Math.abs(
     Math.round(
@@ -69,27 +72,18 @@ export default function FileProperties({
   );
 
   return (
-    <div
-      id="file-properties"
-      ref={properties}
-      onMouseDown={(e) => {
-        if (e.button === 0) {
-          setIsDragging(true);
-        }
-      }}
-      style={{ left: XY.x, top: XY.y }}
-    >
-      <button
+    <div id="file-properties">
+      <img
+        src={localStorage.getItem("close") || close}
+        alt="close"
         onClick={() => {
           setShowProperties(false);
         }}
-      >
-        X
-      </button>
-      <p id="name">Name: {itemProperties.name}</p>
-      <p id="grow">Path: "{itemProperties.path}"</p>
+      />
+      <p>Name: {itemProperties.name}</p>
+      <p>Path: "{itemProperties.path}"</p>
       <div>
-        Size:{" "}
+        Size:&nbsp;
         {itemProperties.formattedSize ? (
           itemProperties.formattedSize
         ) : (

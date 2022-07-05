@@ -10,12 +10,14 @@ export default function Volume(props) {
   const { volumePosition, setVolumePosition, video } = props;
   useEffect(() => {
     video.addEventListener("volumechange", () => {
+      console.log("object");
       if (video.volume > 0 && !video.muted) {
         setVolumePosition(video.volume);
       } else if (video.volume === 0 || video.muted) {
         setVolumePosition(0);
       }
     });
+    // eslint-disable-next-line
   }, [volumePosition]);
 
   return (
@@ -57,10 +59,10 @@ export default function Volume(props) {
         max="1"
         step="any"
         onInput={(e) => {
+          setVolumePosition(e.target.value);
           if (e.target.value > 0) {
             video.muted = false;
           }
-          setVolumePosition(e.target.value);
           video.volume = e.target.value;
           e.stopPropagation();
         }}

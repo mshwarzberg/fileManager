@@ -6,10 +6,10 @@ const { execSync } = require("child_process");
 router.post("/", (req, res) => {
   const setPermission =
     "powershell.exe Set-ExecutionPolicy -Scope CurrentUser remoteSigned";
-  const deleteItem = `powershell.exe -f ${path.join(
+  const deleteItem = `powershell.exe -f "${path.join(
     __dirname,
-    "../filesystemhelpers/Recycle.ps1"
-  )} "${req.body.path}"`;
+    "./Recycle.ps1"
+  )}" "${req.body.path}"`;
   try {
     execSync(setPermission);
     const output = execSync(deleteItem, { stdio: "pipe" }).toString();

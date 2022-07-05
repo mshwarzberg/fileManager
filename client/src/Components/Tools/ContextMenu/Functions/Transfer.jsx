@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function CutAndCopy({
+export default function Transfer({
   setClipboardData,
   setContextMenu,
   contextMenu,

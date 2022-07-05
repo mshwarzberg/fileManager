@@ -10,7 +10,7 @@ const Rename = require("./routes/File Management/Rename");
 const CutAndCopy = require("./routes/File Management/CutAndCopy");
 const Delete = require("./routes/File Management/Delete");
 
-const SizeAndContents = require("./routes/Metadata/Directory/Size");
+const SizeAndContents = require("./routes/Metadata/Directory/SizeAndContents");
 const DateData = require("./routes/Metadata/Directory/DateData");
 
 const loaddisplayfiles = require("./routes/Load Display/loaddisplayfiles");

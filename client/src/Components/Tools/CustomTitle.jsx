@@ -6,7 +6,9 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
   useEffect(() => {
     document.addEventListener("mousemove", (e) => {
       clearTimeout(titleTimeout);
-      setTitle({});
+      if (Object.entries(title)) {
+        setTitle({});
+      }
       if (e.target.dataset?.title || e.target.parentElement?.dataset.title) {
         titleTimeout = setTimeout(() => {
           if (contextMenu.x || contextMenu.y) {
@@ -20,14 +22,13 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
           });
         }, 500);
       }
-      e.stopPropagation();
     });
-    document.addEventListener("click", () => {
+    document.addEventListener("mousedown", () => {
       setTitle({});
     });
     return () => {
       document.removeEventListener("mousemove", () => {});
-      document.removeEventListener("click", () => {});
+      document.removeEventListener("mousedown", () => {});
     };
     // eslint-disable-next-line
   }, [title.title, contextMenu.x, contextMenu.y]);

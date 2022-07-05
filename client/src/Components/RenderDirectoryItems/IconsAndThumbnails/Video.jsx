@@ -4,15 +4,13 @@ import useDrag from "../../../Hooks/useDrag";
 import playIcon from "../../../Assets/images/play.png";
 import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Icon/Filename";
+import IconStyle from "../../../Helpers/IconStyle";
 
 function Video(props) {
-  const { item, index, getTitle } = props;
-
-  const nameInput = useRef();
   const blockRef = useRef();
 
   const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
-  const { name, thumbnail, duration, path, permission } = item;
+  const { name, thumbnail, duration, permission } = props.item;
 
   const [durationPosition, setDurationPosition] = useState({
     rectX: 0,
@@ -33,30 +31,8 @@ function Video(props) {
   return (
     thumbnail && (
       <div
-        data-srcpath={path}
-        data-name={name}
-        className="renderitem--block"
-        onMouseEnter={(e) => {
-          e.currentTarget.firstChild.style.display = "block";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.firstChild.style.display = "none";
-        }}
-        style={{
-          cursor: !permission ? "not-allowed" : "pointer",
-          backgroundColor: !permission ? "#ff7878c5" : "",
-          border: !permission ? "1.5px solid red" : "",
-          opacity: !permission ? 0.6 : "",
-          ...((XY.x || XY.y) && {
-            top: XY.y,
-            left: XY.x,
-            zIndex: 100,
-            pointerEvents: "none",
-            backgroundColor: "black",
-            border: "2px solid pink",
-            opacity: 0.8,
-          }),
-        }}
+        className="block-container"
+        style={IconStyle(permission, XY)}
         ref={blockRef}
         onMouseDown={(e) => {
           if (e.button === 0) {
@@ -66,23 +42,12 @@ function Video(props) {
           }
         }}
       >
-        <img
-          src={playIcon}
-          alt="playvideo"
-          className="renderitem--play-icon"
-          style={{ display: "none", zIndex: 1 }}
-          data-index={index}
-          data-permission={permission}
-          data-title={getTitle()}
-        />
+        <img src={playIcon} alt="playvideo" className="renderitem--play-icon" />
         <img
           style={{
             cursor: !permission ? "not-allowed" : "pointer",
           }}
           className="renderitem--thumbnail"
-          data-index={index}
-          data-permission={permission}
-          data-title={getTitle()}
           src={thumbnail}
           alt="gifthumb"
           onLoad={(e) => {
@@ -131,7 +96,7 @@ function Video(props) {
             </text>
           </svg>
         )}
-        <Filename name={name} nameRef={nameInput} />
+        <Filename name={name} />
       </div>
     )
   );

@@ -23,7 +23,7 @@ router.post("/", verifyFolder, makeThumbnails, (req, res) => {
   if (isImageGifVideo.includes(true)) {
     ffprobeMetadata(`${currentdirectory}/${prefix}.${suffix}`, (data) => {
       fs.readdir(`${drive}/temp/${restOfPath}`, (err, files) => {
-        if (err) return res.send({ err: err }).status(404);
+        if (err) return res.send({ err: err }).status(500);
         if (files && files.indexOf(`${prefix}${suffix}.jpeg`) !== -1) {
           const options = {
             root: drive,

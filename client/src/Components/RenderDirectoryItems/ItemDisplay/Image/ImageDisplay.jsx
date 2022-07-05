@@ -27,11 +27,6 @@ function ImageDisplay(props) {
       }}
       onLoad={() => {
         image.current.style.scale = 1;
-        image.current.style.transform = "";
-        image.current.style.left = "";
-        image.current.style.top = "";
-        image.current.style.cursor = "default";
-        image.current.style.position = "fixed";
       }}
     >
       <DisplayMiscellaneous viewItem={viewItem} setViewItem={setViewItem} />
@@ -48,8 +43,8 @@ function ImageDisplay(props) {
         alt={viewItem.name}
         onMouseDown={(e) => {
           if (e.button === 1) {
-            image.current.style.transform = "";
             image.current.style.scale = 1;
+            image.current.style.transform = "";
             image.current.style.left = "";
             image.current.style.top = "";
             image.current.style.cursor = "default";

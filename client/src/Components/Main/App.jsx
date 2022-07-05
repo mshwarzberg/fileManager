@@ -29,6 +29,7 @@ export default function App() {
 
   useEffect(() => {
     if (state.drive && state.currentDirectory) {
+      document.title = state.currentDirectory;
       if (
         !CompareArray(itemData, directoryItems) &&
         state.currentDirectory !== ""

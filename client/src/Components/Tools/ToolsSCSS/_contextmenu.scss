@@ -1,15 +1,15 @@
 @import "../../Main/MainSCSS/variables";
 
 #menu {
-  height: 15rem;
-  width: 15rem;
   background-color: #fff;
   position: absolute;
   z-index: 50;
+  display: flex;
+  flex-direction: column;
   button {
-    width: 100%;
+    width: 15rem;
+    height: 3rem;
     border: none;
-    height: 20%;
     font-family: "bebas neue";
     font-size: 1.7rem;
     background-color: #222;

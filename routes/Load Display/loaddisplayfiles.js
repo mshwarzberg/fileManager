@@ -2,45 +2,6 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 
-const io = require("socket.io")(5001, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  socket.on("get-document", async (data) => {
-    const tempFile =
-      data.drive +
-      "temp/" +
-      data.directory.split(data.drive)[1] +
-      `/${data.name}`;
-
-    let fileContent;
-    try {
-      fileContent = fs.readFileSync(tempFile);
-    } catch (e) {
-      fileContent = fs.readFileSync(data.file);
-      fileContent = fs.writeFileSync(
-        tempFile,
-        JSON.stringify({
-          ops: [{ insert: fileContent.toString().split("\n") }],
-        })
-      );
-    }
-    socket.emit("load-document", fileContent.toString());
-
-    socket.on("send-changes", (delta) => {
-      socket.broadcast.to(data).emit("receive-changes", delta);
-    });
-
-    socket.on("save-document", async (updatedData) => {
-      // await Document.findByIdAndUpdate(documentId, { updatedData });
-    });
-  });
-});
-
 router.post("/file", (req, res) => {
   const { path, drive } = req.body;
   let currentdirectory = path.slice(drive.length, path.length);

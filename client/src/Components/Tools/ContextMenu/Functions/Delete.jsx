@@ -1,13 +1,12 @@
 import React, { useContext } from "react";
 import { DirectoryContext } from "../../../Main/App";
 
-export default function Delete({ contextMenu, path }) {
-  const { setDirectoryItems } = useContext(DirectoryContext);
+export default function Delete({ info }) {
+  const { setDirectoryItems} = useContext(DirectoryContext);
   return (
     <button
       className="context-menu-item"
-      onClick={(e) => {
-        e.target.parentElement.style.display = "none";
+      onClick={() => {
         if (
           window.confirm(
             "Are you sure you want to move this item to the trash?"
@@ -19,7 +18,7 @@ export default function Delete({ contextMenu, path }) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              path: path,
+              path: info.path,
             }),
           })
             .then(async (res) => {
@@ -29,10 +28,7 @@ export default function Delete({ contextMenu, path }) {
               } else {
                 setDirectoryItems((prevItems) => {
                   return prevItems.map((item) => {
-                    if (
-                      prevItems.indexOf(item) === contextMenu.targetIndex * 1 ||
-                      contextMenu.targetPath === item.path
-                    ) {
+                    if (info.path === item.path && info.name === item.name) {
                       return {};
                     }
                     return item;

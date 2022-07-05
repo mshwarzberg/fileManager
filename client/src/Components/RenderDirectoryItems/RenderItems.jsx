@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from "react";
+import React, { useState, useContext } from "react";
 
 import ImageGif from "./IconsAndThumbnails/ImageGif";
 import Video from "./IconsAndThumbnails/Video";
@@ -13,9 +13,7 @@ export default function RenderItems() {
 
   const [viewItem, setViewItem] = useState({});
 
-  const page = useRef();
-
-  function renderViewItem(filename, path, type, property) {
+  function displayItem(filename, path, type, property) {
     if (type === "video") {
       return setViewItem({
         type: "video",
@@ -23,7 +21,7 @@ export default function RenderItems() {
         name: filename,
         path: path,
       });
-    } else {
+    } else if (type !== "unknown") {
       fetch("/api/loadfiles/file", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,11 +59,6 @@ export default function RenderItems() {
     }
   }
 
-  function displayItem(filename, path, type) {
-    // setting a 'default' property since the video is the only property that will not use fetch. If the type is not video the property will be overridden later on.
-    return renderViewItem(filename, path, type, encodeURIComponent(path));
-  }
-
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
     const {
@@ -95,52 +88,65 @@ export default function RenderItems() {
         return `Name:${name}\nPath: ${path}\nSize: ${formattedSize || ""}`;
       }
     }
+    function getContextMenu() {
+      if (permission) {
+        return ["rename", "cutcopy", "delete", "properties"];
+      }
+    }
 
     if (name) {
       return (
-        <div
-          key={`Name: ${name}\nSize: ${size}`}
-          onClick={() => {
-            if (item.isDrive) {
-              dispatch({ type: "setDriveName", value: name });
-              dispatch({ type: "openDirectory", value: name });
-              return;
-            }
-            if (item.isDirectory) {
-              return;
-            }
-            if (permission) {
-              return displayItem(
-                name,
-                path,
-                itemtype,
-                directoryItems.indexOf(item),
-                null
-              );
-            }
-          }}
-        >
-          {!thumbnail && (
-            <Icon
-              item={item}
-              index={directoryItems.indexOf(item)}
-              getTitle={getTitle}
-            />
-          )}
-          {itemtype === "video" && (
-            <Video
-              item={item}
-              index={directoryItems.indexOf(item)}
-              getTitle={getTitle}
-            />
-          )}
+        <div className="renderitem--block" key={`Name: ${name}\nSize: ${size}`}>
+          {!thumbnail && <Icon item={item} />}
+          {itemtype === "video" && <Video item={item} />}
           {(itemtype === "image" || itemtype === "gif") && (
-            <ImageGif
-              item={item}
-              index={directoryItems.indexOf(item)}
-              getTitle={getTitle}
-            />
+            <ImageGif item={item} />
           )}
+          <div
+            className="cover-block"
+            data-contextmenu={getContextMenu()}
+            data-title={getTitle()}
+            data-info={JSON.stringify(item)}
+            onClick={() => {
+              if (item.isDrive) {
+                dispatch({ type: "setDriveName", value: name });
+                dispatch({ type: "openDirectory", value: name });
+                return;
+              } else if (item.isDirectory) {
+                return dispatch({
+                  type: "openDirectory",
+                  value: state.currentDirectory + name + "/",
+                });
+              } else if (permission) {
+                return displayItem(
+                  name,
+                  path,
+                  itemtype,
+                  encodeURIComponent(path)
+                );
+              }
+            }}
+            onMouseEnter={(e) => {
+              if (
+                e.target.previousSibling.firstChild.className ===
+                "renderitem--play-icon"
+              ) {
+                e.target.previousSibling.firstChild.style.opacity = 1;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (
+                e.target.previousSibling.firstChild.className ===
+                "renderitem--play-icon"
+              ) {
+                e.target.previousSibling.firstChild.style.opacity = 0;
+              }
+            }}
+            style={{
+              cursor: !permission ? "not-allowed" : "pointer",
+              animation: "none",
+            }}
+          />
         </div>
       );
     }
@@ -155,7 +161,11 @@ export default function RenderItems() {
   });
 
   return (
-    <div id="renderitem--page" ref={page}>
+    <div
+      id="renderitem--page"
+      data-contextmenu={["view", "sort", "new folder", "paste", "properties"]}
+      data-info={JSON.stringify({ path: state.currentDirectory })}
+    >
       {renderItems?.length > 0 ? (
         renderItems
       ) : (

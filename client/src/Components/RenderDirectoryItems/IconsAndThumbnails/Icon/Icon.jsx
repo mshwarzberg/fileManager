@@ -6,18 +6,11 @@ import drive from "../../../../Assets/images/drive.png";
 import Filename from "./Filename";
 import CustomIcon from "./CustomIcon";
 import useDrag from "../../../../Hooks/useDrag";
+import IconStyle from "../../../../Helpers/IconStyle";
 
 function Icon(props) {
-  const {
-    dispatch,
-    directoryItems,
-    state,
-    setDirectoryItems,
-    setControllers,
-    controllers,
-  } = useContext(DirectoryContext);
-
-  const { item, index, getTitle } = props;
+  const { dispatch, state, setDirectoryItems, setControllers, controllers } =
+    useContext(DirectoryContext);
 
   const {
     name,
@@ -30,7 +23,9 @@ function Icon(props) {
     isSymbolicLink,
     isDirectory,
     isDrive,
-  } = item;
+    itemtype,
+    prefix,
+  } = props.item;
 
   const blockRef = useRef();
   const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
@@ -42,8 +37,8 @@ function Icon(props) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        prefix: item.prefix,
-        suffix: item.fileextension,
+        prefix: prefix,
+        suffix: fileextension,
         currentdirectory: state.currentDirectory,
         drive: state.drive,
       }),
@@ -91,11 +86,7 @@ function Icon(props) {
   }
 
   useEffect(() => {
-    if (
-      item.itemtype === "video" ||
-      item.itemtype === "image" ||
-      item.itemtype === "gif"
-    ) {
+    if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
       if (!thumbnail) {
         if (sessionStorage.getItem(path)) {
           return setDirectoryItems((prevItems) => {
@@ -120,14 +111,7 @@ function Icon(props) {
 
   function displayIcon() {
     if (isFile) {
-      return (
-        <CustomIcon
-          fileextension={fileextension}
-          index={index}
-          permission={permission}
-          getTitle={getTitle}
-        />
-      );
+      return <CustomIcon fileextension={fileextension} />;
     }
     if (isDirectory || isSymbolicLink) {
       return (
@@ -138,12 +122,7 @@ function Icon(props) {
               : localStorage.getItem("folder") || folder
           }
           alt="foldericon"
-          data-path={!isSymbolicLink && permission ? path : ""}
-          data-index={
-            !isSymbolicLink && permission ? directoryItems.indexOf(item) : ""
-          }
           className="renderitem--full-icon"
-          data-title={getTitle()}
           onClick={() => {
             for (let i in controllers) {
               controllers[i].abort();
@@ -162,7 +141,7 @@ function Icon(props) {
 
   return (
     <div
-      className="renderitem--block"
+      className="block-container"
       onClick={() => {
         if (isDirectory && permission && !isSymbolicLink) {
           dispatch({
@@ -177,21 +156,7 @@ function Icon(props) {
           });
         }
       }}
-      data-name={name}
-      style={{
-        cursor: !permission ? "not-allowed" : "pointer",
-        backgroundColor: !permission ? "#ff7878c5" : "",
-        border: !permission ? "1.5px solid red" : "",
-        ...((XY.x || XY.y) && {
-          top: XY.y,
-          left: XY.x,
-          zIndex: 100,
-          pointerEvents: "none",
-          backgroundColor: "black",
-          border: "2px solid pink",
-          opacity: 0.8,
-        }),
-      }}
+      style={IconStyle(permission, XY)}
       onMouseDown={(e) => {
         if (e.button === 0) {
           setIsDragging(true);
