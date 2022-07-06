@@ -2,7 +2,6 @@ const fs = require("fs");
 const os = require("os");
 const { checkIfFileOrDir } = require("./isfileordirectory");
 const { checkType } = require("./verifiers");
-const { formatSize } = require("./formatsize");
 
 function Metadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
@@ -72,15 +71,12 @@ function Metadata(file, directory, drive) {
   }
   const filteredData = {
     ...item,
-    path: `${directory === isDrive[0] ? directory : directory + "/"}${
-      file.name
-    }`,
+    path: `${directory}${file.name}`,
     itemtype: item.isDirectory ? "folder" : checkType(suffix),
     fileextension: suffix || "",
     prefix: encodeURIComponent(prefix),
     permission: permission,
     size: sizeOf || 0,
-    formattedSize: formatSize(sizeOf) || 0,
     accessed: dateAccessed || 0,
     modified: dateModified || 0,
     created: dateCreated || 0,

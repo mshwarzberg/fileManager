@@ -9,6 +9,7 @@ import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import useStoreImages from "../../Hooks/useStoreImages";
 import GeneralUI from "../Tools/GeneralUI";
+import useDrag from "../../Hooks/useDrag";
 
 export const DirectoryContext = createContext();
 
@@ -63,7 +64,7 @@ export default function App() {
   }, [itemData, state.currentDirectory]);
 
   useStoreImages();
-
+  useDrag();
   return (
     <DirectoryContext.Provider
       value={{

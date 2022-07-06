@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import useDrag from "../../../../Hooks/useDrag";
 import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
 import useFullscreenElement from "../../../../Hooks/useFullscreenElement";
 
@@ -7,8 +6,6 @@ function ImageDisplay(props) {
   const { viewItem, setViewItem } = props;
 
   const image = useRef();
-
-  const { setIsDragging, XY } = useDrag(image.current);
 
   const { fullscreenControl, fullscreen } = useFullscreenElement();
 
@@ -32,7 +29,6 @@ function ImageDisplay(props) {
       <DisplayMiscellaneous viewItem={viewItem} setViewItem={setViewItem} />
       <img
         ref={image}
-        style={{ left: XY.x, top: XY.y }}
         onLoad={(e) => {
           e.target.id = "image-display";
         }}
@@ -57,7 +53,8 @@ function ImageDisplay(props) {
             image.current.style.top !== ""
           ) {
             image.current.style.cursor = "grabbing";
-            setIsDragging(true);
+            
+            //setIsDragging(true);
           }
         }}
         onMouseUp={() => {

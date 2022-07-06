@@ -1,9 +1,10 @@
 // turn the byte integers from the filesize to more readable format
-export default function shortHandFileSize(originalSize) {
+export default function FormatSize(originalSize) {
   let newSize;
   let letter;
-
-  console.log(originalSize);
+  if (originalSize === undefined) {
+    return undefined;
+  }
   if (originalSize < 1000) {
     newSize = originalSize;
     letter = "";

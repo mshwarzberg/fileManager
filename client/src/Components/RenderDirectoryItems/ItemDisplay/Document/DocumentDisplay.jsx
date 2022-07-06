@@ -2,7 +2,7 @@ import React from "react";
 import DisplayMiscellaneous from "../../../Tools/DisplayMiscellaneous";
 
 export default function DocumentDisplay({ viewItem, setViewItem }) {
-  function getSelectedText() {
+  function getSelectedText(index) {
     var selectedText = "";
     let ranges = [];
 
@@ -18,16 +18,33 @@ export default function DocumentDisplay({ viewItem, setViewItem }) {
     const underline = document.createElement("u");
     underline.innerHTML = selectedText;
     if (selectedText.toString()) {
-      let doc = document.getElementById("document").innerText;
+      let doc = document.getElementsByClassName("document")[index].innerText;
       for (let i = 0; i < selectedText.rangeCount; i++) {
         ranges[i] = selectedText.getRangeAt(i);
       }
-      console.log(doc[ranges[0].startOffset]);
-      doc = doc.slice(ranges[0].startOffset, ranges[0].endOffset);
 
+      doc = doc.slice(ranges[0].startOffset, ranges[0].endOffset);
+      console.log(doc);
       document.testform.selectedtext.value = selectedText;
     }
   }
+
+  const tempDoc = viewItem.property.split("\n").map((item, i) => {
+    return (
+      <p
+        key={i}
+        className="document"
+        onMouseMove={() => {
+          getSelectedText(i);
+        }}
+        spellCheck={false}
+        contentEditable
+        suppressContentEditableWarning
+      >
+        {item}
+      </p>
+    );
+  });
 
   return (
     <div className="display--block" id="document--body">
@@ -36,19 +53,7 @@ export default function DocumentDisplay({ viewItem, setViewItem }) {
         setViewItem={setViewItem}
         confirmExit={() => {}}
       />
-      <div id="document-container">
-        <p
-          id="document"
-          onMouseEnter={() => {
-            getSelectedText();
-          }}
-          spellCheck={false}
-          contentEditable
-          suppressContentEditableWarning
-        >
-          {viewItem.property}
-        </p>
-      </div>
+      <div id="document-container">{tempDoc}</div>
       <form name="testform" style={{ position: "fixed", bottom: 0 }}>
         <textarea name="selectedtext" id="" cols="30" rows="10"></textarea>
       </form>

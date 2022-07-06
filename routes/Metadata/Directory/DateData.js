@@ -3,16 +3,16 @@ const router = express.Router();
 const fs = require("fs");
 
 router.post("/", (req, res) => {
-  let { path } = req.body;
-  let name;
+  let { path, name } = req.body;
+
   var {
     birthtimeMs: dateCreated,
     mtimeMs: dateModified,
     atimeMs: dateAccessed,
   } = fs.statSync(path);
-  for (let i = path.length; i >= 0; i--) {
-    if (path[i] === "/") {
-      name = path.slice(i + 1, path.length);
+  for (let i = path.length - 2; i >= 0; i--) {
+    if (path[i] === "/" && !name) {
+      name = path.slice(i + 1, path.length - 1);
       break;
     }
   }

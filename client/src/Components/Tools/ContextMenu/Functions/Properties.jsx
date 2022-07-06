@@ -3,6 +3,7 @@ import formatDuration from "../../../../Helpers/FormatVideoTime";
 import FormatDate from "../../../../Helpers/FormatDate";
 import loading from "../../../../Assets/images/loading.png";
 import close from "../../../../Assets/images/close.png";
+import FormatSize from "../../../../Helpers/FormatSize";
 
 export default function Properties({
   contextMenu,
@@ -16,7 +17,6 @@ export default function Properties({
       setContextMenu({});
     }
     if (itemProperties.isDirectory) {
-      console.log(itemProperties);
       if (
         itemProperties.formattedSize &&
         itemProperties.formattedSize !== "0B"
@@ -28,6 +28,7 @@ export default function Properties({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           path: itemProperties.path,
+          name: itemProperties.name,
         }),
       })
         .then(async (res) => {
@@ -48,7 +49,8 @@ export default function Properties({
 
               setItemProperties((prevProps) => ({
                 ...prevProps,
-                formattedSize: response.bytes,
+                size: response.bytes,
+                formattedSize: FormatSize(response.bytes),
                 count: `(${response.filecount + response.foldercount} items, ${
                   response.filecount
                 } files, ${response.foldercount} folders)`,
@@ -65,12 +67,13 @@ export default function Properties({
     // eslint-disable-next-line
   }, [itemProperties, setItemProperties]);
 
-  let lastTimeAccessed = Math.abs(
+  const lastTimeAccessed = Math.abs(
     Math.round(
       (Date.now() - new Date(itemProperties.accessed).getTime()) / 1000 / 60
     )
   );
-
+  const formattedSize =
+    itemProperties.formattedSize || FormatSize(itemProperties.size);
   return (
     <div id="file-properties">
       <img
@@ -80,29 +83,47 @@ export default function Properties({
           setShowProperties(false);
         }}
       />
-      <p>Name: {itemProperties.name}</p>
-      <p>Path: "{itemProperties.path}"</p>
+      <div>
+        <p>Name: {itemProperties.name}</p>
+      </div>
+      <div>
+        <p>Path: "{itemProperties.path}"</p>
+      </div>
       <div>
         Size:&nbsp;
-        {itemProperties.formattedSize ? (
-          itemProperties.formattedSize
+        {formattedSize ? (
+          formattedSize
         ) : (
           <img src={loading} alt="" id="loading" />
         )}
         {itemProperties.count && <p>&nbsp;&nbsp;{itemProperties.count}</p>}
       </div>
       {itemProperties.duration && (
-        <p>Length: {formatDuration(itemProperties.duration)}</p>
+        <div>
+          <p>Length: {formatDuration(itemProperties.duration)}</p>
+        </div>
       )}
       {itemProperties.width && itemProperties.height && (
-        <p>Dimensions: {`${itemProperties.width}x${itemProperties.height}`}</p>
+        <div>
+          <p>
+            Dimensions: {`${itemProperties.width}x${itemProperties.height}`}
+          </p>
+        </div>
       )}
-      <p> Date Created: {FormatDate(new Date(itemProperties.created))}</p>
-      <p> Date Modified: {FormatDate(new Date(itemProperties.modified))}</p>
-      <p>
-        Date Accessed: {FormatDate(new Date(itemProperties.accessed))}
-        {lastTimeAccessed < 60 && " (" + lastTimeAccessed + " minutes ago)"}
-      </p>
+      <div>
+        {" "}
+        <p> Date Created: {FormatDate(new Date(itemProperties.created))}</p>
+      </div>
+      <div>
+        <p> Date Modified: {FormatDate(new Date(itemProperties.modified))}</p>
+      </div>
+      <div>
+        {" "}
+        <p>
+          Date Accessed: {FormatDate(new Date(itemProperties.accessed))}
+          {lastTimeAccessed < 60 && " (" + lastTimeAccessed + " minutes ago)"}
+        </p>
+      </div>
     </div>
   );
 }

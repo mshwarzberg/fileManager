@@ -3,7 +3,9 @@ export default function IconStyle(permission, XY) {
     cursor: !permission ? "not-allowed" : "pointer",
     backgroundColor: !permission ? "#ff7878c5" : "",
     border: !permission ? "1.5px solid red" : "",
+    position: "",
     ...((XY.x || XY.y) && {
+      position: "absolute",
       top: XY.y,
       left: XY.x,
       zIndex: 100,

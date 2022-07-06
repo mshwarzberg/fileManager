@@ -1,6 +1,5 @@
 import React, { useContext, useState, useRef } from "react";
 import { DirectoryContext } from "../../Main/App";
-import useDrag from "../../../Hooks/useDrag";
 import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
 
@@ -10,14 +9,6 @@ export default function DirectoryTree() {
 
   const treeID = useRef();
   const treeBody = useRef();
-
-  const { setIsDragging, XY } = useDrag(
-    treeBody.current,
-    true,
-    false,
-    true,
-    "X"
-  );
 
   function mapDirectoryTreeLoop(tree, path) {
     let parentDirectoryName;
@@ -70,34 +61,11 @@ export default function DirectoryTree() {
         {showTree ? "Hide Tree" : "Show Tree"}
       </button>
       {showTree && (
-        <div
-          style={{ width: XY.x, pointerEvents: "none", position: "relative" }}
-          ref={treeBody}
-        >
-          <div
-            id="directorytree--body"
-            ref={treeID}
-            style={{
-              width: XY.x,
-              pointerEvents: "all",
-              position: "absolute",
-            }}
-          >
+        <div ref={treeBody}>
+          <div id="directorytree--body" ref={treeID}>
             {/* {mapDirectoryTreeLoop(state.directoryTree, "/")} */}
           </div>
-          <div
-            style={{
-              pointerEvents: "all",
-              left: XY.x,
-              cursor: "grab",
-            }}
-            id="resize--tree"
-            onMouseDown={(e) => {
-              setIsDragging(true);
-              e.target.style.cursor = "grabbing";
-              e.stopPropagation();
-            }}
-          />
+          <div id="resize--tree" />
         </div>
       )}
     </>

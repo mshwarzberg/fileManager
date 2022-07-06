@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect } from "react";
 import { DirectoryContext } from "../../../Main/App";
 import folder from "../../../../Assets/images/folder.png";
 import symlink from "../../../../Assets/images/symlink.png";
 import drive from "../../../../Assets/images/drive.png";
 import Filename from "./Filename";
 import CustomIcon from "./CustomIcon";
-import useDrag from "../../../../Hooks/useDrag";
-import IconStyle from "../../../../Helpers/IconStyle";
 
 function Icon(props) {
   const { dispatch, state, setDirectoryItems, setControllers, controllers } =
@@ -26,9 +24,6 @@ function Icon(props) {
     itemtype,
     prefix,
   } = props.item;
-
-  const blockRef = useRef();
-  const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
 
   function fetchStuff() {
     const controller = new AbortController();
@@ -156,15 +151,6 @@ function Icon(props) {
           });
         }
       }}
-      style={IconStyle(permission, XY)}
-      onMouseDown={(e) => {
-        if (e.button === 0) {
-          setIsDragging(true);
-          e.stopPropagation();
-          return;
-        }
-      }}
-      ref={blockRef}
     >
       {displayIcon()}
       <Filename name={name} />

@@ -1,15 +1,10 @@
-import React, { useRef, useState } from "react";
-import useDrag from "../../../Hooks/useDrag";
+import React, { useState } from "react";
 
 import playIcon from "../../../Assets/images/play.png";
 import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Icon/Filename";
-import IconStyle from "../../../Helpers/IconStyle";
 
 function Video(props) {
-  const blockRef = useRef();
-
-  const { XY, setIsDragging } = useDrag(blockRef.current, false, true);
   const { name, thumbnail, duration, permission } = props.item;
 
   const [durationPosition, setDurationPosition] = useState({
@@ -32,11 +27,9 @@ function Video(props) {
     thumbnail && (
       <div
         className="block-container"
-        style={IconStyle(permission, XY)}
-        ref={blockRef}
         onMouseDown={(e) => {
           if (e.button === 0) {
-            setIsDragging(true);
+            // setIsDragging(true);
             e.stopPropagation();
             return;
           }

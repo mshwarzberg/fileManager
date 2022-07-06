@@ -4,7 +4,7 @@ export default function Transfer({
   setClipboardData,
   setContextMenu,
   contextMenu,
-  path,
+  source,
   mode,
 }) {
   return (
@@ -12,9 +12,10 @@ export default function Transfer({
       className="context-menu-item"
       onClick={() => {
         setClipboardData({
-          path: path,
+          source: source,
           mode: mode,
-          isDirectory: contextMenu?.isDirectory,
+          metadata: contextMenu.info,
+          isSourceDirectory: contextMenu.info.isDirectory,
         });
         setContextMenu({});
       }}

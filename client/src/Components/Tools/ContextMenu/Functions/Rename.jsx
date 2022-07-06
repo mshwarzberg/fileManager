@@ -7,13 +7,6 @@ export default function Rename({ originalItem }) {
     <button
       className="context-menu-item"
       onClick={(e) => {
-        e.target.parentElement.style.display = "none";
-        const shouldUpdateThumbnail = [
-          originalItem.isDirectory,
-          originalItem.itemtype === "video",
-          originalItem.itemtype === "image",
-          originalItem.itemtype === "gif",
-        ];
         const prompt = window.prompt(
           `Enter a new ${originalItem.isDirectory ? "folder" : "file"} name`,
           decodeURI(originalItem.prefix)
@@ -35,16 +28,7 @@ export default function Rename({ originalItem }) {
               oldname: originalItem.name,
               newname: newName,
               drive: state.drive,
-              renameInThumbDirectory: shouldUpdateThumbnail.includes(true),
               isdirectory: originalItem.isDirectory,
-              ...(shouldUpdateThumbnail.includes(true) &&
-                !originalItem.isDirectory && {
-                  oldthumbname:
-                    decodeURI(originalItem.prefix) +
-                    originalItem.fileextension +
-                    ".jpeg",
-                  newthumbname: prompt + originalItem.fileextension + ".jpeg",
-                }),
             }),
           })
             .then(async (res) => {
@@ -55,7 +39,7 @@ export default function Rename({ originalItem }) {
               if (!response.err) {
                 setDirectoryItems((prevItems) => {
                   return prevItems.map((item) => {
-                    if (item === originalItem) {
+                    if (item.name === originalItem.name) {
                       let path = item.path.slice(
                         0,
                         item.path.length - item.name.length

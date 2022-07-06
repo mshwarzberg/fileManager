@@ -10,7 +10,6 @@ export default function Volume(props) {
   const { volumePosition, setVolumePosition, video } = props;
   useEffect(() => {
     video.addEventListener("volumechange", () => {
-      console.log("object");
       if (video.volume > 0 && !video.muted) {
         setVolumePosition(video.volume);
       } else if (video.volume === 0 || video.muted) {

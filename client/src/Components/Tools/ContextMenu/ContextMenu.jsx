@@ -3,19 +3,24 @@ import { DirectoryContext } from "../../Main/App";
 import Rename from "./Functions/Rename";
 import Transfer from "./Functions/Transfer";
 import Delete from "./Functions/Delete";
+import Paste from "./Functions/Paste";
+import NewDirectory from "./Functions/NewDirectory";
 
 export default function ContextMenu({
   contextMenu,
   setContextMenu,
   setShowProperties,
 }) {
-  const [clipboardData, setClipboardData] = useState();
+  const [clipboardData, setClipboardData] = useState({});
 
   const { state } = useContext(DirectoryContext);
 
   useEffect(() => {
     document.addEventListener("contextmenu", (e) => {
       e.preventDefault();
+    });
+    window.addEventListener("blur", () => {
+      setContextMenu({});
     });
     document.addEventListener("mousedown", (e) => {
       if (e.button === 2 && e.target.dataset?.contextmenu) {
@@ -30,12 +35,12 @@ export default function ContextMenu({
         e.stopImmediatePropagation();
       } else if (e.target.className !== "context-menu-item") {
         setContextMenu({});
-        e.preventDefault();
       }
     });
     return () => {
       document.removeEventListener("contextmenu", () => {});
       document.removeEventListener("mousedown", () => {});
+      window.removeEventListener("blur", () => {});
     };
     // eslint-disable-next-line
   }, [clipboardData, state.currentDirectory, setContextMenu]);
@@ -46,6 +51,7 @@ export default function ContextMenu({
         {contextMenu.items.includes("rename") && (
           <Rename originalItem={contextMenu.info} />
         )}
+        {contextMenu.items.includes("new folder") && <NewDirectory />}
         {contextMenu.items.includes("cutcopy") && (
           <>
             <Transfer
@@ -53,17 +59,26 @@ export default function ContextMenu({
               setContextMenu={setContextMenu}
               contextMenu={contextMenu}
               mode="cut"
-              path={contextMenu.info.path}
+              source={contextMenu.info.source}
             />
             <Transfer
               setClipboardData={setClipboardData}
               setContextMenu={setContextMenu}
               contextMenu={contextMenu}
               mode="copy"
-              path={contextMenu.info.path}
+              source={contextMenu.info.source}
             />
           </>
         )}
+        {contextMenu.items.includes("paste") &&
+          Object.entries(clipboardData).length > 0 && (
+            <Paste
+              contextMenu={contextMenu}
+              setContextMenu={setContextMenu}
+              clipboardData={clipboardData}
+              setClipboardData={setClipboardData}
+            />
+          )}
         {contextMenu.items.includes("delete") && (
           <Delete info={contextMenu.info} />
         )}

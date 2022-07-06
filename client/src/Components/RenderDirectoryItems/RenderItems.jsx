@@ -7,6 +7,7 @@ import Icon from "./IconsAndThumbnails/Icon/Icon";
 import { DirectoryContext } from "../Main/App";
 import ItemDisplay from "./ItemDisplay/ItemDisplay";
 import formatDuration from "../../Helpers/FormatVideoTime";
+import FormatSize from "../../Helpers/FormatSize";
 
 export default function RenderItems() {
   const { directoryItems, dispatch, state } = useContext(DirectoryContext);
@@ -68,7 +69,6 @@ export default function RenderItems() {
       path,
       permission,
       thumbnail,
-      formattedSize,
       duration,
       width,
       height,
@@ -77,7 +77,7 @@ export default function RenderItems() {
     function getTitle() {
       if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
         return `Name: ${name}\nPath: ${path}\nSize: ${
-          formattedSize || ""
+          FormatSize(size) || ""
         }\nDimensions: ${width + "x" + height}\n${
           duration ? `Duration: ${formatDuration(duration)}` : ""
         }`;
@@ -85,10 +85,13 @@ export default function RenderItems() {
       if (itemtype === "folder") {
         return `Name:${name}\nPath: ${path}`;
       } else {
-        return `Name:${name}\nPath: ${path}\nSize: ${formattedSize || ""}`;
+        return `Name:${name}\nPath: ${path}\nSize: ${FormatSize(size) || ""}`;
       }
     }
     function getContextMenu() {
+      if (item.isDirectory) {
+        return ["rename", "cutcopy", "paste", "delete", "properties"];
+      }
       if (permission) {
         return ["rename", "cutcopy", "delete", "properties"];
       }
@@ -96,7 +99,16 @@ export default function RenderItems() {
 
     if (name) {
       return (
-        <div className="renderitem--block" key={`Name: ${name}\nSize: ${size}`}>
+        <div
+          id={name}
+          className="renderitem--block"
+          key={`Name: ${name}\nSize: ${size}`}
+          style={{
+            cursor: !permission ? "not-allowed" : "pointer",
+            border: !permission ? "1.5px solid red" : "",
+            backgroundColor: !permission ? "#88000088" : "",
+          }}
+        >
           {!thumbnail && <Icon item={item} />}
           {itemtype === "video" && <Video item={item} />}
           {(itemtype === "image" || itemtype === "gif") && (
@@ -106,8 +118,19 @@ export default function RenderItems() {
             className="cover-block"
             data-contextmenu={getContextMenu()}
             data-title={getTitle()}
-            data-info={JSON.stringify(item)}
+            data-drag={JSON.stringify({
+              element: "parentElement",
+              resetOnUp: true,
+            })}
+            data-info={JSON.stringify({
+              ...item,
+              source: path,
+              ...(item.isDirectory && { destination: path + "/" }),
+            })}
             onClick={() => {
+              if (!permission) {
+                return;
+              }
               if (item.isDrive) {
                 dispatch({ type: "setDriveName", value: name });
                 dispatch({ type: "openDirectory", value: name });
@@ -144,7 +167,6 @@ export default function RenderItems() {
             }}
             style={{
               cursor: !permission ? "not-allowed" : "pointer",
-              animation: "none",
             }}
           />
         </div>
@@ -164,7 +186,11 @@ export default function RenderItems() {
     <div
       id="renderitem--page"
       data-contextmenu={["view", "sort", "new folder", "paste", "properties"]}
-      data-info={JSON.stringify({ path: state.currentDirectory })}
+      data-info={JSON.stringify({
+        path: state.currentDirectory,
+        isDirectory: true,
+        destination: state.currentDirectory,
+      })}
     >
       {renderItems?.length > 0 ? (
         renderItems

@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import VideoControls from "./VideoControls";
 import useFitVideo from "../../../../Hooks/useFitVideo";
-import useDrag from "../../../../Hooks/useDrag";
 import useFullscreenElement from "../../../../Hooks/useFullscreenElement";
 
 import { expand } from "../../../../Assets/images/videocontrols/index.js";
@@ -29,7 +28,6 @@ function VideoDisplay(props) {
     videoContainer.current
   );
   const { fitVideo, containerDimensions } = useFitVideo();
-  const { setIsDragging, isDragging, XY } = useDrag(videoPage.current);
 
   useEffect(() => {
     let timeout;
@@ -53,15 +51,6 @@ function VideoDisplay(props) {
     }
   }
 
-  useEffect(() => {
-    let header = document.querySelector("#video-header");
-    let headername = document.querySelector("#video-header-filename");
-    if (!isDragging && header && headername) {
-      header.style.cursor = "grab";
-      headername.style.cursor = "grab";
-    }
-  }, [isDragging, setIsDragging]);
-
   function showHideHeaderControls(isShowing) {
     videoContainer.current.style.cursor = isShowing ? "default" : "none";
     videoControls.current.style.transform =
@@ -81,7 +70,6 @@ function VideoDisplay(props) {
       }
       id="display--block-video"
       ref={videoPage}
-      style={{ left: XY.x, top: XY.y }}
       onWheel={(e) => {
         if (e.deltaY < 0) {
           video.current.volume <= 0.97
@@ -220,7 +208,6 @@ function VideoDisplay(props) {
                 top: "1%",
               }}
               onMouseDown={(e) => {
-                setIsDragging(true);
                 e.stopPropagation();
               }}
               onClick={(e) => {

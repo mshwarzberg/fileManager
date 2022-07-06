@@ -1,17 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 
-export default function useDrag(
-  element,
-  snapToMousePosition,
-  resetOnUp,
-  scaling,
-  axisLockedTo
-) {
-  const [isDragging, setIsDragging] = useState(false);
-  const [XY, setXY] = useState({
-    x: null,
-    y: null,
-  });
+export default function useDrag() {
+  const [dragRules, setDragRules] = useState({});
+  const [element, setElement] = useState();
+  const [isDragging, setIsDragging] = useState();
+
+  const { axisLockedTo, scaling, resetOnUp } = dragRules;
 
   const onMouseMove = useCallback(
     (e) => {
@@ -26,46 +20,64 @@ export default function useDrag(
           positionY = positionY.split("px")[0];
           positionY = movementY * 1 + positionY * 1;
 
-          if ((positionX <= 0 || positionY <= 0) && snapToMousePosition) {
-            positionX = e.clientX;
-            positionY = e.clientY;
-          }
-
-          setXY({
-            x: (axisLockedTo === "X" || !axisLockedTo) && positionX + "px",
-            y: (axisLockedTo === "Y" || !axisLockedTo) && positionY + "px",
-          });
+          element.style.top =
+            (axisLockedTo === "Y" || !axisLockedTo) && positionY + "px";
+          element.style.left =
+            (axisLockedTo === "X" || !axisLockedTo) && positionX + "px";
         }
       }
     },
     // eslint-disable-next-line
     [element]
   );
+  function reset(timeout) {
+    clearTimeout(timeout);
+    setIsDragging(false);
+    if (resetOnUp && element) {
+      element.style.pointerEvents = "";
+      element.style.top = "";
+      element.style.left = "";
+      element.style.zIndex = "";
+      element.style.backgroundColor = "";
+      element.style.border = "";
+      document.body.style.cursor = "";
+    }
+  }
 
   useEffect(() => {
+    let dragTimeout;
+
+    document.addEventListener("mouseup", () => {
+      reset(dragTimeout);
+    });
+    window.addEventListener("blur", () => {
+      reset(dragTimeout);
+    });
+    document.addEventListener("mousedown", (e) => {
+      if (e.button === 0 && e.target.dataset.drag) {
+        dragTimeout = setTimeout(() => {
+          const dataset = JSON.parse(e.target.dataset.drag);
+          const tempEl =
+            dataset.element === "parentElement"
+              ? e.target.parentElement
+              : e.target;
+          tempEl.style.pointerEvents = "none";
+          tempEl.style.zIndex = 10;
+          tempEl.style.backgroundColor = "black";
+          tempEl.style.border = "2px solid pink";
+          document.body.style.cursor = "grabbing";
+          setIsDragging(true);
+          setElement(tempEl);
+          setDragRules(dataset);
+        }, 100);
+      }
+    });
     if (isDragging) {
-      document.addEventListener("mouseup", () => {
-        setIsDragging(false);
-        if (resetOnUp && isDragging) {
-          setXY({
-            x: "",
-            y: "",
-          });
-        }
-      });
-      window.addEventListener("blur", () => {
-        if (element) {
-          setIsDragging(false);
-          element.style.cursor = "default";
-          document.removeEventListener("mousemove", onMouseMove);
-        }
-      });
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("dragstart", (e) => {
         e.preventDefault();
       });
     }
-
     return () => {
       window.removeEventListener("blur", () => {});
       document.removeEventListener("mousemove", onMouseMove);
@@ -73,7 +85,5 @@ export default function useDrag(
       document.removeEventListener("mouseup", () => {});
     };
     // eslint-disable-next-line
-  }, [isDragging, setIsDragging, element]);
-
-  return { setIsDragging, isDragging, XY, onMouseMove };
+  }, [isDragging, setIsDragging, element, setElement]);
 }
