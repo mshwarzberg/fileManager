@@ -1,8 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import DirectoryContextManager from "./Context/DirectoryState";
-
-import useFetch from "../../Hooks/useFetch";
-import CompareArray from "../../Helpers/CompareArray";
+import DirectoryState from "./Context/DirectoryState";
 
 import RenderItems from "../RenderDirectoryItems/RenderItems";
 import Navbar from "./Navbar/Navbar";
@@ -14,35 +11,38 @@ import useDrag from "../../Hooks/useDrag";
 export const DirectoryContext = createContext();
 
 export default function App() {
-  const { state, dispatch, controllers, setControllers } =
-    DirectoryContextManager();
+  const { state, dispatch, controllers, setControllers } = DirectoryState();
 
   const [directoryItems, setDirectoryItems] = useState();
-
-  const { data: itemData } = useFetch(
-    "/api/metadata",
-    JSON.stringify({
-      currentdirectory: state.currentDirectory,
-      drive: state.drive,
-    }),
-    state.currentDirectory
-  );
 
   useEffect(() => {
     if (state.drive && state.currentDirectory) {
       document.title = state.currentDirectory;
-      if (
-        !CompareArray(itemData, directoryItems) &&
-        state.currentDirectory !== ""
-      ) {
-        for (let i of controllers) {
-          i.abort();
-        }
-        setControllers([]);
-        setDirectoryItems(itemData);
-      } else if (itemData?.length === 0 || !itemData) {
-        setDirectoryItems([]);
+      for (let i of controllers) {
+        i.abort();
       }
+      setControllers([]);
+      fetch("/api/metadata", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          currentdirectory: state.currentDirectory,
+          drive: state.drive,
+        }),
+      })
+        .then(async (res) => {
+          const response = await res.json();
+          setDirectoryItems(response);
+        })
+        .catch((err) => {
+          setDirectoryItems([
+            {
+              err: err.toString(),
+            },
+          ]);
+        });
     } else {
       fetch("/api/getdrives", {
         method: "GET",
@@ -51,20 +51,12 @@ export default function App() {
         setDirectoryItems(response);
       });
     }
-    try {
-      if (itemData && itemData[0].err) {
-        setTimeout(() => {
-          dispatch({ type: "openDirectory", value: "" });
-        }, 3000);
-      }
-    } catch {
-      return;
-    }
     // eslint-disable-next-line
-  }, [itemData, state.currentDirectory]);
+  }, [state.currentDirectory]);
 
   useStoreImages();
-  useDrag();
+  useDrag(state);
+
   return (
     <DirectoryContext.Provider
       value={{

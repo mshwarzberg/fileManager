@@ -18,30 +18,19 @@ function VideoDisplay(props) {
   const videoPage = useRef();
 
   const [miniPlayer, setMiniPlayer] = useState(false);
+  const [looping, setLooping] = useState(false);
 
   useMouseOrKey(video.current, "keydown", "video", videoContainer.current, [
     miniPlayer,
     setMiniPlayer,
+    looping,
+    setLooping,
   ]);
 
   const { fullscreenControl, fullscreen } = useFullscreenElement(
     videoContainer.current
   );
   const { fitVideo, containerDimensions } = useFitVideo();
-
-  useEffect(() => {
-    let timeout;
-    window.addEventListener("resize", () => {
-      timeout = setTimeout(() => {
-        fitVideo(video.current, videoContainer.current);
-        return;
-      }, 0);
-    });
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener("resize", () => {});
-    };
-  }, [fitVideo]);
 
   function togglePlay() {
     if (video.current.paused) {
@@ -178,6 +167,8 @@ function VideoDisplay(props) {
               setMiniPlayer={setMiniPlayer}
               miniPlayer={miniPlayer}
               videoPage={videoPage.current}
+              looping={looping}
+              setLooping={setLooping}
             />
           </>
         ) : (

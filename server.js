@@ -10,6 +10,7 @@ const Rename = require("./routes/File Management/Rename");
 const Transfer = require("./routes/File Management/Transfer");
 const Delete = require("./routes/File Management/Delete");
 const NewDirectory = require("./routes/File Management/NewDirectory");
+const OpenFile = require("./routes/File Management/OpenFile");
 
 const SizeAndContents = require("./routes/Metadata/Directory/SizeAndContents");
 const DateData = require("./routes/Metadata/Directory/DateData");
@@ -33,3 +34,4 @@ app.use("/api/manage/rename", Rename);
 app.use("/api/manage/transfer", Transfer);
 app.use("/api/manage/delete", Delete);
 app.use("/api/manage/newdirectory", NewDirectory);
+app.use("/api/manage/open", OpenFile);

@@ -43,6 +43,7 @@
   overflow-y: auto;
   overflow-x: auto;
   padding: 0 0.7rem 4rem 1.4rem;
+  overflow: visible;
   .tree--expanded-chunk {
     position: relative;
     .line--down {
@@ -146,7 +147,7 @@
   position: absolute;
   top: 50vw;
   transform: translateY(-50%);
-  left: 34.7%;
+  right: -0.5rem;
   background-color: red;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;

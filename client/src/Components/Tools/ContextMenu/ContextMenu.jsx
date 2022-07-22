@@ -5,6 +5,7 @@ import Transfer from "./Functions/Transfer";
 import Delete from "./Functions/Delete";
 import Paste from "./Functions/Paste";
 import NewDirectory from "./Functions/NewDirectory";
+import ExternalApp from "./Functions/ExternalApp";
 
 export default function ContextMenu({
   contextMenu,
@@ -48,6 +49,12 @@ export default function ContextMenu({
   return (
     Object.entries(contextMenu).length && (
       <div id="menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
+        {contextMenu.items.includes("open") && (
+          <ExternalApp
+            originalItem={contextMenu.info}
+            setContextMenu={setContextMenu}
+          />
+        )}
         {contextMenu.items.includes("rename") && (
           <Rename originalItem={contextMenu.info} />
         )}

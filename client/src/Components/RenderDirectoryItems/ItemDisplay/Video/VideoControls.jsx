@@ -23,6 +23,8 @@ export default function VideoControls(props) {
     setMiniPlayer,
     miniPlayer,
     videoPage,
+    looping,
+    setLooping,
   } = props;
 
   const playPauseButton = useRef();
@@ -31,7 +33,6 @@ export default function VideoControls(props) {
 
   const [currentPlaybackTime, setCurrentPlaybackTime] = useState("0:00");
   const [volumePosition, setVolumePosition] = useState(0);
-  const [looping, setLooping] = useState(false);
 
   function handleTimelineUpdate(e) {
     const rect = timelineContainer?.getBoundingClientRect();

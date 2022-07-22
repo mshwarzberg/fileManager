@@ -19,6 +19,11 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
               e.target.dataset.title || e.target.parentElement?.dataset.title,
             x: e.clientX,
             y: e.clientY,
+            ...((e.target.dataset.style ||
+              e.target.parentElement?.dataset.style) && {
+              style:
+                e.target.dataset.style || e.target.parentElement.dataset.style,
+            }),
           });
         }, 500);
       }
@@ -39,7 +44,7 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
         style={{
           top: title.y,
           left: title.x,
-          pointerEvents: "none",
+          ...(title.style && JSON.parse(title.style)),
         }}
         id="custom-title"
       >

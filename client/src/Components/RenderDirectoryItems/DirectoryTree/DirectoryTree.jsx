@@ -8,7 +8,6 @@ export default function DirectoryTree() {
   const { state } = useContext(DirectoryContext);
 
   const treeID = useRef();
-  const treeBody = useRef();
 
   function mapDirectoryTreeLoop(tree, path) {
     let parentDirectoryName;
@@ -61,11 +60,17 @@ export default function DirectoryTree() {
         {showTree ? "Hide Tree" : "Show Tree"}
       </button>
       {showTree && (
-        <div ref={treeBody}>
-          <div id="directorytree--body" ref={treeID}>
-            {/* {mapDirectoryTreeLoop(state.directoryTree, "/")} */}
-          </div>
-          <div id="resize--tree" />
+        <div id="directorytree--body" ref={treeID}>
+          {/* {mapDirectoryTreeLoop(state.directoryTree, "/")} */}
+          <div
+            id="resize--tree"
+            data-drag={JSON.stringify({
+              scaling: true,
+              element: "parentElement",
+              axisLockedTo: "X",
+              responseTime: 50,
+            })}
+          />
         </div>
       )}
     </>

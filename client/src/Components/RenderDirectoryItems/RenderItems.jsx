@@ -93,7 +93,7 @@ export default function RenderItems() {
         return ["rename", "cutcopy", "paste", "delete", "properties"];
       }
       if (permission) {
-        return ["rename", "cutcopy", "delete", "properties"];
+        return ["open", "rename", "cutcopy", "delete", "properties"];
       }
     }
 
@@ -106,27 +106,28 @@ export default function RenderItems() {
           style={{
             cursor: !permission ? "not-allowed" : "pointer",
             border: !permission ? "1.5px solid red" : "",
-            backgroundColor: !permission ? "#88000088" : "",
+            backgroundColor: !permission ? "#883333cc" : "",
           }}
+          data-info={JSON.stringify({
+            ...item,
+            source: path,
+            ...(item.isDirectory && { destination: path + "/" }),
+          })}
         >
           {!thumbnail && <Icon item={item} />}
           {itemtype === "video" && <Video item={item} />}
           {(itemtype === "image" || itemtype === "gif") && (
             <ImageGif item={item} />
           )}
-          <div
+          <button
             className="cover-block"
             data-contextmenu={getContextMenu()}
-            data-title={getTitle()}
-            data-drag={JSON.stringify({
-              element: "parentElement",
-              resetOnUp: true,
-            })}
             data-info={JSON.stringify({
               ...item,
               source: path,
               ...(item.isDirectory && { destination: path + "/" }),
             })}
+            data-title={getTitle()}
             onClick={() => {
               if (!permission) {
                 return;

@@ -12,7 +12,7 @@ export default function useMouseOrKey(
     alternateControlledElement ? alternateControlledElement : element
   );
   function videoListeners(e) {
-    const [miniPlayer, setMiniPlayer] = props;
+    const [miniPlayer, setMiniPlayer, looping, setLooping] = props;
     const { key } = e;
     switch (key) {
       case " ":
@@ -46,6 +46,7 @@ export default function useMouseOrKey(
         break;
       case "l":
         element.loop = true;
+        setLooping(!looping);
         break;
       default:
         break;

@@ -25,7 +25,18 @@ function Navbar() {
       <DirectoryNavigation />
       <SortBy />
       <div id="navbar--dir-info">
-        <h1>{state.currentDirectory || "Computer:"}</h1>
+        <h1
+          data-title={state.currentDirectory}
+          onWheel={(e) => {
+            if (e.deltaY > 0) {
+              e.target.scrollLeft += 15;
+            } else {
+              e.target.scrollLeft -= 15;
+            }
+          }}
+        >
+          {state.currentDirectory || "Computer:"}
+        </h1>
         <h1>{directoryItems?.length || 0} items loaded</h1>
       </div>
     </nav>
