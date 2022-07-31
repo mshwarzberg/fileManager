@@ -2,12 +2,27 @@ import React, { useContext, useEffect, useState } from "react";
 import FormatDate from "../../../Helpers/FormatDate";
 import DirectoryNavigation from "../../Tools/DirectoryNavigation";
 import SortBy from "../../Tools/Sorting/SortBy";
-import { DirectoryContext } from "../App";
+import { GeneralContext } from "../App";
 
-function Navbar() {
-  const { state, directoryItems } = useContext(DirectoryContext);
+function Navbar({ showTree, setShowTree }) {
+  const { state, directoryItems } = useContext(GeneralContext);
 
   const [time, setTime] = useState(new Date());
+
+  function navigate(e) {
+    if (e.button === 3) {
+      document.getElementById("navbar--backwards").click();
+    } else if (e.button === 4) {
+      document.getElementById("navbar--forwards").click();
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("mousedown", navigate);
+    return () => {
+      window.removeEventListener("mousedown", navigate);
+    };
+  }, []);
 
   useEffect(() => {
     let temp;
@@ -21,20 +36,20 @@ function Navbar() {
 
   return (
     <nav id="navbar--component">
+      <button
+        className="navbar--button"
+        id="directorytree--button-showhide"
+        onClick={() => {
+          setShowTree(!showTree);
+        }}
+      >
+        {showTree ? "Hide Tree" : "Show Tree"}
+      </button>
       <h1 id="current-time">{FormatDate(time, true)}</h1>
       <DirectoryNavigation />
       <SortBy />
       <div id="navbar--dir-info">
-        <h1
-          data-title={state.currentDirectory}
-          onWheel={(e) => {
-            if (e.deltaY > 0) {
-              e.target.scrollLeft += 15;
-            } else {
-              e.target.scrollLeft -= 15;
-            }
-          }}
-        >
+        <h1 data-title={state.currentDirectory}>
           {state.currentDirectory || "Computer:"}
         </h1>
         <h1>{directoryItems?.length || 0} items loaded</h1>

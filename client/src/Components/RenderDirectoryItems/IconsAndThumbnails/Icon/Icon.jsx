@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from "react";
-import { DirectoryContext } from "../../../Main/App";
+import React, { useContext } from "react";
+import { GeneralContext } from "../../../Main/App";
 import folder from "../../../../Assets/images/folder.png";
 import symlink from "../../../../Assets/images/symlink.png";
 import drive from "../../../../Assets/images/drive.png";
@@ -7,13 +7,11 @@ import Filename from "./Filename";
 import CustomIcon from "./CustomIcon";
 
 function Icon(props) {
-  const { dispatch, state, setDirectoryItems, setControllers, controllers } =
-    useContext(DirectoryContext);
+  const { dispatch, setControllers, controllers } = useContext(GeneralContext);
 
   const {
     name,
     fileextension,
-    thumbnail,
     isFile,
     permission,
     path,
@@ -21,88 +19,45 @@ function Icon(props) {
     isSymbolicLink,
     isDirectory,
     isDrive,
-    itemtype,
-    prefix,
   } = props.item;
 
-  function fetchStuff() {
-    const controller = new AbortController();
-    setControllers((prevControllers) => [...prevControllers, controller]);
-    fetch("/api/getthumbnails", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prefix: prefix,
-        suffix: fileextension,
-        currentdirectory: state.currentDirectory,
-        drive: state.drive,
-      }),
-      signal: controller.signal,
-    })
-      .then(async (res) => {
-        let response = await res.blob();
-        let imageURL = URL.createObjectURL(response);
-
-        setDirectoryItems((prevItems) => {
-          return prevItems.map((prevItem) => {
-            const doesMatch =
-              res.headers.get("prefix") === prevItem.prefix &&
-              res.headers.get("suffix") === prevItem.fileextension;
-            const newData = {
-              ...prevItem,
-              ...(doesMatch && {
-                thumbnail: imageURL,
-                width: res.headers.get("width"),
-                height: res.headers.get("height"),
-                ...(res.headers.get("duration") && {
-                  duration: res.headers.get("duration"),
-                }),
-              }),
-            };
-
-            sessionStorage.setItem(
-              path,
-              JSON.stringify({
-                thumbnail: imageURL,
-                width: res.headers.get("width"),
-                height: res.headers.get("height"),
-                duration: res.headers.get("duration"),
-              })
-            );
-            return newData;
-          });
-        });
-      })
-      .catch((err) => {
-        if (!err.toString().includes("AbortError")) {
-          console.log("App.jsx, Thumbnail", err.toString());
-        }
-      });
-  }
-
-  useEffect(() => {
-    if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
-      if (!thumbnail) {
-        if (sessionStorage.getItem(path)) {
-          return setDirectoryItems((prevItems) => {
-            return prevItems.map((prevItem) => {
-              if (path === prevItem.path) {
-                return {
-                  ...prevItem,
-                  ...JSON.parse(sessionStorage.getItem(path)),
-                };
-              }
-              return prevItem;
-            });
-          });
-        }
-        fetchStuff();
-      }
-    }
-    // if items with the same name are in different folders and the AbortController is called, there wouldn't be a new request made for the item causing the thubmnail to not load, so I added the item path as a dependency to check if the item changed.
-
-    // eslint-disable-next-line
-  }, [thumbnail, path]);
+  // function fetchStuff() {
+  //   const controller = new AbortController();
+  //   setControllers((prevControllers) => [...prevControllers, controller]);
+  //   fetch("/api/mediametadata", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({
+  //       prefix: prefix,
+  //       fileextension: fileextension,
+  //       currentdirectory: state.currentDirectory,
+  //       drive: state.drive,
+  //     }),
+  //     signal: controller.signal,
+  //   })
+  //     .then(async (res) => {
+  //       const response = await res.json();
+  //       setDirectoryItems((prevItems) => {
+  //         return prevItems.map((prevItem) => {
+  //           if (
+  //             prevItem.prefix === response.prefix &&
+  //             prevItem.fileextension === response.fileextension
+  //           ) {
+  //             return {
+  //               ...prevItem,
+  //               ...response,
+  //             };
+  //           }
+  //           return prevItem;
+  //         });
+  //       });
+  //     })
+  //     .catch((err) => {
+  //       if (!err.toString().includes("AbortError")) {
+  //         console.log("App.jsx, Thumbnail", err.toString());
+  //       }
+  //     });
+  // }
 
   function displayIcon() {
     if (isFile) {
@@ -111,11 +66,7 @@ function Icon(props) {
     if (isDirectory || isSymbolicLink) {
       return (
         <img
-          src={
-            isSymbolicLink
-              ? localStorage.getItem("symlink") || symlink
-              : localStorage.getItem("folder") || folder
-          }
+          src={isSymbolicLink ? symlink : folder}
           alt="foldericon"
           className="renderitem--full-icon"
           onClick={() => {
@@ -141,13 +92,13 @@ function Icon(props) {
         if (isDirectory && permission && !isSymbolicLink) {
           dispatch({
             type: "openDirectory",
-            value: path,
+            value: path + "/",
           });
         }
         if (isSymbolicLink && permission) {
           dispatch({
             type: "openDirectory",
-            value: `${linkTo}`,
+            value: linkTo + "/",
           });
         }
       }}

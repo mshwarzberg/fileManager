@@ -5,28 +5,31 @@ const fs = require("fs");
 const { checkIfFileOrDir } = require("../../helpers/isfileordirectory");
 
 router.post("/", (req, res) => {
-  if (!req.body.path) {
-    return res.send({ err: "path is blank" });
+  const { path } = req.body;
+  if (!path) {
+    return res.send({ err: "path is blank" }).status(404);
   }
-  fs.readdir(req.body.path, { withFileTypes: true }, (error, files) => {
+  fs.readdir(path, { withFileTypes: true }, (error, files) => {
     if (error) return res.end();
     let dirArray = [];
-    for (let i in files) {
-      if (checkIfFileOrDir(files[i]).isDirectory) {
-        let folderName = files[i].name;
+    for (const item of files) {
+      if (checkIfFileOrDir(item).isDirectory) {
+        if (
+          (item.name === "temp" || item.name === "$RECYCLE.BIN") &&
+          path.length === 3
+        ) {
+          continue;
+        }
+        let folderName = item.name;
         try {
-          fs.statSync(
-            `${req.body.path === "/" ? req.body.path : req.body.path + "/"}${
-              files[i].name
-            }`
-          );
+          fs.statSync(`${path === "/" ? path : path + "/"}${item.name}`);
         } catch {
           folderName = folderName + "*?<>";
         }
         dirArray.push(folderName);
       }
     }
-    res.send({ array: dirArray });
+    res.send(dirArray);
   });
 });
 

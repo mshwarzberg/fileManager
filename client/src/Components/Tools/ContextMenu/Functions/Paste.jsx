@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { DirectoryContext } from "../../../Main/App";
+import { GeneralContext } from "../../../Main/App";
 import TransferFunction from "./TransferFunction";
 
 export default function Paste({
@@ -7,7 +7,7 @@ export default function Paste({
   setClipboardData,
   contextMenu,
 }) {
-  const { setDirectoryItems, state } = useContext(DirectoryContext);
+  const { setDirectoryItems, state } = useContext(GeneralContext);
 
   let destination;
   if (contextMenu) {

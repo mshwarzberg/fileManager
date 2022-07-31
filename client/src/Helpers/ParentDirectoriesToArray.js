@@ -1,7 +1,14 @@
 export default function ParentDirectoriesToArray(path) {
-  path = path.split("/");
-  if (path[0] === "") {
-    path = path.slice(1, path.length);
+  let [drive, restOfPath] = path.split(":");
+  let restOfPathArray = [];
+  drive += ":";
+  path = restOfPath?.split("/");
+  if (typeof path === "object") {
+    for (let i of path) {
+      if (i !== "") {
+        restOfPathArray.push(i);
+      }
+    }
   }
-  return path
+  return ["", drive, ...restOfPathArray];
 }

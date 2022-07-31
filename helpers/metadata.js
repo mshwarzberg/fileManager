@@ -5,14 +5,14 @@ const { checkType } = require("./verifiers");
 
 function Metadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
-  let suffix = "";
+  let fileextension = "";
   // get the file extension
   if (!item.isDirectory) {
     for (let i = file.name.length - 1; i >= 0; i--) {
-      if (file.name[i] !== "." && suffix === "") {
-        suffix = file.name[i];
+      if (file.name[i] !== "." && fileextension === "") {
+        fileextension = file.name[i];
       } else if (file.name[i] !== ".") {
-        suffix = file.name[i] + suffix;
+        fileextension = file.name[i] + fileextension;
       } else {
         break;
       }
@@ -24,7 +24,7 @@ function Metadata(file, directory, drive) {
   // if the item is a folder don't remove anything. keep the file as is (even if it has a period in the name)
   for (
     let j = 0;
-    j < file.name.length - (suffix ? suffix.length + 1 : 0);
+    j < file.name.length - (fileextension ? fileextension.length + 1 : 0);
     j++
   ) {
     if (prefix === "") {
@@ -33,8 +33,7 @@ function Metadata(file, directory, drive) {
       prefix += file.name[j];
     }
   }
-  let sizeOf;
-  let symLink;
+  let sizeOf, symLink;
   let permission = true;
   try {
     var { size, birthtimeMs, mtimeMs, atimeMs } = fs.statSync(
@@ -57,11 +56,6 @@ function Metadata(file, directory, drive) {
     permission = false;
   }
 
-  let isDrive = "";
-  if (os.platform() === "win32") {
-    isDrive = directory.match(/^.:\//gm);
-  }
-
   if (
     (file.name === "temp" || file.name === "$RECYCLE.BIN") &&
     item.isDirectory &&
@@ -69,18 +63,31 @@ function Metadata(file, directory, drive) {
   ) {
     return {};
   }
+  let isMedia, restOfPath;
+  if (
+    checkType(fileextension) === "video" ||
+    checkType(fileextension) === "image" ||
+    checkType(fileextension) === "gif"
+  ) {
+    isMedia = true;
+    restOfPath = directory.slice(drive.length, directory.length);
+  }
+
   const filteredData = {
     ...item,
     path: `${directory}${file.name}`,
-    itemtype: item.isDirectory ? "folder" : checkType(suffix),
-    fileextension: suffix || "",
-    prefix: encodeURIComponent(prefix),
+    itemtype: item.isDirectory ? "folder" : checkType(fileextension),
+    fileextension: fileextension || "",
+    prefix: prefix,
     permission: permission,
     size: sizeOf || 0,
     accessed: dateAccessed || 0,
     modified: dateModified || 0,
     created: dateCreated || 0,
     ...(symLink && { linkTo: symLink }),
+    ...(isMedia && {
+      thumbPath: `${drive}/temp/${restOfPath}/${prefix + fileextension}.jpeg`,
+    }),
   };
   return filteredData;
 }

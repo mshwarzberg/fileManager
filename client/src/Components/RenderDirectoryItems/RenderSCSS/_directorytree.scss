@@ -31,46 +31,43 @@
   max-width: 10%;
   font-size: 1.1em;
 }
-
+@keyframes rollDown {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}
+@keyframes rollUp {
+  0% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+}
 #directorytree--body {
-  z-index: 10;
+  z-index: 1;
   height: calc(100vh - 2.5rem);
-  width: 35%;
-  background-color: #111;
-  position: absolute;
-  left: -5px;
-  top: 2.5rem;
+  top: 1.5rem;
+  flex: 0 0 25rem;
+  background-color: #000;
+  position: relative;
+  padding: 1rem;
+  padding-bottom: 6rem;
   overflow-y: auto;
   overflow-x: auto;
-  padding: 0 0.7rem 4rem 1.4rem;
-  overflow: visible;
   .tree--expanded-chunk {
     position: relative;
-    .line--down {
-      position: absolute;
-      margin-top: 2.5rem;
-      left: 0;
-      top: 0;
-      height: calc(100% - 2.5rem);
-      width: 0.5rem;
-      background: linear-gradient(
-        to right,
-        #00000000 45%,
-        white 46%,
-        white 54%,
-        #00000000 56%
-      );
-      background-size: 100%;
-      border-radius: 40%;
-      &:hover {
-        cursor: pointer;
-        background: linear-gradient(
-          to right,
-          #00000000 35%,
-          $accentColor 36%,
-          $accentColor 64%,
-          #00000000 65%
-        );
+    .opendirectory--list {
+      animation: rollDown 200ms ease-in forwards;
+      &.hide {
+        animation: rollUp 200ms ease-in forwards;
       }
     }
     .tree--open-directory,
@@ -80,7 +77,6 @@
       align-items: center;
       padding-left: 5px;
       height: 1.5rem;
-      width: 100%;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -91,7 +87,7 @@
         cursor: pointer;
         background-color: black;
         color: white;
-        transform: scaleX(1.03) scaleY(1.1);
+        transform: scaleX(1.01) scaleY(1.1);
         border: 1.5px solid white;
         transition: 200ms ease-out;
       }
@@ -99,15 +95,34 @@
         width: 1.1em;
         margin-right: 5px;
       }
+      @keyframes hideRotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(-90deg);
+        }
+      }
+      @keyframes showRotate {
+        0% {
+          transform: rotate(-90deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
       .tree--arrow {
         height: 1.2rem;
         margin-left: 2px;
         margin-right: 5px;
         cursor: default;
+        animation: showRotate linear 200ms forwards;
+        &.hide {
+          animation: hideRotate linear 200ms forwards;
+        }
       }
     }
     .tree--open-directory {
-      margin-bottom: 0.7rem;
       background-color: #888;
       color: black;
       font-size: 1.1rem;
@@ -118,7 +133,6 @@
       background-color: $accentColor;
       color: #000;
     }
-
     #tree--in-path {
       background-color: darken($accentColor, 50%);
       &:hover {
@@ -131,25 +145,39 @@
       background-color: #222;
       color: white;
       &.no-permission {
-        background-color: #ff7878c5;
-        border: 1.5px solid red;
+        background-color: #cc7878c5;
+        border: 2px solid red;
         cursor: not-allowed;
         transform: none;
-        color: #000;
+        color: white;
       }
     }
   }
-}
-
-#resize--tree {
-  width: 0.5rem;
-  height: 5rem;
-  position: absolute;
-  top: 50vw;
-  transform: translateY(-50%);
-  right: -0.5rem;
-  background-color: red;
-  border-top-right-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  z-index: 1;
+  .line--down {
+    position: absolute;
+    margin-top: 2.5rem;
+    left: 0;
+    top: 0;
+    height: calc(100% - 2.5rem);
+    width: 0.5rem;
+    background: linear-gradient(
+      to right,
+      #00000000 45%,
+      white 46%,
+      white 54%,
+      #00000000 56%
+    );
+    background-size: 100%;
+    border-radius: 40%;
+    &:hover {
+      cursor: pointer;
+      background: linear-gradient(
+        to right,
+        #00000000 35%,
+        $accentColor 36%,
+        $accentColor 64%,
+        #00000000 65%
+      );
+    }
+  }
 }

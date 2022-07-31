@@ -8,9 +8,9 @@ export default function FormatDate(itemDate, getCustom) {
       ? "0" + itemDate.getDate()
       : itemDate.getDate();
   let hours =
-    itemDate.getHours().toString().length === 1
-      ? "0" + itemDate.getHours()
-      : itemDate.getHours();
+    itemDate.getHours().toString().length + 1 === 1
+      ? "0" + itemDate.getHours() + 1
+      : itemDate.getHours() + 1;
   let minutes =
     itemDate.getMinutes().toString().length === 1
       ? "0" + itemDate.getMinutes()
@@ -49,5 +49,6 @@ export default function FormatDate(itemDate, getCustom) {
       months[parseInt(month) - 1]
     } ${date} ${itemDate.getFullYear()} at ${hours}:${minutes}:${seconds}`;
   }
-  return `${month}/${date}/${itemDate.getFullYear()} at ${hours}:${minutes}:${seconds}`;
+  return `${month}/${date}/${itemDate.getFullYear()} at ${
+    hours}:${minutes}:${seconds}`;
 }

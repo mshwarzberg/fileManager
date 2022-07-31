@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import { DirectoryContext } from "../../Main/App";
+import { GeneralContext } from "../../Main/App";
 import Rename from "./Functions/Rename";
 import Transfer from "./Functions/Transfer";
 import Delete from "./Functions/Delete";
 import Paste from "./Functions/Paste";
 import NewDirectory from "./Functions/NewDirectory";
-import ExternalApp from "./Functions/ExternalApp";
+import Refresh from "./Functions/Refresh";
+import OpenFileManager from "./Functions/OpenFileManager";
 
 export default function ContextMenu({
   contextMenu,
@@ -14,7 +15,7 @@ export default function ContextMenu({
 }) {
   const [clipboardData, setClipboardData] = useState({});
 
-  const { state } = useContext(DirectoryContext);
+  const { state } = useContext(GeneralContext);
 
   useEffect(() => {
     document.addEventListener("contextmenu", (e) => {
@@ -49,12 +50,6 @@ export default function ContextMenu({
   return (
     Object.entries(contextMenu).length && (
       <div id="menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
-        {contextMenu.items.includes("open") && (
-          <ExternalApp
-            originalItem={contextMenu.info}
-            setContextMenu={setContextMenu}
-          />
-        )}
         {contextMenu.items.includes("rename") && (
           <Rename originalItem={contextMenu.info} />
         )}
@@ -88,6 +83,15 @@ export default function ContextMenu({
           )}
         {contextMenu.items.includes("delete") && (
           <Delete info={contextMenu.info} />
+        )}
+        {contextMenu.items.includes("refresh") && (
+          <Refresh setContextMenu={setContextMenu} />
+        )}
+        {contextMenu.items.includes("explorer") && (
+          <OpenFileManager
+            setContextMenu={setContextMenu}
+            path={contextMenu.info.path}
+          />
         )}
         {contextMenu.items.includes("properties") && (
           <button

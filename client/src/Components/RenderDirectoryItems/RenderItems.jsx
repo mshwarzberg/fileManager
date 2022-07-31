@@ -1,64 +1,16 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 
 import ImageGif from "./IconsAndThumbnails/ImageGif";
 import Video from "./IconsAndThumbnails/Video";
 import Icon from "./IconsAndThumbnails/Icon/Icon";
 
-import { DirectoryContext } from "../Main/App";
-import ItemDisplay from "./ItemDisplay/ItemDisplay";
+import { GeneralContext } from "../Main/App";
 import formatDuration from "../../Helpers/FormatVideoTime";
 import FormatSize from "../../Helpers/FormatSize";
 
 export default function RenderItems() {
-  const { directoryItems, dispatch, state } = useContext(DirectoryContext);
-
-  const [viewItem, setViewItem] = useState({});
-
-  function displayItem(filename, path, type, property) {
-    if (type === "video") {
-      return setViewItem({
-        type: "video",
-        property: property,
-        name: filename,
-        path: path,
-      });
-    } else if (type !== "unknown") {
-      fetch("/api/loadfiles/file", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          path: path,
-          drive: state.drive,
-        }),
-      })
-        .then(async (res) => {
-          const response = await res.blob();
-          const imageURL = URL.createObjectURL(response);
-          if (type === "image" || type === "gif") {
-            return setViewItem({
-              type: "imagegif",
-              property: imageURL,
-              name: filename,
-              path: path,
-            });
-          } else {
-            const reader = new FileReader();
-            reader.onload = () => {
-              setViewItem({
-                type: "document",
-                property: reader.result,
-                name: filename,
-                path: path,
-              });
-            };
-            return reader.readAsText(response);
-          }
-        })
-        .catch((err) => {
-          console.log("RenderItems.jsx displayfiles", err);
-        });
-    }
-  }
+  const { directoryItems, dispatch, state, setDirectoryItems } =
+    useContext(GeneralContext);
 
   // render the file data and thumbnails
   const renderItems = directoryItems?.map((item) => {
@@ -68,10 +20,12 @@ export default function RenderItems() {
       itemtype,
       path,
       permission,
-      thumbnail,
+      thumbPath,
       duration,
       width,
       height,
+      fileextension,
+      prefix,
     } = item;
 
     function getTitle() {
@@ -90,10 +44,17 @@ export default function RenderItems() {
     }
     function getContextMenu() {
       if (item.isDirectory) {
-        return ["rename", "cutcopy", "paste", "delete", "properties"];
+        return [
+          "rename",
+          "cutcopy",
+          "paste",
+          "delete",
+          "explorer",
+          "properties",
+        ];
       }
       if (permission) {
-        return ["open", "rename", "cutcopy", "delete", "properties"];
+        return ["rename", "cutcopy", "delete", "properties"];
       }
     }
 
@@ -105,8 +66,8 @@ export default function RenderItems() {
           key={`Name: ${name}\nSize: ${size}`}
           style={{
             cursor: !permission ? "not-allowed" : "pointer",
-            border: !permission ? "1.5px solid red" : "",
-            backgroundColor: !permission ? "#883333cc" : "",
+            border: !permission ? "2px solid red" : "",
+            backgroundColor: !permission ? "#cc7878c5" : "",
           }}
           data-info={JSON.stringify({
             ...item,
@@ -114,12 +75,12 @@ export default function RenderItems() {
             ...(item.isDirectory && { destination: path + "/" }),
           })}
         >
-          {!thumbnail && <Icon item={item} />}
+          {!thumbPath && <Icon item={item} />}
           {itemtype === "video" && <Video item={item} />}
           {(itemtype === "image" || itemtype === "gif") && (
             <ImageGif item={item} />
           )}
-          <button
+          <div
             className="cover-block"
             data-contextmenu={getContextMenu()}
             data-info={JSON.stringify({
@@ -141,13 +102,16 @@ export default function RenderItems() {
                   type: "openDirectory",
                   value: state.currentDirectory + name + "/",
                 });
-              } else if (permission) {
-                return displayItem(
-                  name,
-                  path,
-                  itemtype,
-                  encodeURIComponent(path)
-                );
+              } else {
+                fetch("/api/manage/open", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    path: path,
+                  }),
+                });
               }
             }}
             onMouseEnter={(e) => {
@@ -156,6 +120,36 @@ export default function RenderItems() {
                 "renderitem--play-icon"
               ) {
                 e.target.previousSibling.firstChild.style.opacity = 1;
+              }
+              if (itemtype === "image" || itemtype === "gif") {
+                fetch("/api/mediametadata", {
+                  method: "post",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    prefix: prefix,
+                    fileextension: fileextension,
+                    currentdirectory: state.currentDirectory,
+                  }),
+                })
+                  .then(async (res) => {
+                    const response = await res.json();
+                    setDirectoryItems((prevItems) => {
+                      return prevItems.map((item) => {
+                        if (item.name === name) {
+                          return {
+                            ...item,
+                            ...response,
+                          };
+                        }
+                        return item;
+                      });
+                    });
+                  })
+                  .catch((e) => {
+                    console.log(e);
+                  });
               }
             }}
             onMouseLeave={(e) => {
@@ -186,7 +180,15 @@ export default function RenderItems() {
   return (
     <div
       id="renderitem--page"
-      data-contextmenu={["view", "sort", "new folder", "paste", "properties"]}
+      data-contextmenu={[
+        "view",
+        "sort",
+        "new folder",
+        "paste",
+        "refresh",
+        "explorer",
+        "properties",
+      ]}
       data-info={JSON.stringify({
         path: state.currentDirectory,
         isDirectory: true,
@@ -198,7 +200,6 @@ export default function RenderItems() {
       ) : (
         <h1 style={{ pointerEvents: "none" }}>Folder is empty</h1>
       )}
-      <ItemDisplay viewItem={viewItem} setViewItem={setViewItem} />
     </div>
   );
 }

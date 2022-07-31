@@ -27,36 +27,27 @@ function reducer(state, action) {
         ...(action.value === "" && { drive: "" }),
       };
     case "backDirectory":
-      const lastNavigated =
-        state.navigatedDirectories[state.navigatedIndex - 1];
-      const nextNavigated =
-        state.navigatedDirectories[state.navigatedIndex - 2];
+      const navBackwards = state.navigatedDirectories[state.navigatedIndex - 1];
 
+      return {
+        ...state,
+        currentDirectory: navBackwards,
+        navigatedIndex: state.navigatedIndex - 1,
+        ...(!navBackwards.startsWith(state.drive) && {
+          drive: navBackwards.slice(0, 3),
+        }),
+      };
+    case "forwardDirectory":
+      const navForwards = state.navigatedDirectories[state.navigatedIndex + 1];
       let drive;
-      for (let i in nextNavigated) {
-        if (nextNavigated[i] === "/") {
-          drive = nextNavigated.slice(0, i + 1);
-          break;
-        }
+      if (!navForwards.startsWith(state.drive)) {
+        drive = navForwards.slice(0, 3);
       }
       return {
         ...state,
-        currentDirectory: lastNavigated,
-        navigatedIndex: state.navigatedIndex - 1,
-        ...(!lastNavigated.startsWith(state.drive) &&
-          lastNavigated && {
-            drive: "",
-          }),
-        ...(lastNavigated === "" && { drive: drive || "" }),
-      };
-    case "forwardDirectory":
-      return {
-        ...state,
-        currentDirectory: state.navigatedDirectories[state.navigatedIndex + 1],
+        currentDirectory: navForwards,
         navigatedIndex: state.navigatedIndex + 1,
-        ...(!state.currentDirectory && {
-          drive: state.navigatedDirectories[state.navigatedIndex + 1],
-        }),
+        drive: drive || state.drive,
       };
     case "updateDirectoryTree":
       return {
@@ -68,6 +59,11 @@ function reducer(state, action) {
         ...state,
         drive: action.value,
       };
+    case "refresh":
+      return {
+        ...state,
+        refresh: !state.refresh,
+      };
     default:
       return state;
   }
@@ -75,16 +71,16 @@ function reducer(state, action) {
 
 export default function DirectoryState() {
   const initState = JSON.parse(localStorage.getItem("state"));
+  const initTree = JSON.parse(sessionStorage.getItem("tree"));
 
   const [state, dispatch] = useReducer(reducer, {
     drive: initState?.drive || "",
     currentDirectory: initState?.currentDirectory || "",
-    directoryTree: initState?.directoryTree || [""],
+    directoryTree: initTree?.directoryTree || [""],
     navigatedDirectories: initState?.navigatedDirectories || [""],
     navigatedIndex: initState?.navigatedIndex || 0,
+    refresh: false,
   });
-
-  const [controllers, setControllers] = useState([]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -95,9 +91,14 @@ export default function DirectoryState() {
         directoryTree: state.directoryTree,
         navigatedDirectories: state.navigatedDirectories,
         navigatedIndex: state.navigatedIndex,
+        refresh: false,
       })
+    );
+    sessionStorage.setItem(
+      "tree",
+      JSON.stringify({ directoryTree: state.directoryTree })
     );
   }, [state, dispatch]);
 
-  return { state, dispatch, controllers, setControllers };
+  return { state, dispatch };
 }

@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import playIcon from "../../../Assets/images/play.png";
 import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Icon/Filename";
+import loading from "../../../Assets/images/loading.png";
+import { GeneralContext } from "../../Main/App";
 
 function Video(props) {
-  const { name, thumbnail, duration, permission } = props.item;
+  let timeout;
+  let srcAttempts = 0;
+  const { name, thumbPath, permission, prefix, fileextension, duration } =
+    props.item;
+
+  const { state, setDirectoryItems } = useContext(GeneralContext);
 
   const [durationPosition, setDurationPosition] = useState({
     rectX: 0,
@@ -13,6 +20,38 @@ function Video(props) {
     textX: 0,
     textY: 0,
   });
+
+  useEffect(() => {
+    fetch("/api/mediametadata", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prefix: prefix,
+        fileextension: fileextension,
+        currentdirectory: state.currentDirectory,
+      }),
+    })
+      .then(async (res) => {
+        const response = await res.json();
+        setDirectoryItems((prevItems) => {
+          return prevItems.map((item) => {
+            if (item.name === name) {
+              return {
+                ...item,
+                ...response,
+              };
+            }
+            return item;
+          });
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    // eslint-disable-next-line
+  }, []);
 
   function positionDuration(x, y) {
     setDurationPosition({
@@ -24,12 +63,11 @@ function Video(props) {
   }
 
   return (
-    thumbnail && (
+    thumbPath && (
       <div
         className="block-container"
         onMouseDown={(e) => {
           if (e.button === 0) {
-            // setIsDragging(true);
             e.stopPropagation();
             return;
           }
@@ -41,8 +79,36 @@ function Video(props) {
             cursor: !permission ? "not-allowed" : "pointer",
           }}
           className="renderitem--thumbnail"
-          src={thumbnail}
-          alt="gifthumb"
+          src={thumbPath}
+          onError={(e) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              e.target.id = "loading";
+              e.target.src = loading;
+            }, 0);
+            setTimeout(() => {
+              if (srcAttempts <= 5) {
+                e.target.src = thumbPath;
+                e.target.id = "";
+                srcAttempts++;
+              } else {
+                e.target.id = "";
+                setDirectoryItems((prevItems) => {
+                  return prevItems.map((item) => {
+                    if (item.name === name) {
+                      return {
+                        ...item,
+                        thumbPath: null,
+                      };
+                    } else {
+                      return item;
+                    }
+                  });
+                });
+              }
+            }, 1000);
+          }}
+          alt=""
           onLoad={(e) => {
             const currentThumbWidth =
               e.currentTarget.getBoundingClientRect().width;
@@ -55,26 +121,28 @@ function Video(props) {
 
             const X =
               (currentThumbWidth / currentContainerWidth) * 100 +
-              0.7 * (currentThumbWidth / currentContainerWidth);
+              0.5 * (currentThumbWidth / currentContainerWidth);
             const Y =
               (currentThumbHeight / currentContainerHeight) * 100 +
-              15 * (currentThumbHeight / currentContainerHeight);
+              25 * (currentThumbHeight / currentContainerHeight);
 
             positionDuration(X, Y);
           }}
         />
-        {durationPosition.rectX && durationPosition.rectY && (
+        {durationPosition.rectX && durationPosition.rectY ? (
           <svg
             viewBox="0 0 100 100"
             style={{ zIndex: 1, pointerEvents: "none" }}
           >
-            <rect
-              fill="#000000de"
-              width="25%"
-              height="10%"
-              x={durationPosition.rectX}
-              y={durationPosition.rectY}
-            />
+            {duration && (
+              <rect
+                fill="#000000de"
+                width="25%"
+                height="10%"
+                x={durationPosition.rectX}
+                y={durationPosition.rectY}
+              />
+            )}
             <text
               fill="white"
               style={{
@@ -88,6 +156,8 @@ function Video(props) {
               {formatDuration(duration)}
             </text>
           </svg>
+        ) : (
+          <></>
         )}
         <Filename name={name} />
       </div>

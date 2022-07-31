@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { DirectoryContext } from "../../Main/App";
+import { GeneralContext } from "../../Main/App";
 
 import SortPopup from "./SortPopup";
 
@@ -10,7 +10,7 @@ function SortBy() {
   const [showPopup, setShowPopup] = useState(false);
   const [descending, setDescending] = useState(true);
 
-  const { setDirectoryItems } = useContext(DirectoryContext);
+  const { setDirectoryItems } = useContext(GeneralContext);
 
   useEffect(() => {
     document.addEventListener("click", (e) => {

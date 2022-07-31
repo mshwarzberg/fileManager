@@ -12,6 +12,11 @@
   // }
 }
 
+#directory-and-item-container {
+  display: flex;
+  flex-direction: row;
+}
+
 html,
 body {
   background: #444;

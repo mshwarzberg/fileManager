@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
-import { DirectoryContext } from "../Main/App";
+import { GeneralContext } from "../Main/App";
 
 import forwards from "../../Assets/images/navigation/forwardshover.png";
 import backwards from "../../Assets/images/navigation/backwardshover.png";
 import upwards from "../../Assets/images/navigation/upwardshover.png";
 
 function DirectoryNavigation() {
-  const { state, dispatch, controllers } = useContext(DirectoryContext);
+  const { state, dispatch, controllers } = useContext(GeneralContext);
 
   return (
     <div id="navbar--navigation">
@@ -15,12 +15,11 @@ function DirectoryNavigation() {
           for (let i in controllers) {
             controllers[i].abort();
           }
-          let uppedDirectory = state.currentDirectory;
-          if (
-            uppedDirectory.length === 3 &&
-            uppedDirectory[1] === ":" &&
-            uppedDirectory[2] === "/"
-          ) {
+          let uppedDirectory = state.currentDirectory.slice(
+            0,
+            state.currentDirectory.length - 2
+          );
+          if (uppedDirectory.length === 3) {
             uppedDirectory = "";
           } else {
             for (let i = uppedDirectory.length - 1; i >= 0; i--) {

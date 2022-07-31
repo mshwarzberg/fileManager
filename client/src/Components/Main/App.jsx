@@ -1,19 +1,19 @@
 import React, { createContext, useEffect, useState } from "react";
-import DirectoryState from "./Context/DirectoryState";
+import DirectoryState from "./DirectoryState";
 
 import RenderItems from "../RenderDirectoryItems/RenderItems";
 import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
-import useStoreImages from "../../Hooks/useStoreImages";
 import GeneralUI from "../Tools/GeneralUI";
-import useDrag from "../../Hooks/useDrag";
 
-export const DirectoryContext = createContext();
+export const GeneralContext = createContext();
 
 export default function App() {
-  const { state, dispatch, controllers, setControllers } = DirectoryState();
+  const { state, dispatch } = DirectoryState();
 
+  const [controllers, setControllers] = useState([]);
   const [directoryItems, setDirectoryItems] = useState();
+  const [showTree, setShowTree] = useState(true);
 
   useEffect(() => {
     if (state.drive && state.currentDirectory) {
@@ -44,21 +44,25 @@ export default function App() {
           ]);
         });
     } else {
-      fetch("/api/getdrives", {
-        method: "GET",
-      }).then(async (res) => {
+      fetch("/api/getdrives").then(async (res) => {
         const response = await res.json();
         setDirectoryItems(response);
+        dispatch({
+          type: "updateDirectoryTree",
+          value: [
+            "",
+            ...response.map((item) => {
+              return item.name.slice(0, item.name.length - 1);
+            }),
+          ],
+        });
       });
     }
     // eslint-disable-next-line
-  }, [state.currentDirectory]);
-
-  useStoreImages();
-  useDrag(state);
+  }, [state.currentDirectory, state.refresh]);
 
   return (
-    <DirectoryContext.Provider
+    <GeneralContext.Provider
       value={{
         state,
         dispatch,
@@ -68,10 +72,12 @@ export default function App() {
         setControllers,
       }}
     >
-      <Navbar />
-      <RenderItems />
-      <DirectoryTree />
+      <Navbar setShowTree={setShowTree} showTree={showTree} />
+      <div id="directory-and-item-container">
+        <DirectoryTree showTree={showTree} />
+        <RenderItems />
+      </div>
       <GeneralUI />
-    </DirectoryContext.Provider>
+    </GeneralContext.Provider>
   );
 }

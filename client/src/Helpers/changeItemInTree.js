@@ -1,20 +1,20 @@
 export default function changeItem(tree, parentArray, currentIndex, newValue) {
-  if (!tree[0] && tree.length === 1) {
-    tree = tree.concat(parentArray);
-    return tree;
-  }
   if (typeof newValue === "string") {
-    for (let i in tree) {
+    for (let thing of tree) {
       if (
-        tree[i][0] === parentArray[currentIndex] &&
+        thing[0] === parentArray[currentIndex] &&
         currentIndex !== parentArray.length - 1
       ) {
-        tree[i] = changeItem(tree[i], parentArray, currentIndex + 1, newValue);
+        tree.splice(
+          tree.indexOf(thing),
+          1,
+          changeItem(thing, parentArray, currentIndex + 1, newValue)
+        );
       }
       if (currentIndex === parentArray.length - 1) {
-        for (let i in tree) {
-          if (tree[i][0] === parentArray[currentIndex]) {
-            tree[i] = newValue;
+        for (let thing of tree) {
+          if (thing[0] === parentArray[currentIndex]) {
+            tree.splice(tree.indexOf(thing), 1, newValue);
             break;
           }
         }
@@ -22,17 +22,17 @@ export default function changeItem(tree, parentArray, currentIndex, newValue) {
     }
     return tree;
   } else if (typeof newValue === "object") {
-    for (let i in tree) {
-      if (tree[i][0] === parentArray[currentIndex]) {
-        tree[i] = changeItem(tree[i], parentArray, currentIndex + 1, newValue);
+    for (let thing of tree) {
+      if (thing[0] === parentArray[currentIndex]) {
+        thing = changeItem(thing, parentArray, currentIndex + 1, newValue);
       }
     }
     if (currentIndex === parentArray.length - 1) {
-      for (let i in tree) {
-        if (typeof tree[i] === "object") {
-          tree[i] = changeItem(tree[i], parentArray, currentIndex, newValue);
+      for (let thing of tree) {
+        if (typeof thing === "object") {
+          thing = changeItem(thing, parentArray, currentIndex, newValue);
         }
-        if (tree[i] === parentArray[parentArray.length - 1]) {
+        if (thing === parentArray[parentArray.length - 1]) {
           tree.splice(tree.indexOf(parentArray[currentIndex]), 1, [
             parentArray[currentIndex],
             ...newValue,
@@ -41,5 +41,6 @@ export default function changeItem(tree, parentArray, currentIndex, newValue) {
       }
     }
   }
+
   return tree;
 }

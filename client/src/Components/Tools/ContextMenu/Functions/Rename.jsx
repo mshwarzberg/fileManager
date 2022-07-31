@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
-import { DirectoryContext } from "../../../Main/App";
+import { GeneralContext } from "../../../Main/App";
 
 export default function Rename({ originalItem }) {
-  const { state, setDirectoryItems } = useContext(DirectoryContext);
+  const { state, setDirectoryItems } = useContext(GeneralContext);
   return (
     <button
       className="context-menu-item"
       onClick={(e) => {
         const prompt = window.prompt(
           `Enter a new ${originalItem.isDirectory ? "folder" : "file"} name`,
-          decodeURI(originalItem.prefix)
+          originalItem.prefix
         );
 
         if (prompt && prompt !== originalItem.name) {
@@ -48,7 +48,7 @@ export default function Rename({ originalItem }) {
                         ...item,
                         name: newName,
                         path: path + newName,
-                        prefix: encodeURI(prompt),
+                        prefix: prompt,
                       };
                     }
                     return item;

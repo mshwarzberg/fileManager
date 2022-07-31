@@ -1,5 +1,2 @@
-import './_display.scss'
-import './_document.scss'
-import './_directorytree.scss'
-import './_renderitems.scss'
-import './_video.scss'
+import "./_directorytree.scss";
+import "./_renderitems.scss";

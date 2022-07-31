@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { DirectoryContext } from "../../../Main/App";
+import { GeneralContext } from "../../../Main/App";
 
 export default function NewDirectory() {
-  const { state, setDirectoryItems } = useContext(DirectoryContext);
+  const { state, setDirectoryItems } = useContext(GeneralContext);
 
   return (
     <button
