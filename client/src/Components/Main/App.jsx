@@ -16,12 +16,12 @@ export default function App() {
   const [showTree, setShowTree] = useState(true);
 
   useEffect(() => {
+    for (let i of controllers) {
+      i.abort();
+    }
+    setControllers([]);
     if (state.drive && state.currentDirectory) {
       document.title = state.currentDirectory;
-      for (let i of controllers) {
-        i.abort();
-      }
-      setControllers([]);
       fetch("/api/metadata", {
         method: "POST",
         headers: {
@@ -68,14 +68,15 @@ export default function App() {
         dispatch,
         directoryItems,
         setDirectoryItems,
-        controllers,
-        setControllers,
       }}
     >
       <Navbar setShowTree={setShowTree} showTree={showTree} />
       <div id="directory-and-item-container">
         <DirectoryTree showTree={showTree} />
-        <RenderItems />
+        <RenderItems
+          controllers={controllers}
+          setControllers={setControllers}
+        />
       </div>
       <GeneralUI />
     </GeneralContext.Provider>

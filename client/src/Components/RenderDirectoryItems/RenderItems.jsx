@@ -8,7 +8,7 @@ import { GeneralContext } from "../Main/App";
 import formatDuration from "../../Helpers/FormatVideoTime";
 import FormatSize from "../../Helpers/FormatSize";
 
-export default function RenderItems() {
+export default function RenderItems({ controllers, setControllers }) {
   const { directoryItems, dispatch, state, setDirectoryItems } =
     useContext(GeneralContext);
 
@@ -26,15 +26,23 @@ export default function RenderItems() {
       height,
       fileextension,
       prefix,
+      description,
     } = item;
+
+    function cleanerFormat(header, str) {
+      if (str) {
+        return header + str;
+      }
+      return "";
+    }
 
     function getTitle() {
       if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
         return `Name: ${name}\nPath: ${path}\nSize: ${
           FormatSize(size) || ""
-        }\nDimensions: ${width + "x" + height}\n${
-          duration ? `Duration: ${formatDuration(duration)}` : ""
-        }`;
+        }\nDimensions: ${width + "x" + height}${
+          duration > 0.1 ? `\nDuration: ${formatDuration(duration)}` : ""
+        }${cleanerFormat("\nDescription: ", description)}`;
       }
       if (itemtype === "folder") {
         return `Name:${name}\nPath: ${path}`;
@@ -54,7 +62,7 @@ export default function RenderItems() {
         ];
       }
       if (permission) {
-        return ["rename", "cutcopy", "delete", "properties"];
+        return ["rename", "cutcopy", "delete", "properties", "explorer"];
       }
     }
 
@@ -69,25 +77,23 @@ export default function RenderItems() {
             border: !permission ? "2px solid red" : "",
             backgroundColor: !permission ? "#cc7878c5" : "",
           }}
-          data-info={JSON.stringify({
-            ...item,
-            source: path,
-            ...(item.isDirectory && { destination: path + "/" }),
-          })}
+          data-info={JSON.stringify(item)}
         >
           {!thumbPath && <Icon item={item} />}
-          {itemtype === "video" && <Video item={item} />}
+          {itemtype === "video" && (
+            <Video
+              item={item}
+              controllers={controllers}
+              setControllers={setControllers}
+            />
+          )}
           {(itemtype === "image" || itemtype === "gif") && (
             <ImageGif item={item} />
           )}
           <div
             className="cover-block"
             data-contextmenu={getContextMenu()}
-            data-info={JSON.stringify({
-              ...item,
-              source: path,
-              ...(item.isDirectory && { destination: path + "/" }),
-            })}
+            data-info={JSON.stringify(item)}
             data-title={getTitle()}
             onClick={() => {
               if (!permission) {
@@ -192,7 +198,6 @@ export default function RenderItems() {
       data-info={JSON.stringify({
         path: state.currentDirectory,
         isDirectory: true,
-        destination: state.currentDirectory,
       })}
     >
       {renderItems?.length > 0 ? (

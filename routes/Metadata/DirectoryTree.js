@@ -24,7 +24,7 @@ router.post("/", (req, res) => {
         try {
           fs.statSync(`${path === "/" ? path : path + "/"}${item.name}`);
         } catch {
-          folderName = folderName + "*?<>";
+          folderName = folderName + "*/";
         }
         dirArray.push(folderName);
       }

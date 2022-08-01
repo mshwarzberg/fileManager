@@ -6,36 +6,23 @@ const router = express.Router();
 router.get("/", (_, res) => {
   let drives;
   let sortedDrives = [];
-  if (os.platform() === "win32") {
-    drives = child.execSync("wmic logicaldisk get name");
-    let listOfDrives = drives.toString().split("\r\r\n");
-    for (let i in listOfDrives) {
-      if (listOfDrives[i].includes(":")) {
-        sortedDrives.push({
-          name: listOfDrives[i].trim() + "/",
-          permission: true,
-          isDrive: true,
-        });
-      }
-    }
-  } else if (os.platform() === "linux") {
-    drives = child.execSync("df");
-    drives = drives.toString().split("\n");
-    drives = drives
-      .map((drive) => {
-        if (!drive.includes("/dev/")) {
-          return "";
-        }
-        return drive;
-      })
-      .filter((entry) => /\S/.test(entry));
-    for (let i in drives) {
-      drives[i] = drives[i].split("%")[1].trim();
-      if (drives[i].includes("/media") || drives[i] === "/") {
-        sortedDrives.push({ name: drives[i], permission: true, isDrive: true });
-      }
+  drives = child.execSync("wmic logicaldisk get name");
+  let test = child.execSync(
+    "wmic logicaldisk get caption,drivetype, size /format:Textvaluelist"
+  );
+  test = test.toString().split("\n");
+  for (let i in test) {
+    if (test[i].startsWith("Caption")) {
+      sortedDrives.push({
+        name: test[i].split("=")[1].split("\r\r")[0] + "/",
+        isNetworkDrive: parseInt(test[i * 1 + 1].split("=")[1]) === 4,
+        size: parseInt(test[i * 1 + 2].split("=")[1]),
+        permission: true,
+        isDrive: true,
+      });
     }
   }
+
   res.send(sortedDrives);
 });
 

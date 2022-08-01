@@ -90,7 +90,7 @@ export default function ContextMenu({
         {contextMenu.items.includes("explorer") && (
           <OpenFileManager
             setContextMenu={setContextMenu}
-            path={contextMenu.info.path}
+            item={contextMenu.info}
           />
         )}
         {contextMenu.items.includes("properties") && (

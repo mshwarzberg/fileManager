@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function OpenFileManager({ setContextMenu, path }) {
+export default function OpenFileManager({ setContextMenu, item }) {
   return (
     <button
       className="context-menu-item"
@@ -11,7 +11,8 @@ export default function OpenFileManager({ setContextMenu, path }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            path: path,
+            path: item.path,
+            isFile: item.isFile,
           }),
         });
         setContextMenu({});

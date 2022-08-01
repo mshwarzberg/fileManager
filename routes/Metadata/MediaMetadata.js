@@ -15,13 +15,7 @@ router.post("/", verifyFolder, (req, res) => {
     ffprobeMetadata(
       `${currentdirectory}/${prefix}.${fileextension}`,
       (data) => {
-        return res.send({
-          width: data.width || "",
-          height: data.height || "",
-          ...(data.duration > 0.1 && {
-            duration: data.duration,
-          }),
-        });
+        return res.send(data);
       }
     );
   } else {

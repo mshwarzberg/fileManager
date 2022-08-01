@@ -9,7 +9,6 @@ export default function useContainWithinScreen(
     const element = document.querySelector(tag);
     if (element) {
       const { y, x, width, height } = element.getBoundingClientRect();
-
       setStateFunction((prevState) => ({
         ...prevState,
         x: x + width > document.body.clientWidth ? x - width : prevState.x,

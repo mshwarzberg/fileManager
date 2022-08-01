@@ -3,17 +3,14 @@ import React, { useState, useEffect, useContext } from "react";
 import playIcon from "../../../Assets/images/play.png";
 import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Icon/Filename";
-import loading from "../../../Assets/images/loading.png";
 import { GeneralContext } from "../../Main/App";
 
-function Video(props) {
-  let timeout;
-  let srcAttempts = 0;
-  const { name, thumbPath, permission, prefix, fileextension, duration } =
-    props.item;
+function Video({ item, setControllers }) {
+  const { name, thumbPath, permission, prefix, fileextension, duration, path } =
+    item;
 
   const { state, setDirectoryItems } = useContext(GeneralContext);
-
+  const [srcAttempts, setSrcAttempts] = useState(0);
   const [durationPosition, setDurationPosition] = useState({
     rectX: 0,
     rectY: 0,
@@ -22,6 +19,21 @@ function Video(props) {
   });
 
   useEffect(() => {
+    if (sessionStorage.getItem(path)) {
+      setDirectoryItems((prevItems) => {
+        return prevItems.map((item) => {
+          if (item.name === name) {
+            return {
+              ...item,
+              ...JSON.parse(sessionStorage.getItem(path)),
+            };
+          }
+          return item;
+        });
+      });
+    }
+    const newController = new AbortController();
+    setControllers((prevControllers) => [...prevControllers, newController]);
     fetch("/api/mediametadata", {
       method: "post",
       headers: {
@@ -32,9 +44,11 @@ function Video(props) {
         fileextension: fileextension,
         currentdirectory: state.currentDirectory,
       }),
+      signal: newController.signal,
     })
       .then(async (res) => {
         const response = await res.json();
+        sessionStorage.setItem(path, JSON.stringify(response));
         setDirectoryItems((prevItems) => {
           return prevItems.map((item) => {
             if (item.name === name) {
@@ -47,9 +61,7 @@ function Video(props) {
           });
         });
       })
-      .catch((e) => {
-        console.log(e);
-      });
+      .catch(() => {});
     // eslint-disable-next-line
   }, []);
 
@@ -81,18 +93,14 @@ function Video(props) {
           className="renderitem--thumbnail"
           src={thumbPath}
           onError={(e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-              e.target.id = "loading";
-              e.target.src = loading;
-            }, 0);
+            e.target.parentElement.classList.add("loading");
+
             setTimeout(() => {
               if (srcAttempts <= 5) {
                 e.target.src = thumbPath;
-                e.target.id = "";
-                srcAttempts++;
+                setSrcAttempts((prev) => prev + 1);
+                e.target.parentElement.classList.remove("loading");
               } else {
-                e.target.id = "";
                 setDirectoryItems((prevItems) => {
                   return prevItems.map((item) => {
                     if (item.name === name) {

@@ -1,7 +1,6 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import { GeneralContext } from "../../Main/App";
 import DownArrowBlack from "../../../Assets/images/directorytree/down-arrow-black.png";
-import DownArrowAccented from "../../../Assets/images/directorytree/down-arrow-accented.png";
 import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-white.png";
 
 import directoryIcon from "../../../Assets/images/folder.png";
@@ -13,52 +12,58 @@ export default function ParentDir(props) {
   const { parentDirectoryName, parentDirectory, path } = props;
 
   const { state, dispatch } = useContext(GeneralContext);
-
+  const [hideList, setHideList] = useState(false);
   const listRef = useRef();
 
-  function showHideList(element) {
-    listRef.current.classList.toggle("hide");
-    if (listRef.current.classList[1] === "hide") {
-      element.className = "tree--closed-directory";
+  useEffect(() => {
+    if (hideList) {
+      listRef.current.classList.add("hide");
       setTimeout(() => {
         listRef.current.style.display = "none";
       }, 200);
     } else {
-      element.className = "tree--open-directory";
       listRef.current.style.display = "block";
+      listRef.current.classList.remove("hide");
     }
-  }
+  }, [hideList]);
 
   return (
     <div className="tree--expanded-chunk">
       <div
         className="line--down"
-        onClick={(e) => {
-          showHideList(e.target.nextElementSibling);
+        onClick={() => {
+          // clicking on the line should always hide the directory list
+          setHideList(false);
         }}
       />
       <p
-        className="tree--open-directory"
+        className={hideList ? "tree--closed-directory" : "tree--open-directory"}
         data-title={`Name: ${
-          parentDirectoryName.includes("*?<>")
-            ? parentDirectoryName.slice(0, parentDirectoryName.length - 4)
+          parentDirectoryName.includes("*/")
+            ? parentDirectoryName.slice(0, parentDirectoryName.length - 2)
             : parentDirectoryName
         }\nPath: ${
-          parentDirectoryName.includes("*?<>")
-            ? path.slice(0, path.length - 4)
+          parentDirectoryName.includes("*/")
+            ? path.slice(0, path.length - 2)
             : path
-        }\n${parentDirectoryName.includes("*?<>") ? "NO ACCESS" : ""}`}
-        id={
-          path + "/" === state.currentDirectory
-            ? "highlight--child"
-            : IsInPath(parentDirectoryName, path, state.currentDirectory)
-            ? "tree--in-path"
-            : ""
-        }
+        }\n${parentDirectoryName.includes("*/") ? "NO ACCESS" : ""}`}
+        id={path + "/" === state.currentDirectory ? "highlight--child" : ""}
         onClick={(e) => {
+          e.currentTarget.className = "tree--open-directory";
+          if (!path) {
+            dispatch({
+              type: "openDirectory",
+              value: "",
+            });
+            return dispatch({
+              type: "setDriveName",
+              value: "",
+            });
+          }
+          setHideList(true);
           dispatch({
             type: "openDirectory",
-            value: path ? path + "/" : "",
+            value: path + "/",
           });
           if (
             parentDirectoryName.includes(":") ||
@@ -69,18 +74,22 @@ export default function ParentDir(props) {
               : path.slice(0, 2);
             dispatch({ type: "setDriveName", value: drive + "/" });
           }
+          if (listRef.current.classList[1] === "hide") {
+            listRef.current.classList.remove("hide");
+            listRef.current.style.display = "block";
+          }
           e.stopPropagation();
         }}
       >
         <img
           onClick={(e) => {
-            showHideList(e.target.parentElement);
-            e.target.classList.toggle("hide");
-            e.stopPropagation();
-          }}
-          onMouseMove={() => {
-            if (listRef.current.classList[1] === "hide") {
+            setHideList(!hideList);
+            if (hideList) {
+              e.target.classList.remove("hide");
+            } else {
+              e.target.classList.add("hide");
             }
+            e.stopPropagation();
           }}
           className="tree--arrow"
           src={

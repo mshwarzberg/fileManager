@@ -46,7 +46,12 @@ export default function CustomIcon({ fileextension }) {
         className="svg--icon"
       />
       <text
-        fill={ColorizeIcons(fileextension) === "white" ? "black" : "white"}
+        fill={
+          ColorizeIcons(fileextension) === "white" ||
+          ColorizeIcons(fileextension) === "yellow"
+            ? "black"
+            : "white"
+        }
         x="30"
         y={fileextension.length > 4 ? "36" : "40"}
         className="custom-icon-text"

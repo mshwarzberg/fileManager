@@ -1,14 +1,11 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Filename from "./Icon/Filename";
-import loading from "../../../Assets/images/loading.png";
 import { GeneralContext } from "../../Main/App";
 
 export default function ImageGif(props) {
-  let timeout;
-  let srcAttempts = 0;
   let { name, thumbPath, permission } = props.item;
   const { setDirectoryItems } = useContext(GeneralContext);
-
+  const [srcAttempts, setSrcAttempts] = useState(0);
   return (
     thumbPath && (
       <div
@@ -25,18 +22,14 @@ export default function ImageGif(props) {
           style={{ cursor: !permission ? "not-allowed" : "pointer" }}
           src={thumbPath}
           onError={(e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-              e.target.id = "loading";
-              e.target.src = loading;
-            }, 0);
+            e.target.parentElement.classList.add("loading");
+
             setTimeout(() => {
               if (srcAttempts <= 5) {
                 e.target.src = thumbPath;
-                e.target.id = "";
-                srcAttempts++;
+                setSrcAttempts((prev) => prev + 1);
+                e.target.parentElement.classList.remove("loading");
               } else {
-                e.target.id = "";
                 setDirectoryItems((prevItems) => {
                   return prevItems.map((item) => {
                     if (item.name === name) {

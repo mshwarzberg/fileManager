@@ -16,7 +16,6 @@ function checkType(type) {
     type === "jpg",
     type === "png",
     type === "jpeg",
-    type === "ico",
     type === "avif",
     type === "svg",
     type === "tiff",

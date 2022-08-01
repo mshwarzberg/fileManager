@@ -45,37 +45,35 @@ export default function ChildDir({ path, subItem }) {
   return (
     <div
       onClick={(e) => {
-        if (subItem.includes("*?<>")) {
+        if (subItem.includes("*/")) {
           return;
         }
         expandDirectory(true);
         e.stopPropagation();
       }}
       className={`tree--closed-directory ${
-        subItem.includes("*?<>") && "no-permission"
+        subItem.includes("*/") && "no-permission"
       }`}
       id={path + "/" === state.currentDirectory ? "highlight--child" : ""}
       data-title={`Name: ${
-        subItem.includes("*?<>")
-          ? subItem.slice(0, subItem.length - 4)
-          : subItem
+        subItem.includes("*/") ? subItem.slice(0, subItem.length - 2) : subItem
       }\nPath: ${
-        subItem.includes("*?<>") ? path.slice(0, path.length - 4) : path
-      }\n${subItem.includes("*?<>") ? "NO ACCESS" : ""}`}
+        subItem.includes("*/") ? path.slice(0, path.length - 2) : path
+      }\n${subItem.includes("*/") ? "NO ACCESS" : ""}`}
     >
       <img
         onMouseEnter={(e) => {
-          if (path !== state.currentDirectory && !subItem.includes("*?<>")) {
+          if (path !== state.currentDirectory && !subItem.includes("*/")) {
             return (e.target.src = RightArrowAccented);
           }
         }}
         onMouseLeave={(e) => {
-          if (path !== state.currentDirectory && !subItem.includes("*?<>")) {
+          if (path !== state.currentDirectory && !subItem.includes("*/")) {
             return (e.target.src = RightArrowWhite);
           }
         }}
         onClick={(e) => {
-          if (subItem.includes("*?<>")) {
+          if (subItem.includes("*/")) {
             return;
           }
           expandDirectory(false);
@@ -83,7 +81,7 @@ export default function ChildDir({ path, subItem }) {
         }}
         className="tree--arrow"
         src={
-          subItem.includes("*?<>")
+          subItem.includes("*/")
             ? RightArrowRed
             : path === state.currentDirectory
             ? RightArrowBlack
@@ -96,9 +94,7 @@ export default function ChildDir({ path, subItem }) {
         alt="folder"
         className="directory--icon"
       />
-      {subItem.includes("*?<>")
-        ? subItem.slice(0, subItem.length - 4)
-        : subItem}
+      {subItem.includes("*/") ? subItem.slice(0, subItem.length - 2) : subItem}
     </div>
   );
 }

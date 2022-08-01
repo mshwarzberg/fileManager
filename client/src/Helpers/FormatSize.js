@@ -2,7 +2,7 @@
 export default function FormatSize(originalSize) {
   let newSize;
   let letter;
-  if (originalSize === undefined) {
+  if (!originalSize && originalSize !== 0) {
     return undefined;
   }
   if (originalSize < 1000) {
@@ -21,7 +21,9 @@ export default function FormatSize(originalSize) {
     newSize = originalSize / 1000000000000;
     letter = "T";
   }
-
+  if (!newSize && newSize !== 0) {
+    return undefined;
+  }
   newSize = newSize.toString().slice(0, 5);
   newSize += `${letter}B`;
 
