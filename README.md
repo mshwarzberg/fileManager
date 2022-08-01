@@ -1,7 +1,12 @@
 # fileManager
-This application requires ffmpeg. 
+This application requires ffmpeg. (WINDOWS HOW TO: https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/)
 
-Install dependencies with "npm i" (both for server and client)
+Install server dependencies with "npm i"
 
-Start server with "npm run server"
-Start client with "npm run dev"
+Switch to client directory with "cd client" 
+
+Install client dependencies with "npm i"
+
+Switch back to server with "cd .."
+
+Start server and client simultaneously with "npm run all" in the main directory (not the client folder)
