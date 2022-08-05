@@ -1,3 +1,5 @@
+# fileManager
+
 This application requires ffmpeg. (WINDOWS HOW TO: https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/)
 
 Install server dependencies with "npm i"
