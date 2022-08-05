@@ -10,6 +10,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     icon: "../src/Assets/images/folder.ico",
     modal: false,
+    autoHideMenuBar: true,
     webPreferences: {
       webSecurity: false,
     },

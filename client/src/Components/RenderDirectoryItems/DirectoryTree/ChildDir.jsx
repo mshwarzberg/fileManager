@@ -1,43 +1,41 @@
 import React, { useContext } from "react";
 import { GeneralContext } from "../../Main/App";
-import changeItem from "../../../Helpers/ChangeItemInTree";
-import ParentDirectoriesToArray from "../../../Helpers/ParentDirectoriesToArray";
-import RightArrowBlack from "../../../Assets/images/directorytree/right-arrow-black.png";
-import RightArrowWhite from "../../../Assets/images/directorytree/right-arrow-white.png";
-import RightArrowAccented from "../../../Assets/images/directorytree/right-arrow-accented.png";
-import RightArrowRed from "../../../Assets/images/directorytree/right-arrow-red.png";
+import { addToDirectoryTree } from "../../../Helpers/ChangeItemInTree";
+
+import blackArrow from "../../../Assets/images/directorytree/right-arrow-black.png";
+import whiteArrow from "../../../Assets/images/directorytree/right-arrow-white.png";
+import redArrow from "../../../Assets/images/directorytree/right-arrow-red.png";
+
 import directory from "../../../Assets/images/folder.png";
 import driveIcon from "../../../Assets/images/drive.png";
 
-export default function ChildDir({ path, subItem }) {
+export default function ChildDir({ child }) {
   const { state, dispatch } = useContext(GeneralContext);
+  const { path, name, permission, type } = child;
 
-  function expandDirectory(toOpenDirectory) {
-    // if a user clicks on the down caret don't open the directory. Instead just expand to the child directories
+  const isDrive = type === "drive";
+
+  function clickDirectory(toOpenDirectory) {
+    if (!path.startsWith(state.drive) || !state.drive || isDrive) {
+      let drive = isDrive ? name : path.slice(0, 2);
+      dispatch({ type: "setDriveName", value: drive + "/" });
+    }
     if (toOpenDirectory) {
       dispatch({
         type: "openDirectory",
         value: path + "/",
       });
-      if (subItem.includes(":") || !path.startsWith(state.drive)) {
-        let drive = subItem.includes(":") ? subItem : path.slice(0, 2);
-        dispatch({ type: "setDriveName", value: drive + "/" });
-      }
+      return;
     }
     fetch("/api/directorytree", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: path.length === 2 ? path + "/" : path }),
+      body: JSON.stringify({ path: path }),
     }).then(async (res) => {
       const response = await res.json();
       dispatch({
         type: "updateDirectoryTree",
-        value: changeItem(
-          state.directoryTree,
-          ParentDirectoriesToArray(path),
-          1,
-          response
-        ),
+        value: addToDirectoryTree(state.directoryTree, path, response),
       });
     });
   }
@@ -45,56 +43,39 @@ export default function ChildDir({ path, subItem }) {
   return (
     <div
       onClick={(e) => {
-        if (subItem.includes("*/")) {
+        if (!permission) {
           return;
         }
-        expandDirectory(true);
+        clickDirectory(true);
         e.stopPropagation();
       }}
-      className={`tree--closed-directory ${
-        subItem.includes("*/") && "no-permission"
-      }`}
+      className={`tree--closed-directory ${!permission && "no-permission"}`}
       id={path + "/" === state.currentDirectory ? "highlight--child" : ""}
-      data-title={`Name: ${
-        subItem.includes("*/") ? subItem.slice(0, subItem.length - 2) : subItem
-      }\nPath: ${
-        subItem.includes("*/") ? path.slice(0, path.length - 2) : path
-      }\n${subItem.includes("*/") ? "NO ACCESS" : ""}`}
     >
       <img
-        onMouseEnter={(e) => {
-          if (path !== state.currentDirectory && !subItem.includes("*/")) {
-            return (e.target.src = RightArrowAccented);
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (path !== state.currentDirectory && !subItem.includes("*/")) {
-            return (e.target.src = RightArrowWhite);
-          }
-        }}
         onClick={(e) => {
-          if (subItem.includes("*/")) {
+          if (!permission) {
             return;
           }
-          expandDirectory(false);
+          clickDirectory(false);
           e.stopPropagation();
         }}
         className="tree--arrow"
         src={
-          subItem.includes("*/")
-            ? RightArrowRed
-            : path === state.currentDirectory
-            ? RightArrowBlack
-            : RightArrowWhite
+          permission
+            ? path + "/" === state.currentDirectory
+              ? blackArrow
+              : whiteArrow
+            : redArrow
         }
         alt="expand directory"
       />
       <img
-        src={!subItem.includes(":") ? directory : driveIcon}
+        src={!isDrive ? directory : driveIcon}
         alt="folder"
         className="directory--icon"
       />
-      {subItem.includes("*/") ? subItem.slice(0, subItem.length - 2) : subItem}
+      {name}
     </div>
   );
 }

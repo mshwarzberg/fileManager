@@ -6,37 +6,30 @@ import ParentDir from "./ParentDir";
 export default function DirectoryTree({ showTree }) {
   const { state } = useContext(GeneralContext);
 
-  function mapDirectoryTreeLoop(tree, path) {
+  function mapDirectoryTreeLoop(tree) {
     let parentDirectoryName;
-    let newPath = path;
-    let parentDirectory = tree.map((subItem) => {
-      newPath = path;
-      if (tree.indexOf(subItem) === 0) {
-        parentDirectoryName = subItem;
+    const childDirectories = tree.map((child) => {
+      if (tree.indexOf(child) === 0) {
+        parentDirectoryName = child.name;
         return "";
       }
-      if (typeof subItem === "object") {
-        newPath += subItem[0] + "/";
-        return mapDirectoryTreeLoop(subItem, newPath);
+      if (child[0]) {
+        return mapDirectoryTreeLoop(child);
       }
-      newPath += subItem;
-      return <ChildDir subItem={subItem} path={newPath} key={path + subItem} />;
+      return <ChildDir child={child} key={child.path} />;
     });
-    path = path.slice(0, path.length - 1);
+
     return (
-      <ParentDir
-        path={path}
-        parentDirectoryName={parentDirectoryName}
-        parentDirectory={parentDirectory}
-        key={path}
-      />
+      <ParentDir parentDir={tree[0] || {}} key={tree.path}>
+        {childDirectories}
+      </ParentDir>
     );
   }
 
   return (
     showTree && (
       <div id="directorytree--body">
-        {mapDirectoryTreeLoop(state.directoryTree, "")}
+        {mapDirectoryTreeLoop(state.directoryTree, {})}
         <div id="resize--tree" />
       </div>
     )

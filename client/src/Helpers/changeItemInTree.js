@@ -1,46 +1,33 @@
-export default function changeItem(tree, parentArray, currentIndex, newValue) {
-  if (typeof newValue === "string") {
-    for (let thing of tree) {
-      if (
-        thing[0] === parentArray[currentIndex] &&
-        currentIndex !== parentArray.length - 1
-      ) {
-        tree.splice(
-          tree.indexOf(thing),
-          1,
-          changeItem(thing, parentArray, currentIndex + 1, newValue)
-        );
-      }
-      if (currentIndex === parentArray.length - 1) {
-        for (let thing of tree) {
-          if (thing[0] === parentArray[currentIndex]) {
-            tree.splice(tree.indexOf(thing), 1, newValue);
-            break;
-          }
-        }
-      }
-    }
-    return tree;
-  } else if (typeof newValue === "object") {
-    for (let thing of tree) {
-      if (thing[0] === parentArray[currentIndex]) {
-        thing = changeItem(thing, parentArray, currentIndex + 1, newValue);
-      }
-    }
-    if (currentIndex === parentArray.length - 1) {
-      for (let thing of tree) {
-        if (typeof thing === "object") {
-          thing = changeItem(thing, parentArray, currentIndex, newValue);
-        }
-        if (thing === parentArray[parentArray.length - 1]) {
-          tree.splice(tree.indexOf(parentArray[currentIndex]), 1, [
-            parentArray[currentIndex],
-            ...newValue,
-          ]);
-        }
-      }
+function addToDirectoryTree(tree, path, directories) {
+  for (const i in tree) {
+    const firstElement = tree[i][0];
+    if (firstElement && path.startsWith(firstElement.path)) {
+      tree.splice(i, 1, addToDirectoryTree(tree[i], path, directories));
+    } else if (path.startsWith(tree[i].path) && path === tree[i].path) {
+      directories.unshift({
+        ...tree[i],
+        collapsed: false,
+      });
+      tree.splice(i, 1, directories);
     }
   }
 
   return tree;
 }
+
+function expandAndCollapseDirectory(tree, path, bool) {
+  for (const i in tree) {
+    const firstElement = tree[i][0];
+    if (firstElement && path.startsWith(firstElement.path)) {
+      tree.splice(i, 1, expandAndCollapseDirectory(tree[i], path, bool));
+    } else if (path.startsWith(tree[i].path) && path === tree[i].path) {
+      tree.splice(i, 1, {
+        ...tree[i],
+        collapsed: bool,
+      });
+    }
+  }
+  return tree;
+}
+
+export { expandAndCollapseDirectory, addToDirectoryTree };

@@ -1,12 +1,9 @@
 const child = require("child_process");
-const os = require("os");
 const express = require("express");
 const router = express.Router();
 
 router.get("/", (_, res) => {
-  let drives;
   let sortedDrives = [];
-  drives = child.execSync("wmic logicaldisk get name");
   let test = child.execSync(
     "wmic logicaldisk get caption,drivetype, size /format:Textvaluelist"
   );

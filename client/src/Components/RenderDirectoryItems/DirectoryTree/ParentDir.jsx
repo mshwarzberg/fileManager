@@ -1,119 +1,93 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { GeneralContext } from "../../Main/App";
-import DownArrowBlack from "../../../Assets/images/directorytree/down-arrow-black.png";
-import DownArrowWhite from "../../../Assets/images/directorytree/down-arrow-white.png";
+import { expandAndCollapseDirectory } from "../../../Helpers/ChangeItemInTree";
 
 import directoryIcon from "../../../Assets/images/folder.png";
-import { IsInPath } from "../../../Helpers/IsInPath";
 import driveIcon from "../../../Assets/images/drive.png";
 import monitorIcon from "../../../Assets/images/monitor.png";
 
-export default function ParentDir(props) {
-  const { parentDirectoryName, parentDirectory, path } = props;
+import blackArrow from "../../../Assets/images/directorytree/down-arrow-black.png";
+import whiteArrow from "../../../Assets/images/directorytree/down-arrow-white.png";
+import redArrow from "../../../Assets/images/directorytree/down-arrow-red.png";
 
+export default function ParentDir({ parentDir, children }) {
+  const { path, name, permission, type, collapsed } = parentDir;
   const { state, dispatch } = useContext(GeneralContext);
-  const [hideList, setHideList] = useState(false);
-  const listRef = useRef();
 
-  useEffect(() => {
-    if (hideList) {
-      listRef.current.classList.add("hide");
-      setTimeout(() => {
-        listRef.current.style.display = "none";
-      }, 200);
-    } else {
-      listRef.current.style.display = "block";
-      listRef.current.classList.remove("hide");
+  const isDrive = type === "drive";
+
+  function isInPath() {
+    if (path + "/" === state.currentDirectory) {
+      return "highlight--child";
+    } else if (state.currentDirectory.startsWith(path) || !path) {
+      return "tree--in-path";
     }
-  }, [hideList]);
-
+    return "";
+  }
   return (
     <div className="tree--expanded-chunk">
       <div
         className="line--down"
         onClick={() => {
-          // clicking on the line should always hide the directory list
-          setHideList(false);
+          dispatch({
+            type: "updateDirectoryTree",
+            value: expandAndCollapseDirectory(state.directoryTree, path, true),
+          });
         }}
       />
       <p
-        className={hideList ? "tree--closed-directory" : "tree--open-directory"}
-        data-title={`Name: ${
-          parentDirectoryName.includes("*/")
-            ? parentDirectoryName.slice(0, parentDirectoryName.length - 2)
-            : parentDirectoryName
-        }\nPath: ${
-          parentDirectoryName.includes("*/")
-            ? path.slice(0, path.length - 2)
-            : path
-        }\n${parentDirectoryName.includes("*/") ? "NO ACCESS" : ""}`}
-        id={path + "/" === state.currentDirectory ? "highlight--child" : ""}
+        className={
+          collapsed ? "tree--closed-directory" : "tree--open-directory"
+        }
+        id={isInPath()}
         onClick={(e) => {
-          e.currentTarget.className = "tree--open-directory";
-          if (!path) {
-            dispatch({
-              type: "openDirectory",
-              value: "",
-            });
-            return dispatch({
-              type: "setDriveName",
-              value: "",
-            });
-          }
-          setHideList(true);
-          dispatch({
-            type: "openDirectory",
-            value: path + "/",
-          });
-          if (
-            parentDirectoryName.includes(":") ||
-            !path.startsWith(state.drive)
-          ) {
-            let drive = parentDirectoryName.includes(":")
-              ? parentDirectoryName
-              : path.slice(0, 2);
-            dispatch({ type: "setDriveName", value: drive + "/" });
-          }
-          if (listRef.current.classList[1] === "hide") {
-            listRef.current.classList.remove("hide");
-            listRef.current.style.display = "block";
+          dispatch({ type: "openDirectory", value: path ? path + "/" : "" });
+          if (!path.startsWith(state.drive)) {
+            dispatch({ type: "setDriveName", value: path.slice(0, 4) });
           }
           e.stopPropagation();
         }}
       >
         <img
           onClick={(e) => {
-            setHideList(!hideList);
-            if (hideList) {
-              e.target.classList.remove("hide");
-            } else {
-              e.target.classList.add("hide");
+            if (!name) {
+              return;
             }
+            if (collapsed) {
+              return dispatch({
+                type: "updateDirectoryTree",
+                value: expandAndCollapseDirectory(state.directoryTree, path),
+              });
+            }
+            dispatch({
+              type: "updateDirectoryTree",
+              value: expandAndCollapseDirectory(
+                state.directoryTree,
+                path,
+                true
+              ),
+            });
             e.stopPropagation();
           }}
-          className="tree--arrow"
+          className={`tree--arrow ${collapsed ? "rotate-me" : ""}`}
           src={
-            path + "/" === state.currentDirectory
-              ? DownArrowBlack
-              : DownArrowWhite
+            permission
+              ? path + "/" === state.currentDirectory
+                ? blackArrow
+                : whiteArrow
+              : redArrow
           }
           alt="close tree"
         />
         <img
-          src={
-            parentDirectoryName
-              ? !parentDirectoryName.includes(":")
-                ? directoryIcon
-                : driveIcon
-              : monitorIcon
-          }
+          src={name ? (!isDrive ? directoryIcon : driveIcon) : monitorIcon}
           alt="folder"
           className="directory--icon"
         />
-        {parentDirectoryName || "This PC"}
+        {name || "This PC"}
       </p>
-      <div className="opendirectory--list" ref={listRef}>
-        {parentDirectory}
+      <div className={`opendirectory--list ${collapsed ? "hide-me" : ""}`}>
+        {children}
       </div>
     </div>
   );

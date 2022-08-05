@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useState } from "react";
+import { useReducer, useEffect } from "react";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -71,12 +71,11 @@ function reducer(state, action) {
 
 export default function DirectoryState() {
   const initState = JSON.parse(localStorage.getItem("state"));
-  const initTree = JSON.parse(sessionStorage.getItem("tree"));
 
   const [state, dispatch] = useReducer(reducer, {
     drive: initState?.drive || "",
     currentDirectory: initState?.currentDirectory || "",
-    directoryTree: initTree?.directoryTree || [""],
+    directoryTree: initState?.directoryTree || [""],
     navigatedDirectories: initState?.navigatedDirectories || [""],
     navigatedIndex: initState?.navigatedIndex || 0,
     refresh: false,
@@ -93,10 +92,6 @@ export default function DirectoryState() {
         navigatedIndex: state.navigatedIndex,
         refresh: false,
       })
-    );
-    sessionStorage.setItem(
-      "tree",
-      JSON.stringify({ directoryTree: state.directoryTree })
     );
   }, [state, dispatch]);
 

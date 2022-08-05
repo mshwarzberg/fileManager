@@ -5,10 +5,10 @@
   flex-direction: row;
   flex-wrap: wrap;
   position: relative;
-  height: 100vh;
-  top: 3rem;
+  height: calc(100vh - 4rem);
+  top: 1.5rem;
   align-content: flex-start;
-  padding: 0 1rem 10rem 1rem;
+  padding: 1.5rem 1rem 10rem 1rem;
   overflow-y: scroll;
   flex-grow: 1;
   & > h1 {
@@ -19,7 +19,7 @@
     text-align: center;
   }
   .renderitem--block {
-    width: 12rem;
+    width: 10rem;
     aspect-ratio: 0.8;
     position: relative;
     margin: 0.2rem;

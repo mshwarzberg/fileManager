@@ -24,11 +24,11 @@ function ffprobeMetadata(name, callback) {
 
   try {
     let output = child.execSync(probeCommand, { stdio: "pipe" }).toString();
+    output = JSON.parse(output);
+    let dimensions = output["streams"][0];
     exifr
       .parse(name, true)
       .then((data) => {
-        output = JSON.parse(output);
-        let dimensions = output["streams"][0];
         callback({
           width: dimensions.width,
           height: dimensions.height,
@@ -37,8 +37,6 @@ function ffprobeMetadata(name, callback) {
         });
       })
       .catch(() => {
-        output = JSON.parse(output);
-        let dimensions = output["streams"][0];
         callback({
           width: dimensions.width,
           height: dimensions.height,

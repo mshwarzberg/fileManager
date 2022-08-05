@@ -44,18 +44,18 @@ export default function App() {
           ]);
         });
     } else {
+      fetch("/api/directorytree/initialtree")
+        .then(async (res) => {
+          const response = await res.json();
+          dispatch({
+            type: "updateDirectoryTree",
+            value: [{ collapsed: false, permission: true }, ...response],
+          });
+        })
+        .catch((e) => {});
       fetch("/api/getdrives").then(async (res) => {
         const response = await res.json();
         setDirectoryItems(response);
-        dispatch({
-          type: "updateDirectoryTree",
-          value: [
-            "",
-            ...response.map((item) => {
-              return item.name.slice(0, item.name.length - 1);
-            }),
-          ],
-        });
       });
     }
     // eslint-disable-next-line
@@ -70,6 +70,14 @@ export default function App() {
         setDirectoryItems,
       }}
     >
+      {/* <button
+        onClick={() => {
+          localStorage.clear();
+          window.location.reload();
+        }}
+      >
+        click
+      </button> */}
       <Navbar setShowTree={setShowTree} showTree={showTree} />
       <div id="directory-and-item-container">
         <DirectoryTree showTree={showTree} />
