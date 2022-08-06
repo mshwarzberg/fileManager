@@ -8,22 +8,12 @@ export default function ImageGif(props) {
   const [srcAttempts, setSrcAttempts] = useState(0);
   return (
     thumbPath && (
-      <div
-        className="block-container"
-        id="renderitem--image-block"
-        onMouseDown={(e) => {
-          if (e.button === 0) {
-            e.stopPropagation();
-            return;
-          }
-        }}
-      >
+      <div className="block-container" id="renderitem--image-block">
         <img
-          style={{ cursor: !permission ? "not-allowed" : "pointer" }}
+          style={{ cursor: !permission ? "not-allowed" : "" }}
           src={thumbPath}
           onError={(e) => {
             e.target.parentElement.classList.add("loading");
-
             setTimeout(() => {
               if (srcAttempts <= 5) {
                 e.target.src = thumbPath;

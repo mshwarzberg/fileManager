@@ -4,18 +4,16 @@ import { addToDirectoryTree } from "../../../Helpers/ChangeItemInTree";
 
 import blackArrow from "../../../Assets/images/directorytree/right-arrow-black.png";
 import whiteArrow from "../../../Assets/images/directorytree/right-arrow-white.png";
-import redArrow from "../../../Assets/images/directorytree/right-arrow-red.png";
 
 import directory from "../../../Assets/images/folder.png";
 import driveIcon from "../../../Assets/images/drive.png";
+import notAllowedIcon from "../../../Assets/images/notallowed.png";
 
-export default function ChildDir({ child }) {
+export default function ChildDir({ child, altImage }) {
   const { state, dispatch } = useContext(GeneralContext);
-  const { path, name, permission, type } = child;
+  const { path, name, permission, isDirectory, isDrive } = child;
 
-  const isDrive = type === "drive";
-
-  function clickDirectory(toOpenDirectory) {
+  function clickDirectory(toOpenDirectory, toExpandTree) {
     if (!path.startsWith(state.drive) || !state.drive || isDrive) {
       let drive = isDrive ? name : path.slice(0, 2);
       dispatch({ type: "setDriveName", value: drive + "/" });
@@ -25,40 +23,51 @@ export default function ChildDir({ child }) {
         type: "openDirectory",
         value: path + "/",
       });
-      return;
+      if (!toExpandTree) {
+        return;
+      }
     }
     fetch("/api/directorytree", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ path: path }),
-    }).then(async (res) => {
-      const response = await res.json();
-      dispatch({
-        type: "updateDirectoryTree",
-        value: addToDirectoryTree(state.directoryTree, path, response),
-      });
-    });
+    })
+      .then(async (res) => {
+        const response = await res.json();
+        dispatch({
+          type: "updateDirectoryTree",
+          value: addToDirectoryTree(state.directoryTree, path, response),
+        });
+      })
+      .catch(() => {});
   }
 
   return (
     <div
       onClick={(e) => {
+        e.stopPropagation();
         if (!permission) {
           return;
         }
         clickDirectory(true);
+      }}
+      onDoubleClick={(e) => {
         e.stopPropagation();
+        clickDirectory(true, true);
       }}
       className={`tree--closed-directory ${!permission && "no-permission"}`}
       id={path + "/" === state.currentDirectory ? "highlight--child" : ""}
+      data-info={
+        permission && (isDrive || isDirectory) ? JSON.stringify(child) : null
+      }
     >
       <img
-        onClick={(e) => {
+        onMouseDown={(e) => {
+          e.stopPropagation();
           if (!permission) {
             return;
           }
           clickDirectory(false);
-          e.stopPropagation();
         }}
         className="tree--arrow"
         src={
@@ -66,14 +75,14 @@ export default function ChildDir({ child }) {
             ? path + "/" === state.currentDirectory
               ? blackArrow
               : whiteArrow
-            : redArrow
+            : notAllowedIcon
         }
         alt="expand directory"
       />
       <img
-        src={!isDrive ? directory : driveIcon}
+        src={altImage(name) || (!isDrive ? directory : driveIcon)}
         alt="folder"
-        className="directory--icon"
+        className="side--icon"
       />
       {name}
     </div>

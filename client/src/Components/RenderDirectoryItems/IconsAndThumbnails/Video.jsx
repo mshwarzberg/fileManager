@@ -6,8 +6,7 @@ import Filename from "./Icon/Filename";
 import { GeneralContext } from "../../Main/App";
 
 function Video({ item, setControllers }) {
-  const { name, thumbPath, permission, prefix, fileextension, duration, path } =
-    item;
+  const { name, thumbPath, permission, duration, path } = item;
 
   const { state, setDirectoryItems } = useContext(GeneralContext);
   const [srcAttempts, setSrcAttempts] = useState(0);
@@ -40,8 +39,7 @@ function Video({ item, setControllers }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prefix: prefix,
-        fileextension: fileextension,
+        name: name,
         currentdirectory: state.currentDirectory,
       }),
       signal: newController.signal,

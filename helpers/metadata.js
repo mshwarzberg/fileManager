@@ -5,18 +5,11 @@ const { checkType } = require("./verifiers");
 
 function Metadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
-  let fileextension = "";
+  let fileextension;
+  let itemtype;
   // get the file extension
   if (!item.isDirectory) {
-    for (let i = file.name.length - 1; i >= 0; i--) {
-      if (file.name[i] !== "." && fileextension === "") {
-        fileextension = file.name[i];
-      } else if (file.name[i] !== ".") {
-        fileextension = file.name[i] + fileextension;
-      } else {
-        break;
-      }
-    }
+    [itemtype, fileextension] = checkType(file.name);
   }
 
   // get the filename without the extension
@@ -33,6 +26,7 @@ function Metadata(file, directory, drive) {
       prefix += file.name[j];
     }
   }
+
   let sizeOf, symLink;
   let permission = true;
   try {
@@ -48,7 +42,6 @@ function Metadata(file, directory, drive) {
       symLink = fs.readlinkSync(
         `${directory === "/" ? directory : directory + "/"}${file.name}`
       );
-      symLink = symLink.slice(2, symLink.length);
       symLink = symLink.replaceAll("\\", "/");
     }
   } catch {
@@ -64,11 +57,7 @@ function Metadata(file, directory, drive) {
     return {};
   }
   let isMedia, restOfPath;
-  if (
-    checkType(fileextension) === "video" ||
-    checkType(fileextension) === "image" ||
-    checkType(fileextension) === "gif"
-  ) {
+  if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
     isMedia = true;
     restOfPath = directory.slice(drive.length, directory.length);
   }
@@ -76,7 +65,7 @@ function Metadata(file, directory, drive) {
   const filteredData = {
     ...item,
     path: `${directory}${file.name}`,
-    itemtype: item.isDirectory ? "folder" : checkType(fileextension),
+    itemtype: item.isDirectory ? "folder" : itemtype,
     fileextension: fileextension || "",
     prefix: prefix,
     permission: permission,
@@ -86,9 +75,10 @@ function Metadata(file, directory, drive) {
     created: dateCreated || 0,
     ...(symLink && { linkTo: symLink }),
     ...(isMedia && {
-      thumbPath: `${drive}/temp/${restOfPath}/${prefix + fileextension}.jpeg`,
+      thumbPath: `${drive}temp/${restOfPath}${prefix + fileextension}.jpeg`,
     }),
   };
+
   return filteredData;
 }
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import formatDuration from "../../../../Helpers/FormatVideoTime";
 import FormatDate from "../../../../Helpers/FormatDate";
-import loading from "../../../../Assets/images/loading.png";
 import close from "../../../../Assets/images/close.png";
 import FormatSize from "../../../../Helpers/FormatSize";
 
@@ -91,11 +90,7 @@ export default function Properties({
       </div>
       <div>
         Size:&nbsp;
-        {formattedSize ? (
-          formattedSize
-        ) : (
-          <img src={loading} alt="" id="loading" />
-        )}
+        {formattedSize ? formattedSize : <img src={""} alt="" id="loading" />}
         {itemProperties.count && <p>&nbsp;&nbsp;{itemProperties.count}</p>}
       </div>
       {itemProperties.duration && (

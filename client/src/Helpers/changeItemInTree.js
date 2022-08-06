@@ -11,11 +11,25 @@ function addToDirectoryTree(tree, path, directories) {
       tree.splice(i, 1, directories);
     }
   }
-
   return tree;
 }
-
 function expandAndCollapseDirectory(tree, path, bool) {
+  if (!path) {
+    for (let i = 1; i < tree.length - 1; i++) {
+      if (tree[i][0]) {
+        tree[i].splice(0, 1, {
+          ...tree[i][0],
+          collapsed: bool,
+        });
+      } else {
+        tree.splice(i, 1, {
+          ...tree[i],
+          collapsed: bool,
+        });
+      }
+    }
+    return tree;
+  }
   for (const i in tree) {
     const firstElement = tree[i][0];
     if (firstElement && path.startsWith(firstElement.path)) {
@@ -29,5 +43,15 @@ function expandAndCollapseDirectory(tree, path, bool) {
   }
   return tree;
 }
-
-export { expandAndCollapseDirectory, addToDirectoryTree };
+function countTree(tree) {
+  let num = 0;
+  for (const subTree of tree) {
+    num++;
+    if (subTree[0]) {
+      num += countTree(subTree);
+    }
+  }
+  console.log(num);
+  return num * 1;
+}
+export { expandAndCollapseDirectory, addToDirectoryTree, countTree };

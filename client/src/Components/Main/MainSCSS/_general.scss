@@ -5,21 +5,32 @@
   font: 1rem "Times New Roman";
   margin: 0;
   padding: 0;
-  // scrollbar-width: none;
-  // &::-webkit-scrollbar {
-  //   display: none;
-  //   -ms-overflow-style: none;
-  // }
 }
 
 #directory-and-item-container {
   display: flex;
   flex-direction: row;
+  #split-main-page {
+    height: 91vh;
+    position: relative;
+    top: 2vh;
+    flex: 0 0 0.5rem;
+    margin: 0.5rem;
+    background: linear-gradient(
+      90deg,
+      #00000000 0%,
+      #00000000 30%,
+      #aaa 50%,
+      #00000000 70%,
+      #00000000 100%
+    );
+    border-radius: 40%;
+  }
 }
 
 html,
 body {
-  background: #444;
+  background: #333;
   overflow: hidden;
   width: 100%;
   height: 100%;

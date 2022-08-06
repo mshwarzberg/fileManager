@@ -4,7 +4,7 @@ export default function TransferFunction(
   contextMenu,
   setDirectoryItems,
   setClipboardData,
-  state
+  currentDirectory
 ) {
   fetch("/api/manage/transfer", {
     method: "POST",
@@ -18,23 +18,23 @@ export default function TransferFunction(
   })
     .then((res) => {
       if (res.status === 409) {
-        alert("File already exists");
+        console.log(res);
         return;
       } else if (res.status === 500) {
         alert("Error occurred");
         return;
       }
       if (contextMenu) {
-        if (state.currentDirectory === contextMenu.info.destination) {
+        if (currentDirectory === contextMenu.info.destination) {
           setDirectoryItems((prevItems) => [
             ...prevItems,
             {
               ...clipboardData.metadata,
-              path: state.currentDirectory + clipboardData.metadata.name,
+              path: currentDirectory + clipboardData.metadata.name,
             },
           ]);
         } else if (
-          state.currentDirectory !== contextMenu.info.destination &&
+          currentDirectory !== contextMenu.info.destination &&
           clipboardData.mode === "cut"
         ) {
           setDirectoryItems((prevItems) => {
@@ -49,9 +49,16 @@ export default function TransferFunction(
         if (clipboardData.mode === "cut") {
           setClipboardData({});
         }
+      } else {
+        setDirectoryItems((prevItems) => {
+          return prevItems.map((prevItem) => {
+            if (prevItem.name === clipboardData.metadata.name) {
+              return {};
+            }
+            return prevItem;
+          });
+        });
       }
     })
-    .catch((e) => {
-      alert(e.toString());
-    });
+    .catch((e) => {});
 }

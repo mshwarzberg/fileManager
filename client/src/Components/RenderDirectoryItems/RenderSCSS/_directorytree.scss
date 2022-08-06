@@ -1,36 +1,22 @@
 @import "../../Main/MainSCSS/variables.scss";
 
-@keyframes hoverDirs {
+@keyframes hideRotate {
   0% {
-    transform: scaleX(1) scaleY(1);
+    transform: rotate(0deg);
   }
   100% {
-    transform: scaleX(1.03) scaleY(1.05);
+    transform: rotate(-90deg);
+  }
+}
+@keyframes showRotate {
+  0% {
+    transform: rotate(-90deg);
+  }
+  100% {
+    transform: rotate(0deg);
   }
 }
 
-.opendirectory--list {
-  $var: 0;
-
-  @for $i from 0 through 15 {
-    &:nth-child(#{$i}) {
-      margin-left: #{$var * 7}px;
-      $var: $var + 1;
-    }
-  }
-}
-
-#directorytree--button-showhide {
-  @include navbarBtn;
-  position: absolute;
-  z-index: 10;
-  top: 0;
-  height: 2.5rem;
-  width: 5rem;
-  left: 5px;
-  max-width: 10%;
-  font-size: 1.1em;
-}
 @keyframes rollDown {
   0% {
     transform: scaleY(0);
@@ -53,72 +39,76 @@
     height: 0;
   }
 }
+.opendirectory--list {
+  $var: 0;
+
+  @for $i from 0 through 15 {
+    &:nth-child(#{$i}) {
+      margin-left: #{$var * 7}px;
+      $var: $var + 1;
+    }
+  }
+}
+
+#directorytree--button-showhide {
+  @include navbarBtn;
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  height: 2.5rem;
+  width: 5rem;
+  left: 5px;
+  max-width: 10%;
+  font-size: 1.1em;
+}
 #directorytree--body {
   z-index: 1;
-  height: calc(100vh - 4rem);
+  height: calc(100vh - 5.5rem);
   top: 1.5rem;
-  flex: 0 0 30rem;
-  background-color: #000;
   position: relative;
   padding: 1rem;
   padding-bottom: 6rem;
   overflow-y: auto;
   overflow-x: auto;
+  flex: 0 0 30rem;
   .tree--expanded-chunk {
     position: relative;
-    .opendirectory--list {
-      animation: rollDown 200ms ease-in forwards;
-      &.hide-me {
-        animation: rollUp 200ms ease-in forwards;
-      }
-    }
     .tree--open-directory,
-    .tree--closed-directory {
+    .tree--closed-directory,
+    .tree--file {
       display: flex;
       flex-direction: row;
       align-items: center;
       padding-left: 5px;
-      height: 1.5rem;
+      height: 1.3rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-bottom: 4px;
-      font-family: "roboto slab";
+      margin-bottom: 2px;
+      font-family: akshar;
       border-radius: 3px;
-      letter-spacing: -0.2px;
+      letter-spacing: 0.2px;
+      font-size: 0.9rem;
       &:hover {
         cursor: pointer;
         background-color: #111;
         color: white;
         transform: scaleX(1.005) scaleY(1.06);
-        border: 1px solid white;
-        transition: all 100ms ease-out;
+        outline: 1px solid white;
       }
-      .directory--icon {
+      .side--icon {
         width: 1.1em;
         margin-right: 5px;
       }
-      @keyframes hideRotate {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(-90deg);
-        }
-      }
-      @keyframes showRotate {
-        0% {
-          transform: rotate(-90deg);
-        }
-        100% {
-          transform: rotate(0deg);
-        }
-      }
       .tree--arrow {
-        height: 1.2rem;
-        margin-left: 2px;
+        height: 1rem;
         margin-right: 5px;
         cursor: default;
+        position: relative;
+        height: 100%;
+        left: -4px;
+        padding: 2px;
+        padding-left: 4px;
         animation: showRotate linear 200ms forwards;
         &.rotate-me {
           animation: hideRotate linear 200ms forwards;
@@ -128,44 +118,52 @@
     .tree--open-directory {
       background-color: #111;
       color: white;
-      font-size: 1.1rem;
       &:hover {
         background-color: #444;
+      }
+    }
+    .tree--closed-directory,
+    .tree--file {
+      background-color: #222;
+      color: white;
+      &.no-permission {
+        background-color: #ba5555;
+        border: 1.2px solid #f00;
+        cursor: not-allowed;
+        transform: none;
+        color: white;
+        outline: none;
       }
     }
     #highlight--child {
       background-color: $accentColor;
       color: #000;
       font-weight: bold;
+      &:hover {
+        outline: 1px solid black;
+      }
     }
     #tree--in-path {
       background-color: darken($accentColor, 60%);
       color: white;
       font-weight: normal;
       &:hover {
-        color: #000;
-        background-color: $accentColor;
-        border: none;
+        background-color: darken($accentColor, 65%);
       }
     }
-    .tree--closed-directory {
-      background-color: #222;
-      color: white;
-      &.no-permission {
-        background-color: #cc7878c5;
-        border: 2px solid red;
-        cursor: not-allowed;
-        transform: none;
-        color: white;
-      }
+  }
+  .opendirectory--list {
+    animation: rollDown 200ms ease-in forwards;
+    &.hide-me {
+      animation: rollUp 200ms ease-in forwards;
     }
   }
   .line--down {
     position: absolute;
-    margin-top: 2.5rem;
+    margin-top: 1.75rem;
     left: 0;
     top: 0;
-    height: calc(100% - 2.5rem);
+    height: calc(100% - 2rem);
     width: 0.5rem;
     background: linear-gradient(
       to right,

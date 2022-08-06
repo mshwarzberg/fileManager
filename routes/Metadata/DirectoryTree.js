@@ -3,43 +3,49 @@ const router = express.Router();
 const fs = require("fs");
 const { checkIfFileOrDir } = require("../../helpers/isfileordirectory");
 const { execSync } = require("child_process");
+const { checkType } = require("../../helpers/verifiers");
 
 router.post("/", (req, res) => {
   const { path } = req.body;
-
   if (!path) {
     return res.send({ err: "path is blank" }).status(404);
   }
+
   fs.readdir(path + "/", { withFileTypes: true }, (error, files) => {
     if (error) return res.end();
     let dirArray = [];
     for (const item of files) {
-      if (checkIfFileOrDir(item).isDirectory) {
-        if (
-          (item.name === "temp" || item.name === "$RECYCLE.BIN") &&
-          path.length === 2
-        ) {
-          continue;
-        }
-        let permission = true;
-        try {
-          fs.statSync(`${path + "/"}${item.name}`);
-        } catch {
-          permission = false;
-        }
-        dirArray.push({
-          path: path + "/" + item.name,
-          name: item.name,
-          collapsed: true,
-          permission: permission,
-        });
+      if (
+        (item.name === "temp" ||
+          item.name === "$RECYCLE.BIN" ||
+          item.name === "System Volume Information") &&
+        path.length === 2
+      ) {
+        continue;
       }
+      let permission = true;
+      try {
+        fs.statSync(`${path + "/"}${item.name}`);
+      } catch {
+        permission = false;
+      }
+      dirArray.push({
+        path: path + "/" + item.name,
+        name: item.name,
+        itemtype: checkType(item.name)[0],
+        permission: permission,
+        isFile: checkIfFileOrDir(item).isFile,
+        isDirectory: checkIfFileOrDir(item).isDirectory,
+        isSymbolicLink: checkIfFileOrDir(item).isSymbolicLink,
+        ...(checkIfFileOrDir(item).isDirectory && { collapsed: true }),
+        collapsed: true,
+      });
     }
     res.send(dirArray);
   });
 });
 
-router.get("/initialtree", (req, res) => {
+router.get("/initialtree", (_, res) => {
   let listOfDrives = execSync(
     "wmic logicaldisk get name, size /format:Textvaluelist"
   );
@@ -72,8 +78,9 @@ router.get("/initialtree", (req, res) => {
         name: directory,
         path: `C:/Users/${username}/${directory}`,
         permission: true,
-        hidden: false,
         type: "default",
+        isDirectory: true,
+        collapsed: true,
       });
     }
   }

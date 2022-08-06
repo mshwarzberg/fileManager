@@ -7,63 +7,76 @@ function verifyFolder(req, res, next) {
   return res.send([{ err: "ERROR: FOLDER DOES NOT EXIST" }]).status(404);
 }
 
-function checkType(type) {
-  if (type) {
-    type = type.toLowerCase();
+function checkType(fullName) {
+  if (!fullName) {
+    return ["", ""];
+  }
+  let fileextension = "";
+  for (let i = fullName.length - 1; i >= 0; i--) {
+    if (fullName[i] !== "." && fileextension === "") {
+      fileextension = fullName[i];
+    } else if (fullName[i] !== ".") {
+      fileextension = fullName[i] + fileextension;
+    } else {
+      break;
+    }
+  }
+  if (fileextension) {
+    fileextension = fileextension.toLowerCase();
   }
 
   const checkIfImage = [
-    type === "jpg",
-    type === "png",
-    type === "jpeg",
-    type === "avif",
-    type === "svg",
-    type === "tiff",
-    type === "bmp",
-    type === "cur",
+    fileextension === "jpg",
+    fileextension === "png",
+    fileextension === "jpeg",
+    fileextension === "avif",
+    fileextension === "svg",
+    fileextension === "tiff",
+    fileextension === "bmp",
+    fileextension === "cur",
   ];
   const checkIfVideo = [
-    type === "mp4",
-    type === "mkv",
-    type === "webm",
-    type === "avi",
-    type === "wmv",
+    fileextension === "mp4",
+    fileextension === "mkv",
+    fileextension === "webm",
+    fileextension === "avi",
+    fileextension === "wmv",
   ];
 
-  const checkIfGif = [type === "gif"];
+  const checkIfGif = [fileextension === "gif"];
 
   const checkIfText = [
-    type === "txt",
-    type === "rtf",
-    type === "ion",
-    type === "docx",
-    type === "json",
-    type === "jsx",
-    type === "js",
-    type === "scss",
-    type === "md",
-    type === "py",
-    type === "css",
-    type === "html",
-    type === "xhtml",
-    type === "ini",
-    type === "lnk",
+    fileextension === "txt",
+    fileextension === "rtf",
+    fileextension === "ion",
+    fileextension === "docx",
+    fileextension === "json",
+    fileextension === "jsx",
+    fileextension === "js",
+    fileextension === "scss",
+    fileextension === "md",
+    fileextension === "py",
+    fileextension === "css",
+    fileextension === "html",
+    fileextension === "xhtml",
+    fileextension === "ini",
+    fileextension === "lnk",
   ];
 
+  let type;
   if (checkIfImage.includes(true)) {
-    return "image";
-  }
-  if (checkIfVideo.includes(true)) {
-    return "video";
-  }
-  if (checkIfGif.includes(true)) {
-    return "gif";
-  }
-  if (checkIfText.includes(true)) {
-    return "document";
+    type = "image";
+  } else if (checkIfVideo.includes(true)) {
+    type = "video";
+  } else if (checkIfGif.includes(true)) {
+    type = "gif";
+  } else if (checkIfText.includes(true)) {
+    type = "document";
   } else {
-    return "unknown";
+    type = "unknown";
   }
+
+  return [type, fileextension];
 }
 
 module.exports = { verifyFolder, checkType };

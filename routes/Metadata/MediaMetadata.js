@@ -5,19 +5,15 @@ const { ffprobeMetadata } = require("../../helpers/ffmpegfunctions");
 const { verifyFolder, checkType } = require("../../helpers/verifiers");
 
 router.post("/", verifyFolder, (req, res) => {
-  const { currentdirectory, fileextension, prefix } = req.body;
-
+  const { currentdirectory, name } = req.body;
   if (
-    checkType(fileextension) === "video" ||
-    checkType(fileextension) === "gif" ||
-    checkType(fileextension) === "image"
+    checkType(name)[0] === "video" ||
+    checkType(name)[0] === "gif" ||
+    checkType(name)[0] === "image"
   ) {
-    ffprobeMetadata(
-      `${currentdirectory}/${prefix}.${fileextension}`,
-      (data) => {
-        return res.send(data);
-      }
-    );
+    ffprobeMetadata(`${currentdirectory}/${name}`, (data) => {
+      return res.send(data);
+    });
   } else {
     res.end();
   }

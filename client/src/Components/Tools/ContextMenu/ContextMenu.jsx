@@ -7,6 +7,7 @@ import Paste from "./Functions/Paste";
 import NewDirectory from "./Functions/NewDirectory";
 import Refresh from "./Functions/Refresh";
 import OpenFileManager from "./Functions/OpenFileManager";
+import View from "./Functions/View";
 
 export default function ContextMenu({
   contextMenu,
@@ -50,6 +51,9 @@ export default function ContextMenu({
   return (
     Object.entries(contextMenu).length && (
       <div id="menu" style={{ top: contextMenu.y, left: contextMenu.x }}>
+        {contextMenu.items.includes("view") && (
+          <View setContextMenu={setContextMenu} />
+        )}
         {contextMenu.items.includes("rename") && (
           <Rename originalItem={contextMenu.info} />
         )}

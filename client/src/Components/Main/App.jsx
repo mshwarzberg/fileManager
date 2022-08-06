@@ -49,7 +49,10 @@ export default function App() {
           const response = await res.json();
           dispatch({
             type: "updateDirectoryTree",
-            value: [{ collapsed: false, permission: true }, ...response],
+            value: [
+              { collapsed: false, permission: true, isRoot: true },
+              ...response,
+            ],
           });
         })
         .catch((e) => {});
@@ -70,17 +73,18 @@ export default function App() {
         setDirectoryItems,
       }}
     >
-      {/* <button
+      <button
         onClick={() => {
           localStorage.clear();
           window.location.reload();
         }}
       >
         click
-      </button> */}
+      </button>
       <Navbar setShowTree={setShowTree} showTree={showTree} />
       <div id="directory-and-item-container">
         <DirectoryTree showTree={showTree} />
+        <div id="split-main-page" />
         <RenderItems
           controllers={controllers}
           setControllers={setControllers}

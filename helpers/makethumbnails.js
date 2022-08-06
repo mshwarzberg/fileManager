@@ -14,8 +14,8 @@ function makeThumbs(drive, currentdirectory, prefix, fileextension) {
     if (files && files.indexOf(`${prefix}${fileextension}.jpeg`) === -1) {
       // generate thumbnails for videos and gifs
       if (
-        checkType(fileextension) === "video" ||
-        checkType(fileextension) === "gif"
+        checkType(`${prefix}.${fileextension}`)[0] === "video" ||
+        checkType(`${prefix}.${fileextension}`)[0] === "gif"
       ) {
         ffmpegThumbs(
           `${currentdirectory}/${prefix}.${fileextension}`,
@@ -24,7 +24,7 @@ function makeThumbs(drive, currentdirectory, prefix, fileextension) {
         );
       }
       // generate thumbnails for images
-      else if (checkType(fileextension) === "image") {
+      else if (checkType(`${prefix}.${fileextension}`)[0] === "image") {
         sharp(`${currentdirectory}/${prefix}.${fileextension}`)
           .resize({ width: 400 })
           .toFile(`${drive}/temp/${restOfPath}/${prefix}${fileextension}.jpeg`)

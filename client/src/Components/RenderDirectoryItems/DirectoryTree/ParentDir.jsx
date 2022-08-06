@@ -3,18 +3,15 @@ import { GeneralContext } from "../../Main/App";
 import { expandAndCollapseDirectory } from "../../../Helpers/ChangeItemInTree";
 
 import directoryIcon from "../../../Assets/images/folder.png";
-import driveIcon from "../../../Assets/images/drive.png";
 import monitorIcon from "../../../Assets/images/monitor.png";
 
 import blackArrow from "../../../Assets/images/directorytree/down-arrow-black.png";
 import whiteArrow from "../../../Assets/images/directorytree/down-arrow-white.png";
 import redArrow from "../../../Assets/images/directorytree/down-arrow-red.png";
 
-export default function ParentDir({ parentDir, children }) {
-  const { path, name, permission, type, collapsed } = parentDir;
+export default function ParentDir({ parentDir, altImage, children }) {
+  const { path, name, permission, collapsed, isDirectory, isDrive } = parentDir;
   const { state, dispatch } = useContext(GeneralContext);
-
-  const isDrive = type === "drive";
 
   function isInPath() {
     if (path + "/" === state.currentDirectory) {
@@ -24,6 +21,17 @@ export default function ParentDir({ parentDir, children }) {
     }
     return "";
   }
+
+  function sideIcon() {
+    if (!name) {
+      return monitorIcon;
+    }
+    if (altImage(name)) {
+      return altImage(name);
+    }
+    return directoryIcon;
+  }
+
   return (
     <div className="tree--expanded-chunk">
       <div
@@ -41,15 +49,21 @@ export default function ParentDir({ parentDir, children }) {
         }
         id={isInPath()}
         onClick={(e) => {
+          e.stopPropagation();
           dispatch({ type: "openDirectory", value: path ? path + "/" : "" });
           if (!path.startsWith(state.drive)) {
             dispatch({ type: "setDriveName", value: path.slice(0, 4) });
           }
-          e.stopPropagation();
         }}
+        data-info={
+          permission && (isDrive || isDirectory)
+            ? JSON.stringify(parentDir)
+            : null
+        }
       >
         <img
           onClick={(e) => {
+            e.stopPropagation();
             if (!name) {
               return;
             }
@@ -67,7 +81,6 @@ export default function ParentDir({ parentDir, children }) {
                 true
               ),
             });
-            e.stopPropagation();
           }}
           className={`tree--arrow ${collapsed ? "rotate-me" : ""}`}
           src={
@@ -79,11 +92,7 @@ export default function ParentDir({ parentDir, children }) {
           }
           alt="close tree"
         />
-        <img
-          src={name ? (!isDrive ? directoryIcon : driveIcon) : monitorIcon}
-          alt="folder"
-          className="directory--icon"
-        />
+        <img src={sideIcon()} alt="folder" className="side--icon" />
         {name || "This PC"}
       </p>
       <div className={`opendirectory--list ${collapsed ? "hide-me" : ""}`}>
