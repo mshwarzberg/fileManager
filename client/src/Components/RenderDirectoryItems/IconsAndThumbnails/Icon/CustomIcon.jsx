@@ -17,16 +17,18 @@ export default function CustomIcon({ fileextension }) {
         clipPath="polygon(100% 0, 100% 75%, 69% 100%, 0 100%, 0 0)"
         className="svg--icon"
       />
-      <rect
-        x="4.5"
-        y="20"
-        width="50"
-        height="25"
-        fill={ColorizeIcons(fileextension)}
-        rx="1"
-        ry="1"
-        className="svg--icon"
-      />
+      {fileextension.length < 7 && (
+        <rect
+          x="4.5"
+          y="20"
+          width="50"
+          height="25"
+          fill={ColorizeIcons(fileextension)}
+          rx="1"
+          ry="1"
+          className="svg--icon"
+        />
+      )}
       <rect
         width="25"
         height="25"
@@ -45,22 +47,24 @@ export default function CustomIcon({ fileextension }) {
         clipPath="polygon(100% 0, 0% 100%, 100% 100%)"
         className="svg--icon"
       />
-      <text
-        fill={
-          ColorizeIcons(fileextension) === "white" ||
-          ColorizeIcons(fileextension) === "yellow"
-            ? "black"
-            : "white"
-        }
-        x="30"
-        y={fileextension.length > 4 ? "36" : "40"}
-        className="custom-icon-text"
-        style={{
-          fontSize: fileextension.length > 4 ? "0.6em" : "1.3em",
-        }}
-      >
-        {fileextension.toUpperCase()}
-      </text>
+      {fileextension.length < 7 && (
+        <text
+          fill={
+            ColorizeIcons(fileextension) === "white" ||
+            ColorizeIcons(fileextension) === "yellow"
+              ? "black"
+              : "white"
+          }
+          x="30"
+          y={fileextension.length > 4 ? "37.5" : "40"}
+          className="custom-icon-text"
+          style={{
+            fontSize: fileextension.length > 4 ? "0.8em" : "1.3em",
+          }}
+        >
+          {fileextension.toUpperCase()}
+        </text>
+      )}
     </svg>
   );
 }

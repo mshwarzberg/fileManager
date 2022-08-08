@@ -50,7 +50,7 @@ export default function DirectoryTree({ showTree }) {
         return mapDirectoryTreeLoop(child, tree);
       }
       if (child.isFile) {
-        return <Files child={child} />;
+        return <Files child={child} key={child.path} />;
       }
 
       return (
@@ -79,10 +79,13 @@ export default function DirectoryTree({ showTree }) {
 
   return (
     showTree && (
-      <div id="directorytree--body">
-        {mapDirectoryTreeLoop(state.directoryTree, {})}
-        <div id="resize--tree" />
-      </div>
+      <>
+        <div id="directorytree--body">
+          {mapDirectoryTreeLoop(state.directoryTree, {})}
+          <div id="resize--tree" />
+        </div>
+        <div id="split-main-page" />
+      </>
     )
   );
 }

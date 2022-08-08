@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import formatDuration from "../../../../Helpers/FormatVideoTime";
 import FormatDate from "../../../../Helpers/FormatDate";
 import close from "../../../../Assets/images/close.png";
 import FormatSize from "../../../../Helpers/FormatSize";
+import { UIContext } from "../../GeneralUI";
 
-export default function Properties({
-  contextMenu,
-  setShowProperties,
-  setContextMenu,
-}) {
+export default function Properties({ setShowProperties }) {
+  const { setContextMenu, contextMenu } = useContext(UIContext);
   const [itemProperties, setItemProperties] = useState(contextMenu?.info);
 
   useEffect(() => {

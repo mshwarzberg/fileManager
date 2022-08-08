@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, createContext } from "react";
 import ContextMenu from "./ContextMenu/ContextMenu";
 import CustomTitle from "./CustomTitle";
 import useContainWithinScreen from "../../Hooks/useContainWithinScreen";
 import Properties from "./ContextMenu/Functions/Properties";
-// import Confirm from "./Popups/Confirm";
-// import Alert from "./Popups/Alert";
-// import Prompt from "./Popups/Prompt";
+import Prompt from "./ContextMenu/Functions/Popups/Prompt";
 
-export default function GeneralUI() {
+export const UIContext = createContext();
+
+export default function GeneralUI({ itemsSelected, setItemsSelected }) {
   const [contextMenu, setContextMenu] = useState({});
   const [title, setTitle] = useState({});
   const [showProperties, setShowProperties] = useState(false);
-  // const [popups, setPopups] = useState();
+  const [prompt, setPrompt] = useState({});
 
   useContainWithinScreen("#menu", setContextMenu, [
     contextMenu.x,
@@ -20,12 +20,18 @@ export default function GeneralUI() {
   useContainWithinScreen("#custom-title", setTitle, [title.title]);
 
   return (
-    <>
-      <ContextMenu
-        contextMenu={contextMenu}
-        setContextMenu={setContextMenu}
-        setShowProperties={setShowProperties}
-      />
+    <UIContext.Provider
+      value={{
+        itemsSelected,
+        setItemsSelected,
+        contextMenu,
+        setContextMenu,
+        prompt,
+        setPrompt,
+      }}
+    >
+      <Prompt />
+      <ContextMenu setShowProperties={setShowProperties} />
       <CustomTitle
         contextMenu={contextMenu}
         title={title}
@@ -33,12 +39,10 @@ export default function GeneralUI() {
       />
       {showProperties && (
         <Properties
-          contextMenu={contextMenu}
-          setContextMenu={setContextMenu}
           showProperties={showProperties}
           setShowProperties={setShowProperties}
         />
       )}
-    </>
+    </UIContext.Provider>
   );
 }

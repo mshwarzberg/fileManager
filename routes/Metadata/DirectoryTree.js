@@ -29,6 +29,7 @@ router.post("/", (req, res) => {
       } catch {
         permission = false;
       }
+
       dirArray.push({
         path: path + "/" + item.name,
         name: item.name,

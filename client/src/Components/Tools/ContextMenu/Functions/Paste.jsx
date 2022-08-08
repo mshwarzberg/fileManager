@@ -1,38 +1,35 @@
 import React, { useContext } from "react";
 import { GeneralContext } from "../../../Main/App";
-import TransferFunction from "./TransferFunction";
+import TransferFunction from "../../../../Helpers/TransferFunction";
 
 export default function Paste({
   clipboardData,
   setClipboardData,
   contextMenu,
+  setContextMenu,
 }) {
   const { setDirectoryItems, state } = useContext(GeneralContext);
 
-  let destination;
-  if (contextMenu) {
-    destination = contextMenu.info.destination + clipboardData.metadata.name;
-  } else {
-    destination = clipboardData.metadata.destination;
-  }
   return (
     <button
       className="context-menu-item"
       onClick={() => {
         TransferFunction(
-          clipboardData,
-          destination,
-          contextMenu,
-          setDirectoryItems,
-          setClipboardData,
-          state
+          [clipboardData.metadata],
+          contextMenu.info.path,
+          clipboardData.mode,
+          state.currentDirectory,
+          setDirectoryItems
         );
+        if (clipboardData.mode === "cut") {
+          setClipboardData({});
+        }
+        setContextMenu({});
       }}
     >
-      Paste&nbsp;
-      {contextMenu.info.destination !== state.currentDirectory
-        ? "Into Folder"
-        : ""}
+      {contextMenu.info.path !== state.currentDirectory
+        ? "Paste Into Folder"
+        : "Paste"}
     </button>
   );
 }

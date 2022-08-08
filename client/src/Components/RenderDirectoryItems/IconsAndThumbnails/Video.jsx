@@ -6,7 +6,7 @@ import Filename from "./Icon/Filename";
 import { GeneralContext } from "../../Main/App";
 
 function Video({ item, setControllers }) {
-  const { name, thumbPath, permission, duration, path } = item;
+  const { name, thumbPath, duration, path } = item;
 
   const { state, setDirectoryItems } = useContext(GeneralContext);
   const [srcAttempts, setSrcAttempts] = useState(0);
@@ -85,9 +85,6 @@ function Video({ item, setControllers }) {
       >
         <img src={playIcon} alt="playvideo" className="renderitem--play-icon" />
         <img
-          style={{
-            cursor: !permission ? "not-allowed" : "pointer",
-          }}
           className="renderitem--thumbnail"
           src={thumbPath}
           onError={(e) => {

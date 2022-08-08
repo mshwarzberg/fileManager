@@ -5,6 +5,8 @@ import RenderItems from "../RenderDirectoryItems/RenderItems";
 import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import GeneralUI from "../Tools/GeneralUI";
+import useDragItems from "../../Hooks/useDragItems";
+import useSelectMultiple from "../../Hooks/useSelectMultiple";
 
 export const GeneralContext = createContext();
 
@@ -14,6 +16,8 @@ export default function App() {
   const [controllers, setControllers] = useState([]);
   const [directoryItems, setDirectoryItems] = useState();
   const [showTree, setShowTree] = useState(true);
+  const [dragMe, setDragMe] = useState();
+  const [itemsSelected, setItemsSelected] = useState([]);
 
   useEffect(() => {
     for (let i of controllers) {
@@ -36,12 +40,8 @@ export default function App() {
           const response = await res.json();
           setDirectoryItems(response);
         })
-        .catch((err) => {
-          setDirectoryItems([
-            {
-              err: err.toString(),
-            },
-          ]);
+        .catch(() => {
+          dispatch({ type: "resetToDefault" });
         });
     } else {
       fetch("/api/directorytree/initialtree")
@@ -62,7 +62,17 @@ export default function App() {
       });
     }
     // eslint-disable-next-line
-  }, [state.currentDirectory, state.refresh]);
+  }, [state.currentDirectory]);
+
+  useDragItems(
+    dragMe,
+    setDragMe,
+    state,
+    setDirectoryItems,
+    itemsSelected,
+    setItemsSelected
+  );
+  useSelectMultiple(itemsSelected, setItemsSelected);
 
   return (
     <GeneralContext.Provider
@@ -73,24 +83,19 @@ export default function App() {
         setDirectoryItems,
       }}
     >
-      <button
-        onClick={() => {
-          localStorage.clear();
-          window.location.reload();
-        }}
-      >
-        click
-      </button>
       <Navbar setShowTree={setShowTree} showTree={showTree} />
       <div id="directory-and-item-container">
         <DirectoryTree showTree={showTree} />
-        <div id="split-main-page" />
         <RenderItems
+          itemsSelected={itemsSelected}
           controllers={controllers}
           setControllers={setControllers}
         />
       </div>
-      <GeneralUI />
+      <GeneralUI
+        itemsSelected={itemsSelected}
+        setItemsSelected={setItemsSelected}
+      />
     </GeneralContext.Provider>
   );
 }

@@ -33,7 +33,9 @@ function ffprobeMetadata(name, callback) {
           width: dimensions.width,
           height: dimensions.height,
           duration: output["format"].duration,
-          ...(data?.description && { description: data.description }),
+          ...(data?.description && {
+            description: data.description.value || data.description,
+          }),
         });
       })
       .catch(() => {

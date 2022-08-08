@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 function verifyFolder(req, res, next) {
-  if (fs.existsSync(`${"/" || req.body.currentdirectory}`)) {
+  if (fs.existsSync(req.body.currentdirectory)) {
     return next();
   }
   return res.send([{ err: "ERROR: FOLDER DOES NOT EXIST" }]).status(404);

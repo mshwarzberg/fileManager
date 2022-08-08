@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
-const os = require("os");
 const { execSync } = require("child_process");
 
 router.post("/", (req, res) => {
@@ -9,29 +7,23 @@ router.post("/", (req, res) => {
   let transferItem;
   try {
     if (mode === "copy") {
-      if (os.platform() === "win32") {
-        let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
-        transferItem = `copy ${completePath}`;
-        if (isDirectory) {
-          transferItem = `xcopy ${completePath}\\ /s /h /e`;
-        }
-      } else if (os.platform() === "linux") {
-        transferItem = `cp "${source}" "${destination}"`;
+      let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
+      transferItem = `copy ${completePath}`;
+      if (isDirectory) {
+        transferItem = `xcopy ${completePath}\\ /s /h /e`;
       }
       execSync(transferItem);
     }
     if (mode === "cut") {
-      if (os.platform() === "win32") {
-        let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
-        transferItem = `move ${completePath}`;
-      }
-      execSync(transferItem);
+      let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
+      transferItem = `move ${completePath}`;
     }
+    execSync(transferItem);
+    return res.end();
   } catch (e) {
     console.log(e.toString());
     return res.status(500).send({ err: e.toString() });
   }
-  res.end();
 });
 
 module.exports = router;

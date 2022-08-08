@@ -38,6 +38,7 @@ export default function Files({ child }) {
           }),
         });
       }}
+      data-info={permission ? JSON.stringify(child) : null}
     >
       {displayIcon()}
       {name}

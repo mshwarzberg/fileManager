@@ -14,7 +14,10 @@ export default function ParentDir({ parentDir, altImage, children }) {
   const { state, dispatch } = useContext(GeneralContext);
 
   function isInPath() {
-    if (path + "/" === state.currentDirectory) {
+    if (
+      path + "/" === state.currentDirectory &&
+      state.currentDirectory.includes(name + "/")
+    ) {
       return "highlight--child";
     } else if (state.currentDirectory.startsWith(path) || !path) {
       return "tree--in-path";
@@ -44,6 +47,7 @@ export default function ParentDir({ parentDir, altImage, children }) {
         }}
       />
       <p
+        data-contextmenu={["rename", "properties", "cutcopy"]}
         className={
           collapsed ? "tree--closed-directory" : "tree--open-directory"
         }

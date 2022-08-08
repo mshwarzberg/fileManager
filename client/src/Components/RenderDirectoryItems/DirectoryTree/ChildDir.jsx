@@ -63,11 +63,14 @@ export default function ChildDir({ child, altImage }) {
     >
       <img
         onMouseDown={(e) => {
-          e.stopPropagation();
+          clickDirectory(false);
           if (!permission) {
             return;
           }
-          clickDirectory(false);
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
         }}
         className="tree--arrow"
         src={
@@ -81,7 +84,7 @@ export default function ChildDir({ child, altImage }) {
       />
       <img
         src={altImage(name) || (!isDrive ? directory : driveIcon)}
-        alt="folder"
+        alt="icon"
         className="side--icon"
       />
       {name}

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import rightArrow from "../../../../Assets/images/navigate-forwards.png";
-
-export default function View({ setContextMenu }) {
+import { UIContext } from "../../GeneralUI";
+export default function View() {
   const [showSubMenu, setShowSubMenu] = useState(false);
+  const { setContextMenu } = useContext(UIContext);
 
   const views = ["Extra Small", "Small", "Medium", "Large", "Extra Large"];
   const viewOptions = views.map((item) => {
@@ -37,7 +38,7 @@ export default function View({ setContextMenu }) {
     );
   });
   return (
-    <button className="context-menu-item">
+    <div className="context-menu-item">
       View&nbsp;
       <img
         src={rightArrow}
@@ -47,6 +48,6 @@ export default function View({ setContextMenu }) {
         }}
       />
       {showSubMenu && <div id="sub-menu">{viewOptions}</div>}
-    </button>
+    </div>
   );
 }

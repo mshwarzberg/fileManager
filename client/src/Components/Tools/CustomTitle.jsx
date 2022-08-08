@@ -4,7 +4,6 @@ import { useEffect } from "react";
 let titleTimeout;
 export default function CustomTitle({ title, setTitle, contextMenu }) {
   useEffect(() => {
-    let active = true;
     function titleEvent(e) {
       clearTimeout(titleTimeout);
       if (Object.entries(title)) {
@@ -29,16 +28,16 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
         }, 500);
       }
     }
+    function clearTitle() {
+      setTitle({});
+    }
     document.addEventListener("mousemove", titleEvent);
-    document.addEventListener("mousedown", () => {
-      if (active) {
-        setTitle({});
-      }
-    });
+    document.addEventListener("mousedown", clearTitle);
+    document.addEventListener("wheel", clearTitle);
     return () => {
-      active = false;
       document.removeEventListener("mousemove", titleEvent);
-      document.removeEventListener("mousedown", () => {});
+      document.removeEventListener("wheel", clearTitle);
+      document.removeEventListener("mousedown", clearTitle);
     };
     // eslint-disable-next-line
   }, [title.title, contextMenu.x, contextMenu.y]);

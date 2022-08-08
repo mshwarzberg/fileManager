@@ -47,3 +47,7 @@ body {
   --screen-width: 100vw;
   --screen-height: 100vh;
 }
+
+.dragging {
+  cursor: grabbing !important;
+}

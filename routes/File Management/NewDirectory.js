@@ -10,7 +10,7 @@ router.post("/", (req, res) => {
       err: e.toString(),
     });
   }
-  res.end();
+  res.send({});
 });
 
 module.exports = router;

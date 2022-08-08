@@ -17,7 +17,7 @@ router.post("/", verifyFolder, (req, res) => {
 
   res.send(result);
   fs.readdir(`${currentdirectory}`, { withFileTypes: true }, (err, files) => {
-    if (err) return console.log(err);
+    if (err) return console.log("Files and Directories", err);
     if (files) {
       const restOfPath = currentdirectory.slice(
         drive.length,

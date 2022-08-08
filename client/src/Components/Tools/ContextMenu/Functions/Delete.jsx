@@ -1,8 +1,11 @@
 import React, { useContext } from "react";
 import { GeneralContext } from "../../../Main/App";
+import { UIContext } from "../../GeneralUI";
 
 export default function Delete({ info }) {
   const { setDirectoryItems } = useContext(GeneralContext);
+  const { itemsSelected } = useContext(UIContext);
+
   return (
     <button
       className="context-menu-item"

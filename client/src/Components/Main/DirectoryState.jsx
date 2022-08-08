@@ -59,10 +59,13 @@ function reducer(state, action) {
         ...state,
         drive: action.value,
       };
-    case "refresh":
+    case "resetToDefault":
       return {
-        ...state,
-        refresh: !state.refresh,
+        drive: "",
+        currentDirectory: "",
+        directoryTree: [""],
+        navigatedDirectories: [""],
+        navigatedIndex: 0,
       };
     default:
       return state;
@@ -78,7 +81,6 @@ export default function DirectoryState() {
     directoryTree: initState?.directoryTree || [""],
     navigatedDirectories: initState?.navigatedDirectories || [""],
     navigatedIndex: initState?.navigatedIndex || 0,
-    refresh: false,
   });
 
   useEffect(() => {
@@ -90,7 +92,6 @@ export default function DirectoryState() {
         directoryTree: state.directoryTree,
         navigatedDirectories: state.navigatedDirectories,
         navigatedIndex: state.navigatedIndex,
-        refresh: false,
       })
     );
   }, [state, dispatch]);

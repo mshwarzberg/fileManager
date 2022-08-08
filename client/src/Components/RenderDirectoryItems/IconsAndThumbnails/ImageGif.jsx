@@ -10,7 +10,6 @@ export default function ImageGif(props) {
     thumbPath && (
       <div className="block-container" id="renderitem--image-block">
         <img
-          style={{ cursor: !permission ? "not-allowed" : "" }}
           src={thumbPath}
           onError={(e) => {
             e.target.parentElement.classList.add("loading");

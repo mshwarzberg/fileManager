@@ -11,7 +11,7 @@ router.post("/", verifyFolder, (req, res) => {
     checkType(name)[0] === "gif" ||
     checkType(name)[0] === "image"
   ) {
-    ffprobeMetadata(`${currentdirectory}/${name}`, (data) => {
+    ffprobeMetadata(`${currentdirectory}${name}`, (data) => {
       return res.send(data);
     });
   } else {

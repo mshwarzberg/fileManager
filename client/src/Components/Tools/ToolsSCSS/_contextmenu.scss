@@ -16,6 +16,7 @@
     background-color: #222;
     color: white;
     outline: 1px solid white;
+    @include flexStyle(row);
     &:hover {
       cursor: pointer;
       background-color: #444;

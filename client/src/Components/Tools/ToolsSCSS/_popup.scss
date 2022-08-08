@@ -1,0 +1,60 @@
+@import "../../Main/MainSCSS/variables";
+
+#popup-page {
+  width: 100vw;
+  height: 100vh;
+  background-color: #22222288;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  @include flexStyle(row);
+  .context-menu-item {
+    background-color: none;
+  }
+  #popup-body {
+    border-radius: 2px;
+    width: 40rem;
+    height: 20rem;
+    background-color: #888;
+    outline: 3px solid black;
+    @include flexStyle(row);
+    box-shadow: 1rem 1rem 10px black;
+    position: relative;
+    cursor: default;
+    #close-prompt {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background-color: #00000000;
+      outline: none;
+      cursor: pointer;
+      font-family: "Times New Roman", Times, serif;
+    }
+    textarea {
+      cursor: text;
+      width: 60%;
+      background-color: #fff;
+      color: black;
+      position: absolute;
+      top: 7rem;
+      height: 1.3rem;
+      outline: none;
+      word-wrap: break-word;
+      font-family: serif;
+      resize: none;
+    }
+    button {
+      position: relative;
+      top: 6rem;
+      margin-inline: 5rem;
+      width: 8rem;
+      height: 3rem;
+      font-family: bebas neue;
+      font-size: 1.4rem;
+    }
+  }
+}
