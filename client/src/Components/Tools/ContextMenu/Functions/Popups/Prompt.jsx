@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import closeIcon from "../../../../../Assets/images/close.png";
 import { UIContext } from "../../../GeneralUI";
 
@@ -14,7 +13,7 @@ export default function Prompt() {
     document
       .getElementById("prompt-input")
       ?.setSelectionRange(0, originalItem?.prefix?.length || 1000);
-  }, [prompt]);
+  }, [prompt.show]);
 
   return (
     show && (
@@ -43,7 +42,7 @@ export default function Prompt() {
               }
             }}
             id="prompt-input"
-            value={content || originalItem.name}
+            value={originalItem.name || content}
             onChange={(e) => {
               setPrompt((prevPrompt) => ({
                 ...prevPrompt,

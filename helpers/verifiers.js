@@ -29,11 +29,6 @@ function checkType(fullName) {
     fileextension === "jpg",
     fileextension === "png",
     fileextension === "jpeg",
-    fileextension === "avif",
-    fileextension === "svg",
-    fileextension === "tiff",
-    fileextension === "bmp",
-    fileextension === "cur",
   ];
   const checkIfVideo = [
     fileextension === "mp4",

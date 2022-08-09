@@ -22,6 +22,12 @@
     box-shadow: 1rem 1rem 10px black;
     position: relative;
     cursor: default;
+    #popup-dialog {
+      position: absolute;
+      top: 7rem;
+      font-family: "bebas neue";
+      font-size: 1.7rem;
+    }
     #close-prompt {
       position: absolute;
       top: 0.5rem;

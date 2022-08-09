@@ -45,7 +45,7 @@ export default function NewDirectory() {
     <button
       className="context-menu-item"
       onClick={() => {
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 1000; i++) {
           const newDirectoryName = `New Folder${i > 1 ? ` (${i})` : ""}`;
           if (!CheckIfExists(directoryItems, newDirectoryName, "name")) {
             setPrompt({

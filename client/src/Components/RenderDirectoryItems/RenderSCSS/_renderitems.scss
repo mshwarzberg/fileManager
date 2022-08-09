@@ -5,7 +5,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   position: relative;
-  height: calc(100vh - 5.5rem);
+  height: calc(100vh - 4rem);
   top: 1.5rem;
   align-content: flex-start;
   padding: 1.5rem 1rem 20rem 1rem;
@@ -41,9 +41,6 @@
       z-index: 1;
       top: 0;
       background-color: #00000000;
-      &:focus {
-        outline: 1px solid grey;
-      }
     }
     .block-container {
       @keyframes AnimationName {

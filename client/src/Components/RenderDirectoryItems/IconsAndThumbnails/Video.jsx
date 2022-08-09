@@ -76,12 +76,6 @@ function Video({ item, setControllers }) {
     thumbPath && (
       <div
         className="block-container"
-        onMouseDown={(e) => {
-          if (e.button === 0) {
-            e.stopPropagation();
-            return;
-          }
-        }}
       >
         <img src={playIcon} alt="playvideo" className="renderitem--play-icon" />
         <img

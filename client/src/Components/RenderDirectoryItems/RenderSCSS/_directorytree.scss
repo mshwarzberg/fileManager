@@ -63,7 +63,7 @@
 }
 #directorytree--body {
   z-index: 1;
-  height: calc(100vh - 5.5rem);
+  height: calc(100vh - 4rem);
   top: 1.5rem;
   position: relative;
   padding: 1rem;
@@ -136,7 +136,7 @@
       }
     }
     #highlight--child {
-      background-color: $accentColor;
+      background-color: white;
       color: #000;
       font-weight: bold;
       &:hover {

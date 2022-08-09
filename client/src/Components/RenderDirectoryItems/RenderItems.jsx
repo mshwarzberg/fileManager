@@ -13,6 +13,7 @@ export default function RenderItems({
   controllers,
   setControllers,
   itemsSelected,
+  setItemsSelected,
 }) {
   const { directoryItems, dispatch, state, setDirectoryItems } =
     useContext(GeneralContext);
@@ -62,8 +63,9 @@ export default function RenderItems({
             backgroundColor: !permission ? "#cc7878c5" : "",
             width: localStorage.getItem("blockWidth") || "10rem",
             ...(CheckIfExists(itemsSelected, path, "path") && {
-              backgroundColor: "#add8e6aa",
-              border: "2px solid darkblue",
+              backgroundColor: "#222233",
+              outline: "2px solid #111",
+              borderRadius: "1px",
             }),
           }}
         >
@@ -86,6 +88,28 @@ export default function RenderItems({
             onClick={(e) => {
               if (e.nativeEvent.pointerId === -1) {
                 navigateAndOpen();
+                return;
+              }
+              if (CheckIfExists(itemsSelected, item.path, "path")) {
+                if (e.ctrlKey) {
+                  setItemsSelected((prevItems) => {
+                    return prevItems
+                      .map((prevItem) => {
+                        if (prevItem.path === path) {
+                          return {};
+                        }
+                        return prevItem;
+                      })
+                      .filter((prevItem) => prevItem.name && prevItem);
+                  });
+                }
+              } else {
+                if (e.ctrlKey) {
+                  setItemsSelected((prevItems) => [...prevItems, item]);
+                  return;
+                } else if (e.button !== 2) {
+                  setItemsSelected([item]);
+                }
               }
             }}
             onDoubleClick={() => {
@@ -123,9 +147,7 @@ export default function RenderItems({
                       });
                     });
                   })
-                  .catch((e) => {
-                    console.log(e);
-                  });
+                  .catch((e) => {});
               }
             }}
             onMouseLeave={(e) => {

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const { checkIfFileOrDir } = require("../../helpers/isfileordirectory");
 const { execSync } = require("child_process");
 const { checkType } = require("../../helpers/verifiers");
 
@@ -25,9 +24,14 @@ router.post("/", (req, res) => {
       }
       let permission = true;
       try {
-        fs.statSync(`${path + "/"}${item.name}`);
+        fs.statSync(`${path}/${item.name}`);
       } catch {
         permission = false;
+      }
+      let symLink;
+      if (item.isSymbolicLink()) {
+        symLink = fs.readlinkSync(path + "/" + item.name);
+        symLink = symLink.replaceAll("\\", "/");
       }
 
       dirArray.push({
@@ -35,11 +39,11 @@ router.post("/", (req, res) => {
         name: item.name,
         itemtype: checkType(item.name)[0],
         permission: permission,
-        isFile: checkIfFileOrDir(item).isFile,
-        isDirectory: checkIfFileOrDir(item).isDirectory,
-        isSymbolicLink: checkIfFileOrDir(item).isSymbolicLink,
-        ...(checkIfFileOrDir(item).isDirectory && { collapsed: true }),
+        isFile: item.isFile(),
+        isDirectory: item.isDirectory(),
+        isSymbolicLink: item.isSymbolicLink(),
         collapsed: true,
+        ...(item.isSymbolicLink() && { linkTo: symLink }),
       });
     }
     res.send(dirArray);

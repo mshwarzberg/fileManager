@@ -53,9 +53,7 @@ export default function Properties({ setShowProperties }) {
                 } files, ${response.foldercount} folders)`,
               }));
             })
-            .catch((e) => {
-              console.log(e);
-            });
+            .catch((e) => {});
         })
         .catch((e) => {
           console.log("FileProperties.jsx directorydata", e);

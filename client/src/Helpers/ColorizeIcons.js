@@ -1,28 +1,49 @@
 export default function ColorizeIcons(fileextension) {
   fileextension = fileextension.toLowerCase();
-  if (fileextension === "jpg") return "#ff0000";
-  if (fileextension === "mp4") return "blue";
-  if (fileextension === "mkv") return "#000022";
-  if (fileextension === "json") return "#878372";
-  if (fileextension === "txt") return "teal";
-  if (fileextension === "rtf") return "#938aed";
-  if (fileextension === "png" || fileextension === "apng") return "#ff6e6e";
-  if (fileextension === "avi") return "#3223a5";
-  if (fileextension === "wmv") return "#878372";
-  if (fileextension === "html") return "#ffa500";
-  if (fileextension === "db") return "#775832";
-  if (fileextension === "xcf") return "green";
-  if (fileextension === "ion") return "#281010";
-  if (fileextension === "gif") return "white";
-  if (fileextension === "ini") return "#444444";
-  if (fileextension === "exe") return "#43ad66";
-  if (fileextension === "dll") return "#852297";
-  if (fileextension === "bin") return "yellow";
-  if (
-    fileextension === "js" ||
-    fileextension === "jsx" ||
-    fileextension === "cjs"
-  )
-    return "purple";
-  if (fileextension === "scss" || fileextension === "css") return "teal";
+
+  switch (fileextension) {
+    case "jpg":
+      return "#ff0000";
+    case "mp4":
+      return "blue";
+    case "mkv":
+      return "#000022";
+    case "json":
+      return "#878372";
+    case "txt":
+      return "teal";
+    case "rtf":
+      return "#938aed";
+    case "png" || "apng":
+      return "#ff6e6e";
+    case "avi":
+      return "#3223a5";
+    case "wmv":
+      return "#878372";
+    case "xhtml":
+    case "html":
+      return "#ffa500";
+    case "db":
+      return "#775832";
+    case "7z":
+    case "zip":
+      return "pink";
+    case "xcf":
+      return "green";
+    case "ion":
+      return "#210323";
+    case "gif":
+      return "white";
+    case "ts":
+    case "tsx":
+    case "cjs":
+    case "jsx":
+    case "js":
+      return "rebeccapurple";
+    case "scss":
+    case "css":
+      return "lightgreen";
+    default:
+      return "black";
+  }
 }

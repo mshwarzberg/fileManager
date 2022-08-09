@@ -90,6 +90,7 @@ export default function App() {
           itemsSelected={itemsSelected}
           controllers={controllers}
           setControllers={setControllers}
+          setItemsSelected={setItemsSelected}
         />
       </div>
       <GeneralUI

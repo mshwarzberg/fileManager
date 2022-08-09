@@ -10,15 +10,15 @@ router.post("/", (req, res) => {
       let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
       transferItem = `copy ${completePath}`;
       if (isDirectory) {
-        transferItem = `xcopy ${completePath}\\ /s /h /e`;
+        transferItem = `xcopy ${completePath} /s /h /e`;
       }
       execSync(transferItem);
     }
     if (mode === "cut") {
       let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
       transferItem = `move ${completePath}`;
+      execSync(transferItem);
     }
-    execSync(transferItem);
     return res.end();
   } catch (e) {
     console.log(e.toString());

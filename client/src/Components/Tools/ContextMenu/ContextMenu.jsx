@@ -9,44 +9,56 @@ import Refresh from "./Functions/Refresh";
 import OpenFileManager from "./Functions/OpenFileManager";
 import View from "./Functions/View";
 import NewDirectory from "./Functions/NewDirectory";
+import CheckIfExists from "../../../Helpers/CheckIfExists";
 
 export default function ContextMenu({ setShowProperties }) {
   const [clipboardData, setClipboardData] = useState({});
 
   const { state } = useContext(GeneralContext);
-  const { contextMenu, setContextMenu, setPrompt } = useContext(UIContext);
+  const {
+    contextMenu,
+    setContextMenu,
+    setPrompt,
+    setItemsSelected,
+    itemsSelected,
+  } = useContext(UIContext);
 
   useEffect(() => {
-    document.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-    });
-    window.addEventListener("blur", () => {
+    function handleBlur() {
       setPrompt({});
       setContextMenu({});
-    });
-    document.addEventListener("mousedown", (e) => {
+    }
+    function handleMouseDown(e) {
       if (e.button === 2 && e.target.dataset?.contextmenu) {
-        setTimeout(() => {
-          setContextMenu({
-            items: e.target.dataset.contextmenu,
-            info: JSON.parse(e.target.dataset.info),
-            x: e.clientX,
-            y: e.clientY,
-          });
-        }, 0);
+        const info = JSON.parse(e.target.dataset.info);
+        if (!CheckIfExists(itemsSelected, info.path, "path")) {
+          setItemsSelected([info]);
+        }
+        setContextMenu({
+          items: e.target.dataset.contextmenu,
+          info: info,
+          x: e.clientX,
+          y: e.clientY,
+        });
         e.stopImmediatePropagation();
       } else if (e.target.className !== "context-menu-item") {
         setContextMenu({});
         setPrompt({});
       }
-    });
+    }
+    function noContextMenu(e) {
+      e.preventDefault();
+    }
+    document.addEventListener("contextmenu", noContextMenu);
+    window.addEventListener("blur", handleBlur);
+    document.addEventListener("mousedown", handleMouseDown);
     return () => {
-      document.removeEventListener("contextmenu", () => {});
-      document.removeEventListener("mousedown", () => {});
-      window.removeEventListener("blur", () => {});
+      document.removeEventListener("contextmenu", noContextMenu);
+      document.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("blur", handleBlur);
     };
     // eslint-disable-next-line
-  }, [clipboardData, state.currentDirectory, setContextMenu]);
+  }, [itemsSelected]);
 
   return Object.entries(contextMenu).length ? (
     <div id="menu" style={{ top: contextMenu.y, left: contextMenu.x }}>

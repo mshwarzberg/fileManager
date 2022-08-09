@@ -1,20 +1,38 @@
 const fs = require("fs");
 const os = require("os");
-const { checkIfFileOrDir } = require("./isfileordirectory");
 const { checkType } = require("./verifiers");
 
+function checkIfFileOrDir(file) {
+  var methods = [
+    "isBlockDevice",
+    "isCharacterDevice",
+    "isDirectory",
+    "isFIFO",
+    "isFile",
+    "isSocket",
+    "isSymbolicLink",
+  ];
+
+  // check if current item in directory is a file or a sub-directory
+  var item = { name: file.name };
+  for (var method of methods) {
+    if (file[method]() === true) {
+      item[method] = file[method]();
+    }
+  }
+  return item;
+}
 function Metadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
   let fileextension;
   let itemtype;
-  // get the file extension
+
   if (!item.isDirectory) {
     [itemtype, fileextension] = checkType(file.name);
   }
 
-  // get the filename without the extension
   let prefix = "";
-  // if the item is a folder don't remove anything. keep the file as is (even if it has a period in the name)
+
   for (
     let j = 0;
     j < file.name.length - (fileextension ? fileextension.length + 1 : 0);
@@ -39,10 +57,9 @@ function Metadata(file, directory, drive) {
     sizeOf = size;
 
     if (item.isSymbolicLink) {
-      symLink = fs.readlinkSync(
-        `${directory === "/" ? directory : directory + "/"}${file.name}`
-      );
-      symLink = symLink.replaceAll("\\", "/");
+      symLink = fs
+        .readlinkSync(`${directory}/${file.name}`)
+        .replaceAll("\\", "/");
     }
   } catch {
     sizeOf = 0;

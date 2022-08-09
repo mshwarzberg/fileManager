@@ -11,7 +11,7 @@ import notAllowedIcon from "../../../Assets/images/notallowed.png";
 
 export default function ChildDir({ child, altImage }) {
   const { state, dispatch } = useContext(GeneralContext);
-  const { path, name, permission, isDirectory, isDrive } = child;
+  const { path, name, permission, isDirectory, isDrive, linkTo } = child;
 
   function clickDirectory(toOpenDirectory, toExpandTree) {
     if (!path.startsWith(state.drive) || !state.drive || isDrive) {
@@ -21,7 +21,7 @@ export default function ChildDir({ child, altImage }) {
     if (toOpenDirectory) {
       dispatch({
         type: "openDirectory",
-        value: path + "/",
+        value: (linkTo || path) + "/",
       });
       if (!toExpandTree) {
         return;
@@ -30,7 +30,7 @@ export default function ChildDir({ child, altImage }) {
     fetch("/api/directorytree", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: path }),
+      body: JSON.stringify({ path: linkTo || path }),
     })
       .then(async (res) => {
         const response = await res.json();
@@ -53,6 +53,9 @@ export default function ChildDir({ child, altImage }) {
       }}
       onDoubleClick={(e) => {
         e.stopPropagation();
+        if (!permission) {
+          return;
+        }
         clickDirectory(true, true);
       }}
       className={`tree--closed-directory ${!permission && "no-permission"}`}
@@ -62,14 +65,14 @@ export default function ChildDir({ child, altImage }) {
       }
     >
       <img
-        onMouseDown={(e) => {
+        onClick={(e) => {
           clickDirectory(false);
           if (!permission) {
             return;
           }
           e.stopPropagation();
         }}
-        onClick={(e) => {
+        onMouseDown={(e) => {
           e.stopPropagation();
         }}
         className="tree--arrow"
