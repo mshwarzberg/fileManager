@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { GeneralContext } from "../Components/Main/App";
 
-export default function useSelectMultiple(itemsSelected, setItemsSelected) {
-  function highlightItems(boxDimensions) {
-    const elements = document.getElementsByClassName("renderitem--block");
+export default function useSelectMultiple() {
+  const { setItemsSelected } = useContext(GeneralContext);
+  function highlightItems(boxDimensions, ctrlKey) {
+    const elements = document.getElementsByClassName("cover-block");
     let infoArray = [];
     for (const element of elements) {
       const elDimensions = element.getBoundingClientRect();
@@ -14,13 +16,18 @@ export default function useSelectMultiple(itemsSelected, setItemsSelected) {
         elDimensions.y < boxDimensions.bottom
       ) {
         const info = JSON.parse(element.dataset.info);
-        if (info.permission) {
+        if (info.permission && info.name) {
           infoArray.push(info);
         }
       }
     }
 
-    setItemsSelected((prevArray) => [...prevArray, ...infoArray]);
+    if (ctrlKey) {
+      setItemsSelected((prevArray) => [...prevArray, ...infoArray]);
+      return;
+    }
+
+    setItemsSelected(infoArray);
   }
   useEffect(() => {
     let isBox, anchorY, anchorX;
@@ -67,10 +74,10 @@ export default function useSelectMultiple(itemsSelected, setItemsSelected) {
         } else {
           box.style.height = boxDimensions.height + e.movementY + "px";
         }
+        highlightItems(box.getBoundingClientRect(), e.ctrlKey);
       }
     }
     function handleMouseUp() {
-      highlightItems(box.getBoundingClientRect());
       isBox = null;
       box.style.display = "none";
       box.style.width = "";
@@ -88,7 +95,8 @@ export default function useSelectMultiple(itemsSelected, setItemsSelected) {
       document.removeEventListener("mousemove", handleMouseMove);
       document
         .getElementById("renderitem--page")
-        .removeEventListener("mousedown", handleMouseDown);
+        ?.removeEventListener("mousedown", handleMouseDown);
     };
+    // eslint-disable-next-line
   }, []);
 }

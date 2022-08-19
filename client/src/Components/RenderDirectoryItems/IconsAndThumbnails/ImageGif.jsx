@@ -3,9 +3,10 @@ import Filename from "./Icon/Filename";
 import { GeneralContext } from "../../Main/App";
 
 export default function ImageGif(props) {
-  let { name, thumbPath, permission } = props.item;
+  const { name, thumbPath } = props.directoryItem;
   const { setDirectoryItems } = useContext(GeneralContext);
   const [srcAttempts, setSrcAttempts] = useState(0);
+
   return (
     thumbPath && (
       <div className="block-container" id="renderitem--image-block">

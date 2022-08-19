@@ -1,5 +1,4 @@
 const fs = require("fs");
-const os = require("os");
 const { checkType } = require("./verifiers");
 
 function checkIfFileOrDir(file) {
@@ -31,19 +30,7 @@ function Metadata(file, directory, drive) {
     [itemtype, fileextension] = checkType(file.name);
   }
 
-  let prefix = "";
-
-  for (
-    let j = 0;
-    j < file.name.length - (fileextension ? fileextension.length + 1 : 0);
-    j++
-  ) {
-    if (prefix === "") {
-      prefix = file.name[j];
-    } else {
-      prefix += file.name[j];
-    }
-  }
+  let prefix = file.name.slice(0, file.name.length - fileextension?.length - 1);
 
   let sizeOf, symLink;
   let permission = true;
@@ -67,21 +54,24 @@ function Metadata(file, directory, drive) {
   }
 
   if (
-    (file.name === "temp" || file.name === "$RECYCLE.BIN") &&
+    (file.name === "temp" ||
+      file.name === "$RECYCLE.BIN" ||
+      file.name === "System Volume Information") &&
     item.isDirectory &&
-    directory === drive
+    directory === drive + "/"
   ) {
     return {};
   }
-  let isMedia, restOfPath;
+  let isMedia, restOfPath, thumbPath;
   if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
     isMedia = true;
-    restOfPath = directory.slice(drive.length, directory.length);
+    restOfPath = directory.slice(3, Infinity);
+    thumbPath = `${drive}temp/${restOfPath}/${prefix + fileextension}.jpeg`;
   }
 
   const filteredData = {
     ...item,
-    path: `${directory}${file.name}`,
+    path: directory,
     itemtype: item.isDirectory ? "folder" : itemtype,
     fileextension: fileextension || "",
     prefix: prefix,
@@ -90,9 +80,10 @@ function Metadata(file, directory, drive) {
     accessed: dateAccessed || 0,
     modified: dateModified || 0,
     created: dateCreated || 0,
+    isMedia: isMedia,
     ...(symLink && { linkTo: symLink }),
-    ...(isMedia && {
-      thumbPath: `${drive}temp/${restOfPath}${prefix + fileextension}.jpeg`,
+    ...(thumbPath && {
+      thumbPath: thumbPath,
     }),
   };
 

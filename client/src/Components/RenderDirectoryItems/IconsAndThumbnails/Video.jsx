@@ -5,8 +5,8 @@ import formatDuration from "../../../Helpers/FormatVideoTime";
 import Filename from "./Icon/Filename";
 import { GeneralContext } from "../../Main/App";
 
-function Video({ item, setControllers }) {
-  const { name, thumbPath, duration, path } = item;
+function Video({ directoryItem, setControllers }) {
+  const { name, thumbPath, duration, path } = directoryItem;
 
   const { state, setDirectoryItems } = useContext(GeneralContext);
   const [srcAttempts, setSrcAttempts] = useState(0);
@@ -74,9 +74,7 @@ function Video({ item, setControllers }) {
 
   return (
     thumbPath && (
-      <div
-        className="block-container"
-      >
+      <div className="block-container">
         <img src={playIcon} alt="playvideo" className="renderitem--play-icon" />
         <img
           className="renderitem--thumbnail"

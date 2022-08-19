@@ -13,6 +13,7 @@ export default function Prompt() {
     document
       .getElementById("prompt-input")
       ?.setSelectionRange(0, originalItem?.prefix?.length || 1000);
+    // eslint-disable-next-line
   }, [prompt.show]);
 
   return (
@@ -29,7 +30,7 @@ export default function Prompt() {
               setContextMenu({});
             }}
           />
-          <textarea
+          <input
             type="text"
             spellCheck={false}
             onKeyDown={(e) => {
@@ -37,12 +38,15 @@ export default function Prompt() {
                 if (!originalItem.name) {
                   promptFunction(content);
                 } else if (content && content !== originalItem.name) {
-                  promptFunction(content, originalItem.path);
+                  promptFunction(
+                    content,
+                    originalItem.path + originalItem.name
+                  );
                 }
               }
             }}
             id="prompt-input"
-            value={originalItem.name || content}
+            value={content}
             onChange={(e) => {
               setPrompt((prevPrompt) => ({
                 ...prevPrompt,
@@ -64,10 +68,11 @@ export default function Prompt() {
           <button
             className="context-menu-item"
             onClick={() => {
+              console.log(originalItem);
               if (!originalItem.name) {
                 promptFunction(content);
               } else if (content && content !== originalItem.name) {
-                promptFunction(content, originalItem.path);
+                promptFunction(content, originalItem.path + originalItem.name);
               }
             }}
           >

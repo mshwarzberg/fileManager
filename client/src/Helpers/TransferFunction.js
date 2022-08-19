@@ -1,19 +1,19 @@
 export default function TransferFunction(
-  metadata,
+  source,
   destination,
   mode,
   currentDirectory,
   setDirectoryItems
 ) {
-  for (const index in metadata) {
+  for (const index in source) {
     fetch("/api/manage/transfer", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        source: metadata[index].path,
+        source: source[index],
+        name: source[index].name,
         mode: mode,
         destination: destination,
-        isDirectory: metadata[index].isDirectory,
       }),
     })
       .then((res) => {
@@ -24,14 +24,14 @@ export default function TransferFunction(
           setDirectoryItems((prevItems) => [
             ...prevItems,
             {
-              ...metadata[index],
-              path: currentDirectory + metadata[index].name,
+              ...source[index],
+              path: currentDirectory,
             },
           ]);
         } else if (currentDirectory !== destination && mode === "cut") {
           setDirectoryItems((prevItems) => {
             return prevItems.map((prevItem) => {
-              if (prevItem.name === metadata[index].name) {
+              if (prevItem.name === source[index].name) {
                 return {};
               }
               return prevItem;

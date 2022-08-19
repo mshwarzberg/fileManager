@@ -9,31 +9,31 @@ import getTitle from "../../Helpers/getTitle";
 import getContextMenu from "../../Helpers/getContextMenu";
 import CheckIfExists from "../../Helpers/CheckIfExists";
 
-export default function RenderItems({
-  controllers,
-  setControllers,
-  itemsSelected,
-  setItemsSelected,
-}) {
-  const { directoryItems, dispatch, state, setDirectoryItems } =
-    useContext(GeneralContext);
+export default function DisplayPage({ controllers, setControllers }) {
+  const {
+    directoryItems,
+    dispatch,
+    state,
+    setDirectoryItems,
+    itemsSelected,
+    setItemsSelected,
+  } = useContext(GeneralContext);
 
-  // render the file data and thumbnails
-  const renderItems = directoryItems?.map((item) => {
-    const { name, size, itemtype, path, permission, thumbPath } = item;
+  const renderItems = directoryItems?.map((directoryItem) => {
+    const { name, size, itemtype, path, permission, thumbPath } = directoryItem;
 
     function navigateAndOpen() {
       if (!permission) {
         return;
       }
-      if (item.isDrive) {
+      if (directoryItem.isDrive) {
         dispatch({ type: "setDriveName", value: name });
         dispatch({ type: "openDirectory", value: name });
         return;
-      } else if (item.isDirectory || item.isSymbolicLink) {
-        let newPath = path;
-        if (item.isSymbolicLink) {
-          newPath = item.linkTo;
+      } else if (directoryItem.isDirectory || directoryItem.isSymbolicLink) {
+        let newPath = path + name;
+        if (directoryItem.isSymbolicLink) {
+          newPath = directoryItem.linkTo;
         }
         return dispatch({
           type: "openDirectory",
@@ -46,56 +46,72 @@ export default function RenderItems({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            path: path,
+            path: path + name,
           }),
         });
       }
     }
-
     if (name) {
       return (
         <div
           className="renderitem--block"
-          data-info={permission ? JSON.stringify(item) : "{}"}
+          data-info={permission ? JSON.stringify(directoryItem) : "{}"}
           key={`Name: ${name}\nSize: ${size}`}
           style={{
             border: !permission ? "2px solid red" : "",
             backgroundColor: !permission ? "#cc7878c5" : "",
             width: localStorage.getItem("blockWidth") || "10rem",
-            ...(CheckIfExists(itemsSelected, path, "path") && {
-              backgroundColor: "#222233",
-              outline: "2px solid #111",
-              borderRadius: "1px",
-            }),
+            ...(CheckIfExists(
+              itemsSelected,
+              name,
+              "name",
+              directoryItem.path,
+              "path"
+            ) &&
+              permission && {
+                backgroundColor: "#cccccccc",
+                outline: "2px solid #111",
+              }),
           }}
         >
-          {!thumbPath && <Icon item={item} />}
+          {!thumbPath && <Icon directoryItem={directoryItem} />}
           {itemtype === "video" && (
             <Video
-              item={item}
+              directoryItem={directoryItem}
               controllers={controllers}
               setControllers={setControllers}
             />
           )}
           {(itemtype === "image" || itemtype === "gif") && (
-            <ImageGif item={item} />
+            <ImageGif directoryItem={directoryItem} />
           )}
           <button
             className="cover-block"
-            data-contextmenu={getContextMenu(item.isDirectory, permission)}
-            data-info={permission ? JSON.stringify(item) : null}
-            data-title={getTitle(item)}
+            data-contextmenu={getContextMenu(
+              directoryItem.isDirectory,
+              permission
+            )}
+            data-info={permission ? JSON.stringify(directoryItem) : null}
+            data-title={getTitle(directoryItem)}
             onClick={(e) => {
               if (e.nativeEvent.pointerId === -1) {
                 navigateAndOpen();
                 return;
               }
-              if (CheckIfExists(itemsSelected, item.path, "path")) {
+              if (
+                CheckIfExists(
+                  itemsSelected,
+                  directoryItem.name,
+                  "name",
+                  directoryItem.path,
+                  "path"
+                )
+              ) {
                 if (e.ctrlKey) {
                   setItemsSelected((prevItems) => {
                     return prevItems
                       .map((prevItem) => {
-                        if (prevItem.path === path) {
+                        if (prevItem.name === name) {
                           return {};
                         }
                         return prevItem;
@@ -105,10 +121,13 @@ export default function RenderItems({
                 }
               } else {
                 if (e.ctrlKey) {
-                  setItemsSelected((prevItems) => [...prevItems, item]);
+                  setItemsSelected((prevItems) => [
+                    ...prevItems,
+                    directoryItem,
+                  ]);
                   return;
                 } else if (e.button !== 2) {
-                  setItemsSelected([item]);
+                  setItemsSelected([directoryItem]);
                 }
               }
             }}
@@ -165,10 +184,10 @@ export default function RenderItems({
         </div>
       );
     }
-    if (item.err) {
+    if (directoryItem.err) {
       return (
-        <h1 key={item.err} style={{ color: "red" }}>
-          {item.err}
+        <h1 key={directoryItem.err} style={{ color: "red" }}>
+          {directoryItem.err}
         </h1>
       );
     }

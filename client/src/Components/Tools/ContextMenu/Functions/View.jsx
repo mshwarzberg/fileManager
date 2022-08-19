@@ -14,13 +14,13 @@ export default function View() {
         onClick={() => {
           let width;
           if (item === "Extra Small") {
-            width = 4;
+            width = 6.5;
           } else if (item === "Small") {
-            width = 7;
+            width = 8.5;
           } else if (item === "Medium") {
-            width = 10;
+            width = 9.5;
           } else if (item === "Large") {
-            width = 12;
+            width = 13;
           } else if (item === "Extra Large") {
             width = 18;
           }
@@ -39,7 +39,7 @@ export default function View() {
   });
   return (
     <div className="context-menu-item">
-      View&nbsp;
+      View
       <img
         src={rightArrow}
         alt="options"

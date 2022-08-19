@@ -3,7 +3,6 @@ import React from "react";
 export default function Transfer({
   setClipboardData,
   setContextMenu,
-  contextMenu,
   source,
   mode,
 }) {
@@ -14,8 +13,6 @@ export default function Transfer({
         setClipboardData({
           source: source,
           mode: mode,
-          metadata: contextMenu.info,
-          isSourceDirectory: contextMenu.info.isDirectory,
         });
         setContextMenu({});
       }}

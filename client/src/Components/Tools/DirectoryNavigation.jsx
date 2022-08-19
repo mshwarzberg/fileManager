@@ -31,30 +31,12 @@ function DirectoryNavigation() {
           }
           dispatch({ type: "upDirectory", value: uppedDirectory });
         }}
-        data-title="Go Up"
-        data-style={JSON.stringify({
-          background: "pink",
-          border: "2px solid black",
-          fontFamily: "bebas neue",
-          color: "black",
-          paddingLeft: "1rem",
-          fontSize: "1rem",
-        })}
         className="navbar--button"
         disabled={state.currentDirectory === ""}
       >
         <img src={upwards} alt="up" />
       </button>
       <button
-        data-title="Go Back"
-        data-style={JSON.stringify({
-          background: "pink",
-          border: "2px solid black",
-          fontFamily: "bebas neue",
-          color: "black",
-          paddingLeft: "1rem",
-          fontSize: "1rem",
-        })}
         id="navbar--backwards"
         className="navbar--button"
         onClick={() => {
@@ -68,15 +50,6 @@ function DirectoryNavigation() {
         <img src={backwards} alt="up" />
       </button>
       <button
-        data-title="Go Forwards"
-        data-style={JSON.stringify({
-          background: "pink",
-          border: "2px solid black",
-          fontFamily: "bebas neue",
-          color: "black",
-          paddingLeft: "1rem",
-          fontSize: "1rem",
-        })}
         onClick={() => {
           for (let i in controllers) {
             controllers[i].abort();

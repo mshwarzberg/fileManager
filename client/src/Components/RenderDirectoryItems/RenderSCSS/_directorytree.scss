@@ -138,17 +138,18 @@
     #highlight--child {
       background-color: white;
       color: #000;
-      font-weight: bold;
+      font-weight: bolder;
       &:hover {
         outline: 1px solid black;
+        background-color: #ddd;
       }
     }
     #tree--in-path {
-      background-color: darken($accentColor, 60%);
-      color: white;
-      font-weight: normal;
+      background-color: #aaa;
+      color: black;
       &:hover {
-        background-color: darken($accentColor, 65%);
+        background-color: #777;
+        color: white;
       }
     }
   }

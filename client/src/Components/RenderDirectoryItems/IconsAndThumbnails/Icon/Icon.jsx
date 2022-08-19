@@ -1,5 +1,4 @@
-import React, { useContext } from "react";
-import { GeneralContext } from "../../../Main/App";
+import React from "react";
 import folder from "../../../../Assets/images/folder.png";
 import symlink from "../../../../Assets/images/symlink.png";
 import drive from "../../../../Assets/images/drive.png";
@@ -7,19 +6,8 @@ import Filename from "./Filename";
 import CustomIcon from "./CustomIcon";
 
 function Icon(props) {
-  const { dispatch } = useContext(GeneralContext);
-
-  const {
-    name,
-    fileextension,
-    isFile,
-    permission,
-    path,
-    linkTo,
-    isSymbolicLink,
-    isDirectory,
-    isDrive,
-  } = props.item;
+  const { name, fileextension, isFile, isSymbolicLink, isDirectory, isDrive } =
+    props.directoryItem;
 
   function displayIcon() {
     if (isFile) {
@@ -42,23 +30,7 @@ function Icon(props) {
   }
 
   return (
-    <div
-      className="block-container"
-      onClick={() => {
-        if (isDirectory && permission && !isSymbolicLink) {
-          dispatch({
-            type: "openDirectory",
-            value: path + "/",
-          });
-        }
-        if (isSymbolicLink && permission) {
-          dispatch({
-            type: "openDirectory",
-            value: linkTo + "/",
-          });
-        }
-      }}
-    >
+    <div className="block-container">
       {displayIcon()}
       <Filename name={name} />
     </div>

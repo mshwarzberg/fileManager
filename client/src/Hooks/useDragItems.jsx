@@ -1,15 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useContext, useState } from "react";
 import TransferFunction from "../Helpers/TransferFunction";
+import { GeneralContext } from "../Components/Main/App";
 
 let timeout;
-export default function useDragItems(
-  dragMe,
-  setDragMe,
-  state,
-  setDirectoryItems,
-  itemsSelected,
-  setItemsSelected
-) {
+export default function useDragItems() {
+  const [dragMe, setDragMe] = useState();
+  const { itemsSelected, state, setDirectoryItems } =
+    useContext(GeneralContext);
+
   useEffect(() => {
     function handleMouseDown(e) {
       if (
@@ -55,14 +53,6 @@ export default function useDragItems(
               setDirectoryItems
             );
           }
-          // let i = 0;
-          // interval = setInterval(() => {
-          //   i++;
-          //   e.target.click();
-          //   if (i === 1) {
-          //     clearInterval(interval);
-          //   }
-          // }, 50);
           dragMe.style.backgroundColor = "";
           dragMe.style.zIndex = "";
           dragMe.style.position = "";

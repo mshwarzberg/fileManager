@@ -9,23 +9,17 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
       if (Object.entries(title)) {
         setTitle({});
       }
-      if (e.target.dataset?.title || e.target.parentElement?.dataset.title) {
+      if (e.target.dataset?.title) {
         titleTimeout = setTimeout(() => {
           if (contextMenu.x || contextMenu.y) {
             return;
           }
           setTitle({
-            title:
-              e.target.dataset.title || e.target.parentElement?.dataset.title,
+            title: e.target.dataset.title,
             x: e.clientX,
             y: e.clientY,
-            ...((e.target.dataset.style ||
-              e.target.parentElement?.dataset.style) && {
-              style:
-                e.target.dataset.style || e.target.parentElement.dataset.style,
-            }),
           });
-        }, 500);
+        }, 800);
       }
     }
     function clearTitle() {
@@ -52,6 +46,7 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
         }}
         id="custom-title"
       >
+        <div id="title-background" />
         {title.title}
       </pre>
     )

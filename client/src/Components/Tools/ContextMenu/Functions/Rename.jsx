@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { GeneralContext } from "../../../Main/App";
 import { UIContext } from "../../GeneralUI";
 
-export default function Rename() {
+export default function Rename({ oldFileName }) {
   const { state, setDirectoryItems } = useContext(GeneralContext);
   const { setContextMenu, setPrompt } = useContext(UIContext);
 
@@ -25,11 +25,11 @@ export default function Rename() {
         }
         setDirectoryItems((prevItems) => {
           return prevItems.map((item) => {
-            if (item.path === oldPath) {
+            if (item.path + item.name === oldPath) {
               return {
                 ...item,
                 name: newName,
-                path: state.currentDirectory + newName,
+                path: state.currentDirectory,
               };
             }
             return item;
@@ -49,7 +49,7 @@ export default function Rename() {
       onClick={() => {
         setPrompt({
           show: true,
-          content: "",
+          content: oldFileName || "",
           promptFunction: renameItem,
         });
       }}

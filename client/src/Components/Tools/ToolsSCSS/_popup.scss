@@ -27,6 +27,15 @@
       top: 7rem;
       font-family: "bebas neue";
       font-size: 1.7rem;
+      @include flexStyle(row);
+      img {
+        width: 2rem;
+      }
+      #show-duplicates {
+        font-family: "bebas neue";
+        font-size: 1.7rem;
+        color: yellow;
+      }
     }
     #close-prompt {
       position: absolute;
@@ -40,7 +49,8 @@
       cursor: pointer;
       font-family: "Times New Roman", Times, serif;
     }
-    textarea {
+    input {
+      overflow: hidden;
       cursor: text;
       width: 60%;
       background-color: #fff;
@@ -62,5 +72,24 @@
       font-family: bebas neue;
       font-size: 1.4rem;
     }
+  }
+}
+
+#list-of-duplicates-container {
+  position: absolute;
+  bottom: 100%;
+  display: none;
+  right: calc(-50% - 2rem);
+  background-color: #222;
+  padding: 5px;
+  border-radius: 3px;
+  max-height: 15rem;
+  overflow-y: auto;
+  .list-of-duplicates {
+    color: white;
+    margin-bottom: 3px;
+    font-family: akshar;
+    border: 1px solid white;
+    padding: 2px;
   }
 }

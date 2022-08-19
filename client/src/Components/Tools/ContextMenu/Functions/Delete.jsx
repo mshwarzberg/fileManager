@@ -3,13 +3,13 @@ import { GeneralContext } from "../../../Main/App";
 import { UIContext } from "../../GeneralUI";
 
 export default function Delete({ info }) {
-  const { setDirectoryItems } = useContext(GeneralContext);
-  const { itemsSelected, setConfirm } = useContext(UIContext);
+  const { setDirectoryItems, itemsSelected } = useContext(GeneralContext);
+  const { setConfirm } = useContext(UIContext);
 
   function deleteItem() {
-    const deleteTheseItems = [];
+    const deleteItems = [];
     for (const selected of itemsSelected) {
-      deleteTheseItems.push(selected.path);
+      deleteItems.push(selected.path + selected.name);
     }
     fetch("/api/manage/delete", {
       method: "POST",
@@ -17,7 +17,7 @@ export default function Delete({ info }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        paths: deleteTheseItems,
+        paths: deleteItems,
       }),
     })
       .then(async (res) => {
@@ -28,7 +28,7 @@ export default function Delete({ info }) {
           setDirectoryItems((prevItems) => {
             return prevItems
               .map((item) => {
-                if (deleteTheseItems.includes(item.path)) {
+                if (deleteItems.includes(item.path + item.name)) {
                   return {};
                 }
                 return item;

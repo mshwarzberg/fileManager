@@ -1,29 +1,45 @@
 const express = require("express");
 const router = express.Router();
-const { execSync } = require("child_process");
+const fs = require("fs");
+
+process.on("uncaughtException", function (err) {
+  console.error(err);
+});
+
+function copyDir(srcPath, srcName, destination, isSrcNameDirectory) {
+  if (isSrcNameDirectory) {
+    fs.mkdirSync(destination + srcName, { recursive: true });
+    const items = fs.readdirSync(srcPath + srcName, { withFileTypes: true });
+    for (const item of items) {
+      if (item.isDirectory()) {
+        copyDir(srcPath + srcName, item.name, destination, true);
+      } else {
+        fs.copyFileSync(
+          `${srcPath}${srcName}/${item.name}`,
+          `${destination}${srcName}/${item.name}`
+        );
+      }
+    }
+  } else {
+    fs.copyFileSync(srcPath + srcName, destination + srcName);
+  }
+  return;
+}
 
 router.post("/", (req, res) => {
-  let { mode, source, destination, isDirectory } = req.body;
-  let transferItem;
-  try {
-    if (mode === "copy") {
-      let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
-      transferItem = `copy ${completePath}`;
-      if (isDirectory) {
-        transferItem = `xcopy ${completePath} /s /h /e`;
-      }
-      execSync(transferItem);
-    }
-    if (mode === "cut") {
-      let completePath = `"${source}" "${destination}"`.replaceAll("/", "\\");
-      transferItem = `move ${completePath}`;
-      execSync(transferItem);
-    }
-    return res.end();
-  } catch (e) {
-    console.log(e.toString());
-    return res.status(500).send({ err: e.toString() });
+  const { mode, source, destination } = req.body;
+  if (source.path === destination) {
+    return res
+      .send({ err: "destination cannot be same as source" })
+      .status(409);
   }
+  if (mode === "copy") {
+    copyDir(source.path, source.name, destination, source.isDirectory);
+  } else {
+    fs.renameSync(source.path + source.name, destination + "/" + source.name);
+  }
+
+  return res.send({ msg: "successfully transferred" });
 });
 
 module.exports = router;

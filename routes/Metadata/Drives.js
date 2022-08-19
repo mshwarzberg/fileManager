@@ -16,10 +16,10 @@ router.get("/", (_, res) => {
         size: parseInt(test[i * 1 + 2].split("=")[1]),
         permission: true,
         isDrive: true,
+        path: test[i].split("=")[1].split("\r\r")[0] + "/",
       });
     }
   }
-
   res.send(sortedDrives);
 });
 

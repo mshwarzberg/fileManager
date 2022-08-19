@@ -1,12 +1,10 @@
 import React, { createContext, useEffect, useState } from "react";
 import DirectoryState from "./DirectoryState";
 
-import RenderItems from "../RenderDirectoryItems/RenderItems";
+import DisplayPage from "../RenderDirectoryItems/DisplayPage";
 import Navbar from "./Navbar/Navbar";
 import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
 import GeneralUI from "../Tools/GeneralUI";
-import useDragItems from "../../Hooks/useDragItems";
-import useSelectMultiple from "../../Hooks/useSelectMultiple";
 
 export const GeneralContext = createContext();
 
@@ -14,15 +12,16 @@ export default function App() {
   const { state, dispatch } = DirectoryState();
 
   const [controllers, setControllers] = useState([]);
-  const [directoryItems, setDirectoryItems] = useState();
+  const [thumbController, setThumbController] = useState();
+  const [directoryItems, setDirectoryItems] = useState([]);
   const [showTree, setShowTree] = useState(true);
-  const [dragMe, setDragMe] = useState();
   const [itemsSelected, setItemsSelected] = useState([]);
 
   useEffect(() => {
     for (let i of controllers) {
       i.abort();
     }
+    thumbController?.abort();
     setControllers([]);
     if (state.drive && state.currentDirectory) {
       document.title = state.currentDirectory;
@@ -64,16 +63,6 @@ export default function App() {
     // eslint-disable-next-line
   }, [state.currentDirectory]);
 
-  useDragItems(
-    dragMe,
-    setDragMe,
-    state,
-    setDirectoryItems,
-    itemsSelected,
-    setItemsSelected
-  );
-  useSelectMultiple(itemsSelected, setItemsSelected);
-
   return (
     <GeneralContext.Provider
       value={{
@@ -81,22 +70,21 @@ export default function App() {
         dispatch,
         directoryItems,
         setDirectoryItems,
+        thumbController,
+        setThumbController,
+        itemsSelected,
+        setItemsSelected,
       }}
     >
       <Navbar setShowTree={setShowTree} showTree={showTree} />
       <div id="directory-and-item-container">
         <DirectoryTree showTree={showTree} />
-        <RenderItems
-          itemsSelected={itemsSelected}
+        <DisplayPage
           controllers={controllers}
           setControllers={setControllers}
-          setItemsSelected={setItemsSelected}
         />
       </div>
-      <GeneralUI
-        itemsSelected={itemsSelected}
-        setItemsSelected={setItemsSelected}
-      />
+      <GeneralUI />
     </GeneralContext.Provider>
   );
 }

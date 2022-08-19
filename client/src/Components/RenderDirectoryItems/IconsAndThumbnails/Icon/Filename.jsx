@@ -12,7 +12,6 @@ export default function Filename(props) {
       style={{ position: "absolute", bottom: "1%" }}
       ref={svgBody}
       viewBox="0 0 150 15"
-      data-title={props.name.length > 30 ? props.name : null}
     >
       <text
         ref={svgText}

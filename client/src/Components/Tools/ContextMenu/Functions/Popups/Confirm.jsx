@@ -3,8 +3,7 @@ import { UIContext } from "../../../GeneralUI";
 import closeIcon from "../../../../../Assets/images/close.png";
 
 export default function Confirm() {
-  const { setContextMenu, contextMenu, confirm, setConfirm } =
-    useContext(UIContext);
+  const { setContextMenu, confirm, setConfirm } = useContext(UIContext);
 
   return (
     confirm.show && (
@@ -24,21 +23,24 @@ export default function Confirm() {
           <button
             className="context-menu-item"
             onClick={() => {
+              if (confirm.cancelFunction) {
+                confirm.cancelFunction();
+              }
               setConfirm({});
               setContextMenu({});
             }}
           >
-            Cancel
+            {confirm.cancelText || "Cancel"}
           </button>
           <button
             className="context-menu-item"
             onClick={() => {
-              confirm.confirmFunction();
+              confirm.confirmFunction(true);
               setConfirm({});
               setContextMenu({});
             }}
           >
-            OK
+            {confirm.confirmText || "OK"}
           </button>
         </div>
       </div>
