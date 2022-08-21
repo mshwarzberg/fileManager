@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { UIContext } from "../../GeneralUI";
 import { GeneralContext } from "../../../Main/App";
-import CheckIfExists from "../../../../Helpers/CheckIfExists";
+import { foundInArray } from "../../../../Helpers/SearchArray";
 
 export default function NewDirectory() {
   const { setPrompt, setContextMenu } = useContext(UIContext);
@@ -47,7 +47,7 @@ export default function NewDirectory() {
       onClick={() => {
         for (let i = 0; i < 1000; i++) {
           const newDirectoryName = `New Folder${i > 1 ? ` (${i})` : ""}`;
-          if (!CheckIfExists(directoryItems, newDirectoryName, "name")) {
+          if (!foundInArray(directoryItems, newDirectoryName, "name")) {
             setPrompt({
               show: true,
               content: newDirectoryName,

@@ -1,5 +1,5 @@
 import TransferFunction from "../../../../../Helpers/TransferFunction";
-import CheckIfExists from "../../../../../Helpers/CheckIfExists";
+import { foundInArray } from "../../../../../Helpers/SearchArray";
 
 export default function PasteFunction(
   source,
@@ -19,7 +19,7 @@ export default function PasteFunction(
 
   const duplicates = [];
   for (const item of source) {
-    if (CheckIfExists(currentDirectoryItems, item.name, "name")) {
+    if (foundInArray(currentDirectoryItems, item.name, "name")) {
       duplicates.push(item.name);
     }
   }
@@ -73,7 +73,6 @@ export default function PasteFunction(
         const deleteItems = duplicates.map((duplicate) => {
           return currentDirectory + duplicate;
         });
-        console.log(deleteItems, source);
         for (const index in deleteItems) {
           fetch("/api/manage/delete", {
             method: "POST",
@@ -98,8 +97,10 @@ export default function PasteFunction(
                     return {};
                   }
                   return prevItem;
-                });
-              });
+                }).filter((item) => {
+                  return item.name && item;
+                });;
+              })
               TransferFunction(
                 [source[index]],
                 destination,
@@ -141,6 +142,9 @@ export default function PasteFunction(
       currentDirectory,
       setDirectoryItems
     );
+    if (mode === "cut") {
+      setClipboardData({});
+    }
   }
   return "hello";
 }

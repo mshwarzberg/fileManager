@@ -1,9 +1,10 @@
 import { useEffect, useContext } from "react";
 import { GeneralContext } from "../Components/Main/App";
 
+let scrollWhileDraggingDown, scrollWhileDraggingUp;
 export default function useSelectMultiple() {
   const { setItemsSelected } = useContext(GeneralContext);
-  function highlightItems(boxDimensions, ctrlKey) {
+  function highlightItems(boxDimensions, e) {
     const elements = document.getElementsByClassName("cover-block");
     let infoArray = [];
     for (const element of elements) {
@@ -17,12 +18,15 @@ export default function useSelectMultiple() {
       ) {
         const info = JSON.parse(element.dataset.info);
         if (info.permission && info.name) {
-          infoArray.push(info);
+          infoArray.push({
+            info: info,
+            element: element.parentElement,
+          });
         }
       }
     }
 
-    if (ctrlKey) {
+    if (e.ctrlKey) {
       setItemsSelected((prevArray) => [...prevArray, ...infoArray]);
       return;
     }
@@ -32,6 +36,7 @@ export default function useSelectMultiple() {
   useEffect(() => {
     let isBox, anchorY, anchorX;
     const box = document.getElementById("highlight--box");
+
     function handleMouseDown(e) {
       if (e.target.className === "cover-block") {
         return;
@@ -39,42 +44,54 @@ export default function useSelectMultiple() {
       if (!e.ctrlKey) {
         setItemsSelected([]);
       }
-
       isBox = true;
-      box.style.top = e.clientY + "px";
-      box.style.left = e.clientX + "px";
+      const page = document.getElementById("renderitem--page");
+      const pageDimensions = page.getBoundingClientRect();
+      box.style.top = e.clientY - pageDimensions.top + page.scrollTop + "px";
+      box.style.left = e.clientX - pageDimensions.left + page.scrollLeft + "px";
       box.style.display = "block";
-      anchorX = e.clientX;
-      anchorY = e.clientY;
+      anchorX = e.clientX - pageDimensions.left + page.scrollLeft;
+      anchorY = e.clientY - pageDimensions.top + page.scrollTop;
     }
+
     function handleMouseMove(e) {
       if (isBox) {
-        const boxDimensions = box.getBoundingClientRect();
-        if (e.clientX < anchorX) {
-          if (e.movementX < 0) {
-            box.style.width =
-              Math.abs(e.movementX) + boxDimensions.width + "px";
-            box.style.left = boxDimensions.x - Math.abs(e.movementX) + "px";
-          } else {
-            box.style.width = -e.movementX + boxDimensions.width + "px";
-            box.style.left = boxDimensions.x + e.movementX + "px";
-          }
-        } else {
-          box.style.width = boxDimensions.width + e.movementX + "px";
+        const page = document.getElementById("renderitem--page");
+        const pageDimensions = page.getBoundingClientRect();
+
+        const currentPositionY =
+          e.clientY - pageDimensions.top + page.scrollTop;
+        const currentPositionX =
+          e.clientX - pageDimensions.left + page.scrollLeft;
+
+        if (anchorY < currentPositionY) {
+          box.style.height = currentPositionY - anchorY + "px";
+          box.style.top = anchorY + "px";
+        } else if (anchorY > currentPositionY) {
+          box.style.height = Math.abs(currentPositionY - anchorY) + "px";
+          box.style.top = anchorY - Math.abs(currentPositionY - anchorY) + "px";
         }
-        if (e.clientY < anchorY) {
-          if (e.movementY < 0) {
-            box.style.height =
-              Math.abs(e.movementY) + boxDimensions.height + "px";
-            box.style.top = boxDimensions.y - Math.abs(e.movementY) + "px";
-          } else {
-            box.style.height = -e.movementY + boxDimensions.height + "px";
-            box.style.top = boxDimensions.y + e.movementY + "px";
-          }
-        } else {
-          box.style.height = boxDimensions.height + e.movementY + "px";
+        if (anchorX < currentPositionX) {
+          box.style.width = currentPositionX - anchorX + "px";
+          box.style.left = anchorX + "px";
+        } else if (anchorX > currentPositionX) {
+          box.style.width = Math.abs(currentPositionX - anchorX) + "px";
+          box.style.left =
+            anchorX - Math.abs(currentPositionX - anchorX) + "px";
         }
-        highlightItems(box.getBoundingClientRect(), e.ctrlKey);
+
+        clearInterval(scrollWhileDraggingDown);
+        clearInterval(scrollWhileDraggingUp);
+        if (e.clientY < 100) {
+          scrollWhileDraggingUp = setInterval(() => {
+            page.scroll(0, page.scrollTop - 10);
+          }, 10);
+        } else if (e.clientY > pageDimensions.bottom - 20) {
+          scrollWhileDraggingDown = setInterval(() => {
+            page.scroll(0, page.scrollTop + 10);
+          }, 10);
+        }
+        highlightItems(box.getBoundingClientRect(), e);
       }
     }
     function handleMouseUp() {

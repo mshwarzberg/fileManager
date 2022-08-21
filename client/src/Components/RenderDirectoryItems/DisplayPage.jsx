@@ -7,7 +7,7 @@ import Icon from "./IconsAndThumbnails/Icon/Icon";
 import { GeneralContext } from "../Main/App";
 import getTitle from "../../Helpers/getTitle";
 import getContextMenu from "../../Helpers/getContextMenu";
-import CheckIfExists from "../../Helpers/CheckIfExists";
+import { foundInArrayObject } from "../../Helpers/SearchArray";
 
 export default function DisplayPage({ controllers, setControllers }) {
   const {
@@ -20,7 +20,16 @@ export default function DisplayPage({ controllers, setControllers }) {
   } = useContext(GeneralContext);
 
   const renderItems = directoryItems?.map((directoryItem) => {
-    const { name, size, itemtype, path, permission, thumbPath } = directoryItem;
+    const {
+      name,
+      size,
+      itemtype,
+      path,
+      permission,
+      thumbPath,
+      isDirectory,
+      isDrive,
+    } = directoryItem;
 
     function navigateAndOpen() {
       if (!permission) {
@@ -55,18 +64,16 @@ export default function DisplayPage({ controllers, setControllers }) {
       return (
         <div
           className="renderitem--block"
-          data-info={permission ? JSON.stringify(directoryItem) : "{}"}
           key={`Name: ${name}\nSize: ${size}`}
           style={{
             border: !permission ? "2px solid red" : "",
             backgroundColor: !permission ? "#cc7878c5" : "",
             width: localStorage.getItem("blockWidth") || "10rem",
-            ...(CheckIfExists(
+            ...(foundInArrayObject(
               itemsSelected,
-              name,
-              "name",
-              directoryItem.path,
-              "path"
+              [name, directoryItem.path],
+              ["name", "path"],
+              "info"
             ) &&
               permission && {
                 backgroundColor: "#cccccccc",
@@ -92,42 +99,44 @@ export default function DisplayPage({ controllers, setControllers }) {
               permission
             )}
             data-info={permission ? JSON.stringify(directoryItem) : null}
+            data-destination={
+              (isDirectory || isDrive) && permission
+                ? JSON.stringify({ path: path + name })
+                : null
+            }
             data-title={getTitle(directoryItem)}
             onClick={(e) => {
-              if (e.nativeEvent.pointerId === -1) {
-                navigateAndOpen();
-                return;
-              }
               if (
-                CheckIfExists(
+                foundInArrayObject(
                   itemsSelected,
-                  directoryItem.name,
-                  "name",
-                  directoryItem.path,
-                  "path"
+                  [name, directoryItem.path],
+                  ["name", "path"],
+                  "info"
                 )
               ) {
                 if (e.ctrlKey) {
                   setItemsSelected((prevItems) => {
                     return prevItems
                       .map((prevItem) => {
-                        if (prevItem.name === name) {
+                        if (prevItem.info.name === name) {
                           return {};
                         }
                         return prevItem;
                       })
-                      .filter((prevItem) => prevItem.name && prevItem);
+                      .filter((prevItem) => prevItem.info && prevItem);
                   });
                 }
               } else {
                 if (e.ctrlKey) {
                   setItemsSelected((prevItems) => [
                     ...prevItems,
-                    directoryItem,
+                    { element: e.target.parentElement, info: directoryItem },
                   ]);
                   return;
                 } else if (e.button !== 2) {
-                  setItemsSelected([directoryItem]);
+                  setItemsSelected([
+                    { element: e.target.parentElement, info: directoryItem },
+                  ]);
                 }
               }
             }}
@@ -206,9 +215,8 @@ export default function DisplayPage({ controllers, setControllers }) {
         "explorer",
         "properties",
       ]}
-      data-info={JSON.stringify({
+      data-destination={JSON.stringify({
         path: state.currentDirectory,
-        isDirectory: true,
       })}
     >
       <div id="highlight--box" />

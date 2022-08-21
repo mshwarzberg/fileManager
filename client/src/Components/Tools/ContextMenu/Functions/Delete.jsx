@@ -9,7 +9,7 @@ export default function Delete({ info }) {
   function deleteItem() {
     const deleteItems = [];
     for (const selected of itemsSelected) {
-      deleteItems.push(selected.path + selected.name);
+      deleteItems.push(selected.info.path + selected.info.name);
     }
     fetch("/api/manage/delete", {
       method: "POST",

@@ -11,7 +11,7 @@ export default function OpenFileManager({ setContextMenu, item }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            path: item.path,
+            path: item.path + (item.name || ""),
             isFile: item.isFile,
           }),
         });

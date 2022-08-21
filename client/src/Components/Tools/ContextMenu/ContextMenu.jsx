@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { UIContext } from "../GeneralUI";
 import Rename from "./Functions/Rename";
 import Transfer from "./Functions/Transfer";
@@ -8,7 +8,7 @@ import Refresh from "./Functions/Refresh";
 import OpenFileManager from "./Functions/OpenFileManager";
 import View from "./Functions/View";
 import NewDirectory from "./Functions/NewDirectory";
-import CheckIfExists from "../../../Helpers/CheckIfExists";
+import { foundInArrayObject } from "../../../Helpers/SearchArray";
 import { GeneralContext } from "../../Main/App";
 
 export default function ContextMenu({
@@ -25,15 +25,24 @@ export default function ContextMenu({
       setContextMenu({});
     }
     function handleMouseDown(e) {
-      if (e.button === 2 && e.target.dataset?.contextmenu) {
-        const info = JSON.parse(e.target.dataset.info);
-        if (!CheckIfExists(itemsSelected, info.name, "name")) {
-          setItemsSelected([info]);
+      if (e.button === 2 && e.target.dataset.contextmenu) {
+        const info = JSON.parse(
+          e.target.dataset.info || e.target.dataset.destination || "{}"
+        );
+        if (
+          !foundInArrayObject(
+            itemsSelected,
+            [info.name, info.path],
+            ["name", "path"],
+            "info"
+          )
+        ) {
+          setItemsSelected([{ info: info, element: e.target.parentElement }]);
         }
         setContextMenu({
           items: e.target.dataset.contextmenu,
           info: info,
-          destination: info.path + (info.name ? info.name : ""),
+          destination: JSON.parse(e.target.dataset.destination || "{}").path,
           x: e.clientX,
           y: e.clientY,
         });

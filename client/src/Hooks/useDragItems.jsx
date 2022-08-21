@@ -4,7 +4,7 @@ import { GeneralContext } from "../Components/Main/App";
 
 let timeout;
 export default function useDragItems() {
-  const [dragMe, setDragMe] = useState();
+  const [dragMe, setDragMe] = useState([]);
   const { itemsSelected, state, setDirectoryItems } =
     useContext(GeneralContext);
 
@@ -16,55 +16,77 @@ export default function useDragItems() {
         e.target.className === "cover-block"
       ) {
         timeout = setTimeout(() => {
-          setDragMe(e.target.parentElement);
-          document.body.style.cursor = "grabbing";
+          if (!itemsSelected[0]) {
+            return setDragMe([e.target.parentElement]);
+          }
+          const dragTheseItems = [
+            ...itemsSelected.map((itemSelected) => {
+              return itemSelected.element;
+            }),
+          ];
+
+          const dragMeCount = document.createElement("div");
+          dragMeCount.innerHTML = dragTheseItems.length;
+          dragMeCount.id = "drag-count";
+
+          dragTheseItems[dragTheseItems.length - 1].appendChild(dragMeCount);
+          setDragMe(dragTheseItems);
         }, 300);
       }
     }
     function handleMouseMove(e) {
-      if (dragMe) {
-        const blockSize = dragMe.getBoundingClientRect();
-        dragMe.style.position = "fixed";
-        dragMe.style.left = e.clientX - blockSize.width / 2 + "px";
-        dragMe.style.top = e.clientY - blockSize.height / 2 + "px";
-        dragMe.style.pointerEvents = "none";
-        dragMe.style.backgroundColor = "#222";
-        dragMe.style.zIndex = 100;
-        dragMe.style.opacity = 0.8;
+      if (dragMe[0]) {
+        for (const item of dragMe) {
+          const blockSize = item.getBoundingClientRect();
+          item.style.position = "fixed";
+          item.style.left = e.clientX - blockSize.width / 2 + "px";
+          item.style.top = e.clientY - blockSize.height / 2 + "px";
+          item.style.pointerEvents = "none";
+          item.style.zIndex = 100;
+          let opacity;
+          if (dragMe.length > 10) {
+            opacity = 0.3;
+          } else if (dragMe.length > 6) {
+            opacity = 0.4;
+          } else if (dragMe.length > 3) {
+            opacity = 0.65;
+          } else {
+            opacity = 0.75;
+          }
+          item.style.opacity = opacity;
+        }
       }
     }
     function handleMouseUp(e) {
       clearTimeout(timeout);
-      if (e.button === 0 && dragMe) {
-        if (e.target.dataset?.info && dragMe.lastChild?.dataset?.info) {
-          const destination = JSON.parse(e.target.dataset.info);
-          const source = JSON.parse(dragMe.lastChild.dataset.info);
+      if (e.button === 0 && dragMe[0]) {
+        if (e.target.dataset.info) {
+          const destinationInfo = JSON.parse(e.target.dataset.info);
+          const { path } = JSON.parse(e.target.dataset.destination || "{}");
           if (
-            (destination.isDirectory || destination.isDrive) &&
-            destination.path &&
-            destination.path !== state.currentDirectory
+            (destinationInfo.isDirectory || destinationInfo.isDrive) &&
+            path &&
+            path !== state.currentDirectory
           ) {
-            const metadata = itemsSelected[0] ? itemsSelected : [source];
             TransferFunction(
-              metadata,
-              destination.path,
+              itemsSelected,
+              path,
               "cut",
               state.currentDirectory,
               setDirectoryItems
             );
           }
-          dragMe.style.backgroundColor = "";
-          dragMe.style.zIndex = "";
-          dragMe.style.position = "";
-          dragMe.style.pointerEvents = "";
-          dragMe.style.left = "";
-          dragMe.style.top = "";
-          dragMe.style.opacity = 1;
-          document.body.style.cursor = "";
+          for (const item of dragMe) {
+            item.style.zIndex = "";
+            item.style.position = "";
+            item.style.pointerEvents = "";
+            item.style.left = "";
+            item.style.top = "";
+            item.style.opacity = 1;
+          }
         }
       }
-
-      setDragMe(false);
+      setDragMe([]);
     }
     document.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mouseup", handleMouseUp);
@@ -75,5 +97,5 @@ export default function useDragItems() {
       document.removeEventListener("mouseup", handleMouseUp);
     };
     // eslint-disable-next-line
-  }, [dragMe, setDragMe]);
+  }, [dragMe, setDragMe, itemsSelected]);
 }

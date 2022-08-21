@@ -63,6 +63,9 @@ export default function ChildDir({ child, altImage }) {
       data-info={
         permission && (isDrive || isDirectory) ? JSON.stringify(child) : null
       }
+      data-destination={
+        isDirectory || isDrive ? JSON.stringify({ path: path }) : null
+      }
     >
       <img
         onClick={(e) => {

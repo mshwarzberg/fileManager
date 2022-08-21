@@ -39,9 +39,7 @@ export default function App() {
           const response = await res.json();
           setDirectoryItems(response);
         })
-        .catch(() => {
-          dispatch({ type: "resetToDefault" });
-        });
+        .catch(() => {});
     } else {
       fetch("/api/directorytree/initialtree")
         .then(async (res) => {
