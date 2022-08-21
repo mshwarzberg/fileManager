@@ -66,6 +66,7 @@ router.get("/initialtree", (_, res) => {
         collapsed: true,
         size: listOfDrives[listOfDrives.indexOf(i) + 1].split("=")[1],
         type: "drive",
+        isDrive: true,
       });
     }
   }
@@ -78,6 +79,7 @@ router.get("/initialtree", (_, res) => {
       "Documents",
       "Desktop",
     ];
+
     for (let directory of directories) {
       defaultTree.unshift({
         name: directory,

@@ -38,7 +38,7 @@ export default function useSelectMultiple() {
     const box = document.getElementById("highlight--box");
 
     function handleMouseDown(e) {
-      if (e.target.className === "cover-block") {
+      if (e.target.className === "cover-block" || e.button !== 0) {
         return;
       }
       if (!e.ctrlKey) {

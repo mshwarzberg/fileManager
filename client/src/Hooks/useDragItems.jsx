@@ -5,19 +5,28 @@ import { GeneralContext } from "../Components/Main/App";
 let timeout;
 export default function useDragItems() {
   const [dragMe, setDragMe] = useState([]);
-  const { itemsSelected, state, setDirectoryItems } =
+  const { itemsSelected, state, setDirectoryItems, setItemsSelected } =
     useContext(GeneralContext);
 
   useEffect(() => {
     function handleMouseDown(e) {
-      if (
-        e.target.dataset.info &&
-        e.button === 0 &&
-        e.target.className === "cover-block"
-      ) {
+      if (e.button === 0 && e.target.className === "cover-block") {
         timeout = setTimeout(() => {
-          if (!itemsSelected[0]) {
-            return setDragMe([e.target.parentElement]);
+          if (e.ctrlKey) {
+            setItemsSelected((prevItems) => [
+              ...prevItems,
+              {
+                info: JSON.parse(e.target.dataset.info || "{}"),
+                element: e.target.parentElement,
+              },
+            ]);
+          } else {
+            setItemsSelected([
+              {
+                info: JSON.parse(e.target.dataset.info || "{}"),
+                element: e.target.parentElement,
+              },
+            ]);
           }
           const dragTheseItems = [
             ...itemsSelected.map((itemSelected) => {
@@ -57,17 +66,14 @@ export default function useDragItems() {
         }
       }
     }
+
     function handleMouseUp(e) {
       clearTimeout(timeout);
       if (e.button === 0 && dragMe[0]) {
-        if (e.target.dataset.info) {
-          const destinationInfo = JSON.parse(e.target.dataset.info);
+        if (e.target.dataset.destination) {
           const { path } = JSON.parse(e.target.dataset.destination || "{}");
-          if (
-            (destinationInfo.isDirectory || destinationInfo.isDrive) &&
-            path &&
-            path !== state.currentDirectory
-          ) {
+
+          if (path && path !== state.currentDirectory) {
             TransferFunction(
               itemsSelected,
               path,
@@ -76,14 +82,14 @@ export default function useDragItems() {
               setDirectoryItems
             );
           }
-          for (const item of dragMe) {
-            item.style.zIndex = "";
-            item.style.position = "";
-            item.style.pointerEvents = "";
-            item.style.left = "";
-            item.style.top = "";
-            item.style.opacity = 1;
-          }
+        }
+        for (const item of dragMe) {
+          item.style.zIndex = "";
+          item.style.position = "";
+          item.style.pointerEvents = "";
+          item.style.left = "";
+          item.style.top = "";
+          item.style.opacity = 1;
         }
       }
       setDragMe([]);
@@ -97,5 +103,5 @@ export default function useDragItems() {
       document.removeEventListener("mouseup", handleMouseUp);
     };
     // eslint-disable-next-line
-  }, [dragMe, setDragMe, itemsSelected]);
+  }, [dragMe, setDragMe, itemsSelected, setItemsSelected]);
 }
