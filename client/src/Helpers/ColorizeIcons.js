@@ -43,6 +43,9 @@ export default function ColorizeIcons(fileextension) {
     case "scss":
     case "css":
       return "lightgreen";
+    case "exe":
+    case "msi":
+      return "navy";
     default:
       return "black";
   }

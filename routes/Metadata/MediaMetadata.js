@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
 const { ffprobeMetadata } = require("../../helpers/ffmpegfunctions");
 const { verifyFolder, checkType } = require("../../helpers/verifiers");
 

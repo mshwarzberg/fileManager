@@ -1,17 +1,32 @@
 import { useEffect, useContext, useState } from "react";
-import TransferFunction from "../Helpers/TransferFunction";
 import { GeneralContext } from "../Components/Main/App";
+import PasteFunction from "../Components/Tools/ContextMenu/Functions/Paste/PasteFunction";
 
 let timeout;
-export default function useDragItems() {
+export default function useDragItems(
+  setDragCount,
+  dragCount,
+  setAlert,
+  setConfirm
+) {
   const [dragMe, setDragMe] = useState([]);
-  const { itemsSelected, state, setDirectoryItems, setItemsSelected } =
-    useContext(GeneralContext);
+  const {
+    itemsSelected,
+    state,
+    setDirectoryItems,
+    setItemsSelected,
+    directoryItems,
+  } = useContext(GeneralContext);
 
   useEffect(() => {
     function handleMouseDown(e) {
       if (e.button === 0 && e.target.className === "cover-block") {
         timeout = setTimeout(() => {
+          let dragTheseItems = [
+            ...itemsSelected.map((itemSelected) => {
+              return itemSelected.element;
+            }),
+          ];
           if (e.ctrlKey) {
             setItemsSelected((prevItems) => [
               ...prevItems,
@@ -20,25 +35,23 @@ export default function useDragItems() {
                 element: e.target.parentElement,
               },
             ]);
-          } else {
+            dragTheseItems.push(e.target.parentElement);
+          } else if (!dragTheseItems.includes(e.target.parentElement)) {
             setItemsSelected([
               {
                 info: JSON.parse(e.target.dataset.info || "{}"),
                 element: e.target.parentElement,
               },
             ]);
+            dragTheseItems = [
+              {
+                info: JSON.parse(e.target.dataset.info || "{}"),
+                element: e.target.parentElement,
+              },
+            ];
           }
-          const dragTheseItems = [
-            ...itemsSelected.map((itemSelected) => {
-              return itemSelected.element;
-            }),
-          ];
 
-          const dragMeCount = document.createElement("div");
-          dragMeCount.innerHTML = dragTheseItems.length;
-          dragMeCount.id = "drag-count";
-
-          dragTheseItems[dragTheseItems.length - 1].appendChild(dragMeCount);
+          setDragCount(dragTheseItems.length);
           setDragMe(dragTheseItems);
         }, 300);
       }
@@ -47,11 +60,22 @@ export default function useDragItems() {
       if (dragMe[0]) {
         for (const item of dragMe) {
           const blockSize = item.getBoundingClientRect();
+          const dragCountElement = document.getElementById("drag-count");
+          dragCountElement.style.left =
+            e.clientX -
+            dragCountElement.getBoundingClientRect().width / 2 +
+            "px";
+          dragCountElement.style.top =
+            e.clientY -
+            blockSize.height / 2 -
+            dragCountElement.getBoundingClientRect().height -
+            5 +
+            "px";
           item.style.position = "fixed";
           item.style.left = e.clientX - blockSize.width / 2 + "px";
           item.style.top = e.clientY - blockSize.height / 2 + "px";
           item.style.pointerEvents = "none";
-          item.style.zIndex = 100;
+          item.style.zIndex = 50;
           let opacity;
           if (dragMe.length > 10) {
             opacity = 0.3;
@@ -74,12 +98,19 @@ export default function useDragItems() {
           const { path } = JSON.parse(e.target.dataset.destination || "{}");
 
           if (path && path !== state.currentDirectory) {
-            TransferFunction(
+            PasteFunction(
               itemsSelected,
               path,
               "cut",
               state.currentDirectory,
-              setDirectoryItems
+              directoryItems,
+              {
+                setDirectoryItems: setDirectoryItems,
+                setConfirm: setConfirm,
+                setAlert: setAlert,
+                setContextMenu: () => {},
+                setClipboardData: () => {},
+              }
             );
           }
         }
@@ -92,6 +123,7 @@ export default function useDragItems() {
           item.style.opacity = 1;
         }
       }
+      setDragCount();
       setDragMe([]);
     }
     document.addEventListener("mousedown", handleMouseDown);
@@ -103,5 +135,5 @@ export default function useDragItems() {
       document.removeEventListener("mouseup", handleMouseUp);
     };
     // eslint-disable-next-line
-  }, [dragMe, setDragMe, itemsSelected, setItemsSelected]);
+  }, [dragMe, itemsSelected, dragCount]);
 }

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { GeneralContext } from "../../Main/App";
 import ChildDir from "./ChildDir";
 import ParentDir from "./ParentDir";
@@ -80,7 +80,14 @@ export default function DirectoryTree({ showTree }) {
   return (
     showTree && (
       <>
-        <div id="directorytree--body">
+        <div
+          id="directorytree--body"
+          style={{
+            flex: `0 0 ${
+              localStorage.getItem("directoryTreeWidth") || "450"
+            }px`,
+          }}
+        >
           {mapDirectoryTreeLoop(state.directoryTree, {})}
           <div id="resize--tree" />
         </div>

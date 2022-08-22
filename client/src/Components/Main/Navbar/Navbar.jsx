@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import FormatDate from "../../../Helpers/FormatDate";
 import DirectoryNavigation from "../../Tools/DirectoryNavigation";
-import SortBy from "../../Tools/Sorting/SortBy";
 import { GeneralContext } from "../App";
 
 function Navbar({ showTree, setShowTree }) {
@@ -47,7 +46,6 @@ function Navbar({ showTree, setShowTree }) {
       </button>
       <h1 id="current-time">{FormatDate(time, true)}</h1>
       <DirectoryNavigation />
-      <SortBy />
       <div id="navbar--dir-info">
         <h1 data-title={state.currentDirectory}>
           {state.currentDirectory || "Computer:"}

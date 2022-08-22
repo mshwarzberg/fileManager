@@ -13,10 +13,14 @@ router.post("/", verifyFolder, (req, res) => {
     .readdirSync(`${currentdirectory}`, { withFileTypes: true })
     .map((file) => {
       return Metadata(file, currentdirectory, drive);
+    })
+    .filter((item) => {
+      return item.name && item;
     });
 
   res.send(result);
-  fs.readdir(`${currentdirectory}`, { withFileTypes: true }, (err, files) => {
+
+  fs.readdir(currentdirectory, { withFileTypes: true }, (err, files) => {
     if (err) return console.log("Files and Directories", err);
     if (files) {
       const restOfPath = currentdirectory.slice(

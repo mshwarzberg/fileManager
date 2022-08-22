@@ -13,7 +13,12 @@ export default function ChildDir({ child, altImage }) {
   const { state, dispatch } = useContext(GeneralContext);
   const { path, name, permission, isDirectory, isDrive, linkTo } = child;
 
+  let isPathClickedAlready;
   function clickDirectory(toOpenDirectory, toExpandTree) {
+    if (isPathClickedAlready) {
+      return;
+    }
+    isPathClickedAlready = path;
     if (!path.startsWith(state.drive) || !state.drive || isDrive) {
       let drive = isDrive ? name : path.slice(0, 2);
       dispatch({ type: "setDriveName", value: drive + "/" });
@@ -69,10 +74,13 @@ export default function ChildDir({ child, altImage }) {
     >
       <img
         onClick={(e) => {
-          clickDirectory(false);
           if (!permission) {
             return;
           }
+          clickDirectory(false);
+          e.stopPropagation();
+        }}
+        onDoubleClick={(e) => {
           e.stopPropagation();
         }}
         onMouseDown={(e) => {
@@ -92,6 +100,7 @@ export default function ChildDir({ child, altImage }) {
         src={altImage(name) || (!isDrive ? directory : driveIcon)}
         alt="icon"
         className="side--icon"
+        style={{ pointerEvents: "none" }}
       />
       {name}
     </div>

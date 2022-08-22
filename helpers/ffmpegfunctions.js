@@ -1,12 +1,12 @@
 const { formatDuration } = require("./formatvideoduration");
 const child = require("child_process");
-var exifr = require("exifr");
+const exifr = require("exifr");
 
 function ffmpegThumbs(name, outputfile, callback) {
   try {
     const getDuration = `ffprobe.exe -show_format -print_format json "${name}"`;
     let output = child.execSync(getDuration, { stdio: "pipe" }).toString();
-    output = JSON.parse(output);
+    output = JSON.parse(output || "{}");
     let duration = output["format"].duration * 1;
     const createThumbs = `ffmpeg.exe -ss ${formatDuration(
       duration,
@@ -24,7 +24,7 @@ function ffprobeMetadata(name, callback) {
 
   try {
     let output = child.execSync(probeCommand, { stdio: "pipe" }).toString();
-    output = JSON.parse(output);
+    output = JSON.parse(output || "{}");
     let dimensions = output["streams"][0];
     exifr
       .parse(name, true)

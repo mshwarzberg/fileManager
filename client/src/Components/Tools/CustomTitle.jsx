@@ -1,8 +1,9 @@
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 let titleTimeout;
 export default function CustomTitle({ title, setTitle, contextMenu }) {
+  const [element, setElement] = useState();
+
   useEffect(() => {
     function titleEvent(e) {
       clearTimeout(titleTimeout);
@@ -10,6 +11,7 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
         setTitle({});
       }
       if (e.target.dataset?.title) {
+        setElement(e.target);
         titleTimeout = setTimeout(() => {
           if (contextMenu.x || contextMenu.y) {
             return;
@@ -22,6 +24,10 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
         }, 800);
       }
     }
+
+    element?.addEventListener("mouseleave", () => {
+      clearTimeout(titleTimeout);
+    });
     function clearTitle() {
       setTitle({});
     }
@@ -29,12 +35,15 @@ export default function CustomTitle({ title, setTitle, contextMenu }) {
     document.addEventListener("mousedown", clearTitle);
     document.addEventListener("wheel", clearTitle);
     return () => {
+      element?.removeEventListener("mouseleave", () => {
+        clearTimeout(titleTimeout);
+      });
       document.removeEventListener("mousemove", titleEvent);
       document.removeEventListener("wheel", clearTitle);
       document.removeEventListener("mousedown", clearTitle);
     };
     // eslint-disable-next-line
-  }, [title.title, contextMenu.x, contextMenu.y]);
+  }, [element]);
 
   return (
     (title.x || title.y) && (

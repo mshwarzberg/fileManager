@@ -24,7 +24,7 @@ function Video({ directoryItem, setControllers }) {
           if (item.name === name) {
             return {
               ...item,
-              ...JSON.parse(sessionStorage.getItem(path)),
+              ...JSON.parse(sessionStorage.getItem(path) || "{}"),
             };
           }
           return item;

@@ -9,14 +9,13 @@ export default function useSelectMultiple() {
     let infoArray = [];
     for (const element of elements) {
       const elDimensions = element.getBoundingClientRect();
-
       if (
         elDimensions.x + elDimensions.width > boxDimensions.x &&
         elDimensions.x < boxDimensions.right &&
         elDimensions.y + elDimensions.height > boxDimensions.y &&
         elDimensions.y < boxDimensions.bottom
       ) {
-        const info = JSON.parse(element.dataset.info);
+        const info = JSON.parse(element.dataset.info || "{}");
         if (info.permission && info.name) {
           infoArray.push({
             info: info,

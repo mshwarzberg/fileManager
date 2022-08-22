@@ -73,12 +73,12 @@ function reducer(state, action) {
 }
 
 export default function DirectoryState() {
-  const initState = JSON.parse(localStorage.getItem("state"));
+  const initState = JSON.parse(localStorage.getItem("state") || "{}");
 
   const [state, dispatch] = useReducer(reducer, {
     drive: initState?.drive || "",
     currentDirectory: initState?.currentDirectory || "",
-    directoryTree: initState?.directoryTree || [""],
+    directoryTree: initState?.directoryTree || [{}],
     navigatedDirectories: initState?.navigatedDirectories || [""],
     navigatedIndex: initState?.navigatedIndex || 0,
   });

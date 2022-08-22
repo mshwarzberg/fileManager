@@ -1,2 +1,2 @@
 import "./_directorytree.scss";
-import "./_renderitems.scss";
+import "./_displaypage.scss";

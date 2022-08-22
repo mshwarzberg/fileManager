@@ -1,5 +1,5 @@
 import TransferFunction from "../../../../../Helpers/TransferFunction";
-import { foundInArray } from "../../../../../Helpers/SearchArray";
+import { foundInArrayWithKey } from "../../../../../Helpers/SearchArray";
 
 export default function PasteFunction(
   source,
@@ -19,7 +19,7 @@ export default function PasteFunction(
 
   const duplicates = [];
   for (const item of source) {
-    if (foundInArray(currentDirectoryItems, item.name, "name")) {
+    if (foundInArrayWithKey(currentDirectoryItems, item.name, "name")) {
       duplicates.push(item.name);
     }
   }
@@ -89,18 +89,22 @@ export default function PasteFunction(
                 show: true,
                 dialog: "Error occurred while deleting the item(s)",
               });
-              setContextMenu({});
+              if (setContextMenu) {
+                setContextMenu({});
+              }
             } else {
               setDirectoryItems((prevItems) => {
-                return prevItems.map((prevItem) => {
-                  if (deleteItems[index] === prevItem.path + prevItem.name) {
-                    return {};
-                  }
-                  return prevItem;
-                }).filter((item) => {
-                  return item.name && item;
-                });;
-              })
+                return prevItems
+                  .map((prevItem) => {
+                    if (deleteItems[index] === prevItem.path + prevItem.name) {
+                      return {};
+                    }
+                    return prevItem;
+                  })
+                  .filter((item) => {
+                    return item.name && item;
+                  });
+              });
               TransferFunction(
                 [source[index]],
                 destination,

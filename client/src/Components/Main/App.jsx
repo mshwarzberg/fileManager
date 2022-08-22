@@ -16,7 +16,19 @@ export default function App() {
   const [directoryItems, setDirectoryItems] = useState([]);
   const [showTree, setShowTree] = useState(true);
   const [itemsSelected, setItemsSelected] = useState([]);
-
+  const [backgroundFade, setBackgroundFade] = useState(`linear-gradient(
+    90deg,
+    #050505 0%,
+    #050505 ${
+      (localStorage.getItem("directoryTreeWidth") / window.innerWidth) * 100 ||
+      20
+    }%,
+    #333 ${
+      (localStorage.getItem("directoryTreeWidth") / window.innerWidth) * 100 +
+        5 || 25
+    }%,
+    #333 100%
+  )`);
   useEffect(() => {
     for (let i of controllers) {
       i.abort();
@@ -75,14 +87,24 @@ export default function App() {
       }}
     >
       <Navbar setShowTree={setShowTree} showTree={showTree} />
-      <div id="directory-and-item-container">
+      <div
+        id="directory-and-item-container"
+        style={{
+          background: backgroundFade,
+        }}
+      >
         <DirectoryTree showTree={showTree} />
         <DisplayPage
           controllers={controllers}
           setControllers={setControllers}
         />
       </div>
-      <GeneralUI />
+      {itemsSelected.length && (
+        <div id="items-selected-count">
+          {itemsSelected.length} items selected
+        </div>
+      )}
+      <GeneralUI showTree={showTree} setBackgroundFade={setBackgroundFade} />
     </GeneralContext.Provider>
   );
 }

@@ -1,4 +1,4 @@
-export function foundInArray(array, value, compareKey) {
+export function foundInArrayWithKey(array, value, compareKey) {
   for (const element of array) {
     if (element[compareKey] === value) {
       return true;

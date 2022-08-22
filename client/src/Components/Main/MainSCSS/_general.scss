@@ -12,11 +12,14 @@
 #directory-and-item-container {
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  height: 100vh;
   #split-main-page {
-    height: 91vh;
+    height: 93vh;
     position: relative;
     top: 2vh;
     flex: 0 0 0.5rem;
+    cursor: ew-resize;
     margin: 0.5rem;
     background: linear-gradient(
       90deg,
@@ -48,20 +51,4 @@ body {
 :root {
   --screen-width: 100vw;
   --screen-height: 100vh;
-}
-
-#drag-count {
-  opacity: 1 !important;
-  right: calc(50% - 0.75rem);
-  position: absolute;
-  top: -1.5rem;
-  height: 1.5rem;
-  @include flexStyle(row);
-  aspect-ratio: 1;
-  padding: 5px;
-  padding-top: 8px;
-  border-radius: 5px;
-  font-family: "bebas neue";
-  background-color: #fff;
-  font-size: 1.2rem;
 }
