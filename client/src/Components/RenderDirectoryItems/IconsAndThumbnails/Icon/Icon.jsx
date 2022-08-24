@@ -4,10 +4,20 @@ import symlink from "../../../../Assets/images/symlink.png";
 import drive from "../../../../Assets/images/drive.png";
 import Filename from "./Filename";
 import CustomIcon from "./CustomIcon";
+import FormatSize from "../../../../Helpers/FormatSize";
 
 function Icon(props) {
-  const { name, fileextension, isFile, isSymbolicLink, isDirectory, isDrive } =
-    props.directoryItem;
+  const {
+    name,
+    path,
+    fileextension,
+    isFile,
+    isSymbolicLink,
+    isDirectory,
+    isDrive,
+    totalSize,
+    availableSpace,
+  } = props.directoryItem;
 
   function displayIcon() {
     if (isFile) {
@@ -33,6 +43,21 @@ function Icon(props) {
     <div className="block-container">
       {displayIcon()}
       <Filename name={name} />
+      {isDrive && (
+        <div
+          id="drive-available-space"
+          data-title={`Space Remaining: ${FormatSize(
+            availableSpace
+          )}\nDrive Size: ${FormatSize(totalSize)}`}
+        >
+          <div
+            style={{ width: (availableSpace / totalSize) * 100 + "%" }}
+            data-title={`Space Remaining: ${FormatSize(
+              availableSpace
+            )}\nDrive Size: ${FormatSize(totalSize)}`}
+          />
+        </div>
+      )}
     </div>
   );
 }

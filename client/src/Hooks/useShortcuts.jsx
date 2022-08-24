@@ -5,17 +5,11 @@ import PasteFunction from "../Components/Tools/ContextMenu/Functions/Paste/Paste
 export default function useShortcuts(
   setClipboardData,
   setContextMenu,
-  setConfirm,
-  setAlert,
+  setPopup,
   clipboardData
 ) {
-  const {
-    setItemsSelected,
-    itemsSelected,
-    setDirectoryItems,
-    directoryItems,
-    state,
-  } = useContext(GeneralContext);
+  const { setItemsSelected, itemsSelected, setDirectoryItems, state } =
+    useContext(GeneralContext);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -34,72 +28,67 @@ export default function useShortcuts(
                 }),
               });
             }
-            break;
           }
+          break;
         default:
           break;
       }
-      switch (e.ctrlKey) {
-        case true:
-          switch (e.key) {
-            case "a":
-              const elements = document.getElementsByClassName("cover-block");
-              setItemsSelected([]);
-              for (const element of elements) {
-                const info = JSON.parse(element.dataset.info || "{}");
-                setItemsSelected((prevItems) => [
-                  ...prevItems,
-                  { info: info, element: element },
-                ]);
-              }
-              return;
-            case "c":
-              for (const block of blocks) {
-                block.parentElement.style.opacity = 1;
-              }
-              setClipboardData({
-                source: itemsSelected,
-                mode: "copy",
-              });
-              return;
-            case "x":
-              setClipboardData({
-                source: itemsSelected,
-                mode: "cut",
-              });
-              for (const block of blocks) {
-                block.parentElement.style.opacity = 1;
-                const info = JSON.parse(block.dataset.info || "{}");
-                for (const selected of itemsSelected) {
-                  if (selected.name === info.name) {
-                    block.parentElement.style.opacity = 0.5;
-                  }
+      if (e.ctrlKey) {
+        switch (e.key) {
+          case "a":
+            const elements = document.getElementsByClassName("cover-block");
+            setItemsSelected([]);
+            for (const element of elements) {
+              const info = JSON.parse(element.dataset.info || "{}");
+              setItemsSelected((prevItems) => [
+                ...prevItems,
+                { info: info, element: element.parentElement },
+              ]);
+            }
+            return;
+          case "c":
+            for (const block of blocks) {
+              block.parentElement.style.opacity = 1;
+            }
+            setClipboardData({
+              source: itemsSelected,
+              mode: "copy",
+            });
+            return;
+          case "x":
+            setClipboardData({
+              source: itemsSelected,
+              mode: "cut",
+            });
+            for (const block of blocks) {
+              block.parentElement.style.opacity = 1;
+              const info = JSON.parse(block.dataset.info || "{}");
+              for (const selected of itemsSelected) {
+                if (selected.name === info.name) {
+                  block.parentElement.style.opacity = 0.5;
                 }
               }
-              return;
-            case "v":
-              if (clipboardData.source) {
-                PasteFunction(
-                  clipboardData.source,
-                  state.currentDirectory,
-                  clipboardData.mode,
-                  state.currentDirectory,
-                  directoryItems,
-                  {
-                    setAlert: setAlert,
-                    setClipboardData: setClipboardData,
-                    setDirectoryItems: setDirectoryItems,
-                    setConfirm: setConfirm,
-                    setContextMenu: setContextMenu,
-                  }
-                );
-              }
-              return;
-            default:
-              return;
-          }
-        default:
-          return;
+            }
+            return;
+          case "v":
+            if (clipboardData.source) {
+              PasteFunction(
+                clipboardData.source,
+                state.currentDirectory,
+                clipboardData.mode,
+                state.currentDirectory,
+                {
+                  setPopup: setPopup,
+                  setClipboardData: setClipboardData,
+                  setDirectoryItems: setDirectoryItems,
+                  setContextMenu: setContextMenu,
+                }
+              );
+            }
+            return;
+          default:
+            return;
+        }
       }
     }
     document.addEventListener("keydown", handleKeyDown);

@@ -28,7 +28,6 @@ function reducer(state, action) {
       };
     case "backDirectory":
       const navBackwards = state.navigatedDirectories[state.navigatedIndex - 1];
-
       return {
         ...state,
         currentDirectory: navBackwards,
@@ -66,7 +65,17 @@ function reducer(state, action) {
         directoryTree: [""],
         navigatedDirectories: [""],
         navigatedIndex: 0,
+        networkDrives: [],
       };
+    case "addNetworkDrive":
+      if (!state.networkDrives.includes(action.value)) {
+        return {
+          ...state,
+          networkDrives: [...state.networkDrives, action.value],
+        };
+      } else {
+        return state;
+      }
     default:
       return state;
   }
@@ -76,11 +85,12 @@ export default function DirectoryState() {
   const initState = JSON.parse(localStorage.getItem("state") || "{}");
 
   const [state, dispatch] = useReducer(reducer, {
-    drive: initState?.drive || "",
-    currentDirectory: initState?.currentDirectory || "",
-    directoryTree: initState?.directoryTree || [{}],
-    navigatedDirectories: initState?.navigatedDirectories || [""],
-    navigatedIndex: initState?.navigatedIndex || 0,
+    drive: initState.drive || "",
+    currentDirectory: initState.currentDirectory || "",
+    directoryTree: initState.directoryTree || [""],
+    navigatedDirectories: initState.navigatedDirectories || [""],
+    navigatedIndex: initState.navigatedIndex || 0,
+    networkDrives: initState.networkDrives || [],
   });
 
   useEffect(() => {
@@ -92,6 +102,7 @@ export default function DirectoryState() {
         directoryTree: state.directoryTree,
         navigatedDirectories: state.navigatedDirectories,
         navigatedIndex: state.navigatedIndex,
+        networkDrives: state.networkDrives,
       })
     );
   }, [state, dispatch]);

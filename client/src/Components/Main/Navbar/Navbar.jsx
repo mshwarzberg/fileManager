@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import FormatDate from "../../../Helpers/FormatDate";
-import DirectoryNavigation from "../../Tools/DirectoryNavigation";
+import DirectoryNavigation from "./DirectoryNavigation";
 import { GeneralContext } from "../App";
 
 function Navbar({ showTree, setShowTree }) {
@@ -40,6 +40,10 @@ function Navbar({ showTree, setShowTree }) {
         id="directorytree--button-showhide"
         onClick={() => {
           setShowTree(!showTree);
+          localStorage.setItem(
+            "isTreeVisible",
+            JSON.stringify({ value: !showTree })
+          );
         }}
       >
         {showTree ? "Hide Tree" : "Show Tree"}

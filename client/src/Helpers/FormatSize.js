@@ -14,10 +14,10 @@ export default function FormatSize(originalSize) {
   } else if (originalSize >= 950000 && originalSize < 950000000) {
     newSize = originalSize / 1000000;
     letter = "M";
-  } else if (originalSize >= 950000000 && originalSize < 9500000000000) {
+  } else if (originalSize >= 950000000 && originalSize < 950000000000) {
     newSize = originalSize / 1000000000;
     letter = "G";
-  } else if (originalSize >= 9500000000000) {
+  } else if (originalSize >= 950000000000) {
     newSize = originalSize / 1000000000000;
     letter = "T";
   }

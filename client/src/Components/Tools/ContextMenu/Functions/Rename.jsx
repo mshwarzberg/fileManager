@@ -4,7 +4,7 @@ import { UIContext } from "../../GeneralUI";
 
 export default function Rename({ oldFileName }) {
   const { state, setDirectoryItems } = useContext(GeneralContext);
-  const { setContextMenu, setPrompt } = useContext(UIContext);
+  const { setContextMenu, setPopup } = useContext(UIContext);
 
   async function renameItem(newName, oldPath) {
     return fetch("/api/manage/rename", {
@@ -38,7 +38,7 @@ export default function Rename({ oldFileName }) {
       })
       .catch((e) => {})
       .finally(() => {
-        setPrompt({});
+        setPopup({});
         setContextMenu({});
       });
   }
@@ -47,8 +47,8 @@ export default function Rename({ oldFileName }) {
     <button
       className="context-menu-item"
       onClick={() => {
-        setPrompt({
-          show: true,
+        setPopup({
+          type: "prompt",
           content: oldFileName || "",
           promptFunction: renameItem,
         });

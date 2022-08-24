@@ -6,8 +6,7 @@ import PasteFunction from "./PasteFunction";
 export default function Paste({ clipboardData, setClipboardData }) {
   const { setDirectoryItems, state, directoryItems } =
     useContext(GeneralContext);
-  const { contextMenu, setContextMenu, setConfirm, setAlert } =
-    useContext(UIContext);
+  const { contextMenu, setContextMenu, setPopup } = useContext(UIContext);
 
   return (
     <button
@@ -18,11 +17,9 @@ export default function Paste({ clipboardData, setClipboardData }) {
           contextMenu.destination,
           clipboardData.mode,
           state.currentDirectory,
-          directoryItems,
           {
             setDirectoryItems: setDirectoryItems,
-            setConfirm: setConfirm,
-            setAlert: setAlert,
+            setPopup: setPopup,
             setContextMenu: setContextMenu,
             setClipboardData: setClipboardData,
           }

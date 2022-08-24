@@ -15,9 +15,9 @@ router.post("/", (req, res) => {
   try {
     exec(`cmd /c "start ${path.join("")}""`);
   } catch (e) {
-    console.log(e.toString());
+    return res.send({ err: e.toString() });
   }
-  res.end();
+  res.send({});
 });
 
 router.post("/withexplorer", (req, res) => {

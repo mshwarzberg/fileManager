@@ -4,7 +4,7 @@ import { UIContext } from "../../GeneralUI";
 
 export default function Delete({ info }) {
   const { setDirectoryItems, itemsSelected } = useContext(GeneralContext);
-  const { setConfirm } = useContext(UIContext);
+  const { setPopup } = useContext(UIContext);
 
   function deleteItem() {
     const deleteItems = [];
@@ -23,7 +23,10 @@ export default function Delete({ info }) {
       .then(async (res) => {
         const response = await res.json();
         if (response.err) {
-          alert(response.err);
+          setPopup({
+            type: "alert",
+            dialog: response.err,
+          });
         } else {
           setDirectoryItems((prevItems) => {
             return prevItems
@@ -47,8 +50,8 @@ export default function Delete({ info }) {
     <button
       className="context-menu-item"
       onClick={() => {
-        setConfirm({
-          show: true,
+        setPopup({
+          type: "confirm",
           dialog: `Are you sure you want to delete ${
             itemsSelected.length === 1
               ? "this item"

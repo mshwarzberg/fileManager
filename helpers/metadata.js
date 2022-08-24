@@ -21,7 +21,7 @@ function checkIfFileOrDir(file) {
   }
   return item;
 }
-function Metadata(file, directory, drive) {
+function Metadata(file, directory, drive, isNetworkDrive) {
   const item = checkIfFileOrDir(file);
   let fileextension;
   let itemtype;
@@ -58,7 +58,7 @@ function Metadata(file, directory, drive) {
       file.name === "$RECYCLE.BIN" ||
       file.name === "System Volume Information") &&
     item.isDirectory &&
-    directory === drive + "/"
+    directory === drive
   ) {
     return {};
   }
@@ -67,6 +67,9 @@ function Metadata(file, directory, drive) {
     isMedia = true;
     restOfPath = directory.slice(3, Infinity);
     thumbPath = `${drive}temp/${restOfPath}/${prefix + fileextension}.jpeg`;
+    if (itemtype === "image" && sizeOf < 300000) {
+      thumbPath = directory + file.name;
+    }
   }
 
   const filteredData = {
@@ -82,7 +85,7 @@ function Metadata(file, directory, drive) {
     created: dateCreated || 0,
     isMedia: isMedia,
     ...(symLink && { linkTo: symLink }),
-    ...(thumbPath && {
+    ...(!isNetworkDrive && {
       thumbPath: thumbPath,
     }),
   };

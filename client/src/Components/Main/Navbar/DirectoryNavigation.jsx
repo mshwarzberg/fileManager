@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
-import { GeneralContext } from "../Main/App";
+import { GeneralContext } from "../App";
 
-import forwards from "../../Assets/images/navigation/forwardshover.png";
-import backwards from "../../Assets/images/navigation/backwardshover.png";
-import upwards from "../../Assets/images/navigation/upwardshover.png";
+import forwards from "../../../Assets/images/navigation/forwardshover.png";
+import backwards from "../../../Assets/images/navigation/backwardshover.png";
+import upwards from "../../../Assets/images/navigation/upwardshover.png";
 
 function DirectoryNavigation() {
   const { state, dispatch, controllers } = useContext(GeneralContext);

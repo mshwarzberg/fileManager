@@ -26,13 +26,20 @@ function copyDir(srcPath, srcName, destination, isSrcNameDirectory) {
   return;
 }
 
+router.post("/checkfordupes", (req, res) => {
+  const destinationFiles = fs.readdirSync(req.body.destination);
+  const duplicates = req.body.names
+    .map((name) => {
+      if (destinationFiles.includes(name)) {
+        return name;
+      }
+    })
+    .filter((item) => item && item);
+  return res.send({ duplicates: duplicates });
+});
+
 router.post("/", (req, res) => {
   const { mode, source, destination } = req.body;
-  if (source.path === destination) {
-    return res
-      .send({ err: "destination cannot be same as source" })
-      .status(409);
-  }
   if (mode === "copy") {
     copyDir(source.path, source.name, destination, source.isDirectory);
   } else {

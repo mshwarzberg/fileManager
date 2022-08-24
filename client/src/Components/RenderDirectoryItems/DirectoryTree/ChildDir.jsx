@@ -20,13 +20,12 @@ export default function ChildDir({ child, altImage }) {
     }
     isPathClickedAlready = path;
     if (!path.startsWith(state.drive) || !state.drive || isDrive) {
-      let drive = isDrive ? name : path.slice(0, 2);
-      dispatch({ type: "setDriveName", value: drive + "/" });
+      dispatch({ type: "setDriveName", value: path.slice(0, 3) });
     }
     if (toOpenDirectory) {
       dispatch({
         type: "openDirectory",
-        value: (linkTo || path) + "/",
+        value: linkTo || path,
       });
       if (!toExpandTree) {
         return;

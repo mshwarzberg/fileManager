@@ -8,7 +8,8 @@ import { GeneralContext } from "../../Main/App";
 function Video({ directoryItem, setControllers }) {
   const { name, thumbPath, duration, path } = directoryItem;
 
-  const { state, setDirectoryItems } = useContext(GeneralContext);
+  const { state, setDirectoryItems, directoryItems } =
+    useContext(GeneralContext);
   const [srcAttempts, setSrcAttempts] = useState(0);
   const [durationPosition, setDurationPosition] = useState({
     rectX: 0,
@@ -18,6 +19,9 @@ function Video({ directoryItem, setControllers }) {
   });
 
   useEffect(() => {
+    if (state.networkDrives.includes(state.drive)) {
+      return;
+    }
     if (sessionStorage.getItem(path)) {
       setDirectoryItems((prevItems) => {
         return prevItems.map((item) => {
@@ -83,7 +87,7 @@ function Video({ directoryItem, setControllers }) {
             e.target.parentElement.classList.add("loading");
 
             setTimeout(() => {
-              if (srcAttempts <= 5) {
+              if (srcAttempts <= directoryItems.indexOf(directoryItem) + 2) {
                 e.target.src = thumbPath;
                 setSrcAttempts((prev) => prev + 1);
                 e.target.parentElement.classList.remove("loading");

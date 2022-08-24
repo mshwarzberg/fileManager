@@ -4,12 +4,12 @@ import { GeneralContext } from "../../../Main/App";
 import { foundInArrayWithKey } from "../../../../Helpers/SearchArray";
 
 export default function NewDirectory() {
-  const { setPrompt, setContextMenu } = useContext(UIContext);
+  const { setPopup, setContextMenu } = useContext(UIContext);
   const { state, setDirectoryItems, directoryItems } =
     useContext(GeneralContext);
 
-  async function newDirectory(content) {
-    return fetch("/api/manage/newdirectory", {
+  function newDirectory(content) {
+    fetch("/api/manage/newdirectory", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,7 +21,10 @@ export default function NewDirectory() {
       .then(async (res) => {
         const response = await res.json();
         if (response.err) {
-          console.log(response.err);
+          setPopup({
+            type: "alert",
+            dialog: response.err,
+          });
         }
         setDirectoryItems((prevItems) => {
           prevItems.push({
@@ -34,11 +37,10 @@ export default function NewDirectory() {
           });
           return prevItems;
         });
-      })
-      .finally(() => {
-        setPrompt({});
+        setPopup({});
         setContextMenu({});
-      });
+      })
+      .catch(() => {});
   }
 
   return (
@@ -48,8 +50,8 @@ export default function NewDirectory() {
         for (let i = 0; i < 1000; i++) {
           const newDirectoryName = `New Folder${i > 1 ? ` (${i})` : ""}`;
           if (!foundInArrayWithKey(directoryItems, newDirectoryName, "name")) {
-            setPrompt({
-              show: true,
+            setPopup({
+              type: "prompt",
               content: newDirectoryName,
               promptFunction: newDirectory,
             });

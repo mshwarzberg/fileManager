@@ -18,7 +18,7 @@ router.post("/", (req, res) => {
         (item.name === "temp" ||
           item.name === "$RECYCLE.BIN" ||
           item.name === "System Volume Information") &&
-        path.length === 2
+        path.length === 3
       ) {
         continue;
       }
@@ -35,7 +35,7 @@ router.post("/", (req, res) => {
       }
 
       dirArray.push({
-        path: path + "/" + item.name,
+        path: path + item.name + (item.isDirectory() ? "/" : ""),
         name: item.name,
         itemtype: checkType(item.name)[0],
         permission: permission,
@@ -60,8 +60,8 @@ router.get("/initialtree", (_, res) => {
   for (let i of listOfDrives) {
     if (i.includes("Name")) {
       defaultTree.push({
-        name: i.split("=")[1],
-        path: i.split("=")[1],
+        name: `(${i.split("=")[1]})`,
+        path: i.split("=")[1] + "/",
         permission: true,
         collapsed: true,
         size: listOfDrives[listOfDrives.indexOf(i) + 1].split("=")[1],
@@ -83,7 +83,7 @@ router.get("/initialtree", (_, res) => {
     for (let directory of directories) {
       defaultTree.unshift({
         name: directory,
-        path: `C:/Users/${username}/${directory}`,
+        path: `C:/Users/${username}/${directory}/`,
         permission: true,
         type: "default",
         isDirectory: true,

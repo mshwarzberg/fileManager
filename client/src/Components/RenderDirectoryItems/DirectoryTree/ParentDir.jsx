@@ -54,9 +54,9 @@ export default function ParentDir({ parentDir, altImage, children }) {
         id={isInPath()}
         onClick={(e) => {
           e.stopPropagation();
-          dispatch({ type: "openDirectory", value: path ? path + "/" : "" });
+          dispatch({ type: "openDirectory", value: path || "" });
           if (!path.startsWith(state.drive)) {
-            dispatch({ type: "setDriveName", value: path.slice(0, 4) });
+            dispatch({ type: "setDriveName", value: path.slice(0, 3) });
           }
         }}
         data-info={

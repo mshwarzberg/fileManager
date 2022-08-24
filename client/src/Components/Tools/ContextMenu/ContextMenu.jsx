@@ -16,12 +16,12 @@ export default function ContextMenu({
   clipboardData,
   setClipboardData,
 }) {
-  const { contextMenu, setContextMenu, setPrompt } = useContext(UIContext);
+  const { contextMenu, setContextMenu, setPopup } = useContext(UIContext);
   const { setItemsSelected, itemsSelected } = useContext(GeneralContext);
 
   useEffect(() => {
     function handleBlur() {
-      setPrompt({});
+      setPopup({});
       setContextMenu({});
     }
     function handleMouseDown(e) {
@@ -49,7 +49,7 @@ export default function ContextMenu({
         e.stopImmediatePropagation();
       } else if (e.target.className !== "context-menu-item") {
         setContextMenu({});
-        setPrompt({});
+        setPopup({});
       }
     }
     function noContextMenu(e) {

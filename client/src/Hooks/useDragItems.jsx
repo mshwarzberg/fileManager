@@ -3,20 +3,10 @@ import { GeneralContext } from "../Components/Main/App";
 import PasteFunction from "../Components/Tools/ContextMenu/Functions/Paste/PasteFunction";
 
 let timeout;
-export default function useDragItems(
-  setDragCount,
-  dragCount,
-  setAlert,
-  setConfirm
-) {
+export default function useDragItems(setDragCount, dragCount, setPopup) {
   const [dragMe, setDragMe] = useState([]);
-  const {
-    itemsSelected,
-    state,
-    setDirectoryItems,
-    setItemsSelected,
-    directoryItems,
-  } = useContext(GeneralContext);
+  const { itemsSelected, state, setDirectoryItems, setItemsSelected } =
+    useContext(GeneralContext);
 
   useEffect(() => {
     function handleMouseDown(e) {
@@ -43,16 +33,18 @@ export default function useDragItems(
                 element: e.target.parentElement,
               },
             ]);
-            dragTheseItems = [
-              {
-                info: JSON.parse(e.target.dataset.info || "{}"),
-                element: e.target.parentElement,
-              },
-            ];
+            dragTheseItems = [e.target.parentElement];
+          }
+          if (dragTheseItems.length > 9) {
+            for (const index in dragTheseItems) {
+              if (index > 10) {
+                dragTheseItems[index].style.display = "none";
+              }
+            }
           }
 
           setDragCount(dragTheseItems.length);
-          setDragMe(dragTheseItems);
+          setDragMe(dragTheseItems.slice(0, 11));
         }, 300);
       }
     }
@@ -90,7 +82,6 @@ export default function useDragItems(
         }
       }
     }
-
     function handleMouseUp(e) {
       clearTimeout(timeout);
       if (e.button === 0 && dragMe[0]) {
@@ -98,29 +89,24 @@ export default function useDragItems(
           const { path } = JSON.parse(e.target.dataset.destination || "{}");
 
           if (path && path !== state.currentDirectory) {
-            PasteFunction(
-              itemsSelected,
-              path,
-              "cut",
-              state.currentDirectory,
-              directoryItems,
-              {
-                setDirectoryItems: setDirectoryItems,
-                setConfirm: setConfirm,
-                setAlert: setAlert,
-                setContextMenu: () => {},
-                setClipboardData: () => {},
-              }
-            );
+            PasteFunction(itemsSelected, path, "cut", state.currentDirectory, {
+              setDirectoryItems: setDirectoryItems,
+              setPopup: setPopup,
+              setContextMenu: () => {},
+              setClipboardData: () => {},
+            });
           }
         }
-        for (const item of dragMe) {
-          item.style.zIndex = "";
-          item.style.position = "";
-          item.style.pointerEvents = "";
-          item.style.left = "";
-          item.style.top = "";
-          item.style.opacity = 1;
+        for (const element of document.getElementsByClassName(
+          "renderitem--block"
+        )) {
+          element.style.display = "block";
+          element.style.zIndex = "";
+          element.style.position = "";
+          element.style.pointerEvents = "";
+          element.style.left = "";
+          element.style.top = "";
+          element.style.opacity = 1;
         }
       }
       setDragCount();

@@ -14,7 +14,7 @@ import useSelectMultiple from "../../Hooks/useSelectMultiple";
 import useScaleDirectoryTree from "../../Hooks/useScaleDirectoryTree";
 
 import GearIcon from "../../Assets/images/gear.png";
-import Settings from "./Settings";
+import Settings from "./Settings/Settings";
 
 export const UIContext = createContext();
 
@@ -22,9 +22,7 @@ export default function GeneralUI({ showTree, setBackgroundFade }) {
   const [contextMenu, setContextMenu] = useState({});
   const [title, setTitle] = useState({});
   const [showProperties, setShowProperties] = useState();
-  const [prompt, setPrompt] = useState({});
-  const [confirm, setConfirm] = useState({});
-  const [alert, setAlert] = useState({});
+  const [popup, setPopup] = useState({});
   const [clipboardData, setClipboardData] = useState({});
   const [dragCount, setDragCount] = useState();
   const [showSettings, setShowSettings] = useState();
@@ -35,14 +33,8 @@ export default function GeneralUI({ showTree, setBackgroundFade }) {
   ]);
   useContainWithinScreen("#custom-title", setTitle, [title.title]);
 
-  useShortcuts(
-    setClipboardData,
-    setContextMenu,
-    setConfirm,
-    setAlert,
-    clipboardData
-  );
-  useDragItems(setDragCount, dragCount, setAlert, setConfirm);
+  useShortcuts(setClipboardData, setContextMenu, clipboardData);
+  useDragItems(setDragCount, dragCount, setPopup);
   useSelectMultiple();
   useScaleDirectoryTree(showTree, setBackgroundFade);
 
@@ -51,12 +43,8 @@ export default function GeneralUI({ showTree, setBackgroundFade }) {
       value={{
         contextMenu,
         setContextMenu,
-        prompt,
-        setPrompt,
-        confirm,
-        setConfirm,
-        alert,
-        setAlert,
+        popup,
+        setPopup,
       }}
     >
       {dragCount && (
@@ -74,9 +62,9 @@ export default function GeneralUI({ showTree, setBackgroundFade }) {
         <img src={GearIcon} alt="" />
       </div>
       {showSettings && <Settings setShowSettings={setShowSettings} />}
-      <Alert />
-      <Confirm />
-      <Prompt />
+      {popup.type === "alert" && <Alert />}
+      {popup.type === "confirm" && <Confirm />}
+      {popup.type === "prompt" && <Prompt />}
       <ContextMenu
         setShowProperties={setShowProperties}
         clipboardData={clipboardData}

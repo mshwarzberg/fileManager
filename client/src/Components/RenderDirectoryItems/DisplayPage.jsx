@@ -5,8 +5,8 @@ import Video from "./IconsAndThumbnails/Video";
 import Icon from "./IconsAndThumbnails/Icon/Icon";
 
 import { GeneralContext } from "../Main/App";
-import getTitle from "../../Helpers/getTitle";
-import getContextMenu from "../../Helpers/getContextMenu";
+import GetTitle from "../../Helpers/GetTitle";
+import GetContextMenu from "../../Helpers/GetContextMenu";
 import { foundInArrayObject } from "../../Helpers/SearchArray";
 
 export default function DisplayPage({ controllers, setControllers }) {
@@ -36,8 +36,8 @@ export default function DisplayPage({ controllers, setControllers }) {
         return;
       }
       if (directoryItem.isDrive) {
-        dispatch({ type: "setDriveName", value: name });
-        dispatch({ type: "openDirectory", value: name });
+        dispatch({ type: "setDriveName", value: path });
+        dispatch({ type: "openDirectory", value: path });
         return;
       } else if (directoryItem.isDirectory || directoryItem.isSymbolicLink) {
         let newPath = path + name;
@@ -57,7 +57,7 @@ export default function DisplayPage({ controllers, setControllers }) {
           body: JSON.stringify({
             path: path + name,
           }),
-        });
+        }).catch(() => {});
       }
     }
     if (name) {
@@ -94,7 +94,7 @@ export default function DisplayPage({ controllers, setControllers }) {
           )}
           <button
             className="cover-block"
-            data-contextmenu={getContextMenu(
+            data-contextmenu={GetContextMenu(
               directoryItem.isDirectory,
               permission
             )}
@@ -104,7 +104,7 @@ export default function DisplayPage({ controllers, setControllers }) {
                 ? JSON.stringify({ path: path + name })
                 : null
             }
-            data-title={getTitle(directoryItem)}
+            data-title={GetTitle(directoryItem)}
             onClick={(e) => {
               if (
                 foundInArrayObject(

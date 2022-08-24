@@ -10,6 +10,24 @@ export default function useScaleDirectoryTree(showTree, setBackgroundFade) {
         setScalingTree(true);
       }
     }
+    if (!showTree) {
+      setBackgroundFade("");
+    } else {
+      setBackgroundFade(`linear-gradient(
+        90deg,
+        #050505 0%,
+        #050505 ${
+          (localStorage.getItem("directoryTreeWidth") / window.innerWidth) *
+            100 || 20
+        }%,
+        #333 ${
+          (localStorage.getItem("directoryTreeWidth") / window.innerWidth) *
+            100 +
+            5 || 25
+        }%,
+        #333 100%
+      )`);
+    }
     function handleMouseMove(e) {
       if (scalingTree) {
         const directoryTree = document.getElementById("directorytree--body");
