@@ -18,7 +18,7 @@ import Settings from "./Settings/Settings";
 
 export const UIContext = createContext();
 
-export default function GeneralUI({ showTree, setBackgroundFade }) {
+export default function GeneralUI({ showTree }) {
   const [contextMenu, setContextMenu] = useState({});
   const [title, setTitle] = useState({});
   const [showProperties, setShowProperties] = useState();
@@ -36,7 +36,7 @@ export default function GeneralUI({ showTree, setBackgroundFade }) {
   useShortcuts(setClipboardData, setContextMenu, clipboardData);
   useDragItems(setDragCount, dragCount, setPopup);
   useSelectMultiple();
-  useScaleDirectoryTree(showTree, setBackgroundFade);
+  useScaleDirectoryTree(showTree);
 
   return (
     <UIContext.Provider

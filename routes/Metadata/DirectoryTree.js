@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require("fs");
 const { execSync } = require("child_process");
 const { checkType } = require("../../helpers/verifiers");
+const { formatdriveoutput } = require("../../helpers/formatdriveoutput");
 
 router.post("/", (req, res) => {
   const { path } = req.body;
@@ -50,26 +51,9 @@ router.post("/", (req, res) => {
   });
 });
 
-router.get("/initialtree", (_, res) => {
-  let listOfDrives = execSync(
-    "wmic logicaldisk get name, size /format:Textvaluelist"
-  );
+router.get("/initialtree", async (_, res) => {
   const username = execSync("echo %username%").toString().split("\r")[0];
-  listOfDrives = listOfDrives.toString().split("\r\r");
-  let defaultTree = [];
-  for (let i of listOfDrives) {
-    if (i.includes("Name")) {
-      defaultTree.push({
-        name: `(${i.split("=")[1]})`,
-        path: i.split("=")[1] + "/",
-        permission: true,
-        collapsed: true,
-        size: listOfDrives[listOfDrives.indexOf(i) + 1].split("=")[1],
-        type: "drive",
-        isDrive: true,
-      });
-    }
-  }
+  let defaultTree = await formatdriveoutput();
   if (username) {
     const directories = [
       "Videos",

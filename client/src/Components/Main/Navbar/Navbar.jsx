@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import FormatDate from "../../../Helpers/FormatDate";
-import DirectoryNavigation from "./DirectoryNavigation";
+import DirectoryNavigation from "./ButtonNavigation";
 import { GeneralContext } from "../App";
+import TextNavigation from "./TextNavigation";
 
 function Navbar({ showTree, setShowTree }) {
-  const { state, directoryItems } = useContext(GeneralContext);
+  const { directoryItems } = useContext(GeneralContext);
 
   const [time, setTime] = useState(new Date());
 
@@ -24,14 +25,10 @@ function Navbar({ showTree, setShowTree }) {
   }, []);
 
   useEffect(() => {
-    let temp;
-    temp = setTimeout(() => {
+    setInterval(() => {
       setTime(new Date());
-    }, 0);
-    return () => {
-      clearTimeout(temp);
-    };
-  }, [time]);
+    }, 1000);
+  }, []);
 
   return (
     <nav id="navbar--component">
@@ -51,10 +48,8 @@ function Navbar({ showTree, setShowTree }) {
       <h1 id="current-time">{FormatDate(time, true)}</h1>
       <DirectoryNavigation />
       <div id="navbar--dir-info">
-        <h1 data-title={state.currentDirectory}>
-          {state.currentDirectory || "Computer:"}
-        </h1>
-        <h1>{directoryItems?.length || 0} items loaded</h1>
+        <TextNavigation />
+        <h1>{directoryItems.length || 0} items loaded</h1>
       </div>
     </nav>
   );

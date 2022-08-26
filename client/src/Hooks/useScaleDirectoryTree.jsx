@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function useScaleDirectoryTree(showTree, setBackgroundFade) {
+export default function useScaleDirectoryTree(showTree) {
   const [scalingTree, setScalingTree] = useState(false);
 
   useEffect(() => {
@@ -10,41 +10,19 @@ export default function useScaleDirectoryTree(showTree, setBackgroundFade) {
         setScalingTree(true);
       }
     }
-    if (!showTree) {
-      setBackgroundFade("");
-    } else {
-      setBackgroundFade(`linear-gradient(
-        90deg,
-        #050505 0%,
-        #050505 ${
-          (localStorage.getItem("directoryTreeWidth") / window.innerWidth) *
-            100 || 20
-        }%,
-        #333 ${
-          (localStorage.getItem("directoryTreeWidth") / window.innerWidth) *
-            100 +
-            5 || 25
-        }%,
-        #333 100%
-      )`);
-    }
     function handleMouseMove(e) {
       if (scalingTree) {
+        if (e.clientX < 200 || e.clientX > window.innerWidth / 2) {
+          return;
+        }
         const directoryTree = document.getElementById("directorytree--body");
-        directoryTree.style.flex = `0 0 ${e.clientX}px`;
-        setBackgroundFade(`linear-gradient(
-          90deg,
-          #050505 0%,
-          #050505 ${(e.clientX / window.innerWidth) * 100}%,
-          #333 ${(e.clientX / window.innerWidth) * 100 + 10}%,
-          #333 100%
-        )`);
+        directoryTree.style.flex = `0 0 ${e.clientX - 10}px`;
       }
     }
     function handleMouseUp(e) {
       if (scalingTree) {
         setScalingTree();
-        localStorage.setItem("directoryTreeWidth", e.clientX);
+        localStorage.setItem("directoryTreeWidth", e.clientX - 10);
       }
     }
     lineSplit?.addEventListener("mousedown", handleMouseDown);

@@ -16,19 +16,6 @@ export default function App() {
     JSON.parse(localStorage.getItem("isTreeVisible"))?.value || false
   );
   const [itemsSelected, setItemsSelected] = useState([]);
-  const [backgroundFade, setBackgroundFade] = useState(`linear-gradient(
-    90deg,
-    #050505 0%,
-    #050505 ${
-      (localStorage.getItem("directoryTreeWidth") / window.innerWidth) * 100 ||
-      20
-    }%,
-    #333 ${
-      (localStorage.getItem("directoryTreeWidth") / window.innerWidth) * 100 +
-        5 || 25
-    }%,
-    #333 100%
-  )`);
 
   useEffect(() => {
     for (let i of controllers) {
@@ -97,12 +84,7 @@ export default function App() {
       }}
     >
       <Navbar setShowTree={setShowTree} showTree={showTree} />
-      <div
-        id="directory-and-item-container"
-        style={{
-          background: backgroundFade,
-        }}
-      >
+      <div id="directory-and-item-container">
         <DirectoryTree showTree={showTree} />
         <DisplayPage
           controllers={controllers}
@@ -114,7 +96,7 @@ export default function App() {
           {itemsSelected.length} items selected
         </div>
       )}
-      <GeneralUI showTree={showTree} setBackgroundFade={setBackgroundFade} />
+      <GeneralUI showTree={showTree} />
     </GeneralContext.Provider>
   );
 }

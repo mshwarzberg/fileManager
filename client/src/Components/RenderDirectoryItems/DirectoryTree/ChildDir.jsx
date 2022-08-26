@@ -63,7 +63,7 @@ export default function ChildDir({ child, altImage }) {
         clickDirectory(true, true);
       }}
       className={`tree--closed-directory ${!permission && "no-permission"}`}
-      id={path + "/" === state.currentDirectory ? "highlight--child" : ""}
+      id={path === state.currentDirectory ? "highlight--child" : ""}
       data-info={
         permission && (isDrive || isDirectory) ? JSON.stringify(child) : null
       }
@@ -88,7 +88,7 @@ export default function ChildDir({ child, altImage }) {
         className="tree--arrow"
         src={
           permission
-            ? path + "/" === state.currentDirectory
+            ? path === state.currentDirectory
               ? blackArrow
               : whiteArrow
             : notAllowedIcon

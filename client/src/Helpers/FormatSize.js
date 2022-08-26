@@ -22,9 +22,15 @@ export default function FormatSize(originalSize) {
     letter = "T";
   }
   if (!newSize && newSize !== 0) {
-    return undefined;
+    return "error";
   }
   newSize = newSize.toString().slice(0, 5);
+  if (
+    newSize.toString().endsWith(".00") ||
+    newSize.toString().endsWith(".000")
+  ) {
+    newSize = newSize.toString().slice(0, newSize.toString().indexOf("."));
+  }
   newSize += `${letter}B`;
 
   return newSize;

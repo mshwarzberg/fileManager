@@ -51,7 +51,6 @@ function countTree(tree) {
       num += countTree(subTree);
     }
   }
-  console.log(num);
   return num * 1;
 }
 export { expandAndCollapseDirectory, addToDirectoryTree, countTree };

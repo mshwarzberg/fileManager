@@ -34,7 +34,11 @@ function Icon(props) {
     }
     if (isDrive) {
       return (
-        <img src={drive} alt="fileicon" className="renderitem--full-icon" />
+        <img
+          src={drive}
+          alt="fileicon"
+          className="renderitem--full-icon drive-icon"
+        />
       );
     }
   }
@@ -44,19 +48,14 @@ function Icon(props) {
       {displayIcon()}
       <Filename name={name} />
       {isDrive && (
-        <div
-          id="drive-available-space"
-          data-title={`Space Remaining: ${FormatSize(
-            availableSpace
-          )}\nDrive Size: ${FormatSize(totalSize)}`}
-        >
-          <div
-            style={{ width: (availableSpace / totalSize) * 100 + "%" }}
-            data-title={`Space Remaining: ${FormatSize(
-              availableSpace
-            )}\nDrive Size: ${FormatSize(totalSize)}`}
-          />
-        </div>
+        <>
+          <div id="drive-available-space">
+            <div style={{ width: (availableSpace / totalSize) * 100 + "%" }} />
+          </div>
+          <p>
+            {FormatSize(availableSpace)} available of {FormatSize(totalSize)}
+          </p>
+        </>
       )}
     </div>
   );

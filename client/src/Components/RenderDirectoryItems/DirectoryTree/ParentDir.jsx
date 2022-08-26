@@ -15,7 +15,7 @@ export default function ParentDir({ parentDir, altImage, children }) {
 
   function isInPath() {
     if (
-      path + "/" === state.currentDirectory &&
+      path === state.currentDirectory &&
       state.currentDirectory.includes(name + "/")
     ) {
       return "highlight--child";
@@ -94,7 +94,7 @@ export default function ParentDir({ parentDir, altImage, children }) {
           className={`tree--arrow ${collapsed ? "rotate-me" : ""}`}
           src={
             permission
-              ? path + "/" === state.currentDirectory
+              ? path === state.currentDirectory
                 ? blackArrow
                 : whiteArrow
               : redArrow

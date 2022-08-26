@@ -3,7 +3,10 @@ import { useReducer, useEffect } from "react";
 function reducer(state, action) {
   switch (action.type) {
     case "openDirectory": {
-      let newNavigatedDirectories = [...state.navigatedDirectories];
+      if (action.value === state.currentDirectory) {
+        return state;
+      }
+      let newNavigatedDirectories = state.navigatedDirectories;
       if (state.navigatedIndex + 1 < state.navigatedDirectories.length) {
         newNavigatedDirectories = state.navigatedDirectories.slice(
           0,
