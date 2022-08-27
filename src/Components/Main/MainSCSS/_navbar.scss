@@ -1,0 +1,89 @@
+@import "./variables.scss";
+
+#navbar--component {
+  @include flexStyle(row);
+  width: $fullscreenWidth;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #151515;
+  height: 2.5rem;
+  width: 100%;
+  #current-time {
+    color: white;
+    font-family: "bebas neue";
+    font-size: 1.2rem;
+  }
+  #navbar--dir-info {
+    cursor: default;
+    position: absolute;
+    top: 2.5rem;
+    @include flexStyle(row);
+    justify-content: space-between;
+    overflow: scroll;
+    padding-inline: 0.5rem;
+    width: 100%;
+    height: 1.5rem;
+    scrollbar-width: none;
+    overflow: visible;
+    color: white;
+    background-color: #0f0f0f;
+    #text-navigation-container {
+      height: 100%;
+      @include flexStyle(row);
+      button {
+        background-color: #00000000;
+        color: white;
+        border: none;
+        margin-inline: 1px;
+        height: 100%;
+        padding-inline: 1px;
+        font-family: "pt serif";
+        &:hover {
+          background-color: #333;
+        }
+      }
+      #arrow-and-child-directories {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        &:hover {
+          background-color: #333;
+        }
+        img {
+          margin-top: 3px;
+          height: 100%;
+          padding-top: 7px;
+          padding-bottom: 7px;
+        }
+        div {
+          position: absolute;
+          height: 5rem;
+          width: 5rem;
+          background-color: #000;
+          bottom: -5rem;
+          border: 3px solid pink;
+          display: none;
+        }
+      }
+    }
+    h1 {
+      overflow: hidden;
+      font-family: "pt serif";
+      font-size: 1.1em;
+      max-width: 80%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      position: absolute;
+      right: 0.5rem;
+    }
+  }
+}
+
+.navbar--button {
+  @include navbarBtn;
+  background-color: #00000000;
+  border: none;
+}

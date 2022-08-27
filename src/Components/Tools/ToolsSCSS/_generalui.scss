@@ -1,0 +1,53 @@
+@import "../../Main/MainSCSS/variables";
+
+#drag-count {
+  padding-top: 2px;
+  position: fixed;
+  height: 2rem;
+  width: 3rem;
+  border-radius: 5px;
+  font-family: "bebas neue";
+  font-size: 1.7rem;
+  z-index: 11;
+  background-color: #fff;
+  pointer-events: none;
+  @include flexStyle(column);
+  outline: 2px solid black;
+  div {
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+    background-color: #fff;
+    width: 0.6rem;
+    height: 0.6rem;
+    position: absolute;
+    bottom: -0.6rem;
+  }
+}
+
+#settings {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  width: 1.5rem;
+  cursor: pointer;
+  img {
+    width: 100%;
+  }
+}
+
+#drag-and-drop-box {
+  width: 5rem;
+  height: 5rem;
+  background-color: #423488cc;
+  z-index: 15;
+  position: fixed;
+  top: 0;
+  display: none;
+  pointer-events: none;
+  font-family: "bebas neue";
+  color: white;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 1rem;
+}
