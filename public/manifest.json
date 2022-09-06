@@ -1,6 +1,6 @@
 {
-  "short_name": "File Manager",
-  "name": "My Own File Manager",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",

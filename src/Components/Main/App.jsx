@@ -1,70 +1,90 @@
 import React, { createContext, useEffect, useState } from "react";
-import DirectoryState from "./DirectoryState";
-import DisplayPage from "../RenderDirectoryItems/DisplayPage";
-import Navbar from "./Navbar/Navbar";
-import DirectoryTree from "../RenderDirectoryItems/DirectoryTree/DirectoryTree";
-import GeneralUI from "../Tools/GeneralUI";
 
-import getMetadata from "./FS and OS/Metadata";
-import initialDirectoryTree from "./FS and OS/InitialDirectoryTree";
-import getDrives from "./FS and OS/GetDrives";
-import generateThumbnails from "./FS and OS/GenerateThumbnails";
-export const GeneralContext = createContext();
+import DirectoryState from "./DirectoryState";
+import UIandUXState from "../UI and UX/UIandUXState";
+
+import Page from "../DirectoryPage/Page";
+import Navbar from "../Navbar/Navbar";
+import DirectoryTree from "../DirectoryTree/DirectoryTree";
+
+import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
+import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
+import UIandUX from "../UI and UX/UIandUX";
+
+export const DirectoryContext = createContext();
+
+const fs = window.require("fs");
 
 export default function App() {
   const { state, dispatch } = DirectoryState();
+  const { settings, setSettings } = UIandUXState();
 
-  const [controllers, setControllers] = useState([]);
   const [directoryItems, setDirectoryItems] = useState([]);
-  const [showTree, setShowTree] = useState(
-    JSON.parse(localStorage.getItem("isTreeVisible"))?.value || false
-  );
   const [itemsSelected, setItemsSelected] = useState([]);
+  const [lastSelected, setLastSelected] = useState();
+  const [visibleItems, setVisibleItems] = useState([]);
+  const [rename, setRename] = useState({});
 
   useEffect(() => {
-    for (let i of controllers) {
-      i.abort();
-    }
-    setControllers([]);
-    if (state.drive && state.currentDirectory) {
-      document.title = state.currentDirectory;
-      setDirectoryItems(
-        getMetadata(
-          state.currentDirectory,
-          state.drive,
-          state.networkDrives.includes(state.drive)
-        )
-      );
-      generateThumbnails(state.currentDirectory, state.drive);
-    } else {
-      if (!state.directoryTree[0]) {
-        initialDirectoryTree().then((result) => {
-          dispatch({
-            type: "updateDirectoryTree",
-            value: [
-              { collapsed: false, permission: true, isRoot: true },
-              ...result,
-            ],
-          });
-        });
-      }
-      getDrives().then((result) => {
-        for (const item of result) {
-          if (item.isNetworkDrive) {
-            dispatch({
-              type: "addNetworkDrive",
-              value: item.path,
+    console.clear();
+  }, []);
+
+  useEffect(() => {
+    async function updatePage() {
+      setVisibleItems([]);
+      if (state.drive && state.currentDirectory) {
+        document.title = state.currentDirectory;
+        let result = [];
+        try {
+          result = fs
+            .readdirSync(state.currentDirectory, { withFileTypes: true })
+            .map((file) => {
+              return formatMetadata(
+                file,
+                state.currentDirectory,
+                state.drive,
+                state.networkDrives.includes(state.drive)
+              );
+            })
+            .filter((item) => {
+              return item.name && item;
             });
-            setDirectoryItems(result);
+
+          setDirectoryItems(
+            result.sort((a, b) => {
+              if (a.isDirectory) {
+                return 1;
+              }
+              if (b.isDirectory) {
+                return -1;
+              }
+              return a.name.localeCompare(b.name);
+            })
+          );
+        } catch (e) {
+          setDirectoryItems([{ err: e.toString() }]);
+        }
+      } else {
+        const drives = await formatDriveOutput();
+        if (state.directoryTree[0]) {
+          for (const item of drives) {
+            if (item.isNetworkDrive) {
+              dispatch({
+                type: "addNetworkDrive",
+                value: item.path,
+              });
+              setDirectoryItems(drives);
+            }
           }
         }
-      });
+      }
     }
+    updatePage();
     // eslint-disable-next-line
   }, [state.currentDirectory]);
 
   return (
-    <GeneralContext.Provider
+    <DirectoryContext.Provider
       value={{
         state,
         dispatch,
@@ -72,17 +92,19 @@ export default function App() {
         setDirectoryItems,
         itemsSelected,
         setItemsSelected,
+        settings,
+        setSettings,
+        lastSelected,
+        setLastSelected,
+        visibleItems,
+        setRename,
+        rename,
       }}
     >
-      <Navbar setShowTree={setShowTree} showTree={showTree} />
-      <div id="directory-and-item-container">
-        <DirectoryTree showTree={showTree} />
-        <DisplayPage
-          controllers={controllers}
-          setControllers={setControllers}
-        />
-      </div>
-      <GeneralUI showTree={showTree} />
-    </GeneralContext.Provider>
+      <Navbar />
+      <DirectoryTree />
+      <Page />
+      <UIandUX visibleItems={visibleItems} setVisibleItems={setVisibleItems} />
+    </DirectoryContext.Provider>
   );
 }

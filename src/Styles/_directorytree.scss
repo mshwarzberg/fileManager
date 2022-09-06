@@ -1,0 +1,78 @@
+#directory-tree {
+  z-index: 1;
+  height: calc(100vh - 9.7rem);
+  top: 2.7rem;
+  position: relative;
+  padding: 1rem 0 0 0;
+  padding-bottom: 6rem;
+  flex: 0 0 20%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  .child-directories-container {
+    left: 1rem;
+    position: relative;
+    * {
+      color: white;
+      font-family: mukta;
+    }
+    .collapsed {
+      display: none;
+      left: 0rem;
+    }
+    .parent-directory,
+    .child-directory,
+    .parent-directory-collapsed {
+      position: relative;
+      padding-left: 1rem;
+      height: 1.3rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-block: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: default;
+      .directory-name {
+        pointer-events: none;
+        outline: none;
+        &.enabled {
+          pointer-events: all;
+          cursor: text;
+        }
+        &::selection {
+          background-color: rebeccapurple;
+        }
+      }
+      &:hover {
+        background-color: #999;
+        color: #000;
+      }
+      .arrow-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        height: 1rem;
+        margin-right: 5px;
+        aspect-ratio: 1;
+        .directory-tree-arrow {
+          position: relative;
+          height: 0.8rem;
+        }
+      }
+    }
+    .parent-directory {
+      background-color: #111;
+      .directory-tree-arrow {
+        transform: rotate(90deg);
+      }
+    }
+    .child-directory {
+      display: flex;
+      flex-direction: row;
+      left: 1rem;
+    }
+  }
+}

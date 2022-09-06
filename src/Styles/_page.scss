@@ -1,0 +1,165 @@
+@keyframes AnimationName {
+  0% {
+    background-position: 0% 51%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 51%;
+  }
+}
+
+#display-page {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  position: relative;
+  height: calc(100vh - 24.25rem);
+  top: 2.7rem;
+  align-content: flex-start;
+  padding: 1.5rem 1rem 20rem 1rem;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  flex-grow: 1;
+  #empty-directory-header {
+    margin-inline: auto;
+    font-size: 4rem;
+    font-family: merriweather;
+    color: #777;
+    pointer-events: none;
+  }
+  .display-page-block {
+    width: 10rem;
+    height: min-content;
+    min-height: 10rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #00000000;
+    outline: none;
+    border: none;
+    margin: 0.3rem;
+    padding-top: 1%;
+    * {
+      pointer-events: none;
+    }
+    &:hover {
+      background-color: grey;
+    }
+    &.loading {
+      background: linear-gradient(90deg, #333, #777);
+      background-size: 400% 400%;
+      animation: AnimationName 2s ease infinite;
+    }
+    &.selected {
+      outline: 1.5px solid black;
+      border-radius: 2px;
+      background-color: grey;
+    }
+    .block-icon {
+      max-width: 80%;
+    }
+    .media-container {
+      margin-top: auto;
+      position: relative;
+      min-width: min-content;
+      min-height: min-content;
+      .media-thumbnail {
+        max-width: 100%;
+        max-height: 9rem;
+      }
+      .duration {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        transform: translateY(50%);
+        background-color: #000;
+        color: white;
+        font-size: 0.75rem;
+        padding-inline: 3px;
+        font-family: "akshar";
+      }
+    }
+    $borderRadius: 3px;
+    .custom-icon-container {
+      margin-top: auto;
+      width: 100%;
+      aspect-ratio: 0.95;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      .custom-icon-body {
+        position: absolute;
+        width: 75%;
+        aspect-ratio: 0.75;
+        background-color: #bbb;
+        margin-bottom: auto;
+        border-radius: $borderRadius;
+        clip-path: polygon(70% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 0%);
+      }
+      .triangle {
+        clip-path: polygon(0 0, 0% 100%, 100% 100%);
+        width: 30%;
+        height: 25%;
+        right: 0;
+        background-color: #222;
+        border-bottom-left-radius: $borderRadius;
+        position: absolute;
+      }
+      .bar-top,
+      .bar-bottom {
+        position: absolute;
+        width: 80%;
+        height: 5%;
+        background-color: #444;
+        left: 10%;
+        border-radius: 2rem;
+      }
+      .bar-top {
+        bottom: 52%;
+      }
+      .bar-bottom {
+        bottom: 42%;
+      }
+      .file-extension-container {
+        position: absolute;
+        bottom: 12%;
+        width: 85%;
+        height: 25%;
+        border-radius: $borderRadius;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        p {
+          font-family: "bebas neue";
+          letter-spacing: 3px;
+        }
+      }
+    }
+    .block-name {
+      color: white;
+      background-color: #00000000;
+      font-size: 0.8rem;
+      width: 100%;
+      text-align: center;
+      outline: none;
+      border: none;
+      font-family: akshar;
+      margin-top: auto;
+      &.enabled {
+        pointer-events: all;
+        cursor: text;
+      }
+      &::selection {
+        background-color: rebeccapurple;
+      }
+    }
+  }
+}

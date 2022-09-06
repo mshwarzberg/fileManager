@@ -2,7 +2,7 @@ import { useReducer, useEffect } from "react";
 
 function reducer(state, action) {
   switch (action.type) {
-    case "openDirectory": {
+    case "open": {
       if (action.value === state.currentDirectory) {
         return state;
       }
@@ -21,7 +21,7 @@ function reducer(state, action) {
         navigatedDirectories: newNavigatedDirectories,
       };
     }
-    case "upDirectory":
+    case "up":
       return {
         ...state,
         currentDirectory: action.value,
@@ -29,7 +29,7 @@ function reducer(state, action) {
         navigatedIndex: state.navigatedIndex + 1,
         ...(action.value === "" && { drive: "" }),
       };
-    case "backDirectory":
+    case "back":
       const navBackwards = state.navigatedDirectories[state.navigatedIndex - 1];
       return {
         ...state,
@@ -39,7 +39,7 @@ function reducer(state, action) {
           drive: navBackwards.slice(0, 3),
         }),
       };
-    case "forwardDirectory":
+    case "forwards":
       const navForwards = state.navigatedDirectories[state.navigatedIndex + 1];
       let drive;
       if (!navForwards.startsWith(state.drive)) {
@@ -56,7 +56,7 @@ function reducer(state, action) {
         ...state,
         directoryTree: action.value,
       };
-    case "setDriveName":
+    case "drive":
       return {
         ...state,
         drive: action.value,

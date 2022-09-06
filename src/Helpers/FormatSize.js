@@ -1,5 +1,5 @@
 // turn the byte integers from the filesize to more readable format
-export default function FormatSize(originalSize) {
+export default function formatSize(originalSize) {
   let newSize;
   let letter;
   if (!originalSize && originalSize !== 0) {

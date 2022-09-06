@@ -1,0 +1,9 @@
+#context-menu {
+  position: fixed;
+  background-color: #777;
+  width: 10rem;
+  z-index: 1;
+  .context-menu-button {
+    width: 100%;
+  }
+}

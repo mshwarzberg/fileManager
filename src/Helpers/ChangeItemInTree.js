@@ -13,18 +13,18 @@ function addToDirectoryTree(tree, path, directories) {
   }
   return tree;
 }
-function expandAndCollapseDirectory(tree, path, bool) {
+function updateDirectoryTree(tree, path, obj) {
   if (!path) {
     for (let i = 1; i < tree.length - 1; i++) {
       if (tree[i][0]) {
         tree[i].splice(0, 1, {
           ...tree[i][0],
-          collapsed: bool,
+          ...obj,
         });
       } else {
         tree.splice(i, 1, {
           ...tree[i],
-          collapsed: bool,
+          ...obj,
         });
       }
     }
@@ -33,16 +33,38 @@ function expandAndCollapseDirectory(tree, path, bool) {
   for (const i in tree) {
     const firstElement = tree[i][0];
     if (firstElement && path.startsWith(firstElement.path)) {
-      tree.splice(i, 1, expandAndCollapseDirectory(tree[i], path, bool));
+      tree.splice(i, 1, updateDirectoryTree(tree[i], path, obj));
     } else if (path.startsWith(tree[i].path) && path === tree[i].path) {
       tree.splice(i, 1, {
         ...tree[i],
-        collapsed: bool,
+        ...obj,
       });
     }
   }
   return tree;
 }
+function removeFromDirectoryTree(tree, path) {
+  if (!path) {
+    for (let i = 1; i < tree.length - 1; i++) {
+      if (tree[i][0]) {
+        tree[i].splice(0, 1, {});
+      } else {
+        tree.splice(i, 1, {});
+      }
+    }
+    return tree;
+  }
+  for (const i in tree) {
+    const firstElement = tree[i][0];
+    if (firstElement && path.startsWith(firstElement.path)) {
+      tree.splice(i, 1, removeFromDirectoryTree(tree[i], path));
+    } else if (path.startsWith(tree[i].path) && path === tree[i].path) {
+      tree.splice(i, 1, {});
+    }
+  }
+  return tree;
+}
+
 function countTree(tree) {
   let num = 0;
   for (const subTree of tree) {
@@ -53,4 +75,9 @@ function countTree(tree) {
   }
   return num * 1;
 }
-export { expandAndCollapseDirectory, addToDirectoryTree, countTree };
+export {
+  updateDirectoryTree,
+  addToDirectoryTree,
+  countTree,
+  removeFromDirectoryTree,
+};

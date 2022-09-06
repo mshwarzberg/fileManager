@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { DirectoryContext } from "../Components/Main/App";
 
-export default function useScaleDirectoryTree(showTree) {
+export default function useScaleDirectoryTree() {
   const [scalingTree, setScalingTree] = useState(false);
-
+  const { settings } = useContext(DirectoryContext);
   useEffect(() => {
-    const lineSplit = document.getElementById("split-main-page");
+    const lineSplit = document.getElementById("directory-tree-scaler");
     function handleMouseDown(e) {
       if (e.button === 0) {
         setScalingTree(true);
@@ -15,14 +16,14 @@ export default function useScaleDirectoryTree(showTree) {
         if (e.clientX < 200 || e.clientX > window.innerWidth / 2) {
           return;
         }
-        const directoryTree = document.getElementById("directorytree--body");
-        directoryTree.style.flex = `0 0 ${e.clientX - 10}px`;
+        const directoryTree = document.getElementById("directory-tree");
+        directoryTree.style.flex = `0 0 ${e.clientX - 16}px`;
       }
     }
     function handleMouseUp(e) {
       if (scalingTree) {
         setScalingTree();
-        localStorage.setItem("directoryTreeWidth", e.clientX - 10);
+        localStorage.setItem("directoryTreeWidth", e.clientX - 45);
       }
     }
     lineSplit?.addEventListener("mousedown", handleMouseDown);
@@ -33,5 +34,5 @@ export default function useScaleDirectoryTree(showTree) {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [scalingTree, showTree]);
+  }, [scalingTree, settings.showDirectoryTree]);
 }

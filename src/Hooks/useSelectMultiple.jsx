@@ -1,11 +1,11 @@
 import { useEffect, useContext } from "react";
-import { GeneralContext } from "../Components/Main/App";
+import { DirectoryContext } from "../Components/Main/App";
 
-let scrollWhileDraggingDown, scrollWhileDraggingUp;
-export default function useSelectMultiple() {
-  const { setItemsSelected } = useContext(GeneralContext);
-  function highlightItems(boxDimensions, e) {
-    const elements = document.getElementsByClassName("cover-block");
+export default function useSelectMultiple(setLastSelected) {
+  const { setItemsSelected } = useContext(DirectoryContext);
+
+  function highlightItems(boxDimensions) {
+    const elements = document.getElementsByClassName("display-page-block");
     let infoArray = [];
     for (const element of elements) {
       const elDimensions = element.getBoundingClientRect();
@@ -19,32 +19,49 @@ export default function useSelectMultiple() {
         if (info.permission && info.name) {
           infoArray.push({
             info: info,
-            element: element.parentElement,
+            element: element,
           });
         }
       }
     }
-
-    if (e.ctrlKey) {
-      setItemsSelected((prevArray) => [...prevArray, ...infoArray]);
-      return;
-    }
-
+    setLastSelected(infoArray[0]?.element);
     setItemsSelected(infoArray);
   }
+  function changeBoxDimensions(
+    box,
+    anchorY,
+    anchorX,
+    currentPositionY,
+    currentPositionX
+  ) {
+    if (anchorY < currentPositionY) {
+      box.style.height = currentPositionY - anchorY + "px";
+      box.style.top = anchorY + "px";
+    } else if (anchorY > currentPositionY) {
+      box.style.height = Math.abs(currentPositionY - anchorY) + "px";
+      box.style.top = anchorY - Math.abs(currentPositionY - anchorY) + "px";
+    }
+    if (anchorX < currentPositionX) {
+      box.style.width = currentPositionX - anchorX + "px";
+      box.style.left = anchorX + "px";
+    } else if (anchorX > currentPositionX) {
+      box.style.width = Math.abs(currentPositionX - anchorX) + "px";
+      box.style.left = anchorX - Math.abs(currentPositionX - anchorX) + "px";
+    }
+  }
   useEffect(() => {
-    let isBox, anchorY, anchorX;
-    const box = document.getElementById("highlight--box");
+    let isBox, anchorY, anchorX, scrollOnDrag;
+    const box = document.getElementById("select-multiple-box");
+    const page = document.getElementById("display-page");
 
     function handleMouseDown(e) {
-      if (e.target.className === "cover-block" || e.button !== 0) {
+      if (e.target.id !== "display-page" || e.button !== 0) {
         return;
       }
-      if (!e.ctrlKey) {
+      if (!e.shiftKey && !e.ctrlKey) {
         setItemsSelected([]);
       }
       isBox = true;
-      const page = document.getElementById("renderitem--page");
       const pageDimensions = page.getBoundingClientRect();
       box.style.top = e.clientY - pageDimensions.top + page.scrollTop + "px";
       box.style.left = e.clientX - pageDimensions.left + page.scrollLeft + "px";
@@ -55,63 +72,68 @@ export default function useSelectMultiple() {
 
     function handleMouseMove(e) {
       if (isBox) {
-        const page = document.getElementById("renderitem--page");
         const pageDimensions = page.getBoundingClientRect();
 
-        const currentPositionY =
-          e.clientY - pageDimensions.top + page.scrollTop;
-        const currentPositionX =
-          e.clientX - pageDimensions.left + page.scrollLeft;
+        const currentPositionY = Math.min(
+          e.clientY - pageDimensions.top + page.scrollTop,
+          page.scrollHeight
+        );
+        const currentPositionX = e.clientX - pageDimensions.left;
 
-        if (anchorY < currentPositionY) {
-          box.style.height = currentPositionY - anchorY + "px";
-          box.style.top = anchorY + "px";
-        } else if (anchorY > currentPositionY) {
-          box.style.height = Math.abs(currentPositionY - anchorY) + "px";
-          box.style.top = anchorY - Math.abs(currentPositionY - anchorY) + "px";
-        }
-        if (anchorX < currentPositionX) {
-          box.style.width = currentPositionX - anchorX + "px";
-          box.style.left = anchorX + "px";
-        } else if (anchorX > currentPositionX) {
-          box.style.width = Math.abs(currentPositionX - anchorX) + "px";
-          box.style.left =
-            anchorX - Math.abs(currentPositionX - anchorX) + "px";
-        }
-
-        clearInterval(scrollWhileDraggingDown);
-        clearInterval(scrollWhileDraggingUp);
-        if (e.clientY < 100) {
-          scrollWhileDraggingUp = setInterval(() => {
-            page.scroll(0, page.scrollTop - 10);
+        changeBoxDimensions(
+          box,
+          anchorY,
+          anchorX,
+          currentPositionY,
+          currentPositionX
+        );
+        highlightItems(box.getBoundingClientRect());
+        clearInterval(scrollOnDrag);
+        if (e.clientY < 100 && page.scrollTop !== 0) {
+          scrollOnDrag = setInterval(() => {
+            page.scroll(0, page.scrollTop - 20);
+            changeBoxDimensions(box, anchorY, anchorX, 0, currentPositionX);
+            highlightItems(box.getBoundingClientRect());
           }, 10);
-        } else if (e.clientY > pageDimensions.bottom - 20) {
-          scrollWhileDraggingDown = setInterval(() => {
-            page.scroll(0, page.scrollTop + 10);
+        } else if (
+          e.clientY > page.getBoundingClientRect().height &&
+          Math.round(page.scrollTop + page.getBoundingClientRect().height) !==
+            page.scrollHeight
+        ) {
+          scrollOnDrag = setInterval(() => {
+            page.scroll(0, page.scrollTop + 20);
+            changeBoxDimensions(
+              box,
+              anchorY,
+              anchorX,
+              Math.min(page.scrollTop + currentPositionY, page.scrollHeight),
+              currentPositionX
+            );
+            highlightItems(box.getBoundingClientRect());
           }, 10);
         }
-        highlightItems(box.getBoundingClientRect(), e);
+      } else {
+        clearInterval(scrollOnDrag);
+        scrollOnDrag = null;
       }
     }
     function handleMouseUp() {
+      clearInterval(scrollOnDrag);
+      scrollOnDrag = null;
       isBox = null;
       box.style.display = "none";
       box.style.width = "";
-      box.style.left = "";
       box.style.height = "";
       box.style.top = "";
+      box.style.left = "";
     }
-    document
-      .getElementById("renderitem--page")
-      .addEventListener("mousedown", handleMouseDown);
+    page.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mousemove", handleMouseMove);
-      document
-        .getElementById("renderitem--page")
-        ?.removeEventListener("mousedown", handleMouseDown);
+      page.removeEventListener("mousedown", handleMouseDown);
     };
     // eslint-disable-next-line
   }, []);

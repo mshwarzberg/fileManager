@@ -1,0 +1,37 @@
+#navbar {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 2.7rem;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+  #toggle-directory-tree {
+    height: 1.35rem;
+  }
+  #navbar-navigation {
+    margin-inline: 1rem;
+  }
+  #current-directory-header {
+    color: white;
+    background-color: #222;
+    height: 50%;
+    top: 25%;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    padding-left: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    left: 0;
+    position: absolute;
+  }
+  #directory-items-count {
+    position: absolute;
+    right: 0.5rem;
+    top: -20%;
+    font-size: 1rem;
+    color: white;
+  }
+}

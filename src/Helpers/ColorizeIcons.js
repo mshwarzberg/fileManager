@@ -1,4 +1,4 @@
-export default function ColorizeIcons(fileextension) {
+export function colorizeIcons(fileextension) {
   fileextension = fileextension.toLowerCase();
 
   switch (fileextension) {
@@ -14,7 +14,8 @@ export default function ColorizeIcons(fileextension) {
       return "teal";
     case "rtf":
       return "#938aed";
-    case "png" || "apng":
+    case "png":
+    case "apng":
       return "#ff6e6e";
     case "avi":
       return "#3223a5";
@@ -46,7 +47,20 @@ export default function ColorizeIcons(fileextension) {
     case "exe":
     case "msi":
       return "navy";
+    case "hc":
+      return "gold";
     default:
       return "black";
+  }
+}
+
+export function colorIconText(color) {
+  switch (color) {
+    case "pink":
+    case "white":
+    case "gold":
+      return "black";
+    default:
+      return "white";
   }
 }

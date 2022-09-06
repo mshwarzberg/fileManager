@@ -1,0 +1,24 @@
+#select-multiple-box {
+  position: absolute;
+  background-color: #11111188;
+  z-index: 2;
+}
+
+#directory-tree-scaler {
+  height: calc(100vh - 3rem);
+  margin-top: 2.8rem;
+  top: 5rem;
+  flex: 0 0 1rem;
+  background-color: #fff;
+  margin-left: 0.5rem;
+  cursor: ew-resize;
+  background: linear-gradient(
+    90deg,
+    #00000000 0%,
+    #00000000 40%,
+    #fff 50%,
+    #00000000 60%,
+    #00000000 100%
+  );
+  border-radius: 40%;
+}
