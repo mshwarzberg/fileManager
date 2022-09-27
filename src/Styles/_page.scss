@@ -22,12 +22,17 @@
   overflow-y: scroll;
   overflow-x: hidden;
   flex-grow: 1;
-  #empty-directory-header {
+  #empty-directory-header,
+  #does-not-exist-error {
     margin-inline: auto;
     font-size: 4rem;
     font-family: merriweather;
     color: #777;
     pointer-events: none;
+  }
+  #does-not-exist-error {
+    color: red;
+    font-size: 2rem;
   }
   .display-page-block {
     width: 10rem;
@@ -143,22 +148,39 @@
         }
       }
     }
-    .block-name {
-      color: white;
+    .block-name-container {
+      color: #00000000;
       background-color: #00000000;
       font-size: 0.8rem;
       width: 100%;
       text-align: center;
-      outline: none;
-      border: none;
       font-family: akshar;
       margin-top: auto;
-      &.enabled {
-        pointer-events: all;
-        cursor: text;
-      }
-      &::selection {
-        background-color: rebeccapurple;
+      height: max-content;
+      position: relative;
+      .block-name {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        resize: none;
+        background-color: #00000000;
+        text-align: center;
+        color: white;
+        font-size: 0.8rem;
+        outline: none;
+        border: none;
+        font-family: akshar;
+        overflow: hidden;
+        padding-left: 0.2px;
+        &:disabled {
+          pointer-events: none;
+        }
+        &:enabled {
+          cursor: text;
+          pointer-events: all;
+        }
       }
     }
   }

@@ -1,104 +1,90 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 
 import formatVideoTime from "../../../Helpers/FormatVideoTime";
+import checkFileType from "../../../Helpers/FS and OS/CheckFileType";
+import {
+  ffmpegThumbs,
+  ffprobeMetadata,
+} from "../../../Helpers/FS and OS/FFmpegFunctions";
 import { DirectoryContext } from "../../Main/App";
-import { ffprobeMetadata } from "../../../Helpers/FS and OS/FFmpegFunctions";
+
+const fs = window.require("fs");
+const sharp = window.require("sharp");
 
 export default function Media({ directoryItem }) {
-  const { name, thumbPath, duration, path, size, fileextension } =
-    directoryItem;
+  const { name, thumbPath, location, size } = directoryItem;
 
-  const { state, setDirectoryItems, visibleItems } =
+  const { state, setDirectoryItems, directoryItems } =
     useContext(DirectoryContext);
 
-  const [srcAttempts, setSrcAttempts] = useState(0);
+  const [thumbnail, setThumbnail] = useState();
+  const [mediaData, setMediaData] = useState({});
+
+  const { duration } = mediaData;
+  useEffect(() => {
+    fs.mkdirSync(
+      `${state.drive}temp/${state.currentDirectory.slice(
+        state.drive.length,
+        state.currentDirectory.length
+      )}`,
+      { recursive: true }
+    );
+    function createThumbnails() {
+      setTimeout(() => {
+        if (checkFileType(name)[0] === "image") {
+          sharp(location + name)
+            .resize({ width: 400 })
+            .toFile(thumbPath)
+            .then(() => {
+              setThumbnail(thumbPath);
+            });
+        } else {
+          ffmpegThumbs(location + name, thumbPath).then(() => {
+            setThumbnail(thumbPath);
+          });
+          ffprobeMetadata(location + name, (data) => {
+            setDirectoryItems((prevItems) =>
+              prevItems.map((prevItem) => {
+                if (prevItem.name === name) {
+                  return {
+                    ...prevItem,
+                    ...data,
+                  };
+                }
+                return prevItem;
+              })
+            );
+          });
+        }
+      }, directoryItems.indexOf(directoryItem) * 100);
+    }
+    try {
+      fs.accessSync(thumbPath);
+      setThumbnail(thumbPath);
+    } catch {
+      setTimeout(() => {
+        createThumbnails();
+      }, directoryItems.indexOf(directoryItem) * 100);
+    }
+  }, [state.currentDirectory]);
+
+  useEffect(() => {
+    setTimeout(async () => {
+      const data = await ffprobeMetadata(location + name);
+      setMediaData(data);
+    }, directoryItems.indexOf(directoryItem) * 100);
+  }, []);
 
   return (
-    thumbPath && (
-      <div className="media-container">
-        <img
-          className="media-thumbnail"
-          src={
-            visibleItems.includes(document.getElementById(name))
-              ? thumbPath
-              : ""
-          }
-          onError={(e) => {
-            if (!visibleItems.includes(document.getElementById(name))) {
-              return;
-            }
-            if (srcAttempts === 0) {
-              e.target.parentElement.parentElement.classList.add("loading");
-            }
-
-            if (srcAttempts >= 5 || size < 300000) {
-              e.target.parentElement.parentElement.classList.remove("loading");
-              setDirectoryItems((prevItems) => {
-                return prevItems.map((item) => {
-                  if (item.name === name) {
-                    return {
-                      ...item,
-                      thumbPath: null,
-                      isMedia: false,
-                    };
-                  } else {
-                    return item;
-                  }
-                });
-              });
-            } else {
-              setTimeout(() => {
-                setSrcAttempts(srcAttempts + 1);
-                e.target.src = thumbPath;
-              }, 200);
-            }
-          }}
-          alt=""
-          onLoad={(e) => {
-            e.target.parentElement.parentElement.classList.remove("loading");
-
-            if (!state.networkDrives.includes(state.drive)) {
-              if (sessionStorage.getItem(path + name)) {
-                setDirectoryItems((prevItems) => {
-                  return prevItems.map((item) => {
-                    if (item.name === name) {
-                      return {
-                        ...item,
-                        ...JSON.parse(
-                          sessionStorage.getItem(path + name) || "{}"
-                        ),
-                      };
-                    }
-                    return item;
-                  });
-                });
-              } else if (visibleItems.includes(document.getElementById(name))) {
-                ffprobeMetadata(`${state.currentDirectory}${name}`, (data) => {
-                  sessionStorage.setItem(path + name, JSON.stringify(data));
-                  setDirectoryItems((prevItems) => {
-                    return prevItems.map((item) => {
-                      if (item.name === name) {
-                        return {
-                          ...item,
-                          ...data,
-                        };
-                      }
-                      return item;
-                    });
-                  });
-                });
-              }
-            }
-          }}
-        />
-        {duration ? (
-          <>
-            <p className="duration">{formatVideoTime(duration)}</p>
-          </>
-        ) : (
-          <></>
-        )}
-      </div>
-    )
+    <div className="media-container">
+      <img src={thumbnail} className="media-thumbnail" />
+      {duration && thumbnail ? (
+        <>
+          <p className="duration">{formatVideoTime(duration)}</p>
+        </>
+      ) : (
+        <></>
+      )}
+    </div>
   );
 }

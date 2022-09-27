@@ -13,10 +13,54 @@ export default function DirectoryTree() {
 
   useEffect(() => {
     async function updateTree() {
+      const drives = await formatDriveOutput();
       if (state.directoryTree[0]) {
+        const driveNames = drives.map((drive) => drive.path);
+        const directoryTreeDriveNames = state.directoryTree
+          .map((item) => item.path || item[0]?.path)
+          .filter((item) => item && item);
+
+        const newDrives = [];
+        const removedDrives = [];
+
+        for (const driveName of driveNames) {
+          if (!directoryTreeDriveNames.includes(driveName)) {
+            newDrives.push(drives[driveNames.indexOf(driveName)]);
+          }
+        }
+        for (const directoryTreeDriveName of directoryTreeDriveNames) {
+          if (
+            !driveNames.includes(directoryTreeDriveName) &&
+            directoryTreeDriveName.length === 3
+          ) {
+            removedDrives.push(directoryTreeDriveName);
+          }
+        }
+        function getPath(item) {
+          return item.path || item[0]?.path;
+        }
+        const updatedDrives = state.directoryTree
+          .map((item) => {
+            if (removedDrives.includes(item.path || item[0]?.path)) {
+              return {};
+            }
+            return item;
+          })
+          .slice(7, Infinity)
+          .sort((a, b) => {
+            return getPath(a)?.length - getPath(b)?.length;
+          });
+
+        dispatch({
+          type: "updateDirectoryTree",
+          value: [
+            ...state.directoryTree.slice(0, 7),
+            ...updatedDrives,
+            ...newDrives,
+          ],
+        });
         return;
       }
-      const drives = await formatDriveOutput();
       const username = execSync("echo %username%").toString().split("\r")[0];
       let defaultTree = drives;
       if (username) {

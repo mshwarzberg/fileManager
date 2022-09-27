@@ -7,13 +7,13 @@ import formatTitle from "../../Helpers/FormatTitle";
 
 export default function ParentDirectory({ parentDir, children }) {
   const { path, name, permission, collapsed, isDirectory, isDrive } = parentDir;
-  const { state, dispatch, rename } = useContext(DirectoryContext);
+  const { state, dispatch } = useContext(DirectoryContext);
 
-  const disabled = rename.element !== document.getElementById(path + "tree");
+  const disabled = true;
 
   return (
     <div className="child-directories-container">
-      <div
+      <button
         className={
           collapsed ? "parent-directory-collapsed" : "parent-directory"
         }
@@ -76,7 +76,6 @@ export default function ParentDirectory({ parentDir, children }) {
           suppressContentEditableWarning
           disabled={true}
           className={`directory-name ${disabled ? "" : "enabled"}`}
-          id={path + "tree"}
           onClick={(e) => {
             e.stopPropagation();
           }}
@@ -86,7 +85,7 @@ export default function ParentDirectory({ parentDir, children }) {
         >
           {name || "This PC"}
         </div>
-      </div>
+      </button>
       <div className={`child-directories-list ${collapsed ? "collapsed" : ""}`}>
         {children}
       </div>

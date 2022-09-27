@@ -2,15 +2,17 @@ import { useEffect, useContext } from "react";
 import { DirectoryContext } from "../Components/Main/App";
 import formatMetadata from "../Helpers/FS and OS/GetMetadata";
 import {
-  removeFromDirectoryTree,
   addToDirectoryTree,
+  removeFromDirectoryTree,
 } from "../Helpers/ChangeItemInTree";
+import { findInArray } from "../Helpers/SearchArray";
 
 const fs = window.require("fs");
 const watch = window.require("node-watch");
 
 export default function useWatch() {
-  const { state, setDirectoryItems, dispatch } = useContext(DirectoryContext);
+  const { state, setDirectoryItems, dispatch, directoryItems } =
+    useContext(DirectoryContext);
   useEffect(() => {
     let watcher;
     if (state.currentDirectory) {
@@ -22,7 +24,9 @@ export default function useWatch() {
             name = name.replaceAll("\\", "/");
             if (event === "update") {
               const data = fs
-                .readdirSync(state.currentDirectory, { withFileTypes: true })
+                .readdirSync(state.currentDirectory, {
+                  withFileTypes: true,
+                })
                 .map((file) => {
                   if (state.currentDirectory + file.name === name) {
                     return formatMetadata(
@@ -32,31 +36,29 @@ export default function useWatch() {
                       state.networkDrives.includes(state.drive)
                     );
                   }
-                  return {};
+                  return null;
                 })
-                .filter((item) => {
-                  return item.name && item;
-                });
-              setDirectoryItems((prevItems) => [...prevItems, data[0]]);
-              if (data[0].isDirectory) {
-                // dispatch({
-                //   type: "updateDirectoryTree",
-                //   value: addToDirectoryTree(
-                //     state.directoryTree,
-                //     state.currentDirectory,
-                //     [{ ...data[0], isPartOfTree: true }]
-                //   ),
-                // });
+                .filter((item) => item && item)[0];
+              if (!data) {
+                return;
+              }
+              if (!findInArray(directoryItems, data.name, "name")) {
+                setDirectoryItems((prevItems) => [...prevItems, data]);
+              } else {
+                setDirectoryItems((prevItems) =>
+                  prevItems.map((prevItem) => {
+                    if (prevItem.name === data.name) {
+                      return data;
+                    }
+                    return prevItem;
+                  })
+                );
               }
             } else if (event === "remove") {
-              dispatch({
-                type: "updateDirectoryTree",
-                value: removeFromDirectoryTree(state.directoryTree, name + "/"),
-              });
               setDirectoryItems((prevItems) =>
                 prevItems
                   .map((prevItem) => {
-                    if (prevItem.path + prevItem.name === name) {
+                    if (prevItem.location + prevItem.name === name) {
                       return {};
                     }
                     return prevItem;
@@ -71,5 +73,5 @@ export default function useWatch() {
         watcher?.close();
       };
     }
-  }, [state.currentDirectory]);
+  }, [state.currentDirectory, directoryItems]);
 }

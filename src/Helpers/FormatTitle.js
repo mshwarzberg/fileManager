@@ -4,7 +4,7 @@ import formatSize from "./FormatSize";
 export default function formatTitle(item) {
   const {
     name,
-    path,
+    location,
     description,
     duration,
     size,
@@ -17,18 +17,20 @@ export default function formatTitle(item) {
     isMedia,
   } = item;
   if (isMedia) {
-    return `Name: ${name}\nLocation: ${path}\nSize: ${
+    return `Name: ${name}\nLocation: ${location}\nSize: ${
       formatSize(size) || ""
     }\nDimensions: ${width + "x" + height}${
       duration > 0.1 ? `\nDuration: ${formatVideoTime(duration)}` : ""
     }${description ? `\nDescription: ${description}` : ""}`;
   } else if (isDirectory) {
-    return `Name: ${name}\nLocation: ${path}`;
+    return `Name: ${name}\nLocation: ${location}`;
   } else if (isDrive) {
     return `Name: ${name}\nSpace Remaining: ${formatSize(
       availableSpace
     )}\nDrive Size: ${formatSize(totalSize)}`;
   } else {
-    return `Name: ${name}\nLocation: ${path}\nSize: ${formatSize(size) || ""}`;
+    return `Name: ${name}\nLocation: ${location}\nSize: ${
+      formatSize(size) || ""
+    }`;
   }
 }

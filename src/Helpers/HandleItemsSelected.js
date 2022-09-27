@@ -1,4 +1,4 @@
-import { findInItemsSelected } from "./SearchArray";
+import { findInArray } from "./SearchArray";
 
 export default function handleItemsSelected(
   e,
@@ -37,7 +37,7 @@ export default function handleItemsSelected(
     setItemsSelected(selected);
     return;
   } else if (e.ctrlKey) {
-    if (!findInItemsSelected(itemsSelected, e.target, "element")) {
+    if (!findInArray(itemsSelected, e.target, "element")) {
       setItemsSelected((prevItemsSelected) => [
         ...prevItemsSelected,
         {

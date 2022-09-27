@@ -68,7 +68,7 @@ export default function formatMetadata(file, directory, drive, isNetworkDrive) {
   if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
     isMedia = true;
     restOfPath = directory.slice(3, Infinity);
-    thumbPath = `${drive}temp/${restOfPath}${prefix + fileextension}.jpeg`;
+    thumbPath = `${drive}temp/${restOfPath}${file.name}.jpeg`;
     if (itemtype === "image" && sizeOf < 300000) {
       thumbPath = directory + file.name;
     }
@@ -77,7 +77,7 @@ export default function formatMetadata(file, directory, drive, isNetworkDrive) {
   const filteredData = {
     ...item,
     key: randomID(),
-    path: directory,
+    location: directory,
     fileextension: fileextension || "",
     prefix: prefix,
     permission: permission,

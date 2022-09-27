@@ -1,45 +1,62 @@
-import React, { useContext, useEffect } from "react";
-import { DirectoryContext } from "../../Main/App";
+import React, { useState } from "react";
 
-export default function ItemName({ directoryItem, disabled, setDisabled }) {
-  const { name, path, fileextension, prefix, isDirectory } = directoryItem;
-  const { setRename, rename } = useContext(DirectoryContext);
+const fs = window.require("fs");
 
-  useEffect(() => {
-    if (rename.element === document.getElementById(name + "name")) {
-      setDisabled();
-    }
-  }, [rename]);
+export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
+  const { name, fileextension, location } = directoryItem;
+
+  const [newName, setNewName] = useState();
+
+  const illegalChars = ['"', "\\", "/", ":", "*", "?", "|", "<", ">"];
 
   return (
-    <div
-      spellCheck="false"
-      contentEditable="true"
-      suppressContentEditableWarning
-      className={`block-name ${disabled ? "" : "enabled"}`}
-      id={name + "name"}
-      onFocus={() => {
-        setRename({
-          element: document.getElementById(name + "name"),
-          endRange: fileextension
-            ? name.length - fileextension.length - 1
-            : name.length,
-          info: {
-            ...directoryItem,
-            path: path + name + (isDirectory ? "/" : ""),
-          },
-        });
-      }}
-      onBlur={() => {
-        setDisabled(true);
-      }}
-      onDoubleClick={(e) => {
-        if (!disabled) {
-          e.stopPropagation();
-        }
-      }}
-    >
+    <div className={`block-name-container`}>
       {name}
+      <textarea
+        className="block-name"
+        disabled={renameItem !== location + name}
+        onKeyDown={(e) => {
+          e.stopPropagation();
+          if (e.key === "Enter") {
+            e.target.blur();
+          }
+        }}
+        onFocus={(e) => {
+          e.target.setSelectionRange(
+            0,
+            fileextension ? name.length - fileextension.length - 1 : name.length
+          );
+        }}
+        onMouseEnter={(e) => {
+          e.stopPropagation();
+        }}
+        onMouseMove={(e) => {
+          e.stopPropagation();
+        }}
+        onBlur={(e) => {
+          setRenameItem();
+          document.getSelection().removeAllRanges();
+          if (
+            illegalChars
+              .map((char) => {
+                return e.target.value.includes(char);
+              })
+              .includes(true) ||
+            e.target.value === name
+          ) {
+            return;
+          }
+          fs.renameSync(location + name, location + e.target.value);
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+        }}
+        value={newName || newName === "" ? newName : name}
+        onChange={(e) => {
+          setNewName(e.target.value);
+        }}
+        data-title={""}
+      />
     </div>
   );
 }

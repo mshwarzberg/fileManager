@@ -17,13 +17,13 @@
     }
     .collapsed {
       display: none;
-      left: 0rem;
+      left: 0;
     }
     .parent-directory,
     .child-directory,
     .parent-directory-collapsed {
       position: relative;
-      padding-left: 1rem;
+      padding-left: 5px;
       height: 1.3rem;
       display: flex;
       flex-direction: row;
@@ -33,16 +33,21 @@
       overflow: hidden;
       text-overflow: ellipsis;
       cursor: default;
+      background-color: #00000000;
+      border: none;
+      width: 100%;
+      &.no-permission {
+        background-color: #441111;
+        color: red;
+        cursor: not-allowed;
+        &:hover {
+          background-color: #441111;
+        }
+      }
       .directory-name {
-        pointer-events: none;
         outline: none;
-        &.enabled {
-          pointer-events: all;
-          cursor: text;
-        }
-        &::selection {
-          background-color: rebeccapurple;
-        }
+        pointer-events: none;
+        font-size: 1rem;
       }
       &:hover {
         background-color: #999;

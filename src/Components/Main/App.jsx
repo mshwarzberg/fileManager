@@ -22,16 +22,34 @@ export default function App() {
   const [directoryItems, setDirectoryItems] = useState([]);
   const [itemsSelected, setItemsSelected] = useState([]);
   const [lastSelected, setLastSelected] = useState();
-  const [visibleItems, setVisibleItems] = useState([]);
-  const [rename, setRename] = useState({});
+  const [renameItem, setRenameItem] = useState();
 
   useEffect(() => {
     console.clear();
   }, []);
 
   useEffect(() => {
+    try {
+      const tempPathValue = `${state.drive}temp/${state.currentDirectory.slice(
+        state.drive.length,
+        state.currentDirectory.length
+      )}`;
+      fs.readdir(tempPathValue, (err, files) => {
+        if (err) return;
+        for (const file of files) {
+          if (
+            parseInt(file).toString().length === 13 &&
+            file.includes("del.jpeg")
+          ) {
+            fs.unlinkSync(tempPathValue + file);
+          }
+        }
+      });
+    } catch {}
+  }, [state.currentDirectory]);
+
+  useEffect(() => {
     async function updatePage() {
-      setVisibleItems([]);
       if (state.drive && state.currentDirectory) {
         document.title = state.currentDirectory;
         let result = [];
@@ -66,6 +84,7 @@ export default function App() {
         }
       } else {
         const drives = await formatDriveOutput();
+        setDirectoryItems(drives);
         if (state.directoryTree[0]) {
           for (const item of drives) {
             if (item.isNetworkDrive) {
@@ -73,7 +92,6 @@ export default function App() {
                 type: "addNetworkDrive",
                 value: item.path,
               });
-              setDirectoryItems(drives);
             }
           }
         }
@@ -96,15 +114,14 @@ export default function App() {
         setSettings,
         lastSelected,
         setLastSelected,
-        visibleItems,
-        setRename,
-        rename,
+        renameItem,
+        setRenameItem,
       }}
     >
       <Navbar />
       <DirectoryTree />
       <Page />
-      <UIandUX visibleItems={visibleItems} setVisibleItems={setVisibleItems} />
+      <UIandUX />
     </DirectoryContext.Provider>
   );
 }

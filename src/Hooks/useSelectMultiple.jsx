@@ -91,7 +91,7 @@ export default function useSelectMultiple(setLastSelected) {
         clearInterval(scrollOnDrag);
         if (e.clientY < 100 && page.scrollTop !== 0) {
           scrollOnDrag = setInterval(() => {
-            page.scroll(0, page.scrollTop - 20);
+            page.scroll(0, page.scrollTop - 50);
             changeBoxDimensions(box, anchorY, anchorX, 0, currentPositionX);
             highlightItems(box.getBoundingClientRect());
           }, 10);
@@ -101,7 +101,7 @@ export default function useSelectMultiple(setLastSelected) {
             page.scrollHeight
         ) {
           scrollOnDrag = setInterval(() => {
-            page.scroll(0, page.scrollTop + 20);
+            page.scroll(0, page.scrollTop + 50);
             changeBoxDimensions(
               box,
               anchorY,

@@ -29,8 +29,6 @@ export default function checkFileType(fullName) {
     fileextension === "wmv",
   ];
 
-  const checkIfGif = [fileextension === "gif"];
-
   const checkIfText = [
     fileextension === "txt",
     fileextension === "rtf",
@@ -54,7 +52,7 @@ export default function checkFileType(fullName) {
     type = "image";
   } else if (checkIfVideo.includes(true)) {
     type = "video";
-  } else if (checkIfGif.includes(true)) {
+  } else if (fileextension === "gif") {
     type = "gif";
   } else if (checkIfText.includes(true)) {
     type = "document";

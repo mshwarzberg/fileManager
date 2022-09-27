@@ -7,7 +7,7 @@ export default function newDirectory(state) {
       fs.accessSync(state.currentDirectory + newDirectoryName);
     } catch {
       fs.mkdirSync(state.currentDirectory + newDirectoryName);
-      break;
+      return newDirectoryName;
     }
   }
 }

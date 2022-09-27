@@ -10,3 +10,7 @@ body {
   justify-content: center;
   height: 100vh;
 }
+
+*::selection {
+  background-color: rebeccapurple;
+}

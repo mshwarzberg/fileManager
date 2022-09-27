@@ -5,14 +5,15 @@ import checkFileType from "../../Helpers/FS and OS/CheckFileType";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import rightCaretImage from "../../Images/right-caret.png";
 import formatTitle from "../../Helpers/FormatTitle";
+import getChildDirectoriesTree from "../../Helpers/FS and OS/GetChildDirectoriesTree";
+import { useEffect } from "react";
 
 const fs = window.require("fs");
+const watch = window.require("node-watch");
 
 export default function ChildDirectory({ childDir, containsDirectories }) {
-  const { state, dispatch, rename } = useContext(DirectoryContext);
+  const { state, dispatch } = useContext(DirectoryContext);
   const { path, name, permission, isDirectory, isDrive, linkTo } = childDir;
-
-  const disabled = rename.element !== document.getElementById(path + "tree");
 
   let isPathClickedAlready;
   function clickDirectory(toOpenDirectory, toExpandTree, dblClick) {
@@ -32,55 +33,30 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
         return;
       }
     }
-
-    fs.readdir(path, { withFileTypes: true }, (error, files) => {
-      if (error) return console.log(error);
-      let dirArray = [];
-      for (const item of files) {
-        if (
-          (item.name === "temp" ||
-            item.name === "$RECYCLE.BIN" ||
-            item.name === "System Volume Information") &&
-          path.length === 3
-        ) {
-          continue;
-        }
-        let permission = true;
-        try {
-          fs.statSync(`${path}/${item.name}`);
-        } catch {
-          permission = false;
-        }
-        let symLink;
-        if (item.isSymbolicLink()) {
-          symLink = fs.readlinkSync(path + "/" + item.name);
-          symLink = symLink.replaceAll("\\", "/");
-        }
-
-        if (item.isDirectory() || item.isSymbolicLink()) {
-          dirArray.push({
-            path: path + item.name + (item.isDirectory() ? "/" : ""),
-            name: item.name,
-            permission: permission,
-            isDirectory: item.isDirectory(),
-            collapsed: true,
-            isPartOfTree: true,
-            ...(item.isSymbolicLink() && {
-              linkTo: symLink,
-              isSymbolicLink: true,
-            }),
-          });
-        }
-      }
-      dispatch({
-        type: "updateDirectoryTree",
-        value: addToDirectoryTree(state.directoryTree, path, dirArray),
-      });
+    dispatch({
+      type: "updateDirectoryTree",
+      value: addToDirectoryTree(
+        state.directoryTree,
+        path,
+        getChildDirectoriesTree(path).map((childDirectory) => ({
+          ...childDirectory,
+          path: childDirectory.location,
+        }))
+      ),
     });
   }
-
+  // useEffect(() => {
+  //   try {
+  //     fs.watchFile(path, (curr, prev) => {
+  //       // console.log(curr, prev, path);
+  //     });
+  //   } catch {}
+  //   return () => {
+  //     fs.unwatchFile(path);
+  //   };
+  // }, []);
   return (
-    <div
+    <button
       onClick={(e) => {
         e.stopPropagation();
         if (!permission) {
@@ -134,7 +110,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
         contentEditable="true"
         suppressContentEditableWarning
         disabled={true}
-        className={`directory-name ${disabled ? "" : "enabled"}`}
+        className="directory-name"
         id={path + "tree"}
         onClick={(e) => {
           e.stopPropagation();
@@ -145,6 +121,6 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       >
         {name}
       </div>
-    </div>
+    </button>
   );
 }

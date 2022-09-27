@@ -6,6 +6,24 @@
   right: 0;
   display: flex;
   flex-direction: row;
+  background-color: #111;
+  button {
+    background-color: black;
+    color: white;
+    border: none;
+    outline: 1px solid white;
+    margin-left: 2px;
+    &:hover {
+      color: black;
+      background-color: #fff;
+    }
+    &:disabled {
+      background-color: #999;
+      color: #555;
+      border: #555;
+      cursor: not-allowed;
+    }
+  }
   #toggle-directory-tree {
     height: 1.35rem;
   }

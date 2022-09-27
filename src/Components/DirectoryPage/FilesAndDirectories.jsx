@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { DirectoryContext } from "../Main/App";
 import Media from "./Icons/Media";
 import handleItemsSelected from "../../Helpers/HandleItemsSelected";
@@ -8,13 +8,18 @@ import formatTitle from "../../Helpers/FormatTitle";
 import CustomIcon from "./Icons/CustomIcon";
 
 import folderImage from "../../Images/folder.png";
-
-const { exec } = window.require("child_process");
+import checkFileType from "../../Helpers/FS and OS/CheckFileType";
+import {
+  ffmpegThumbs,
+  ffprobeMetadata,
+} from "../../Helpers/FS and OS/FFmpegFunctions";
+import clickOnItem from "../../Helpers/ClickOnItem";
 
 let clickOnNameTimeout;
 export default function FilesAndDirectories({ directoryItem }) {
   const {
     path,
+    location,
     name,
     isDirectory,
     isDrive,
@@ -23,6 +28,7 @@ export default function FilesAndDirectories({ directoryItem }) {
     isNetworkDrive,
     fileextension,
     thumbPath,
+    isMedia,
   } = directoryItem;
 
   const {
@@ -31,63 +37,76 @@ export default function FilesAndDirectories({ directoryItem }) {
     setItemsSelected,
     lastSelected,
     setLastSelected,
-    visibleItems,
+    state,
+    setDirectoryItems,
+    renameItem,
+    setRenameItem,
   } = useContext(DirectoryContext);
-
-  const [disabled, setDisabled] = useState(true);
-
-  function clickOnItem() {
-    if (isDrive) {
-      dispatch({
-        type: "open",
-        value: path,
-      });
-      dispatch({
-        type: "drive",
-        value: path,
-      });
-      if (isNetworkDrive) {
-        dispatch({
-          type: "addNetworkDrive",
-          value: path,
-        });
-      }
-    } else if (isFile) {
-      exec(`"${path + name}"`);
-    } else if (isDirectory) {
-      dispatch({
-        type: "open",
-        value: path + name + "/",
-      });
-    } else {
-      console.log("?");
-    }
-  }
 
   return (
     <button
       className="display-page-block"
-      id={name}
+      id={location + name}
+      onMouseEnter={() => {
+        if (isMedia) {
+          ffprobeMetadata(location + name).then((data) => {
+            setDirectoryItems((prevItems) =>
+              prevItems.map((prevItem) => {
+                if (prevItem.name === name) {
+                  return {
+                    ...prevItem,
+                    ...data,
+                  };
+                }
+                return prevItem;
+              })
+            );
+          });
+        }
+      }}
+      onMouseMove={(e) => {
+        if (isMedia) {
+          const date = Date.now();
+          if (
+            checkFileType(name)[0] === "video" ||
+            checkFileType(name)[0] === "gif"
+          ) {
+            const templocation = `${
+              state.drive
+            }temp/${state.currentDirectory.slice(
+              state.drive.length,
+              state.currentDirectory.length
+            )}`;
+            ffmpegThumbs(
+              location + name,
+              templocation + date + "del.jpeg"
+            ).then(() => {
+              e.target.firstChild.firstChild.src =
+                templocation + date + "del.jpeg";
+            });
+          }
+        }
+      }}
       onDoubleClick={(e) => {
         clearTimeout(clickOnNameTimeout);
         if (!permission || e.ctrlKey || e.shiftKey) {
           return;
         }
-        clickOnItem();
+        clickOnItem(directoryItem, dispatch);
       }}
       onContextMenu={() => {
         clearTimeout(clickOnNameTimeout);
-        setDisabled(true);
+        setRenameItem();
       }}
       onBlur={(e) => {
         if (e.relatedTarget?.className !== "block-name") {
-          setDisabled(true);
+          setRenameItem();
         }
       }}
       onClick={(e) => {
         if (!e.shiftKey && !e.ctrlKey) {
           clickOnNameTimeout = setTimeout(() => {
-            setDisabled(false);
+            setRenameItem(location + name);
           }, 1000);
         }
         handleItemsSelected(
@@ -101,11 +120,17 @@ export default function FilesAndDirectories({ directoryItem }) {
       }}
       data-contextmenu={permission && contextMenuOptions(directoryItem)}
       data-info={
-        permission && JSON.stringify({ ...directoryItem, path: path + name })
+        permission &&
+        JSON.stringify({ ...directoryItem, path: location + name })
       }
       data-title={formatTitle(directoryItem)}
+      data-destination={
+        isDirectory
+          ? JSON.stringify({ destination: state.currentDirectory + name + "/" })
+          : "{}"
+      }
     >
-      {visibleItems.includes(document.getElementById(name)) && (
+      {
         <>
           {thumbPath ? (
             <Media directoryItem={directoryItem} />
@@ -117,11 +142,11 @@ export default function FilesAndDirectories({ directoryItem }) {
           )}
           <ItemName
             directoryItem={directoryItem}
-            disabled={disabled}
-            setDisabled={setDisabled}
+            renameItem={renameItem}
+            setRenameItem={setRenameItem}
           />
         </>
-      )}
+      }
     </button>
   );
 }

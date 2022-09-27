@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from "react";
 import { DirectoryContext } from "../Main/App";
 import { UIContext } from "../UI and UX/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
+import checkDestinationDuplicates from "../../Helpers/FS and OS/CheckDestinationDuplicates";
 
 const { exec, execFileSync } = window.require("child_process");
 
@@ -19,7 +20,7 @@ export default function ContextMenuItem({
     };
   }, []);
 
-  const { itemsSelected, setRename, state } = useContext(DirectoryContext);
+  const { itemsSelected, state, setRenameItem } = useContext(DirectoryContext);
   const { setClipboardData, clipboardData } = useContext(UIContext);
 
   const { isFile, path, name, fileextension } = contextMenu.info;
@@ -43,23 +44,23 @@ export default function ContextMenuItem({
               info: itemsSelected.map((itemSelected) => itemSelected.info),
             });
             break;
-          case "Rename":
-            if (!contextMenu.info.isPartOfTree) {
-              setRename({
-                element: document.getElementById(name + "name"),
-                endRange: fileextension
-                  ? name.length - fileextension.length - 1
-                  : name.length,
-                info: contextMenu.info,
-              });
-            } else {
-              setRename({
-                element: document.getElementById(path + "tree"),
-                endRange: name.length,
-                info: contextMenu.info,
-                isPartOfTree: true,
-              });
+          case "Paste":
+            if (typeof clipboardData.info === "object") {
+              if (clipboardData.info[0].location === contextMenu.destination) {
+                return;
+              }
+              console.log(
+                checkDestinationDuplicates(
+                  clipboardData.info
+                    .map((item) => item.name)
+                    .filter((item) => item && item),
+                  contextMenu.destination
+                )
+              );
             }
+            break;
+          case "Rename":
+            setRenameItem(path);
             break;
           case "Delete":
             try {
@@ -74,6 +75,9 @@ export default function ContextMenuItem({
             break;
           case "New Folder":
             newDirectory(state);
+            break;
+          case "Refresh":
+            window.location.reload(true);
             break;
           default:
             return;
