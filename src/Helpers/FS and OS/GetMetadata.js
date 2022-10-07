@@ -25,8 +25,7 @@ function checkIfFileOrDir(file) {
 
 export default function formatMetadata(file, directory, drive, isNetworkDrive) {
   const item = checkIfFileOrDir(file);
-  let fileextension;
-  let itemtype;
+  let fileextension, itemtype;
 
   if (!item.isDirectory) {
     [itemtype, fileextension] = checkFileType(file.name);
@@ -85,6 +84,7 @@ export default function formatMetadata(file, directory, drive, isNetworkDrive) {
     accessed: dateAccessed || 0,
     modified: dateModified || 0,
     created: dateCreated || 0,
+    filetype: checkFileType(file.name)[0],
     isMedia: isMedia,
     ...(symLink && { linkTo: symLink }),
     ...(thumbPath &&

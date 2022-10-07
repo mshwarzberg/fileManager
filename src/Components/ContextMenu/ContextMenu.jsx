@@ -1,27 +1,19 @@
 import React, { useEffect, useContext } from "react";
 import { UIContext } from "../UI and UX/UIandUX";
-import { DirectoryContext } from "../Main/App";
 import ContextMenuItem from "./ContextMenuItem";
 import { findInArray } from "../../Helpers/SearchArray";
 import randomID from "../../Helpers/RandomID";
 
-export default function ContextMenu() {
-  const { contextMenu, setContextMenu, setPopup, clipboardData } =
-    useContext(UIContext);
-  const { setItemsSelected, itemsSelected } = useContext(DirectoryContext);
+export default function ContextMenu({ selectedItems }) {
+  const { contextMenu, setContextMenu, clipboardData } = useContext(UIContext);
 
   useEffect(() => {
-    function handleBlur() {
-      setPopup({});
-    }
+    function handleBlur() {}
     function handleContextMenu(e) {
       if (e.target.dataset.contextmenu) {
         const info = JSON.parse(
           e.target.dataset.info || e.target.dataset.destination || "{}"
         );
-        if (!findInArray(itemsSelected, e.target, "element")) {
-          setItemsSelected([{ info: info, element: e.target }]);
-        }
         setTimeout(() => {
           setContextMenu({
             items: JSON.parse(e.target.dataset.contextmenu),
@@ -34,7 +26,6 @@ export default function ContextMenu() {
         }, 0);
         e.stopImmediatePropagation();
       } else if (e.target.className !== "context-menu-item") {
-        setPopup({});
       }
     }
 
@@ -45,22 +36,28 @@ export default function ContextMenu() {
       window.removeEventListener("blur", handleBlur);
     };
     // eslint-disable-next-line
-  }, [itemsSelected, contextMenu]);
+  }, [contextMenu]);
 
   useEffect(() => {
     if (contextMenu.items) {
-      const titleDimensions = document
+      const contextMenuDimensions = document
         .getElementById("context-menu")
         .getBoundingClientRect();
       let newDimensions = {
         x: contextMenu.x,
         y: contextMenu.y,
       };
-      if (titleDimensions.width + titleDimensions.left > window.innerWidth) {
-        newDimensions.x = contextMenu.x - titleDimensions.width;
+      if (
+        contextMenuDimensions.width + contextMenuDimensions.left >
+        window.innerWidth
+      ) {
+        newDimensions.x = contextMenu.x - contextMenuDimensions.width;
       }
-      if (titleDimensions.height + titleDimensions.top > window.innerHeight) {
-        newDimensions.y = contextMenu.y - titleDimensions.height;
+      if (
+        contextMenuDimensions.height + contextMenuDimensions.top >
+        window.innerHeight
+      ) {
+        newDimensions.y = contextMenu.y - contextMenuDimensions.height;
       }
       setContextMenu((prevContextMenu) => ({
         ...prevContextMenu,
@@ -77,6 +74,7 @@ export default function ContextMenu() {
       <ContextMenuItem
         contextName={item}
         contextMenu={contextMenu}
+        selectedItems={selectedItems}
         key={randomID()}
         clearContextMenu={() => {
           return setContextMenu({});

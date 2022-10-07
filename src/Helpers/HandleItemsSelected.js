@@ -2,8 +2,8 @@ import { findInArray } from "./SearchArray";
 
 export default function handleItemsSelected(
   e,
-  itemsSelected,
-  setItemsSelected,
+  selectedItems,
+  setSelectedItems,
   lastSelected,
   setLastSelected
 ) {
@@ -12,7 +12,7 @@ export default function handleItemsSelected(
       ...document.getElementsByClassName("display-page-block"),
     ];
     let selected = [];
-    if (!itemsSelected[0]) {
+    if (!selectedItems[0]) {
       selected = pageBlocks
         .slice(0, pageBlocks.indexOf(e.target) + 1)
         .map((block) => ({
@@ -34,11 +34,11 @@ export default function handleItemsSelected(
           info: JSON.parse(block.dataset.info || "{}"),
         }));
     }
-    setItemsSelected(selected);
+    setSelectedItems(selected);
     return;
   } else if (e.ctrlKey) {
-    if (!findInArray(itemsSelected, e.target, "element")) {
-      setItemsSelected((prevItemsSelected) => [
+    if (!findInArray(selectedItems, e.target, "element")) {
+      setSelectedItems((prevItemsSelected) => [
         ...prevItemsSelected,
         {
           element: e.target,
@@ -47,7 +47,7 @@ export default function handleItemsSelected(
       ]);
       return;
     } else {
-      setItemsSelected((prevItemsSelected) => {
+      setSelectedItems((prevItemsSelected) => {
         return prevItemsSelected
           .map((prevItemSelected) => {
             if (prevItemSelected.element === e.target) {
@@ -60,10 +60,16 @@ export default function handleItemsSelected(
           );
       });
     }
-  } else {
-    setItemsSelected([
+  } else if (
+    !selectedItems
+      .map((selectedItem) => selectedItem.element)
+      .includes(e.target) ||
+    e.button !== 2
+  ) {
+    setSelectedItems([
       { element: e.target, info: JSON.parse(e.target.dataset.info || "{}") },
     ]);
+  } else {
   }
   setLastSelected(e.target);
 }

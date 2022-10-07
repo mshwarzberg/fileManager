@@ -5,26 +5,20 @@ import clickOnItem from "../Helpers/ClickOnItem";
 
 const { execFileSync } = window.require("child_process");
 export default function useShortcuts(
-  itemsSelected,
+  selectedItems,
   setClipboardData,
-  clipboardData
+  clipboardData,
+  setSelectedItems
 ) {
-  const {
-    state,
-    dispatch,
-    lastSelected,
-    setLastSelected,
-    setItemsSelected,
-    directoryItems,
-    setRenameItem,
-  } = useContext(DirectoryContext);
+  const { state, dispatch, directoryItems, setRenameItem } =
+    useContext(DirectoryContext);
 
   useEffect(() => {
     function navigateDirectories(e) {
       if (e.button === 3) {
-        document.getElementById("navbar-backwards").click();
+        document.getElementById("navigate-back").click();
       } else if (e.button === 4) {
-        document.getElementById("navbar-forwards").click();
+        document.getElementById("navigate-forwards").click();
       }
     }
     document.addEventListener("mousedown", navigateDirectories);
@@ -54,11 +48,21 @@ export default function useShortcuts(
           case "c":
             setClipboardData({
               mode: e.key === "c" ? "copy" : "cut",
-              info: itemsSelected.map((itemSelected) => {
+              info: selectedItems.map((itemSelected) => {
                 return itemSelected.info;
               }),
             });
             break;
+          case "a":
+            const pageBlocks = [
+              ...document.getElementsByClassName("display-page-block"),
+            ];
+            setSelectedItems(
+              pageBlocks.map((block) => ({
+                element: block,
+                info: JSON.parse(block.dataset.info || "{}"),
+              }))
+            );
           default:
             return;
         }
@@ -66,14 +70,14 @@ export default function useShortcuts(
       }
       switch (e.key) {
         case "F2":
-          if (itemsSelected[0]) {
-            setRenameItem(itemsSelected[0].info.name);
+          if (selectedItems[0]) {
+            setRenameItem(selectedItems[0].info.name);
           }
           break;
         case "Delete":
           try {
             execFileSync("recycle.exe", [
-              ...itemsSelected
+              ...selectedItems
                 .map((itemSelected) => itemSelected.info.path)
                 .filter((item) => item && item),
             ]);
@@ -83,8 +87,18 @@ export default function useShortcuts(
           break;
         case "ArrowRight":
         case "ArrowLeft":
+          if (!selectedItems[0]) {
+            return setSelectedItems([
+              {
+                element: document.getElementById(
+                  directoryItems[0].location + directoryItems[0].name
+                ),
+                info: directoryItems[0],
+              },
+            ]);
+          }
           const lastSelectedInArray =
-            itemsSelected[itemsSelected.length - 1].info;
+            selectedItems[selectedItems.length - 1].info;
           directoryItems.map((directoryItem, index) => {
             if (directoryItem.name === lastSelectedInArray.name) {
               if (e.key === "ArrowRight") {
@@ -96,7 +110,7 @@ export default function useShortcuts(
                 return;
               }
               const { name, location } = directoryItems[index];
-              setItemsSelected([
+              setSelectedItems([
                 {
                   element: document.getElementById(location + name),
                   info: directoryItems[index],
@@ -108,7 +122,7 @@ export default function useShortcuts(
           break;
         case "Enter":
           e.preventDefault();
-          itemsSelected.map((item) => {
+          selectedItems.map((item) => {
             clickOnItem(item.info, dispatch);
           });
           break;
@@ -120,5 +134,5 @@ export default function useShortcuts(
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [itemsSelected, clipboardData]);
+  }, [selectedItems, clipboardData]);
 }

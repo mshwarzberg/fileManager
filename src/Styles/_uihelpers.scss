@@ -5,12 +5,12 @@
 }
 
 #directory-tree-scaler {
-  height: calc(100vh - 3rem);
-  margin-top: 2.8rem;
-  top: 5rem;
+  height: calc(100vh);
+  margin-top: 2rem;
   flex: 0 0 1rem;
   background-color: #fff;
-  margin-left: 0.5rem;
+  margin-left: -0.5rem;
+  z-index: 1;
   cursor: ew-resize;
   background: linear-gradient(
     90deg,

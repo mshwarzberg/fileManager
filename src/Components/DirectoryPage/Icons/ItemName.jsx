@@ -11,8 +11,9 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
 
   return (
     <div className={`block-name-container`}>
-      {name}
+      {newName || newName === "" ? newName : name}
       <textarea
+        spellCheck={false}
         className="block-name"
         disabled={renameItem !== location + name}
         onKeyDown={(e) => {

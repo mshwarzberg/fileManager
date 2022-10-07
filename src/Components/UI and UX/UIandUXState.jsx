@@ -7,6 +7,7 @@ export default function UIandUXState() {
     darkMode: initSettings.darkMode,
     iconSize: initSettings.iconSize || 152,
     showDirectoryTree: initSettings.showDirectoryTree !== false,
+    treeWidth: initSettings.treeWidth || 260,
     showThumbnails: initSettings.showThumbnails !== false,
     singleClickToOpen: initSettings.singleClickToOpen,
     compactView: initSettings.compactView,
@@ -22,6 +23,7 @@ export default function UIandUXState() {
         showThumbnails: settings.showThumbnails,
         singleClickToOpen: settings.singleClickToOpen,
         compactView: settings.compactView,
+        treeWidth: settings.treeWidth,
       })
     );
   }, [settings]);

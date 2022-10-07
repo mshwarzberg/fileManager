@@ -3,7 +3,47 @@
   background-color: #777;
   width: 10rem;
   z-index: 1;
+  button {
+    width: 100%;
+    height: 1.5rem;
+    background-color: #777;
+    color: white;
+    border: 1px solid white;
+    &:hover {
+      background-color: #999;
+      color: black;
+      border: 1.5px solid black;
+    }
+  }
   .context-menu-button {
     width: 100%;
+    height: 1.5rem;
+    p {
+      position: absolute;
+      right: 5px;
+      top: 0.85rem;
+    }
+    .sort-by-sub-menu {
+      position: absolute;
+      right: -10rem;
+      width: 10rem;
+      top: 1.5rem;
+      &.position-left {
+        left: -10rem;
+      }
+      #dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background-color: #000;
+        position: absolute;
+        margin-top: 0.25rem;
+      }
+    }
+    #line-break {
+      height: 1.5rem;
+      width: 100%;
+      background-color: white;
+    }
   }
 }

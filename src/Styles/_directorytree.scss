@@ -1,19 +1,46 @@
 #directory-tree {
   z-index: 1;
-  height: calc(100vh - 9.7rem);
-  top: 2.7rem;
+  height: calc(100vh - 9rem);
+  top: 2rem;
   position: relative;
   padding: 1rem 0 0 0;
   padding-bottom: 6rem;
   flex: 0 0 20%;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: #000;
   .child-directories-container {
     left: 1rem;
     position: relative;
     * {
       color: white;
       font-family: mukta;
+    }
+    .line-down {
+      position: absolute;
+      left: 0.3rem;
+      top: 1.5rem;
+      height: calc(100% - 1.5rem);
+      width: 0.5rem;
+      background: linear-gradient(
+        to right,
+        #00000000 45%,
+        white 46%,
+        white 54%,
+        #00000000 56%
+      );
+      background-size: 100%;
+      border-radius: 40%;
+      &:hover {
+        cursor: pointer;
+        background: linear-gradient(
+          to right,
+          #00000000 35%,
+          white 36%,
+          white 64%,
+          #00000000 65%
+        );
+      }
     }
     .collapsed {
       display: none;
@@ -23,25 +50,30 @@
     .child-directory,
     .parent-directory-collapsed {
       position: relative;
-      padding-left: 5px;
       height: 1.3rem;
       display: flex;
       flex-direction: row;
       align-items: center;
-      margin-block: 2px;
+      margin-block: 0.15rem;
+      background-color: #00000000;
       white-space: nowrap;
       overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: default;
-      background-color: #00000000;
       border: none;
       width: 100%;
+      cursor: pointer;
       &.no-permission {
         background-color: #441111;
         color: red;
         cursor: not-allowed;
         &:hover {
           background-color: #441111;
+        }
+      }
+      &#current-directory {
+        background-color: #fff !important;
+        * {
+          color: black;
+          font-weight: bold;
         }
       }
       .directory-name {
@@ -51,20 +83,24 @@
       }
       &:hover {
         background-color: #999;
-        color: #000;
+        * {
+          color: black;
+          font-weight: bold;
+        }
       }
       .arrow-container {
+        cursor: default;
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
         position: relative;
-        height: 1rem;
-        margin-right: 5px;
-        aspect-ratio: 1;
+        width: 1rem;
+        height: 1.3rem;
+        right: 0.3rem;
         .directory-tree-arrow {
           position: relative;
-          height: 0.8rem;
+          height: 0.7rem;
         }
       }
     }

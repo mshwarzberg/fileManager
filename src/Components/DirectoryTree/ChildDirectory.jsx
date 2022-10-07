@@ -1,19 +1,29 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { DirectoryContext } from "../Main/App";
-import { addToDirectoryTree } from "../../Helpers/ChangeItemInTree";
-import checkFileType from "../../Helpers/FS and OS/CheckFileType";
+import {
+  addToDirectoryTree,
+  handleDirectoryTree,
+} from "../../Helpers/ChangeItemInTree";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
-import rightCaretImage from "../../Images/right-caret.png";
 import formatTitle from "../../Helpers/FormatTitle";
 import getChildDirectoriesTree from "../../Helpers/FS and OS/GetChildDirectoriesTree";
-import { useEffect } from "react";
+import useCaretColor, { handleMouse } from "./useCaretColor";
 
 const fs = window.require("fs");
-const watch = window.require("node-watch");
 
 export default function ChildDirectory({ childDir, containsDirectories }) {
   const { state, dispatch } = useContext(DirectoryContext);
   const { path, name, permission, isDirectory, isDrive, linkTo } = childDir;
+
+  useEffect(() => {
+    try {
+      fs.readdirSync(path);
+    } catch {
+      handleDirectoryTree(state.directoryTree, path);
+    }
+  }, []);
+
+  const isDirectoryCurrent = state.currentDirectory === path;
 
   let isPathClickedAlready;
   function clickDirectory(toOpenDirectory, toExpandTree, dblClick) {
@@ -21,7 +31,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       return;
     }
     isPathClickedAlready = path;
-    if (!path.startsWith(state.drive) || !state.drive || isDrive) {
+    if (!path.startsWith(state.drive) || !state.drive) {
       dispatch({ type: "drive", value: path.slice(0, 3) });
     }
     if (toOpenDirectory) {
@@ -38,25 +48,17 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       value: addToDirectoryTree(
         state.directoryTree,
         path,
-        getChildDirectoriesTree(path).map((childDirectory) => ({
-          ...childDirectory,
-          path: childDirectory.location,
-        }))
+        getChildDirectoriesTree(path)
       ),
     });
   }
-  // useEffect(() => {
-  //   try {
-  //     fs.watchFile(path, (curr, prev) => {
-  //       // console.log(curr, prev, path);
-  //     });
-  //   } catch {}
-  //   return () => {
-  //     fs.unwatchFile(path);
-  //   };
-  // }, []);
+
+  const { caretColor, setCaretColor } = useCaretColor(isDirectoryCurrent);
+
   return (
     <button
+      className={`child-directory ${!permission && "no-permission"}`}
+      id={isDirectoryCurrent ? "current-directory" : ""}
       onClick={(e) => {
         e.stopPropagation();
         if (!permission) {
@@ -71,56 +73,37 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
         }
         clickDirectory(true, true, true);
       }}
-      style={{
-        ...(path === state.currentDirectory && {
-          backgroundColor: "#999",
-          color: "#000",
-          fontWeight: "bold",
-        }),
+      onMouseEnter={(e) => {
+        handleMouse(e, setCaretColor, isDirectoryCurrent);
       }}
-      className={`child-directory ${!permission && "no-permission"}`}
+      onMouseLeave={(e) => {
+        handleMouse(e, setCaretColor, isDirectoryCurrent);
+      }}
       data-contextmenu={contextMenuOptions(childDir)}
       data-info={permission && JSON.stringify(childDir)}
       data-title={formatTitle(childDir)}
     >
       {containsDirectories && (
-        <div className="arrow-container">
-          <img
-            onClick={(e) => {
-              if (!permission) {
-                return;
-              }
-              clickDirectory(false, true);
-              e.stopPropagation();
-            }}
-            onDoubleClick={(e) => {
-              e.stopPropagation();
-            }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-            }}
-            className="directory-tree-arrow"
-            src={rightCaretImage}
-            alt=">"
-          />
+        <div
+          className="arrow-container"
+          onClick={(e) => {
+            if (!permission) {
+              return;
+            }
+            clickDirectory(false, true);
+            e.stopPropagation();
+          }}
+          onMouseEnter={(e) => {
+            handleMouse(e, setCaretColor, isDirectoryCurrent);
+          }}
+          onMouseLeave={(e) => {
+            handleMouse(e, setCaretColor, isDirectoryCurrent);
+          }}
+        >
+          <img className="directory-tree-arrow" src={caretColor} alt=">" />
         </div>
       )}
-      <div
-        spellCheck="false"
-        contentEditable="true"
-        suppressContentEditableWarning
-        disabled={true}
-        className="directory-name"
-        id={path + "tree"}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        onDoubleClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        {name}
-      </div>
+      <div className="directory-name">{name}</div>
     </button>
   );
 }

@@ -45,32 +45,21 @@ function addToDirectoryTree(tree, path, directories) {
   return tree;
 }
 
-function removeFromDirectoryTree(tree, path) {
-  for (const i in tree) {
-    const firstElement = tree[i][0];
-    if (firstElement && path.startsWith(firstElement.path)) {
-      tree.splice(i, 1, removeFromDirectoryTree(tree[i], path));
-    } else if (path.startsWith(tree[i].path) && path === tree[i].path) {
-      tree.splice(i, 1);
+function handleDirectoryTree(tree, path, newValue) {
+  for (const item of tree) {
+    if (path?.startsWith(item.path) || path?.startsWith(item[0]?.path)) {
+      if (item.path === path || item[0]?.path === path) {
+        if (newValue) {
+          tree.splice(tree.indexOf(item), 1, newValue);
+        } else {
+          tree.splice(tree.indexOf(item), 1);
+        }
+      } else if (item[0]) {
+        tree = handleDirectoryTree(item, path, newValue);
+      }
     }
   }
-  return tree;
+  return tree.filter((item) => item && item);
 }
 
-function countTree(tree) {
-  let num = 0;
-  for (const subTree of tree) {
-    num++;
-    if (subTree[0]) {
-      num += countTree(subTree);
-    }
-  }
-  return num * 1;
-}
-
-export {
-  updateDirectoryTree,
-  addToDirectoryTree,
-  countTree,
-  removeFromDirectoryTree,
-};
+export { updateDirectoryTree, addToDirectoryTree, handleDirectoryTree };

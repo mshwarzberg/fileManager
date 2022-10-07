@@ -122,9 +122,6 @@ export default function DirectoryTree() {
             childDir={child}
             key={randomID()}
             containsDirectories={containsDirectories(child.path)}
-            altImage={(name) => {
-              return name;
-            }}
           />
         )
       );
@@ -135,9 +132,7 @@ export default function DirectoryTree() {
         <ParentDirectory
           parentDir={tree[0] || {}}
           key={randomID()}
-          altImage={(name) => {
-            return name;
-          }}
+          childDirsList={tree}
         >
           {childDirectories}
         </ParentDirectory>
@@ -148,7 +143,14 @@ export default function DirectoryTree() {
   return (
     settings.showDirectoryTree && (
       <>
-        <div id="directory-tree">{mapDirectoryTreeLoop()}</div>
+        <div
+          id="directory-tree"
+          style={{
+            flex: `0 0 ${settings.treeWidth}px`,
+          }}
+        >
+          {mapDirectoryTreeLoop()}
+        </div>
         <div id="directory-tree-scaler" />
       </>
     )

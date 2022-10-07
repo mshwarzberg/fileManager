@@ -1,36 +1,38 @@
 import formatVideoTime from "./FormatVideoTime";
 import formatSize from "./FormatSize";
 
-export default function formatTitle(item) {
+export default function formatTitle(item, media = {}) {
   const {
     name,
     location,
-    description,
-    duration,
     size,
-    width,
-    height,
     isDrive,
     availableSpace,
     totalSize,
     isDirectory,
     isMedia,
+    path,
   } = item;
+
+  const { headline, duration, description, width, height } = media;
+
   if (isMedia) {
-    return `Name: ${name}\nLocation: ${location}\nSize: ${
+    return `Name: ${name}\nLocation: ${location || path}\nSize: ${
       formatSize(size) || ""
     }\nDimensions: ${width + "x" + height}${
-      duration > 0.1 ? `\nDuration: ${formatVideoTime(duration)}` : ""
-    }${description ? `\nDescription: ${description}` : ""}`;
-  } else if (isDirectory) {
-    return `Name: ${name}\nLocation: ${location}`;
+      duration ? `\nDuration: ${formatVideoTime(duration)}` : ""
+    }${headline ? `\nHeadline: ${headline}` : ""}${
+      description && typeof description === "string"
+        ? `\nDescription: ${description}`
+        : ""
+    }`;
   } else if (isDrive) {
     return `Name: ${name}\nSpace Remaining: ${formatSize(
       availableSpace
     )}\nDrive Size: ${formatSize(totalSize)}`;
   } else {
-    return `Name: ${name}\nLocation: ${location}\nSize: ${
-      formatSize(size) || ""
-    }`;
+    return `Name: ${name}\nLocation: ${
+      location || path?.slice(0, path.length - name.length - 1)
+    }${size ? `\nSize: ${formatSize(size)}` : ""}`;
   }
 }

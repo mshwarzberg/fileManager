@@ -6,47 +6,32 @@ import UIandUXState from "../UI and UX/UIandUXState";
 import Page from "../DirectoryPage/Page";
 import Navbar from "../Navbar/Navbar";
 import DirectoryTree from "../DirectoryTree/DirectoryTree";
+import FilesAndDirectories from "../DirectoryPage/FilesAndDirectories";
 
 import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
 import UIandUX from "../UI and UX/UIandUX";
+import sortBy from "../../Helpers/SortBy";
 
 export const DirectoryContext = createContext();
 
 const fs = window.require("fs");
+const { execSync } = window.require("child_process");
+const getDimensions = window.require("get-media-dimensions");
 
 export default function App() {
   const { state, dispatch } = DirectoryState();
   const { settings, setSettings } = UIandUXState();
 
   const [directoryItems, setDirectoryItems] = useState([]);
-  const [itemsSelected, setItemsSelected] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [lastSelected, setLastSelected] = useState();
   const [renameItem, setRenameItem] = useState();
+  const [visibleItems, setVisibleItems] = useState([]);
 
   useEffect(() => {
     console.clear();
   }, []);
-
-  useEffect(() => {
-    try {
-      const tempPathValue = `${state.drive}temp/${state.currentDirectory.slice(
-        state.drive.length,
-        state.currentDirectory.length
-      )}`;
-      fs.readdir(tempPathValue, (err, files) => {
-        if (err) return;
-        for (const file of files) {
-          if (
-            parseInt(file).toString().length === 13 &&
-            file.includes("del.jpeg")
-          ) {
-            fs.unlinkSync(tempPathValue + file);
-          }
-        }
-      });
-    } catch {}
-  }, [state.currentDirectory]);
 
   useEffect(() => {
     async function updatePage() {
@@ -67,18 +52,8 @@ export default function App() {
             .filter((item) => {
               return item.name && item;
             });
-
-          setDirectoryItems(
-            result.sort((a, b) => {
-              if (a.isDirectory) {
-                return 1;
-              }
-              if (b.isDirectory) {
-                return -1;
-              }
-              return a.name.localeCompare(b.name);
-            })
-          );
+          setDirectoryItems(result);
+          sortBy(setDirectoryItems, "Name");
         } catch (e) {
           setDirectoryItems([{ err: e.toString() }]);
         }
@@ -101,6 +76,20 @@ export default function App() {
     // eslint-disable-next-line
   }, [state.currentDirectory]);
 
+  const renderDirectoryItems = directoryItems.map((directoryItem) => {
+    return (
+      <FilesAndDirectories
+        key={directoryItem.key || directoryItem.name}
+        directoryItem={directoryItem}
+        visibleItems={visibleItems}
+        lastSelected={lastSelected}
+        setLastSelected={setLastSelected}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+      />
+    );
+  });
+
   return (
     <DirectoryContext.Provider
       value={{
@@ -108,20 +97,30 @@ export default function App() {
         dispatch,
         directoryItems,
         setDirectoryItems,
-        itemsSelected,
-        setItemsSelected,
         settings,
         setSettings,
-        lastSelected,
-        setLastSelected,
         renameItem,
         setRenameItem,
       }}
     >
-      <Navbar />
+      <Navbar selectedItems={selectedItems} />
       <DirectoryTree />
-      <Page />
-      <UIandUX />
+      <Page setVisibleItems={setVisibleItems}>{renderDirectoryItems}</Page>
+      <UIandUX
+        setLastSelected={setLastSelected}
+        lastSelected={lastSelected}
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+      />
+      {/* <button
+        style={{ position: "fixed" }}
+        onClick={() => {
+          localStorage.clear();
+          window.location.reload(true);
+        }}
+      >
+        Test Button
+      </button> */}
     </DirectoryContext.Provider>
   );
 }

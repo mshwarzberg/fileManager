@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DirectoryContext } from "../Main/App";
 import { UIContext } from "../UI and UX/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import checkDestinationDuplicates from "../../Helpers/FS and OS/CheckDestinationDuplicates";
+import Sort from "./Sort";
 
 const { exec, execFileSync } = window.require("child_process");
 
@@ -10,6 +11,7 @@ export default function ContextMenuItem({
   contextName,
   clearContextMenu,
   contextMenu,
+  selectedItems,
 }) {
   useEffect(() => {
     document.addEventListener("click", clearContextMenu);
@@ -20,14 +22,27 @@ export default function ContextMenuItem({
     };
   }, []);
 
-  const { itemsSelected, state, setRenameItem } = useContext(DirectoryContext);
+  const { state, setRenameItem } = useContext(DirectoryContext);
   const { setClipboardData, clipboardData } = useContext(UIContext);
 
-  const { isFile, path, name, fileextension } = contextMenu.info;
+  const { isFile, path } = contextMenu.info;
 
+  const [showSort, setShowSort] = useState();
+
+  useEffect(() => {}, [showSort]);
   return (
     <button
       className="context-menu-button"
+      onMouseEnter={() => {
+        if (contextName === "Sort By") {
+          setTimeout(() => {
+            setShowSort(true);
+          }, 0);
+        }
+      }}
+      onMouseLeave={() => {
+        setShowSort();
+      }}
       onClick={() => {
         switch (contextName) {
           case "Open":
@@ -41,7 +56,7 @@ export default function ContextMenuItem({
           case "Copy":
             setClipboardData({
               mode: contextName.toLowerCase(),
-              info: itemsSelected.map((itemSelected) => itemSelected.info),
+              info: selectedItems.map((itemSelected) => itemSelected.info),
             });
             break;
           case "Paste":
@@ -65,7 +80,7 @@ export default function ContextMenuItem({
           case "Delete":
             try {
               execFileSync("recycle.exe", [
-                ...itemsSelected
+                ...selectedItems
                   .map((itemSelected) => itemSelected.info.path)
                   .filter((item) => item && item),
               ]);
@@ -85,6 +100,8 @@ export default function ContextMenuItem({
       }}
     >
       {contextName}
+      {contextName === "Sort By" && <p>→</p>}
+      {showSort && <Sort contextMenu={contextMenu} />}
     </button>
   );
 }

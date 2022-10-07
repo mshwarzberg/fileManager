@@ -1,31 +1,43 @@
-import { useEffect, useContext } from "react";
-import { DirectoryContext } from "../Components/Main/App";
+import { useEffect } from "react";
 
-export default function useSelectMultiple(setLastSelected) {
-  const { setItemsSelected } = useContext(DirectoryContext);
+export default function useSelectMultiple(setLastSelected, setSelectedItems) {
+  let timeout;
 
   function highlightItems(boxDimensions) {
-    const elements = document.getElementsByClassName("display-page-block");
-    let infoArray = [];
-    for (const element of elements) {
-      const elDimensions = element.getBoundingClientRect();
-      if (
-        elDimensions.x + elDimensions.width > boxDimensions.x &&
-        elDimensions.x < boxDimensions.right &&
-        elDimensions.y + elDimensions.height > boxDimensions.y &&
-        elDimensions.y < boxDimensions.bottom
-      ) {
-        const info = JSON.parse(element.dataset.info || "{}");
-        if (info.permission && info.name) {
-          infoArray.push({
-            info: info,
-            element: element,
-          });
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const elements = document.getElementsByClassName("display-page-block");
+      let infoArray = [];
+      for (const element of elements) {
+        const elDimensions = element.getBoundingClientRect();
+
+        const notToRightOfBlock = elDimensions.x < boxDimensions.right;
+        const notToLeftOfBlock =
+          elDimensions.x + elDimensions.width > boxDimensions.x;
+
+        const notBelowBlock = elDimensions.y < boxDimensions.bottom;
+        const notAboveBlock =
+          elDimensions.y + elDimensions.height > boxDimensions.y;
+
+        const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
+        const isWithinYAxis = notAboveBlock && notBelowBlock;
+
+        if (isWithinXAxis && isWithinYAxis) {
+          const info = JSON.parse(element.dataset.info || "{}");
+          if (info.permission && info.name) {
+            infoArray.push({
+              info: info,
+              element: element,
+            });
+          }
+        }
+        if (!notBelowBlock) {
+          break;
         }
       }
-    }
-    setLastSelected(infoArray[0]?.element);
-    setItemsSelected(infoArray);
+      setLastSelected(infoArray[0]?.element);
+      setSelectedItems(infoArray);
+    }, 0);
   }
   function changeBoxDimensions(
     box,
@@ -59,7 +71,8 @@ export default function useSelectMultiple(setLastSelected) {
         return;
       }
       if (!e.shiftKey && !e.ctrlKey) {
-        setItemsSelected([]);
+        setSelectedItems([]);
+        setLastSelected();
       }
       isBox = true;
       const pageDimensions = page.getBoundingClientRect();
@@ -91,7 +104,7 @@ export default function useSelectMultiple(setLastSelected) {
         clearInterval(scrollOnDrag);
         if (e.clientY < 100 && page.scrollTop !== 0) {
           scrollOnDrag = setInterval(() => {
-            page.scroll(0, page.scrollTop - 50);
+            page.scroll(0, page.scrollTop - 100);
             changeBoxDimensions(box, anchorY, anchorX, 0, currentPositionX);
             highlightItems(box.getBoundingClientRect());
           }, 10);
@@ -101,7 +114,7 @@ export default function useSelectMultiple(setLastSelected) {
             page.scrollHeight
         ) {
           scrollOnDrag = setInterval(() => {
-            page.scroll(0, page.scrollTop + 50);
+            page.scroll(0, page.scrollTop + 100);
             changeBoxDimensions(
               box,
               anchorY,

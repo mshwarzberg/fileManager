@@ -2,17 +2,17 @@
   position: fixed;
   top: 0;
   width: 100vw;
-  height: 2.7rem;
+  height: 2rem;
   right: 0;
   display: flex;
   flex-direction: row;
-  background-color: #111;
+  background-color: #101010;
   button {
     background-color: black;
     color: white;
-    border: none;
-    outline: 1px solid white;
+    border: 2px solid white;
     margin-left: 2px;
+    height: 2rem;
     &:hover {
       color: black;
       background-color: #fff;
@@ -25,31 +25,52 @@
     }
   }
   #toggle-directory-tree {
-    height: 1.35rem;
+    width: 6rem;
   }
   #navbar-navigation {
     margin-inline: 1rem;
+    width: 9rem;
+    display: flex;
+    flex-direction: row;
+    button {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      img {
+        pointer-events: none;
+        height: 70%;
+      }
+      #left-arrow {
+        transform: rotate(270deg);
+      }
+      #right-arrow {
+        cursor: copy;
+        transform: rotate(90deg);
+      }
+    }
   }
   #current-directory-header {
     color: white;
-    background-color: #222;
     height: 50%;
-    top: 25%;
     width: 100%;
     text-align: left;
+    top: -5%;
+    position: relative;
     font-size: 1rem;
-    padding-left: 0.5rem;
+    padding-left: 0.2rem;
     display: flex;
     flex-direction: row;
     align-items: center;
-    left: 0;
-    position: absolute;
+    font-family: "Mukta";
   }
   #directory-items-count {
     position: absolute;
     right: 0.5rem;
-    top: -20%;
+    top: -25%;
     font-size: 1rem;
     color: white;
+    font-family: "mukta";
   }
 }

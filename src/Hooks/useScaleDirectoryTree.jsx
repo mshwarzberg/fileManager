@@ -2,8 +2,9 @@ import { useEffect, useState, useContext } from "react";
 import { DirectoryContext } from "../Components/Main/App";
 
 export default function useScaleDirectoryTree() {
-  const [scalingTree, setScalingTree] = useState(false);
-  const { settings } = useContext(DirectoryContext);
+  const [scalingTree, setScalingTree] = useState();
+  const { settings, setSettings } = useContext(DirectoryContext);
+
   useEffect(() => {
     const lineSplit = document.getElementById("directory-tree-scaler");
     function handleMouseDown(e) {
@@ -16,15 +17,14 @@ export default function useScaleDirectoryTree() {
         if (e.clientX < 200 || e.clientX > window.innerWidth / 2) {
           return;
         }
-        const directoryTree = document.getElementById("directory-tree");
-        directoryTree.style.flex = `0 0 ${e.clientX - 16}px`;
+        setSettings((prevSettings) => ({
+          ...prevSettings,
+          treeWidth: e.clientX,
+        }));
       }
     }
     function handleMouseUp(e) {
-      if (scalingTree) {
-        setScalingTree();
-        localStorage.setItem("directoryTreeWidth", e.clientX - 45);
-      }
+      setScalingTree();
     }
     lineSplit?.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);

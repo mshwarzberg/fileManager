@@ -47,6 +47,14 @@ export default function checkFileType(fullName) {
     fileextension === "lnk",
   ];
 
+  const checkIfAudio = [
+    fileextension === "mp3",
+    fileextension === "flac",
+    fileextension === "wav",
+    fileextension === "m4a",
+    fileextension === "aac",
+    fileextension === "wma",
+  ];
   let type;
   if (checkIfImage.includes(true)) {
     type = "image";
@@ -56,6 +64,8 @@ export default function checkFileType(fullName) {
     type = "gif";
   } else if (checkIfText.includes(true)) {
     type = "document";
+  } else if (checkIfAudio.includes(true)) {
+    type = "audio";
   } else {
     type = "unknown";
   }

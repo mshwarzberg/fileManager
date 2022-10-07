@@ -2,7 +2,7 @@
   padding: 4px 1rem 4px 4px;
   font-size: 0.8rem;
   color: white;
-  background-color: #111111;
+  background-color: #111111ee;
   border-radius: 1px;
   z-index: 1;
   position: fixed;
@@ -12,5 +12,9 @@
   word-wrap: break-word;
   white-space: pre-wrap;
   word-break: break-word;
+  text-decoration: underline;
+  text-decoration-color: white;
+  text-decoration-thickness: 0.5px;
+  text-underline-offset: 3px;
   width: max-content;
 }

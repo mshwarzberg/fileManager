@@ -1,51 +1,46 @@
-import React, { useState, createContext, useContext, useEffect } from "react";
+import React, { useState, createContext } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 
-import { DirectoryContext } from "../Main/App";
 import CustomTitle from "./CustomTitle";
 import useSelectMultiple from "../../Hooks/useSelectMultiple";
 import useShortcuts from "../../Hooks/useShortcuts";
-import UIandUXState from "./UIandUXState";
 import useScaleDirectoryTree from "../../Hooks/useScaleDirectoryTree";
 import useWatch from "../../Hooks/useWatch";
 
 export const UIContext = createContext();
 
-export default function UIandUX() {
+export default function UIandUX({
+  setLastSelected,
+  selectedItems,
+  setSelectedItems,
+}) {
   const [contextMenu, setContextMenu] = useState({});
-  const [title, setTitle] = useState({});
-  const [showProperties, setShowProperties] = useState();
-  const [popup, setPopup] = useState({});
-  const [showSettings, setShowSettings] = useState();
-  const [dragAndDrop, setDragAndDrop] = useState();
   const [clipboardData, setClipboardData] = useState({});
-
-  const {
-    setLastSelected,
-    itemsSelected,
-    state,
-    directoryItems,
-    setItemsSelected,
-  } = useContext(DirectoryContext);
 
   useWatch();
   useScaleDirectoryTree();
-  useSelectMultiple(setLastSelected);
-  useShortcuts(itemsSelected, setClipboardData, clipboardData);
+  useSelectMultiple(setLastSelected, setSelectedItems);
+  useShortcuts(
+    selectedItems,
+    setClipboardData,
+    clipboardData,
+    setSelectedItems
+  );
 
   return (
     <UIContext.Provider
       value={{
         contextMenu,
         setContextMenu,
-        popup,
-        setPopup,
         clipboardData,
         setClipboardData,
       }}
     >
       <CustomTitle />
-      <ContextMenu />
+      <ContextMenu
+        selectedItems={selectedItems}
+        setSelectedItems={setSelectedItems}
+      />
     </UIContext.Provider>
   );
 }
