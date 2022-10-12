@@ -87,11 +87,8 @@ export default function ParentDirectory({
         onClick={(e) => {
           e.stopPropagation();
           dispatch({ type: "open", value: path || "" });
-          if (!path?.startsWith(state.drive)) {
-            dispatch({ type: "drive", value: path?.slice(0, 3) });
-          }
         }}
-        onMouseEnter={(e) => {
+        onMouseMove={(e) => {
           handleMouse(e, setCaretColor, isDirectoryCurrent);
         }}
         onMouseLeave={(e) => {
@@ -100,12 +97,15 @@ export default function ParentDirectory({
         data-contextmenu={contextMenuOptions(parentDir)}
         data-info={permission && JSON.stringify(parentDir)}
         data-title={formatTitle(parentDir)}
+        data-destination={JSON.stringify({
+          destination: path,
+        })}
       >
         {name && (
           <div
             className="arrow-container"
             onClick={handleCollapseAndExpanse}
-            onMouseEnter={(e) => {
+            onMouseMove={(e) => {
               handleMouse(e, setCaretColor, isDirectoryCurrent);
             }}
             onMouseLeave={(e) => {

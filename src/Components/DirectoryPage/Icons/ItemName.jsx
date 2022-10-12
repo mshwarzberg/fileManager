@@ -1,21 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { DirectoryContext } from "../../Main/App";
 
 const fs = window.require("fs");
 
 export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
-  const { name, fileextension, location } = directoryItem;
-
+  const { displayName, name, fileextension, location } = directoryItem;
+  const { state } = useContext(DirectoryContext);
   const [newName, setNewName] = useState();
 
   const illegalChars = ['"', "\\", "/", ":", "*", "?", "|", "<", ">"];
 
   return (
-    <div className={`block-name-container`}>
-      {newName || newName === "" ? newName : name}
+    <div className="block-name-container">
+      {newName || newName === "" ? newName : displayName}
       <textarea
         spellCheck={false}
         className="block-name"
-        disabled={renameItem !== location + name}
+        disabled={
+          renameItem !== location + name || state.currentDirectory === "Trash"
+        }
         onKeyDown={(e) => {
           e.stopPropagation();
           if (e.key === "Enter") {
@@ -23,16 +26,7 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
           }
         }}
         onFocus={(e) => {
-          e.target.setSelectionRange(
-            0,
-            fileextension ? name.length - fileextension.length - 1 : name.length
-          );
-        }}
-        onMouseEnter={(e) => {
-          e.stopPropagation();
-        }}
-        onMouseMove={(e) => {
-          e.stopPropagation();
+          e.target.setSelectionRange(0, name.length - fileextension.length);
         }}
         onBlur={(e) => {
           setRenameItem();
@@ -47,12 +41,29 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
           ) {
             return;
           }
-          fs.renameSync(location + name, location + e.target.value);
+          try {
+            fs.renameSync(location + name, location + e.target.value);
+            const prevUndo = JSON.parse(localStorage.getItem("undo") || []);
+            localStorage.setItem(
+              "undo",
+              JSON.stringify([
+                ...prevUndo,
+                {
+                  originalName: location + name,
+                  currentName: location + e.target.value,
+                  change: "rename",
+                },
+              ])
+            );
+          } catch {}
         }}
         onDoubleClick={(e) => {
           e.stopPropagation();
         }}
-        value={newName || newName === "" ? newName : name}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        value={newName || newName === "" ? newName : displayName}
         onChange={(e) => {
           setNewName(e.target.value);
         }}

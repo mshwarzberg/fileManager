@@ -5,7 +5,7 @@ export default function UIandUXState() {
 
   const [settings, setSettings] = useState({
     darkMode: initSettings.darkMode,
-    iconSize: initSettings.iconSize || 152,
+    iconSize: initSettings.iconSize || "large",
     showDirectoryTree: initSettings.showDirectoryTree !== false,
     treeWidth: initSettings.treeWidth || 260,
     showThumbnails: initSettings.showThumbnails !== false,

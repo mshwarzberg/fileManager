@@ -1,19 +1,21 @@
 export default function sortBy(setDirectoryItems, method, ascending) {
   if (method === "Name") {
     setDirectoryItems((prevItems) => {
-      const newSort = prevItems.sort((a, b) => {
-        if (parseInt(a.name)) {
-          return parseInt(a.name) - parseInt(b.name);
-        }
-        return a.name.localeCompare(b.name);
-      });
+      const newSort = prevItems
+        .sort((a, b) => {
+          return a.name.localeCompare(b.name);
+        })
+        .sort((a, b) => {
+          if (parseInt(a.name)) {
+            return parseInt(a.name) - parseInt(b.name);
+          }
+        });
       if (ascending) {
         newSort.reverse();
       }
       return newSort;
     });
-  }
-  if (method === "Size") {
+  } else if (method === "Size") {
     setDirectoryItems((prevItems) => {
       const newSort = prevItems.sort((a, b) => {
         return b.size - a.size;
@@ -23,8 +25,7 @@ export default function sortBy(setDirectoryItems, method, ascending) {
       }
       return newSort;
     });
-  }
-  if (method === "Date") {
+  } else if (method === "Date") {
     setDirectoryItems((prevItems) => {
       const newSort = prevItems.sort((a, b) => {
         return b.modified - a.modified;
@@ -34,19 +35,17 @@ export default function sortBy(setDirectoryItems, method, ascending) {
       }
       return newSort;
     });
-  }
-  if (method === "Type") {
+  } else if (method === "Type") {
     setDirectoryItems((prevItems) => {
       const newSort = prevItems.sort((a, b) => {
-        return a.fileextension?.localeCompare(b.fileextension);
+        return a.fileextension.localeCompare(b.fileextension);
       });
       if (ascending) {
         newSort.reverse();
       }
       return newSort;
     });
-  }
-  if (method === "Duration") {
+  } else if (method === "Duration") {
     setDirectoryItems((prevItems) => {
       const newSort = prevItems.sort((a, b) => {
         return b.duration - a.duration;

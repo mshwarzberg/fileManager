@@ -1,4 +1,5 @@
 const { exec } = window.require("child_process");
+
 export default function clickOnItem(item, dispatch) {
   const {
     isNetworkDrive,
@@ -10,7 +11,12 @@ export default function clickOnItem(item, dispatch) {
     path,
     isSymbolicLink,
     linkTo,
+    displayName,
   } = item;
+
+  if (displayName !== name) {
+    return;
+  }
   if (isDrive) {
     dispatch({
       type: "open",

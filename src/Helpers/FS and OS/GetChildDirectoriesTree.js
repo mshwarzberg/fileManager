@@ -17,7 +17,8 @@ export function getTreeItem(location, item) {
   if (
     (item.name === "temp" ||
       item.name === "System Volume Information" ||
-      item.name.startsWith("$")) &&
+      item.name.startsWith("$") ||
+      item.name === "trash") &&
     location.length === 3
   ) {
     return "";

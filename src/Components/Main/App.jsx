@@ -16,11 +16,13 @@ import sortBy from "../../Helpers/SortBy";
 export const DirectoryContext = createContext();
 
 const fs = window.require("fs");
-const { execSync } = window.require("child_process");
-const getDimensions = window.require("get-media-dimensions");
 
 export default function App() {
-  const { state, dispatch } = DirectoryState();
+  const {
+    state,
+    state: { currentDirectory, drive, networkDrives },
+    dispatch,
+  } = DirectoryState();
   const { settings, setSettings } = UIandUXState();
 
   const [directoryItems, setDirectoryItems] = useState([]);
@@ -28,6 +30,7 @@ export default function App() {
   const [lastSelected, setLastSelected] = useState();
   const [renameItem, setRenameItem] = useState();
   const [visibleItems, setVisibleItems] = useState([]);
+  const [popup, setPopup] = useState({});
 
   useEffect(() => {
     console.clear();
@@ -35,27 +38,50 @@ export default function App() {
 
   useEffect(() => {
     async function updatePage() {
-      if (state.drive && state.currentDirectory) {
-        document.title = state.currentDirectory;
+      if (drive && currentDirectory) {
+        document.title = currentDirectory;
         let result = [];
         try {
-          result = fs
-            .readdirSync(state.currentDirectory, { withFileTypes: true })
-            .map((file) => {
-              return formatMetadata(
-                file,
-                state.currentDirectory,
-                state.drive,
-                state.networkDrives.includes(state.drive)
-              );
-            })
-            .filter((item) => {
-              return item.name && item;
-            });
+          if (currentDirectory === "Trash") {
+            setDirectoryItems(JSON.parse(localStorage.getItem("trash")) || []);
+            return;
+          } else {
+            result = fs
+              .readdirSync(currentDirectory, {
+                withFileTypes: true,
+              })
+              .map((file) => {
+                return formatMetadata(
+                  file,
+                  currentDirectory,
+                  drive,
+                  networkDrives.includes(drive)
+                );
+              })
+              .filter((item) => {
+                return item.name && item;
+              });
+          }
           setDirectoryItems(result);
           sortBy(setDirectoryItems, "Name");
         } catch (e) {
-          setDirectoryItems([{ err: e.toString() }]);
+          setPopup({
+            show: true,
+            body: <div id="body">{e.toString()}</div>,
+            ok: (
+              <button
+                onClick={() => {
+                  setPopup({});
+                }}
+              >
+                OK
+              </button>
+            ),
+          });
+          dispatch({
+            type: "back",
+            value: "error",
+          });
         }
       } else {
         const drives = await formatDriveOutput();
@@ -74,7 +100,17 @@ export default function App() {
     }
     updatePage();
     // eslint-disable-next-line
-  }, [state.currentDirectory]);
+  }, [currentDirectory, drive]);
+
+  useEffect(() => {
+    if (!currentDirectory?.startsWith(drive) || !drive) {
+      dispatch({
+        type: "drive",
+        value:
+          currentDirectory === "Trash" ? drive : currentDirectory?.slice(0, 3),
+      });
+    }
+  }, [currentDirectory]);
 
   const renderDirectoryItems = directoryItems.map((directoryItem) => {
     return (
@@ -89,7 +125,6 @@ export default function App() {
       />
     );
   });
-
   return (
     <DirectoryContext.Provider
       value={{
@@ -103,24 +138,44 @@ export default function App() {
         setRenameItem,
       }}
     >
-      <Navbar selectedItems={selectedItems} />
+      <Navbar selectedItems={selectedItems} setPopup={setPopup} />
       <DirectoryTree />
-      <Page setVisibleItems={setVisibleItems}>{renderDirectoryItems}</Page>
+      <Page setVisibleItems={setVisibleItems} selectedItems={selectedItems}>
+        {renderDirectoryItems}
+      </Page>
       <UIandUX
         setLastSelected={setLastSelected}
         lastSelected={lastSelected}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
+        popup={popup}
+        setPopup={setPopup}
       />
-      {/* <button
+      <button
         style={{ position: "fixed" }}
         onClick={() => {
-          localStorage.clear();
-          window.location.reload(true);
+          // dispatch({
+          //   type: "open",
+          //   value: "null",
+          // });
+          // // setSettings((prevSettings) => {
+          // // setPopup({
+          // //   show: true,
+          // //   body: (
+          // //     <h1>{prevSettings.singleClickToOpen ? "double" : "single"}</h1>
+          // //   ),
+          // //   ok: <button id="ok">ok</button>,
+          // //   cancel: <button id="cancel">cancel</button>,
+          // // });
+          // // return {
+          // //   ...prevSettings,
+          // //   singleClickToOpen: !prevSettings.singleClickToOpen,
+          // // };
+          // // });
         }}
       >
         Test Button
-      </button> */}
+      </button>
     </DirectoryContext.Provider>
   );
 }

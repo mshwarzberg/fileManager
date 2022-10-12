@@ -4,18 +4,42 @@ import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import { findInArray } from "../../Helpers/SearchArray";
 
 export default function Page({ selectedItems, setVisibleItems, children }) {
-  const { directoryItems, state, setDirectoryItems } =
-    useContext(DirectoryContext);
+  const {
+    directoryItems,
+    state: { currentDirectory },
+  } = useContext(DirectoryContext);
 
   useEffect(() => {
     const pageBlocks = document.getElementsByClassName("display-page-block");
-    for (const element of pageBlocks) {
-      if (findInArray(selectedItems, element, "element")) {
-        element.classList.add("selected");
-      } else {
-        element.classList.remove("selected");
+    function focusPage(e) {
+      for (const element of pageBlocks) {
+        if (findInArray(selectedItems, element, "element")) {
+          element.classList.add("selected");
+          element.classList.remove("alternate");
+        } else {
+          element.classList.remove("selected");
+          element.classList.remove("alternate");
+        }
       }
     }
+    focusPage();
+    function blurredPage() {
+      for (const element of pageBlocks) {
+        if (findInArray(selectedItems, element, "element")) {
+          element.classList.add("selected");
+          element.classList.add("alternate");
+        } else {
+          element.classList.remove("selected");
+          element.classList.remove("alternate");
+        }
+      }
+    }
+    window.addEventListener("blur", blurredPage);
+    window.addEventListener("focus", focusPage);
+    return () => {
+      window.removeEventListener("blur", blurredPage);
+      window.removeEventListener("focus", focusPage);
+    };
   }, [selectedItems]);
 
   function handleVisibleItems() {
@@ -35,6 +59,7 @@ export default function Page({ selectedItems, setVisibleItems, children }) {
       }
     }
   }
+
   useEffect(() => {
     handleVisibleItems();
   }, [directoryItems]);
@@ -48,18 +73,18 @@ export default function Page({ selectedItems, setVisibleItems, children }) {
       data-contextmenu={contextMenuOptions()}
       data-info={JSON.stringify({
         isDirectory: true,
-        path: state.currentDirectory,
+        path: currentDirectory,
       })}
-      data-destination={JSON.stringify({ destination: state.currentDirectory })}
+      data-destination={JSON.stringify({
+        destination: currentDirectory,
+      })}
     >
       <div id="select-multiple-box" />
-      {directoryItems[0]?.err ? (
-        <h1 id="does-not-exist-error">{directoryItems[0].err}</h1>
-      ) : (
-        children
-      )}
+      {children}
       {!directoryItems.length && (
-        <h1 id="empty-directory-header">Folder is empty</h1>
+        <h1 id="empty-directory-header">
+          {currentDirectory === "Trash" ? "Trash" : "Folder"} is empty
+        </h1>
       )}
     </div>
   );

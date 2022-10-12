@@ -1,23 +1,25 @@
 import { useReducer, useEffect } from "react";
 
 function reducer(state, action) {
+  const { drive, navigatedDirectories, navigatedIndex, currentDirectory } =
+    state;
   switch (action.type) {
     case "open": {
-      if (action.value === state.currentDirectory) {
+      if (action.value === currentDirectory) {
         return state;
       }
-      let newNavigatedDirectories = state.navigatedDirectories;
-      if (state.navigatedIndex + 1 < state.navigatedDirectories.length) {
-        newNavigatedDirectories = state.navigatedDirectories.slice(
+      let newNavigatedDirectories = navigatedDirectories;
+      if (navigatedIndex + 1 < navigatedDirectories.length) {
+        newNavigatedDirectories = navigatedDirectories.slice(
           0,
-          state.navigatedIndex + 1
+          navigatedIndex + 1
         );
       }
       newNavigatedDirectories = [...newNavigatedDirectories, action.value];
       return {
         ...state,
         currentDirectory: action.value,
-        navigatedIndex: state.navigatedIndex + 1,
+        navigatedIndex: navigatedIndex + 1,
         navigatedDirectories: newNavigatedDirectories,
       };
     }
@@ -25,31 +27,34 @@ function reducer(state, action) {
       return {
         ...state,
         currentDirectory: action.value,
-        navigatedDirectories: [...state.navigatedDirectories, action.value],
-        navigatedIndex: state.navigatedIndex + 1,
+        navigatedDirectories: [...navigatedDirectories, action.value],
+        navigatedIndex: navigatedIndex + 1,
         ...(action.value === "" && { drive: "" }),
       };
     case "back":
-      const navBackwards = state.navigatedDirectories[state.navigatedIndex - 1];
+      const navBackwards = navigatedDirectories[navigatedIndex - 1];
+      if (action.value) {
+        navigatedDirectories.pop();
+      }
       return {
         ...state,
         currentDirectory: navBackwards,
-        navigatedIndex: state.navigatedIndex - 1,
-        ...(!navBackwards.startsWith(state.drive) && {
+        navigatedIndex: navigatedIndex - 1,
+        ...(!navBackwards.startsWith(drive) && {
           drive: navBackwards.slice(0, 3),
         }),
       };
     case "forwards":
-      const navForwards = state.navigatedDirectories[state.navigatedIndex + 1];
-      let drive;
-      if (!navForwards.startsWith(state.drive)) {
-        drive = navForwards.slice(0, 3);
+      const navForwards = navigatedDirectories[navigatedIndex + 1];
+      let newDrive;
+      if (!navForwards.startsWith(newDrive)) {
+        newDrive = navForwards.slice(0, 3);
       }
       return {
         ...state,
         currentDirectory: navForwards,
-        navigatedIndex: state.navigatedIndex + 1,
-        drive: drive || state.drive,
+        navigatedIndex: navigatedIndex + 1,
+        drive: newDrive || drive,
       };
     case "updateDirectoryTree":
       return {
@@ -57,6 +62,12 @@ function reducer(state, action) {
         directoryTree: action.value,
       };
     case "drive":
+      if (action.value === "Tra") {
+        return {
+          ...state,
+          drive: "",
+        };
+      }
       return {
         ...state,
         drive: action.value,

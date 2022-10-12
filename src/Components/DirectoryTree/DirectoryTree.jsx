@@ -19,38 +19,16 @@ export default function DirectoryTree() {
         const directoryTreeDriveNames = state.directoryTree
           .map((item) => item.path || item[0]?.path)
           .filter((item) => item && item);
-
         const newDrives = [];
-        const removedDrives = [];
-
         for (const driveName of driveNames) {
           if (!directoryTreeDriveNames.includes(driveName)) {
             newDrives.push(drives[driveNames.indexOf(driveName)]);
           }
         }
-        for (const directoryTreeDriveName of directoryTreeDriveNames) {
-          if (
-            !driveNames.includes(directoryTreeDriveName) &&
-            directoryTreeDriveName.length === 3
-          ) {
-            removedDrives.push(directoryTreeDriveName);
-          }
-        }
         function getPath(item) {
           return item.path || item[0]?.path;
         }
-        const updatedDrives = state.directoryTree
-          .map((item) => {
-            if (removedDrives.includes(item.path || item[0]?.path)) {
-              return {};
-            }
-            return item;
-          })
-          .slice(7, Infinity)
-          .sort((a, b) => {
-            return getPath(a)?.length - getPath(b)?.length;
-          });
-
+        const updatedDrives = state.directoryTree.slice(7, Infinity);
         dispatch({
           type: "updateDirectoryTree",
           value: [
@@ -72,19 +50,23 @@ export default function DirectoryTree() {
           "Documents",
           "Desktop",
         ];
-
-        for (let directory of directories) {
+        for (const directory of directories) {
           defaultTree.unshift({
             name: directory,
             path: `C:/Users/${username}/${directory}/`,
             permission: true,
-            type: "default",
             isDirectory: true,
             collapsed: true,
           });
         }
+        defaultTree.unshift({
+          name: "Trash",
+          path: "Trash",
+          permission: true,
+          isDirectory: true,
+          collapsed: true,
+        });
       }
-
       dispatch({
         type: "updateDirectoryTree",
         value: [

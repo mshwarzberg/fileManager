@@ -10,9 +10,9 @@
   button {
     background-color: black;
     color: white;
-    border: 2px solid white;
     margin-left: 2px;
-    height: 2rem;
+    margin-top: 0.25rem;
+    height: 1.5rem;
     &:hover {
       color: black;
       background-color: #fff;
@@ -29,7 +29,7 @@
   }
   #navbar-navigation {
     margin-inline: 1rem;
-    width: 9rem;
+    width: 10rem;
     display: flex;
     flex-direction: row;
     button {

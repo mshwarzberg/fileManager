@@ -2,15 +2,25 @@ import React, { useContext, useEffect, useState } from "react";
 import { DirectoryContext } from "../Main/App";
 import { UIContext } from "../UI and UX/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
-import checkDestinationDuplicates from "../../Helpers/FS and OS/CheckDestinationDuplicates";
 import Sort from "./Sort";
-
-const { exec, execFileSync } = window.require("child_process");
+import View from "./View";
+import clickOnItem from "../../Helpers/ClickOnItem";
+import randomID from "../../Helpers/RandomID";
+import {
+  handleMoveToTrash,
+  restoreFromTrash,
+} from "../../Helpers/FS and OS/HandleTrash";
+import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer";
+const { exec } = window.require("child_process");
 
 export default function ContextMenuItem({
   contextName,
   clearContextMenu,
   contextMenu,
+  contextMenu: {
+    info,
+    info: { isFile, path },
+  },
   selectedItems,
 }) {
   useEffect(() => {
@@ -22,31 +32,46 @@ export default function ContextMenuItem({
     };
   }, []);
 
-  const { state, setRenameItem } = useContext(DirectoryContext);
-  const { setClipboardData, clipboardData } = useContext(UIContext);
-
-  const { isFile, path } = contextMenu.info;
+  const { state, setRenameItem, dispatch, setDirectoryItems } =
+    useContext(DirectoryContext);
+  const { setClipboard, clipboard, setPopup } = useContext(UIContext);
 
   const [showSort, setShowSort] = useState();
+  const [showView, setShowView] = useState();
 
-  useEffect(() => {}, [showSort]);
+  if (state.currentDirectory === "Trash") {
+    if (contextName === "Delete") {
+      contextName = "Delete Permanently";
+    }
+    if (contextName === "Rename") {
+      contextName = "Restore";
+    }
+    if (contextName === "Open") {
+      contextName = "Empty Trash";
+    }
+  }
+
   return (
-    <button
+    <div
       className="context-menu-button"
       onMouseEnter={() => {
         if (contextName === "Sort By") {
-          setTimeout(() => {
-            setShowSort(true);
-          }, 0);
+          setShowSort(true);
+        } else if (contextName === "View") {
+          setShowView(true);
         }
       }}
       onMouseLeave={() => {
-        setShowSort();
+        if (contextName === "Sort By") {
+          setShowSort();
+        } else if (contextName === "View") {
+          setShowView();
+        }
       }}
       onClick={() => {
         switch (contextName) {
           case "Open":
-            exec(`"${path}"`);
+            clickOnItem(info, dispatch);
             break;
           case "Show In Explorer":
             let CMDpath = path.replaceAll("/", "\\");
@@ -54,36 +79,39 @@ export default function ContextMenuItem({
             break;
           case "Cut":
           case "Copy":
-            setClipboardData({
+            setClipboard({
+              source: state.currentDirectory,
               mode: contextName.toLowerCase(),
               info: selectedItems.map((itemSelected) => itemSelected.info),
             });
             break;
           case "Paste":
-            if (typeof clipboardData.info === "object") {
-              if (clipboardData.info[0].location === contextMenu.destination) {
-                return;
-              }
-              console.log(
-                checkDestinationDuplicates(
-                  clipboardData.info
-                    .map((item) => item.name)
-                    .filter((item) => item && item),
-                  contextMenu.destination
-                )
-              );
-            }
+            handleTransfer(contextMenu, clipboard, setPopup, setClipboard);
             break;
           case "Rename":
             setRenameItem(path);
             break;
           case "Delete":
             try {
-              execFileSync("recycle.exe", [
-                ...selectedItems
-                  .map((itemSelected) => itemSelected.info.path)
-                  .filter((item) => item && item),
-              ]);
+              handleMoveToTrash(
+                selectedItems.map((item) => {
+                  const { info } = item;
+                  const id = "$" + randomID(10);
+                  return {
+                    ...info,
+                    name: id + info.fileextension,
+                    location: state.drive + "trash/",
+                    path: state.drive + "trash/" + id + info.fileextension,
+                    current: state.drive + "trash/" + id + info.fileextension,
+                    original: info.path,
+                    ...(info.size < 300000 && {
+                      thumbPath:
+                        state.drive + "trash/" + id + info.fileextension,
+                    }),
+                  };
+                }),
+                state.drive
+              );
             } catch (e) {
               console.log(e);
             }
@@ -94,14 +122,28 @@ export default function ContextMenuItem({
           case "Refresh":
             window.location.reload(true);
             break;
+          case "Restore":
+            setDirectoryItems(
+              restoreFromTrash(
+                selectedItems.map((selectedItem) => selectedItem.info)
+              )
+            );
+            break;
+          case "Delete Permanently":
+            break;
+          case "Empty Trash":
+            break;
           default:
             return;
         }
       }}
     >
       {contextName}
-      {contextName === "Sort By" && <p>→</p>}
+      {(contextName === "Sort By" || contextName === "View") && (
+        <p className="sub-menu-arrow">→</p>
+      )}
       {showSort && <Sort contextMenu={contextMenu} />}
-    </button>
+      {showView && <View contextMenu={contextMenu} />}
+    </div>
   );
 }

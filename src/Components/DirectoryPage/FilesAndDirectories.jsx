@@ -9,14 +9,13 @@ import CustomIcon from "./Icons/CustomIcon";
 import folderImage from "../../Images/folder.png";
 import clickOnItem from "../../Helpers/ClickOnItem";
 import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpegFunctions";
-import checkFileType from "../../Helpers/FS and OS/CheckFileType";
 
 const exifr = window.require("exifr");
 const fs = window.require("fs");
 const sharp = window.require("sharp");
 const { execSync } = window.require("child_process");
 
-let clickOnNameTimeout;
+let clickOnNameTimeout, mouseDownTimeout;
 export default function FilesAndDirectories({
   directoryItem,
   visibleItems,
@@ -26,7 +25,7 @@ export default function FilesAndDirectories({
   setLastSelected,
 }) {
   const {
-    location,
+    path,
     name,
     isDirectory,
     isFile,
@@ -34,33 +33,46 @@ export default function FilesAndDirectories({
     fileextension,
     thumbPath,
     isMedia,
+    isSymbolicLink,
+    filetype,
   } = directoryItem;
 
-  const { dispatch, state, renameItem, setRenameItem } =
-    useContext(DirectoryContext);
+  const {
+    dispatch,
+    state: { currentDirectory, drive },
+    renameItem,
+    setRenameItem,
+    settings: { singleClickToOpen, showThumbnails, iconSize },
+  } = useContext(DirectoryContext);
 
   const [thumbnail, setThumbnail] = useState();
   const [metadata, setMetadata] = useState({});
 
   useEffect(() => {
+    let timeout;
     if (isMedia) {
-      fs.mkdirSync(
-        `${state.drive}temp/${state.currentDirectory.slice(
-          state.drive.length,
-          state.currentDirectory.length
-        )}`,
-        { recursive: true }
-      );
+      if (currentDirectory !== "Trash") {
+        fs.mkdirSync(
+          `${drive}temp/${currentDirectory.slice(
+            drive.length,
+            currentDirectory.length
+          )}`,
+          { recursive: true }
+        );
+      }
       function createThumbnails() {
-        if (checkFileType(name)[0] === "image") {
-          sharp(location + name)
+        if (filetype === "image") {
+          sharp(path)
             .resize({ width: 400 })
             .toFile(thumbPath)
             .then(() => {
               setThumbnail(thumbPath);
+            })
+            .catch((e) => {
+              console.log(e);
             });
         } else {
-          ffmpegThumbs(location + name, thumbPath).then(() => {
+          ffmpegThumbs(path, thumbPath).then(() => {
             setThumbnail(thumbPath);
           });
         }
@@ -69,29 +81,35 @@ export default function FilesAndDirectories({
         fs.accessSync(thumbPath);
         setThumbnail(thumbPath);
       } catch {
-        createThumbnails();
+        if (currentDirectory === "Trash") {
+          setThumbnail(drive + "trash/" + name);
+          return;
+        }
+        timeout = setTimeout(() => {
+          createThumbnails();
+        }, 200);
       }
     }
-  }, []);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [currentDirectory]);
 
   return (
     <button
       className={`display-page-block ${
-        selectedItems
-          .map((item) => {
-            return item.info.name;
-          })
-          .includes(name)
-          ? "selected"
-          : ""
-      }`}
-      id={location + name}
+        singleClickToOpen ? "single-click" : ""
+      } ${iconSize}`}
+      id={path}
       onMouseEnter={() => {
-        if (!metadata.width && isMedia) {
-          const probeCommand = `ffprobe.exe -show_streams -print_format json "${
-            location + name
-          }"`;
-          let output = execSync(probeCommand).toString();
+        if (isMedia) {
+          const probeCommand = `ffprobe.exe -show_streams -print_format json "${path}"`;
+          let output;
+          try {
+            output = execSync(probeCommand).toString();
+          } catch {
+            return;
+          }
           output = JSON.parse(output || "{}");
           const dimensions = output["streams"][0];
           setMetadata({
@@ -99,19 +117,30 @@ export default function FilesAndDirectories({
             height: dimensions.height,
             duration: dimensions.duration > 1 && dimensions.duration,
           });
-          if (fileextension === "jpg" || fileextension === "png") {
-            exifr.parse(location + name, true).then((data) => {
-              if (!data) {
-                return;
-              }
-              const description =
-                data.Comment || data.description?.value || data.description;
-              setMetadata((prevData) => ({
-                ...prevData,
-                description: description,
-              }));
-            });
+          if (filetype === "image") {
+            exifr
+              .parse(path, true)
+              .then((data) => {
+                if (!data) {
+                  return;
+                }
+                const description =
+                  data.Comment || data.description?.value || data.description;
+                setMetadata((prevData) => ({
+                  ...prevData,
+                  description: description,
+                }));
+              })
+              .catch(() => {});
           }
+        }
+      }}
+      onMouseMove={() => {
+        clearTimeout(mouseDownTimeout);
+      }}
+      onClick={() => {
+        if (singleClickToOpen) {
+          clickOnItem(directoryItem, dispatch);
         }
       }}
       onDoubleClick={(e) => {
@@ -134,41 +163,39 @@ export default function FilesAndDirectories({
         if (e.button === 0 || e.button === 2) {
           if (!e.shiftKey && !e.ctrlKey) {
             clickOnNameTimeout = setTimeout(() => {
-              setRenameItem(location + name);
+              setRenameItem(path);
             }, 1000);
           }
-          handleItemsSelected(
-            e,
-            selectedItems,
-            setSelectedItems,
-            lastSelected,
-            setLastSelected
-          );
-          e.stopPropagation();
+          mouseDownTimeout = setTimeout(() => {
+            handleItemsSelected(
+              e,
+              selectedItems,
+              setSelectedItems,
+              lastSelected,
+              setLastSelected
+            );
+          }, 100);
         }
       }}
       data-contextmenu={permission && contextMenuOptions(directoryItem)}
-      data-info={
-        permission &&
-        JSON.stringify({ ...directoryItem, path: location + name })
-      }
+      data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
       data-title={formatTitle(directoryItem, metadata)}
-      data-destination={
-        isDirectory
-          ? JSON.stringify({ destination: state.currentDirectory + name + "/" })
-          : "{}"
-      }
+      data-destination={JSON.stringify({
+        destination: path + "/",
+      })}
     >
-      {visibleItems.includes(document.getElementById(location + name)) && (
+      {visibleItems.includes(document.getElementById(path)) && (
         <>
-          {thumbnail ? (
+          {thumbnail && showThumbnails && isMedia ? (
             <div className="media-container">
               <img src={thumbnail} className="media-thumbnail" />
             </div>
           ) : (
-            isFile && <CustomIcon fileextension={fileextension} />
+            isFile && (
+              <CustomIcon fileextension={fileextension.split(".")[1] || ""} />
+            )
           )}
-          {isDirectory && (
+          {(isDirectory || isSymbolicLink) && (
             <img src={folderImage} alt="" className="block-icon" />
           )}
           <ItemName

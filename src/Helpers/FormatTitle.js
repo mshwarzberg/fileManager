@@ -9,7 +9,8 @@ export default function formatTitle(item, media = {}) {
     isDrive,
     availableSpace,
     totalSize,
-    isDirectory,
+    displayName,
+    displayLocation,
     isMedia,
     path,
   } = item;
@@ -17,7 +18,7 @@ export default function formatTitle(item, media = {}) {
   const { headline, duration, description, width, height } = media;
 
   if (isMedia) {
-    return `Name: ${name}\nLocation: ${location || path}\nSize: ${
+    return `Name: ${displayName}\nLocation: ${displayLocation || path}\nSize: ${
       formatSize(size) || ""
     }\nDimensions: ${width + "x" + height}${
       duration ? `\nDuration: ${formatVideoTime(duration)}` : ""
@@ -31,8 +32,8 @@ export default function formatTitle(item, media = {}) {
       availableSpace
     )}\nDrive Size: ${formatSize(totalSize)}`;
   } else {
-    return `Name: ${name}\nLocation: ${
-      location || path?.slice(0, path.length - name.length - 1)
+    return `Name: ${displayName}\nLocation: ${
+      displayLocation || path?.slice(0, path.length - name.length - 1)
     }${size ? `\nSize: ${formatSize(size)}` : ""}`;
   }
 }

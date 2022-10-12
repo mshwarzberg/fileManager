@@ -1,33 +1,37 @@
 #context-menu {
   position: fixed;
-  background-color: #777;
   width: 10rem;
   z-index: 1;
+  div,
   button {
-    width: 100%;
     height: 1.5rem;
     background-color: #777;
     color: white;
-    border: 1px solid white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: "bebas neue";
     &:hover {
       background-color: #999;
       color: black;
-      border: 1.5px solid black;
     }
   }
   .context-menu-button {
     width: 100%;
     height: 1.5rem;
-    p {
+    position: relative;
+    border: 1.1px solid white;
+    .sub-menu-arrow {
       position: absolute;
       right: 5px;
-      top: 0.85rem;
+      top: -0.9rem;
     }
     .sort-by-sub-menu {
       position: absolute;
-      right: -10rem;
       width: 10rem;
-      top: 1.5rem;
+      top: 0;
+      left: calc(10rem + 1px);
       &.position-left {
         left: -10rem;
       }
@@ -36,7 +40,6 @@
         height: 0.5rem;
         border-radius: 50%;
         background-color: #000;
-        position: absolute;
         margin-top: 0.25rem;
       }
     }

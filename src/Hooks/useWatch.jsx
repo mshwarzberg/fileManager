@@ -58,7 +58,7 @@ export default function useWatch() {
               setDirectoryItems((prevItems) =>
                 prevItems
                   .map((prevItem) => {
-                    if (prevItem.location + prevItem.name === name) {
+                    if (prevItem.path === name) {
                       return {};
                     }
                     return prevItem;

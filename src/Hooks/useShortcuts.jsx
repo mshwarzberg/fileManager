@@ -2,12 +2,13 @@ import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
 import { DirectoryContext } from "../Components/Main/App";
 import clickOnItem from "../Helpers/ClickOnItem";
+import { handleMoveToTrash } from "../Helpers/FS and OS/HandleTrash";
+import randomID from "../Helpers/RandomID";
 
-const { execFileSync } = window.require("child_process");
 export default function useShortcuts(
   selectedItems,
-  setClipboardData,
-  clipboardData,
+  setClipboard,
+  clipboard,
   setSelectedItems
 ) {
   const { state, dispatch, directoryItems, setRenameItem } =
@@ -46,7 +47,8 @@ export default function useShortcuts(
         switch (e.key) {
           case "x":
           case "c":
-            setClipboardData({
+            setClipboard({
+              source: state.currentDirectory,
               mode: e.key === "c" ? "copy" : "cut",
               info: selectedItems.map((itemSelected) => {
                 return itemSelected.info;
@@ -63,6 +65,10 @@ export default function useShortcuts(
                 info: JSON.parse(block.dataset.info || "{}"),
               }))
             );
+          case "v":
+            break;
+          case "z":
+            break;
           default:
             return;
         }
@@ -75,24 +81,31 @@ export default function useShortcuts(
           }
           break;
         case "Delete":
-          try {
-            execFileSync("recycle.exe", [
-              ...selectedItems
-                .map((itemSelected) => itemSelected.info.path)
-                .filter((item) => item && item),
-            ]);
-          } catch (e) {
-            console.log(e);
-          }
+          handleMoveToTrash(
+            selectedItems.map((item) => {
+              const { info } = item;
+              const id = "$" + randomID(10);
+              return {
+                ...info,
+                name: id + info.fileextension,
+                location: state.drive + "trash/",
+                path: state.drive + "trash/" + id + info.fileextension,
+                current: state.drive + "trash/" + id + info.fileextension,
+                original: info.path,
+                ...(info.size < 300000 && {
+                  thumbPath: state.drive + "trash/" + id + info.fileextension,
+                }),
+              };
+            }),
+            state.drive
+          );
           break;
         case "ArrowRight":
         case "ArrowLeft":
           if (!selectedItems[0]) {
             return setSelectedItems([
               {
-                element: document.getElementById(
-                  directoryItems[0].location + directoryItems[0].name
-                ),
+                element: document.getElementById(directoryItems[0].path),
                 info: directoryItems[0],
               },
             ]);
@@ -134,5 +147,5 @@ export default function useShortcuts(
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedItems, clipboardData]);
+  }, [selectedItems, clipboard]);
 }

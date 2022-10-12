@@ -1,14 +1,19 @@
 import React, { useEffect, useContext } from "react";
 import { UIContext } from "../UI and UX/UIandUX";
 import ContextMenuItem from "./ContextMenuItem";
-import { findInArray } from "../../Helpers/SearchArray";
 import randomID from "../../Helpers/RandomID";
 
 export default function ContextMenu({ selectedItems }) {
-  const { contextMenu, setContextMenu, clipboardData } = useContext(UIContext);
+  const { contextMenu, setContextMenu, clipboard } = useContext(UIContext);
 
   useEffect(() => {
-    function handleBlur() {}
+    const page = document.getElementById("display-page");
+    const directoryTree = document.getElementById("directory-tree");
+    function preventScroll(e) {
+      if (contextMenu.items) {
+        e.preventDefault();
+      }
+    }
     function handleContextMenu(e) {
       if (e.target.dataset.contextmenu) {
         const info = JSON.parse(
@@ -25,15 +30,15 @@ export default function ContextMenu({ selectedItems }) {
           });
         }, 0);
         e.stopImmediatePropagation();
-      } else if (e.target.className !== "context-menu-item") {
       }
     }
-
+    directoryTree?.addEventListener("wheel", preventScroll);
+    page.addEventListener("wheel", preventScroll);
     document.addEventListener("contextmenu", handleContextMenu);
-    window.addEventListener("blur", handleBlur);
     return () => {
+      page.removeEventListener("wheel", preventScroll);
+      directoryTree?.removeEventListener("wheel", preventScroll);
       document.removeEventListener("contextmenu", handleContextMenu);
-      window.removeEventListener("blur", handleBlur);
     };
     // eslint-disable-next-line
   }, [contextMenu]);
@@ -67,7 +72,7 @@ export default function ContextMenu({ selectedItems }) {
   }, [contextMenu.items]);
 
   const renderContextMenuItems = contextMenu.items?.map((item) => {
-    if (item === "Paste" && !clipboardData.info) {
+    if (item === "Paste" && !clipboard.info) {
       return <React.Fragment key={item} />;
     }
     return (

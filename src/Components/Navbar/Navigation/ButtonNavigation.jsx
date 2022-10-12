@@ -8,7 +8,7 @@ export default function ButtonNavigation() {
   const { state, dispatch } = useContext(DirectoryContext);
 
   function handleMouse(e) {
-    if (e.type === "mouseenter") {
+    if (e.type === "mousemove") {
       e.target.firstChild.src = arrowBlack;
     } else {
       e.target.firstChild.src = arrowWhite;
@@ -17,7 +17,7 @@ export default function ButtonNavigation() {
   return (
     <div id="navbar-navigation">
       <button
-        onMouseEnter={handleMouse}
+        onMouseMove={handleMouse}
         onMouseLeave={handleMouse}
         onClick={() => {
           let uppedDirectory = "";
@@ -35,7 +35,7 @@ export default function ButtonNavigation() {
         <img src={arrowWhite} alt="up" />
       </button>
       <button
-        onMouseEnter={handleMouse}
+        onMouseMove={handleMouse}
         onMouseLeave={handleMouse}
         id="navigate-back"
         onClick={() => {
@@ -46,7 +46,7 @@ export default function ButtonNavigation() {
         <img src={arrowWhite} alt="back" id="left-arrow" />
       </button>
       <button
-        onMouseEnter={handleMouse}
+        onMouseMove={handleMouse}
         onMouseLeave={handleMouse}
         id="navigate-forwards"
         onClick={() => {

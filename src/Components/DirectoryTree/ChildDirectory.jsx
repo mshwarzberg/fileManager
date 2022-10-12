@@ -17,6 +17,9 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
 
   useEffect(() => {
     try {
+      if (name === "Trash") {
+        return;
+      }
       fs.readdirSync(path);
     } catch {
       handleDirectoryTree(state.directoryTree, path);
@@ -31,9 +34,6 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       return;
     }
     isPathClickedAlready = path;
-    if (!path.startsWith(state.drive) || !state.drive) {
-      dispatch({ type: "drive", value: path.slice(0, 3) });
-    }
     if (toOpenDirectory) {
       dispatch({
         type: "open",
@@ -73,7 +73,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
         }
         clickDirectory(true, true, true);
       }}
-      onMouseEnter={(e) => {
+      onMouseMove={(e) => {
         handleMouse(e, setCaretColor, isDirectoryCurrent);
       }}
       onMouseLeave={(e) => {
@@ -82,6 +82,9 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       data-contextmenu={contextMenuOptions(childDir)}
       data-info={permission && JSON.stringify(childDir)}
       data-title={formatTitle(childDir)}
+      data-destination={JSON.stringify({
+        destination: path,
+      })}
     >
       {containsDirectories && (
         <div
@@ -93,7 +96,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
             clickDirectory(false, true);
             e.stopPropagation();
           }}
-          onMouseEnter={(e) => {
+          onMouseMove={(e) => {
             handleMouse(e, setCaretColor, isDirectoryCurrent);
           }}
           onMouseLeave={(e) => {

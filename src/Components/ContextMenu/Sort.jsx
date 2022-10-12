@@ -15,6 +15,7 @@ export default function Sort({ contextMenu }) {
       {sortOptions.map((method) => {
         return (
           <button
+            className="context-menu-button"
             key={method}
             onClick={() => {
               sortBy(
@@ -31,6 +32,7 @@ export default function Sort({ contextMenu }) {
       })}
       <div id="line-break" />
       <button
+        className="context-menu-button"
         onClick={() => {
           sessionStorage.setItem("ascending", true);
           sortBy(
@@ -43,6 +45,7 @@ export default function Sort({ contextMenu }) {
         {sessionStorage.getItem("ascending") && <div id="dot" />} Ascending
       </button>
       <button
+        className="context-menu-button"
         onClick={() => {
           sessionStorage.removeItem("ascending");
           sortBy(

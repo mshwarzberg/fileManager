@@ -7,7 +7,7 @@ export function handleMouse(e, setCaretColor, isDirectoryCurrent) {
   const isRelatedDirectoryButton = [
     ...(e.relatedTarget?.classList || []),
   ].includes("child-directory");
-  if (e.type === "mouseenter") {
+  if (e.type === "mousemove") {
     setCaretColor(rightCaretImageBlack);
   } else if (!isRelatedDirectoryButton && !isDirectoryCurrent) {
     setCaretColor(rightCaretImageWhite);
