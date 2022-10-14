@@ -24,9 +24,10 @@ function checkIfFileOrDir(file) {
   return item;
 }
 
-export default function formatMetadata(file, directory, drive, isNetworkDrive) {
+export default function formatMetadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
   const { name } = file;
+
   let fileextension = file.isFile()
     ? path.extname(directory + name).toLowerCase()
     : "";
@@ -87,11 +88,9 @@ export default function formatMetadata(file, directory, drive, isNetworkDrive) {
     created: dateCreated || 0,
     filetype: checkFileType(fileextension),
     isMedia: isMedia,
+    prefix: name.slice(0, name.length - fileextension.length),
     ...(symLink && { linkTo: symLink }),
-    ...(thumbPath &&
-      !isNetworkDrive && {
-        thumbPath: thumbPath,
-      }),
+    ...(thumbPath && { thumbPath: thumbPath }),
   };
 
   return filtered;

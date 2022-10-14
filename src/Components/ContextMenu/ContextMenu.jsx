@@ -1,5 +1,5 @@
-import React, { useEffect, useContext } from "react";
-import { UIContext } from "../UI and UX/UIandUX";
+import { useEffect, useContext, Fragment } from "react";
+import { UIContext } from "../Main/UIandUX";
 import ContextMenuItem from "./ContextMenuItem";
 import randomID from "../../Helpers/RandomID";
 
@@ -73,7 +73,7 @@ export default function ContextMenu({ selectedItems }) {
 
   const renderContextMenuItems = contextMenu.items?.map((item) => {
     if (item === "Paste" && !clipboard.info) {
-      return <React.Fragment key={item} />;
+      return <Fragment key={item} />;
     }
     return (
       <ContextMenuItem

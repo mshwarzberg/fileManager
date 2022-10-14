@@ -8,6 +8,8 @@ export function colorizeIcons(fileextension) {
       return "blue";
     case "mkv":
       return "#000022";
+    case "webm":
+      return "skyblue";
     case "json":
       return "#878372";
     case "txt":
@@ -59,6 +61,7 @@ export function colorIconText(color) {
     case "pink":
     case "white":
     case "gold":
+    case "skyblue":
       return "black";
     default:
       return "white";

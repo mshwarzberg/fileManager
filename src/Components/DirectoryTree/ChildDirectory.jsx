@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { DirectoryContext } from "../Main/App";
 import {
   addToDirectoryTree,
@@ -7,7 +7,7 @@ import {
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import formatTitle from "../../Helpers/FormatTitle";
 import getChildDirectoriesTree from "../../Helpers/FS and OS/GetChildDirectoriesTree";
-import useCaretColor, { handleMouse } from "./useCaretColor";
+import useCaretColor, { handleMouse } from "../../Hooks/useCaretColor";
 
 const fs = window.require("fs");
 

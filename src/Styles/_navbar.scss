@@ -13,6 +13,8 @@
     margin-left: 2px;
     margin-top: 0.25rem;
     height: 1.5rem;
+    outline: none;
+    border: none;
     &:hover {
       color: black;
       background-color: #fff;
@@ -51,26 +53,6 @@
       }
     }
   }
-  #current-directory-header {
-    color: white;
-    height: 50%;
-    width: 100%;
-    text-align: left;
-    top: -5%;
-    position: relative;
-    font-size: 1rem;
-    padding-left: 0.2rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    font-family: "Mukta";
-  }
-  #directory-items-count {
-    position: absolute;
-    right: 0.5rem;
-    top: -25%;
-    font-size: 1rem;
-    color: white;
-    font-family: "mukta";
+  #current-directory {
   }
 }

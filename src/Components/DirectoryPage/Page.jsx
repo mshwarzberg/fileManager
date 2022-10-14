@@ -1,9 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DirectoryContext } from "../Main/App";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import { findInArray } from "../../Helpers/SearchArray";
+import CornerInfo from "./CornerInfo";
 
-export default function Page({ selectedItems, setVisibleItems, children }) {
+export default function Page({
+  selectedItems,
+  setVisibleItems,
+  clipboard,
+  children,
+}) {
   const {
     directoryItems,
     state: { currentDirectory },
@@ -86,6 +92,11 @@ export default function Page({ selectedItems, setVisibleItems, children }) {
           {currentDirectory === "Trash" ? "Trash" : "Folder"} is empty
         </h1>
       )}
+      <CornerInfo
+        clipboard={clipboard}
+        selectedItems={selectedItems}
+        directoryItems={directoryItems}
+      />
     </div>
   );
 }

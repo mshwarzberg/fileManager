@@ -4,12 +4,15 @@ import { DirectoryContext } from "../Components/Main/App";
 import clickOnItem from "../Helpers/ClickOnItem";
 import { handleMoveToTrash } from "../Helpers/FS and OS/HandleTrash";
 import randomID from "../Helpers/RandomID";
+import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 
 export default function useShortcuts(
   selectedItems,
   setClipboard,
   clipboard,
-  setSelectedItems
+  setSelectedItems,
+  setPopup,
+  popup
 ) {
   const { state, dispatch, directoryItems, setRenameItem } =
     useContext(DirectoryContext);
@@ -33,6 +36,7 @@ export default function useShortcuts(
       if (e.repeat && !e.key.includes("Arrow")) {
         return;
       }
+
       if (e.ctrlKey && e.shiftKey) {
         switch (e.key) {
           case "N":
@@ -65,7 +69,14 @@ export default function useShortcuts(
                 info: JSON.parse(block.dataset.info || "{}"),
               }))
             );
+            break;
           case "v":
+            handleTransfer(
+              state.currentDirectory,
+              setPopup,
+              clipboard,
+              setClipboard
+            );
             break;
           case "z":
             break;
@@ -139,6 +150,9 @@ export default function useShortcuts(
             clickOnItem(item.info, dispatch);
           });
           break;
+        case "Escape":
+          setPopup({});
+          break;
         default:
           return;
       }
@@ -147,5 +161,5 @@ export default function useShortcuts(
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedItems, clipboard]);
+  }, [selectedItems, clipboard, popup]);
 }

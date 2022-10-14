@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { DirectoryContext } from "../Main/App";
 import ChildDirectory from "./ChildDirectory";
 import ParentDirectory from "./ParentDirectory";

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import rightCaretImageWhite from "../../Images/right-caret-white.png";
-import rightCaretImageBlack from "../../Images/right-caret-black.png";
+import rightCaretImageWhite from "../Images/right-caret-white.png";
+import rightCaretImageBlack from "../Images/right-caret-black.png";
 
 export function handleMouse(e, setCaretColor, isDirectoryCurrent) {
   const isRelatedDirectoryButton = [

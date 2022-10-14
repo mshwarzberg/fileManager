@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { DirectoryContext } from "../Main/App";
 import handleItemsSelected from "../../Helpers/HandleItemsSelected";
 import ItemName from "./Icons/ItemName";
@@ -8,12 +8,11 @@ import CustomIcon from "./Icons/CustomIcon";
 
 import folderImage from "../../Images/folder.png";
 import clickOnItem from "../../Helpers/ClickOnItem";
-import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpegFunctions";
+import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpeg";
+import FFprobe from "../../Helpers/FS and OS/FFprobe";
 
-const exifr = window.require("exifr");
 const fs = window.require("fs");
 const sharp = window.require("sharp");
-const { execSync } = window.require("child_process");
 
 let clickOnNameTimeout, mouseDownTimeout;
 export default function FilesAndDirectories({
@@ -103,36 +102,7 @@ export default function FilesAndDirectories({
       id={path}
       onMouseEnter={() => {
         if (isMedia) {
-          const probeCommand = `ffprobe.exe -show_streams -print_format json "${path}"`;
-          let output;
-          try {
-            output = execSync(probeCommand).toString();
-          } catch {
-            return;
-          }
-          output = JSON.parse(output || "{}");
-          const dimensions = output["streams"][0];
-          setMetadata({
-            width: dimensions.width,
-            height: dimensions.height,
-            duration: dimensions.duration > 1 && dimensions.duration,
-          });
-          if (filetype === "image") {
-            exifr
-              .parse(path, true)
-              .then((data) => {
-                if (!data) {
-                  return;
-                }
-                const description =
-                  data.Comment || data.description?.value || data.description;
-                setMetadata((prevData) => ({
-                  ...prevData,
-                  description: description,
-                }));
-              })
-              .catch(() => {});
-          }
+          FFprobe(path, filetype, setMetadata);
         }
       }}
       onMouseMove={() => {

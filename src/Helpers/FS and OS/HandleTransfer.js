@@ -1,5 +1,42 @@
+import CompareFiles from "../../Components/Miscellaneous/CompareFiles";
+
 const fs = window.require("fs");
 const { execSync } = window.require("child_process");
+
+export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
+  const { source, mode, info } = clipboard;
+
+  function transfer(sourcePath, name, destination, isFile) {
+    let command = "";
+    // use location for files and path for everything else
+    if (!isFile) {
+      command = `robocopy "${sourcePath}" "${destination}/${name}" ${
+        mode === "copy" ? "" : "/move"
+      }`;
+    } else {
+      command = `robocopy "${sourcePath}" "${destination}" "${name}" ${
+        mode === "copy" ? "" : "/mov"
+      }`;
+    }
+
+    try {
+      execSync(command);
+    } catch (error) {}
+  }
+
+  if (source === destination) {
+    if (mode === "cut") {
+      setClipboard({});
+      return;
+    }
+    for (const { path, fileextension, isFile, location, prefix } of info) {
+    }
+  } else {
+    for (const { path, location, isFile, name } of info) {
+      transfer(isFile ? location : path, name, destination, isFile);
+    }
+  }
+}
 
 function checkForDuplicates(directory, itemNames) {
   const duplicates = [];
@@ -11,11 +48,13 @@ function checkForDuplicates(directory, itemNames) {
   return duplicates;
 }
 
-function copyItems(source, destination, isDirectory) {
+function copyItems(source, destination, isFile) {
   const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
-  if (!isDirectory) {
+  if (isFile) {
     const copy = `copy ${formatName}`;
-    execSync(copy);
+    try {
+      execSync(copy);
+    } catch (error) {}
   } else {
     execSync(`xcopy ${formatName}\\ /s /h /e`);
   }
@@ -24,75 +63,4 @@ function copyItems(source, destination, isDirectory) {
 function moveItems(source, destination) {
   const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
   execSync(`move ${formatName}`);
-}
-
-function transfer(info, mode, destination, setClipboard) {
-  for (const { path, name, isDirectory } of info) {
-    if (mode === "cut") {
-      moveItems(path, destination + name);
-      setClipboard({});
-    } else {
-      copyItems(path, destination + name, isDirectory);
-    }
-  }
-}
-
-export function handleTransfer(contextMenu, clipboard, setPopup, setClipboard) {
-  const { items, destination } = contextMenu;
-  const { source, mode, copy, info } = clipboard;
-
-  if (source === destination) {
-    if (mode === "cut") {
-      setClipboard({});
-      return;
-    }
-    for (const { path, fileextension, isDirectory } of info) {
-      const newName =
-        path.slice(0, path.length - fileextension.length) +
-        " - Copy" +
-        fileextension;
-      copyItems(path, newName, isDirectory);
-    }
-    return;
-  }
-
-  const duplicates = checkForDuplicates(
-    destination,
-    info.map(({ name }) => {
-      return name;
-    })
-  );
-
-  if (duplicates[0]) {
-    setPopup({
-      show: true,
-      body: (
-        <div id="body" data-title={JSON.stringify(duplicates)}>
-          There are {duplicates.length} duplicate items in the destination
-        </div>
-      ),
-      ok: (
-        <button
-          onClick={() => {
-            transfer(info, mode, destination, setClipboard);
-            setPopup({});
-          }}
-        >
-          Replace All
-        </button>
-      ),
-      cancel: (
-        <button
-          onClick={() => {
-            setPopup({});
-          }}
-        >
-          Cancel
-        </button>
-      ),
-      thirdButton: <button>Compare Items</button>,
-    });
-  } else {
-    transfer(info, mode, destination, setClipboard);
-  }
 }

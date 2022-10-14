@@ -4,9 +4,9 @@
   flex-wrap: wrap;
   position: relative;
   height: calc(100vh - 23.5rem);
-  top: 2rem;
+  top: 2.7rem;
   align-content: flex-start;
-  padding: 1.5rem 1rem 20rem 1rem;
+  padding: 0.2rem 0.2rem 22rem 0.2rem;
   overflow-y: auto;
   overflow-x: hidden;
   flex-grow: 1;
@@ -19,9 +19,9 @@
     pointer-events: none;
   }
   .display-page-block {
-    width: 10rem;
+    width: 12rem;
     height: min-content;
-    min-height: 10rem;
+    min-height: 12rem;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -56,7 +56,7 @@
       min-height: min-content;
       .media-thumbnail {
         max-width: 100%;
-        max-height: 9rem;
+        max-height: 10.8rem;
       }
       .duration {
         position: absolute;
@@ -119,21 +119,23 @@
         width: 85%;
         height: 25%;
         border-radius: $borderRadius;
-        z-index: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         p {
+          bottom: -100%;
           font-family: "bebas neue";
           letter-spacing: 3px;
+          font-size: 2.6rem;
+          position: absolute;
         }
       }
     }
     .block-name-container {
       color: #00000000;
       background-color: #00000000;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       width: 100%;
       font-family: akshar;
       margin-top: auto;
@@ -151,11 +153,10 @@
         background-color: #00000000;
         text-align: center;
         color: white;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         outline: none;
         border: none;
         font-family: akshar;
-        padding-left: 0.2px;
         &:disabled {
           pointer-events: none;
         }
@@ -166,29 +167,36 @@
       }
     }
   }
-}
-.display-page-block {
-  &.small {
-    width: 6rem !important;
-    min-height: 6rem !important;
-    .media-container {
-      .media-thumbnail {
-        max-height: 5.4rem !important;
+  #corner-message-container {
+    pointer-events: none;
+    height: 99.5%;
+    min-width: 5rem;
+    position: fixed;
+    top: 2rem;
+    h1 {
+      font-family: "mukta";
+      font-size: 1rem;
+      background-color: #111;
+      color: white;
+      padding: 0.2rem;
+      width: max-content;
+      pointer-events: all;
+      position: absolute;
+      &:hover {
+        opacity: 0.3;
       }
     }
-    .file-extension-container {
-      p {
-        font-size: 1.2rem !important;
-        position: absolute;
-        bottom: -100%;
-        height: max-content;
-      }
+    #directory-items-count {
+      border-top-right-radius: 0.5rem;
+      transform: translateY(-50%);
+      bottom: -3px;
+      left: -0.5rem;
     }
   }
 }
 
 .display-page-block {
-  &.medium {
+  &.small {
     width: 8rem !important;
     min-height: 8rem !important;
     .media-container {
@@ -198,8 +206,27 @@
     }
     .file-extension-container {
       p {
-        font-size: 1.5rem !important;
-        bottom: -85%;
+        font-size: 1.6rem !important;
+        position: absolute;
+        bottom: -90% !important;
+      }
+    }
+  }
+}
+
+.display-page-block {
+  &.medium {
+    width: 10rem !important;
+    min-height: 10rem !important;
+    .media-container {
+      .media-thumbnail {
+        max-height: 9.1rem !important;
+      }
+    }
+    .file-extension-container {
+      p {
+        font-size: 2rem !important;
+        bottom: -90% !important;
         position: absolute;
       }
     }
@@ -207,7 +234,7 @@
 }
 
 .display-page-block {
-  &.extralarge {
+  &.large {
     width: 12rem !important;
     min-height: 12rem !important;
     .media-container {
@@ -217,9 +244,27 @@
     }
     .file-extension-container {
       p {
-        font-size: 2.5rem !important;
-        bottom: -95%;
+        font-size: 2.6rem !important;
         position: absolute;
+        bottom: -100% !important;
+      }
+    }
+  }
+}
+
+.display-page-block {
+  &.extralarge {
+    width: 14rem !important;
+    min-height: 14rem !important;
+    .media-container {
+      .media-thumbnail {
+        max-height: 12.6rem !important;
+      }
+    }
+    .file-extension-container {
+      p {
+        font-size: 3.2rem !important;
+        bottom: -105% !important;
       }
     }
   }

@@ -1,7 +1,6 @@
-import React from "react";
-
 export default function Popup({ popup, setPopup }) {
   const { body, ok, cancel, thirdButton } = popup;
+
   return (
     <div id="popup-body">
       <div id="close-container">

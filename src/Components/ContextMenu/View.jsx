@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { DirectoryContext } from "../Main/App";
 
 export default function View({ contextMenu }) {

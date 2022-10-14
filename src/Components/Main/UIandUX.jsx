@@ -1,12 +1,12 @@
-import React, { useState, createContext, useEffect } from "react";
+import { useState, createContext, useEffect } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 
-import CustomTitle from "./CustomTitle";
+import CustomTitle from "../Miscellaneous/CustomTitle";
 import useSelectMultiple from "../../Hooks/useSelectMultiple";
 import useShortcuts from "../../Hooks/useShortcuts";
 import useScaleDirectoryTree from "../../Hooks/useScaleDirectoryTree";
 import useWatch from "../../Hooks/useWatch";
-import Popup from "./Popup";
+import Popup from "../Miscellaneous/Popup";
 
 export const UIContext = createContext();
 
@@ -16,14 +16,22 @@ export default function UIandUX({
   setSelectedItems,
   popup,
   setPopup,
+  clipboard,
+  setClipboard,
 }) {
   const [contextMenu, setContextMenu] = useState({});
-  const [clipboard, setClipboard] = useState({});
 
   useWatch();
   useScaleDirectoryTree();
   useSelectMultiple(setLastSelected, setSelectedItems);
-  useShortcuts(selectedItems, setClipboard, clipboard, setSelectedItems);
+  useShortcuts(
+    selectedItems,
+    setClipboard,
+    clipboard,
+    setSelectedItems,
+    setPopup,
+    popup
+  );
 
   useEffect(() => {
     setClipboard(JSON.parse(sessionStorage.getItem("clipboard") || "{}"));

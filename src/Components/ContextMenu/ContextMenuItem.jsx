@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DirectoryContext } from "../Main/App";
-import { UIContext } from "../UI and UX/UIandUX";
+import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import Sort from "./Sort";
 import View from "./View";
@@ -86,7 +86,12 @@ export default function ContextMenuItem({
             });
             break;
           case "Paste":
-            handleTransfer(contextMenu, clipboard, setPopup, setClipboard);
+            handleTransfer(
+              contextMenu.destination,
+              setPopup,
+              clipboard,
+              setClipboard
+            );
             break;
           case "Rename":
             setRenameItem(path);

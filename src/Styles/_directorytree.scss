@@ -1,9 +1,9 @@
 #directory-tree {
   z-index: 1;
   height: calc(100vh - 9rem);
-  top: 2rem;
+  top: 2.7rem;
   position: relative;
-  padding: 1rem 0 0 0;
+  padding-top: 1rem;
   padding-bottom: 6rem;
   flex: 0 0 20%;
   overflow-y: auto;
@@ -50,7 +50,7 @@
     .child-directory,
     .parent-directory-collapsed {
       position: relative;
-      height: 1.3rem;
+      height: 1.5rem;
       display: flex;
       flex-direction: row;
       align-items: center;

@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import { DirectoryContext } from "../../Main/App";
+import { useContext } from "react";
+import { DirectoryContext } from "../Main/App";
 
-import arrowBlack from "../../../Images/arrow-black.png";
-import arrowWhite from "../../../Images/arrow-white.png";
+import arrowBlack from "../../Images/arrow-black.png";
+import arrowWhite from "../../Images/arrow-white.png";
 
 export default function ButtonNavigation() {
   const { state, dispatch } = useContext(DirectoryContext);

@@ -73,5 +73,5 @@ export default function useWatch() {
         watcher?.close();
       };
     }
-  }, [state.currentDirectory, directoryItems]);
+  }, [state.currentDirectory]);
 }

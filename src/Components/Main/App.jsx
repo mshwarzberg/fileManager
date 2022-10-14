@@ -1,7 +1,7 @@
-import React, { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
-import DirectoryState from "./DirectoryState";
-import UIandUXState from "../UI and UX/UIandUXState";
+import DirectoryState from "./State/DirectoryState";
+import UIandUXState from "./State/UIandUXState";
 
 import Page from "../DirectoryPage/Page";
 import Navbar from "../Navbar/Navbar";
@@ -10,19 +10,21 @@ import FilesAndDirectories from "../DirectoryPage/FilesAndDirectories";
 
 import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
-import UIandUX from "../UI and UX/UIandUX";
+import UIandUX from "./UIandUX";
 import sortBy from "../../Helpers/SortBy";
 
 export const DirectoryContext = createContext();
 
 const fs = window.require("fs");
+const { execSync } = window.require("child_process");
 
 export default function App() {
   const {
     state,
-    state: { currentDirectory, drive, networkDrives },
+    state: { currentDirectory, drive },
     dispatch,
   } = DirectoryState();
+
   const { settings, setSettings } = UIandUXState();
 
   const [directoryItems, setDirectoryItems] = useState([]);
@@ -31,6 +33,7 @@ export default function App() {
   const [renameItem, setRenameItem] = useState();
   const [visibleItems, setVisibleItems] = useState([]);
   const [popup, setPopup] = useState({});
+  const [clipboard, setClipboard] = useState({});
 
   useEffect(() => {
     console.clear();
@@ -51,12 +54,7 @@ export default function App() {
                 withFileTypes: true,
               })
               .map((file) => {
-                return formatMetadata(
-                  file,
-                  currentDirectory,
-                  drive,
-                  networkDrives.includes(drive)
-                );
+                return formatMetadata(file, currentDirectory, drive);
               })
               .filter((item) => {
                 return item.name && item;
@@ -138,9 +136,13 @@ export default function App() {
         setRenameItem,
       }}
     >
-      <Navbar selectedItems={selectedItems} setPopup={setPopup} />
+      <Navbar setPopup={setPopup} />
       <DirectoryTree />
-      <Page setVisibleItems={setVisibleItems} selectedItems={selectedItems}>
+      <Page
+        setVisibleItems={setVisibleItems}
+        selectedItems={selectedItems}
+        clipboard={clipboard}
+      >
         {renderDirectoryItems}
       </Page>
       <UIandUX
@@ -150,32 +152,24 @@ export default function App() {
         setSelectedItems={setSelectedItems}
         popup={popup}
         setPopup={setPopup}
+        clipboard={clipboard}
+        setClipboard={setClipboard}
       />
-      <button
+      {/* <button
         style={{ position: "fixed" }}
         onClick={() => {
-          // dispatch({
-          //   type: "open",
-          //   value: "null",
-          // });
-          // // setSettings((prevSettings) => {
-          // // setPopup({
-          // //   show: true,
-          // //   body: (
-          // //     <h1>{prevSettings.singleClickToOpen ? "double" : "single"}</h1>
-          // //   ),
-          // //   ok: <button id="ok">ok</button>,
-          // //   cancel: <button id="cancel">cancel</button>,
-          // // });
-          // // return {
-          // //   ...prevSettings,
-          // //   singleClickToOpen: !prevSettings.singleClickToOpen,
-          // // };
-          // // });
+          const array = [];
+          directoryItems.map((item) => {
+            if (item.fileextension === ".jpg") {
+              array.push(`"${item.path.replaceAll("/", "\\")}"`);
+            }
+          });
+          console.log(`copy /b ${array.join("+")} B:\\x.jpg`);
+          // execSync();
         }}
       >
         Test Button
-      </button>
+      </button> */}
     </DirectoryContext.Provider>
   );
 }
