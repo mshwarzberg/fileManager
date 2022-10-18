@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 
 import arrowBlack from "../../Images/arrow-black.png";
 import arrowWhite from "../../Images/arrow-white.png";

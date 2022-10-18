@@ -13,7 +13,7 @@ export default function Popup({ popup, setPopup }) {
           X
         </button>
       </div>
-      <div id="body">{body}</div>
+      {body}
       <div id="buttons-container">
         <div id="buttons">
           {thirdButton}

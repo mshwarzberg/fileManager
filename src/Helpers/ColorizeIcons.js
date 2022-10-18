@@ -51,6 +51,10 @@ export function colorizeIcons(fileextension) {
       return "navy";
     case "hc":
       return "gold";
+    case "nfo":
+      return "#084322";
+    case "flac":
+      return "limegreen";
     default:
       return "black";
   }
@@ -62,6 +66,7 @@ export function colorIconText(color) {
     case "white":
     case "gold":
     case "skyblue":
+    case "limegreen":
       return "black";
     default:
       return "white";

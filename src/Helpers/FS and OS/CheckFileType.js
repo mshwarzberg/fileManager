@@ -35,6 +35,8 @@ export default function checkFileType(fileextension) {
     case "aac":
     case "wma":
       return "audio";
+    case "gif":
+      return "gif";
     default:
       return "unknown";
   }

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import ButtonNavigation from "./ButtonNavigation";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import TrashButtons from "./TrashButtons";
 import CurrentDirectory from "./CurrentDirectory";
 

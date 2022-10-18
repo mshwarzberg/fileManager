@@ -4,3 +4,4 @@ import "./_directorytree.scss";
 import "./_navbar.scss";
 import "./_contextmenu.scss";
 import "./_uihelpers.scss";
+import "./_customicon.scss";

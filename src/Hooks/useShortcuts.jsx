@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
-import { DirectoryContext } from "../Components/Main/App";
+import { DirectoryContext } from "../Components/Main/App.jsx";
 import clickOnItem from "../Helpers/ClickOnItem";
 import { handleMoveToTrash } from "../Helpers/FS and OS/HandleTrash";
 import randomID from "../Helpers/RandomID";

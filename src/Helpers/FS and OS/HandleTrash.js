@@ -1,7 +1,9 @@
 const fs = window.require("fs");
 
 export function handleMoveToTrash(items, drive) {
-  fs.mkdirSync(drive + "trash", { recursive: true });
+  if (drive !== "tra") {
+    fs.mkdirSync(drive + "trash", { recursive: true });
+  }
   const trashedItems = JSON.parse(localStorage.getItem("trash")) || [];
   for (const item of items) {
     try {

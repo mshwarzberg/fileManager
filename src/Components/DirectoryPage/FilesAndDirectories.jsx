@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import handleItemsSelected from "../../Helpers/HandleItemsSelected";
 import ItemName from "./Icons/ItemName";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
@@ -9,10 +9,11 @@ import CustomIcon from "./Icons/CustomIcon";
 import folderImage from "../../Images/folder.png";
 import clickOnItem from "../../Helpers/ClickOnItem";
 import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpeg";
-import FFprobe from "../../Helpers/FS and OS/FFprobe";
+import formatDuration from "../../Helpers/FormatVideoTime.js";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
+const exifr = window.require("exifr");
 
 let clickOnNameTimeout, mouseDownTimeout;
 export default function FilesAndDirectories({
@@ -34,6 +35,7 @@ export default function FilesAndDirectories({
     isMedia,
     isSymbolicLink,
     filetype,
+    duration,
   } = directoryItem;
 
   const {
@@ -42,14 +44,14 @@ export default function FilesAndDirectories({
     renameItem,
     setRenameItem,
     settings: { singleClickToOpen, showThumbnails, iconSize },
+    setDirectoryItems,
   } = useContext(DirectoryContext);
 
   const [thumbnail, setThumbnail] = useState();
-  const [metadata, setMetadata] = useState({});
 
   useEffect(() => {
     let timeout;
-    if (isMedia) {
+    if (isMedia && filetype !== "audio") {
       if (currentDirectory !== "Trash") {
         fs.mkdirSync(
           `${drive}temp/${currentDirectory.slice(
@@ -101,8 +103,28 @@ export default function FilesAndDirectories({
       } ${iconSize}`}
       id={path}
       onMouseEnter={() => {
-        if (isMedia) {
-          FFprobe(path, filetype, setMetadata);
+        if (filetype === "image") {
+          exifr
+            .parse(path, true)
+            .then((data) => {
+              if (!data) {
+                return;
+              }
+              const description =
+                data.Comment || data.description?.value || data.description;
+              setDirectoryItems((prevItems) =>
+                prevItems.map((prevItem) => {
+                  if (prevItem.name === name) {
+                    return {
+                      ...prevItem,
+                      description: description,
+                    };
+                  }
+                  return prevItem;
+                })
+              );
+            })
+            .catch(() => {});
         }
       }}
       onMouseMove={() => {
@@ -118,6 +140,7 @@ export default function FilesAndDirectories({
         if (!permission || e.ctrlKey || e.shiftKey) {
           return;
         }
+        setRenameItem();
         clickOnItem(directoryItem, dispatch);
       }}
       onContextMenu={() => {
@@ -131,7 +154,7 @@ export default function FilesAndDirectories({
       }}
       onMouseDown={(e) => {
         if (e.button === 0 || e.button === 2) {
-          if (!e.shiftKey && !e.ctrlKey) {
+          if (!e.shiftKey && !e.ctrlKey && renameItem !== path) {
             clickOnNameTimeout = setTimeout(() => {
               setRenameItem(path);
             }, 1000);
@@ -144,12 +167,12 @@ export default function FilesAndDirectories({
               lastSelected,
               setLastSelected
             );
-          }, 100);
+          }, 300);
         }
       }}
       data-contextmenu={permission && contextMenuOptions(directoryItem)}
       data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
-      data-title={formatTitle(directoryItem, metadata)}
+      data-title={formatTitle(directoryItem)}
       data-destination={JSON.stringify({
         destination: path + "/",
       })}
@@ -159,6 +182,9 @@ export default function FilesAndDirectories({
           {thumbnail && showThumbnails && isMedia ? (
             <div className="media-container">
               <img src={thumbnail} className="media-thumbnail" />
+              {duration && (
+                <div className="duration">{formatDuration(duration)}</div>
+              )}
             </div>
           ) : (
             isFile && (

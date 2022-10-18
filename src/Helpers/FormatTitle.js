@@ -1,38 +1,41 @@
 import formatVideoTime from "./FormatVideoTime";
 import formatSize from "./FormatSize";
+import { intToBitRateStr } from "./FormatBitRate";
 
-export default function formatTitle(item, media = {}) {
+export default function formatTitle(item) {
   const {
     name,
     location,
     size,
     isDrive,
     availableSpace,
-    totalSize,
     displayName,
     displayLocation,
     isMedia,
     path,
+    dimensions,
+    headline,
+    duration,
+    description,
+    bitrate,
   } = item;
 
-  const { headline, duration, description, width, height } = media;
-
   if (isMedia) {
-    return `Name: ${displayName}\nLocation: ${displayLocation || path}\nSize: ${
-      formatSize(size) || ""
-    }\nDimensions: ${width + "x" + height}${
-      duration ? `\nDuration: ${formatVideoTime(duration)}` : ""
-    }${headline ? `\nHeadline: ${headline}` : ""}${
-      description && typeof description === "string"
-        ? `\nDescription: ${description}`
-        : ""
+    return `Name: ${displayName || name}\nLocation: ${
+      displayLocation || path
+    }\nSize: ${formatSize(size) || ""}${
+      dimensions ? `\nDimensions: ${dimensions}` : ""
+    }${duration ? `\nDuration: ${formatVideoTime(duration)}` : ""}${
+      headline ? `\nHeadline: ${headline}` : ""
+    }${description ? `\nDescription: ${description}` : ""}${
+      bitrate ? `\nBit Rate: ${intToBitRateStr(bitrate)}` : ""
     }`;
   } else if (isDrive) {
     return `Name: ${name}\nSpace Remaining: ${formatSize(
       availableSpace
-    )}\nDrive Size: ${formatSize(totalSize)}`;
+    )}\nDrive Size: ${formatSize(size)}`;
   } else {
-    return `Name: ${displayName}\nLocation: ${
+    return `Name: ${displayName || name}\nLocation: ${
       displayLocation || path?.slice(0, path.length - name.length - 1)
     }${size ? `\nSize: ${formatSize(size)}` : ""}`;
   }

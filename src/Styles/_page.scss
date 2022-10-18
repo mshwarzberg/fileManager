@@ -61,74 +61,15 @@
       .duration {
         position: absolute;
         right: 0;
-        bottom: 0;
-        transform: translateY(50%);
+        bottom: 3px;
         background-color: #000;
         color: white;
         font-size: 0.75rem;
         padding-inline: 3px;
         font-family: "akshar";
-      }
-    }
-    $borderRadius: 3px;
-    .custom-icon-container {
-      margin-top: auto;
-      width: 100%;
-      aspect-ratio: 0.95;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      .custom-icon-body {
-        position: absolute;
-        width: 75%;
-        aspect-ratio: 0.75;
-        background-color: #bbb;
-        margin-bottom: auto;
-        border-radius: $borderRadius;
-        clip-path: polygon(70% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 0%);
-      }
-      .triangle {
-        clip-path: polygon(0 0, 0% 100%, 100% 100%);
-        width: 30%;
-        height: 25%;
-        right: 0;
-        background-color: #222;
-        border-bottom-left-radius: $borderRadius;
-        position: absolute;
-      }
-      .bar-top,
-      .bar-bottom {
-        position: absolute;
-        width: 80%;
-        height: 5%;
-        background-color: #444;
-        left: 10%;
-        border-radius: 2rem;
-      }
-      .bar-top {
-        bottom: 52%;
-      }
-      .bar-bottom {
-        bottom: 42%;
-      }
-      .file-extension-container {
-        position: absolute;
-        bottom: 12%;
-        width: 85%;
-        height: 25%;
-        border-radius: $borderRadius;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        p {
-          bottom: -100%;
-          font-family: "bebas neue";
-          letter-spacing: 3px;
-          font-size: 2.6rem;
-          position: absolute;
+        pointer-events: all;
+        &:hover {
+          opacity: 0.5;
         }
       }
     }
@@ -205,7 +146,7 @@
       }
     }
     .file-extension-container {
-      p {
+      .file-extension {
         font-size: 1.6rem !important;
         position: absolute;
         bottom: -90% !important;
@@ -224,7 +165,7 @@
       }
     }
     .file-extension-container {
-      p {
+      .file-extension {
         font-size: 2rem !important;
         bottom: -90% !important;
         position: absolute;
@@ -243,7 +184,7 @@
       }
     }
     .file-extension-container {
-      p {
+      .file-extension {
         font-size: 2.6rem !important;
         position: absolute;
         bottom: -100% !important;
@@ -262,7 +203,7 @@
       }
     }
     .file-extension-container {
-      p {
+      .file-extension {
         font-size: 3.2rem !important;
         bottom: -105% !important;
       }

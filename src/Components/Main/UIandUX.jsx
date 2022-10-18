@@ -72,7 +72,7 @@ export default function UIandUX({
         setPopup,
       }}
     >
-      {popup.show && <Popup popup={popup} setPopup={setPopup} />}
+      {popup.body && <Popup popup={popup} setPopup={setPopup} />}
       <CustomTitle />
       <ContextMenu
         selectedItems={selectedItems}

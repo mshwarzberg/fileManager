@@ -1,17 +1,23 @@
 import { useContext } from "react";
 import sortBy from "../../Helpers/SortBy";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 
 export default function Sort({ contextMenu }) {
   const sortOptions = ["Name", "Size", "Date", "Type"];
   const { setDirectoryItems } = useContext(DirectoryContext);
 
+  function subMenuClassNames() {
+    let className = "sort-by-sub-menu";
+    if (contextMenu.x + 320 > window.innerWidth) {
+      className += " position-left";
+    }
+    if (contextMenu.y + 238 > window.innerHeight) {
+      className += " position-top";
+    }
+    return className;
+  }
   return (
-    <div
-      className={`sort-by-sub-menu ${
-        contextMenu.x + 320 > window.innerWidth ? "position-left" : ""
-      }`}
-    >
+    <div className={subMenuClassNames()}>
       {sortOptions.map((method) => {
         return (
           <button
@@ -26,7 +32,7 @@ export default function Sort({ contextMenu }) {
               sessionStorage.setItem("method", method);
             }}
           >
-            {method}
+            ...{method}
           </button>
         );
       })}

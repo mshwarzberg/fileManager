@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { DirectoryContext } from "../Components/Main/App";
+import { DirectoryContext } from "../Components/Main/App.jsx";
 
 export default function useScaleDirectoryTree() {
   const [scalingTree, setScalingTree] = useState();

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import { updateDirectoryTree } from "../../Helpers/ChangeItemInTree";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 

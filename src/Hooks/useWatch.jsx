@@ -1,40 +1,34 @@
 import { useEffect, useContext } from "react";
-import { DirectoryContext } from "../Components/Main/App";
+import { DirectoryContext } from "../Components/Main/App.jsx";
 import formatMetadata from "../Helpers/FS and OS/GetMetadata";
-import {
-  addToDirectoryTree,
-  removeFromDirectoryTree,
-} from "../Helpers/ChangeItemInTree";
 import { findInArray } from "../Helpers/SearchArray";
 
 const fs = window.require("fs");
 const watch = window.require("node-watch");
 
 export default function useWatch() {
-  const { state, setDirectoryItems, dispatch, directoryItems } =
-    useContext(DirectoryContext);
+  const {
+    state: { currentDirectory, drive },
+    setDirectoryItems,
+    directoryItems,
+  } = useContext(DirectoryContext);
   useEffect(() => {
     let watcher;
-    if (state.currentDirectory) {
+    if (currentDirectory) {
       try {
         watcher = watch(
-          state.currentDirectory,
+          currentDirectory,
           { recursive: true },
           (event, name) => {
             name = name.replaceAll("\\", "/");
             if (event === "update") {
               const data = fs
-                .readdirSync(state.currentDirectory, {
+                .readdirSync(currentDirectory, {
                   withFileTypes: true,
                 })
                 .map((file) => {
-                  if (state.currentDirectory + file.name === name) {
-                    return formatMetadata(
-                      file,
-                      state.currentDirectory,
-                      state.drive,
-                      state.networkDrives.includes(state.drive)
-                    );
+                  if (currentDirectory + file.name === name) {
+                    return formatMetadata(file, currentDirectory, drive);
                   }
                   return null;
                 })
@@ -73,5 +67,5 @@ export default function useWatch() {
         watcher?.close();
       };
     }
-  }, [state.currentDirectory]);
+  }, [currentDirectory]);
 }

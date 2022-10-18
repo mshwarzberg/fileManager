@@ -5,11 +5,11 @@ export default function formatDuration(time) {
 
   let hours = 0;
   let minutes = 0;
-  while (time > 3600) {
+  while (time >= 3600) {
     time = time - 3600;
     hours += 1;
   }
-  while (time > 60) {
+  while (time >= 60) {
     time = time - 60;
     minutes += 1;
   }

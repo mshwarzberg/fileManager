@@ -1,19 +1,12 @@
-import { useEffect, useState } from "react";
 import formatDate from "../../Helpers/FormatDate";
 import formatSize from "../../Helpers/FormatSize";
 import formatTitle from "../../Helpers/FormatTitle";
-import FFprobe from "../../Helpers/FS and OS/FFprobe";
+import formatDuration from "../../Helpers/FormatVideoTime";
+import CustomIcon from "../DirectoryPage/Icons/CustomIcon";
 
 import folderImage from "../../Images/folder.png";
 
-export default function BlockComparison({
-  directoryItem,
-  source,
-  location,
-  setDump,
-  dump,
-  newItemName,
-}) {
+export default function BlockComparison({ directoryItem }) {
   const {
     thumbPath,
     name,
@@ -26,47 +19,35 @@ export default function BlockComparison({
     isDirectory,
     prefix,
     fileextension,
+    duration,
+    isFile,
+    isSymbolicLink,
   } = directoryItem;
-
-  const [media, setMedia] = useState({});
-  const [test, setTest] = useState(dump[name]);
-  const isLocationSource = location === source;
-
-  function handleChange(e) {
-    setDump((prevDump) => ({
-      ...prevDump,
-      [newItemName(prefix, fileextension)]: e.target.checked,
-    }));
-  }
-
-  useEffect(() => {
-    setTest(dump[newItemName(prefix, fileextension)]);
-  }, [dump]);
 
   return (
     <div
       key={key}
       className="block-container"
-      data-title={formatTitle(directoryItem, media)}
-      onMouseEnter={() => {
-        if (isMedia) {
-          FFprobe(path, filetype, setMedia);
-        }
-      }}
+      data-title={formatTitle(directoryItem)}
     >
-      {isLocationSource && <div className="separator" />}
-      <input
-        type="checkbox"
-        name={name}
-        value={test}
-        defaultChecked={dump[name]}
-        onChange={handleChange}
-      />
-      <img src={thumbPath} />
-      {isDirectory && <img src={folderImage} />}
+      <input type="checkbox" name={name} />
+      {thumbPath && isMedia ? (
+        <>
+          <img src={thumbPath} />
+          {duration && (
+            <div className="duration">{formatDuration(duration)}</div>
+          )}
+        </>
+      ) : (
+        isFile && (
+          <CustomIcon fileextension={fileextension.split(".")[1] || ""} />
+        )
+      )}
+      {(isDirectory || isSymbolicLink) && (
+        <img src={folderImage} alt="folder" />
+      )}
       {size ? <p className="size">{formatSize(size)}</p> : <></>}
       <pre className="date">{formatDate(new Date(modified))}</pre>
-      {isLocationSource && <p className="name">{name}</p>}
     </div>
   );
 }

@@ -16,7 +16,7 @@ export default function formatDriveOutput() {
           name: name,
           displayName: name,
           isNetworkDrive: parseInt(output[i * 1 + 1].split("=")[1]) === 4,
-          totalSize: parseInt(output[i * 1 + 3].split("=")[1]),
+          size: parseInt(output[i * 1 + 3].split("=")[1]),
           availableSpace: parseInt(output[i * 1 + 2].split("=")[1]),
           permission: true,
           isDrive: true,

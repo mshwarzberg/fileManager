@@ -4,49 +4,61 @@
   z-index: 1;
   div,
   button {
-    height: 1.5rem;
-    background-color: #777;
+    height: 2rem;
+    background-color: black;
     color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    text-align: center;
     font-family: "bebas neue";
     &:hover {
-      background-color: #999;
+      background-color: white;
       color: black;
     }
   }
   .context-menu-button {
     width: 100%;
-    height: 1.5rem;
     position: relative;
-    border: 1.1px solid white;
+    border: 1.2px solid white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
     .sub-menu-arrow {
       position: absolute;
       right: 5px;
-      top: -0.9rem;
+      font-weight: bold;
     }
     .sort-by-sub-menu {
       position: absolute;
       width: 10rem;
       top: 0;
       left: calc(10rem + 1px);
+      button {
+        height: 2rem;
+        font-size: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
       &.position-left {
         left: -10rem;
+      }
+      &.position-top {
+        top: -4rem;
       }
       #dot {
         width: 0.5rem;
         height: 0.5rem;
         border-radius: 50%;
-        background-color: #000;
-        margin-top: 0.25rem;
+        background-color: pink;
+        left: 5%;
+        position: absolute;
       }
-    }
-    #line-break {
-      height: 1.5rem;
-      width: 100%;
-      background-color: white;
+      #line-break {
+        height: 2rem;
+        width: calc(100% - 1px);
+        background-color: black;
+        outline: 1px solid white;
+      }
     }
   }
 }

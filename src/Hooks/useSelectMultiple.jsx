@@ -1,43 +1,54 @@
 import { useEffect } from "react";
+import { findInArray } from "../Helpers/SearchArray";
 
 export default function useSelectMultiple(setLastSelected, setSelectedItems) {
-  let timeout;
+  function highlightItems(boxDimensions, e) {
+    const elements = document.getElementsByClassName("display-page-block");
+    let infoArray = [];
+    for (const element of elements) {
+      const elDimensions = element.getBoundingClientRect();
 
-  function highlightItems(boxDimensions) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      const elements = document.getElementsByClassName("display-page-block");
-      let infoArray = [];
-      for (const element of elements) {
-        const elDimensions = element.getBoundingClientRect();
+      const notToRightOfBlock = elDimensions.x < boxDimensions.right;
+      const notToLeftOfBlock =
+        elDimensions.x + elDimensions.width > boxDimensions.x;
 
-        const notToRightOfBlock = elDimensions.x < boxDimensions.right;
-        const notToLeftOfBlock =
-          elDimensions.x + elDimensions.width > boxDimensions.x;
+      const notBelowBlock = elDimensions.y < boxDimensions.bottom;
+      const notAboveBlock =
+        elDimensions.y + elDimensions.height > boxDimensions.y;
 
-        const notBelowBlock = elDimensions.y < boxDimensions.bottom;
-        const notAboveBlock =
-          elDimensions.y + elDimensions.height > boxDimensions.y;
+      const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
+      const isWithinYAxis = notAboveBlock && notBelowBlock;
 
-        const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
-        const isWithinYAxis = notAboveBlock && notBelowBlock;
-
-        if (isWithinXAxis && isWithinYAxis) {
-          const info = JSON.parse(element.dataset.info || "{}");
-          if (info.permission && info.name) {
-            infoArray.push({
+      if (isWithinXAxis && isWithinYAxis) {
+        const info = JSON.parse(element.dataset.info || "{}");
+        if (info.name) {
+          infoArray.push({
+            info: info,
+            element: element,
+          });
+        }
+      }
+      if (!notBelowBlock) {
+        break;
+      }
+    }
+    setLastSelected(infoArray[0]?.element);
+    setSelectedItems((prevItems) => {
+      let array = [...prevItems];
+      if (e.shiftKey || e.ctrlKey) {
+        for (const { info, element } of infoArray) {
+          if (!prevItems.map((item) => item.element).includes(element)) {
+            array.push({
               info: info,
               element: element,
             });
           }
         }
-        if (!notBelowBlock) {
-          break;
-        }
+      } else {
+        array = infoArray;
       }
-      setLastSelected(infoArray[0]?.element);
-      setSelectedItems(infoArray);
-    }, 0);
+      return array;
+    });
   }
   function changeBoxDimensions(
     box,
@@ -100,7 +111,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
           currentPositionY,
           currentPositionX
         );
-        highlightItems(box.getBoundingClientRect());
+        highlightItems(box.getBoundingClientRect(), e);
         clearInterval(scrollOnDrag);
         if (e.clientY < 100 && page.scrollTop !== 0) {
           scrollOnDrag = setInterval(() => {
@@ -112,7 +123,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
               page.scrollTop,
               currentPositionX
             );
-            highlightItems(box.getBoundingClientRect());
+            highlightItems(box.getBoundingClientRect(), e);
           }, 10);
         } else if (
           e.clientY > page.getBoundingClientRect().height &&
@@ -128,7 +139,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
               Math.min(page.scrollTop + currentPositionY, page.scrollHeight),
               currentPositionX
             );
-            highlightItems(box.getBoundingClientRect());
+            highlightItems(box.getBoundingClientRect(), e);
           }, 10);
         }
       } else {

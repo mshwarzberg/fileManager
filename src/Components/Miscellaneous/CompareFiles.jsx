@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 
 import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import BlockComparison from "./BlockComparison";
 
 const fs = window.require("fs");
@@ -25,57 +25,61 @@ export default function CompareFiles({ duplicates, source, destination }) {
     return result;
   }
 
-  const [dump, setDump] = useState([]);
-  // getItemMetadata(source).map((item) => {
-  //   return {
-  //     [newItemName(item.prefix, item.fileextension)]: false,
-  //   };
-  // })
+  function renderDuplicates() {
+    const sourceItems = getItemMetadata(source);
+    const destinationItems = getItemMetadata(destination);
 
-  function renderItem(location) {
-    return getItemMetadata(location).map((directoryItem) => {
+    return sourceItems.map((sourceItem) => {
+      let destinationItem;
+      for (destinationItem of destinationItems) {
+        if (destinationItem.name === sourceItem.name) {
+          break;
+        }
+      }
       return (
-        <BlockComparison
-          key={directoryItem.key}
-          directoryItem={directoryItem}
-          source={source}
-          location={location}
-          setDump={setDump}
-          dump={dump}
-          newItemName={newItemName}
-        />
+        <div className="comparison" key={sourceItem.name}>
+          <BlockComparison key={sourceItem.key} directoryItem={sourceItem} />
+          <div className="vertical-separator" />
+          <BlockComparison
+            key={destinationItem.key}
+            directoryItem={destinationItem}
+          />
+          <div className="horizontal-separator" />
+          <p className="name">{sourceItem.name}</p>
+        </div>
       );
     });
   }
 
-  function newItemName(prefix, fileextension) {}
-
   return (
     <div id="body">
-      Which item would you like to keep?
-      <br />
-      (selecting both will have a new number added to the end of the name)
-      <br />
-      <div id="file-comparison">
-        <div id="left">
-          <div className="checkbox-name-container">
-            <input type="checkbox" />
-            <p data-title={source}>File in {source}</p>
-          </div>
-          {renderItem(source).map((item) => {
-            return item;
-          })}
+      <h1 id="description">
+        Which item would you like to keep?
+        <br />
+        (selecting both will have a new number added to the end of the name)
+        <br />
+      </h1>
+      <div id="select-all">
+        <div>
+          <input type="checkbox" id="select-all-in-source" />
+          <label htmlFor="select-all-in-source">
+            Select All In{" "}
+            <b data-title={source} data-timing={0}>
+              Source
+            </b>
+          </label>
         </div>
-        <div id="right">
-          <div className="checkbox-name-container">
-            <input type="checkbox" />
-            <p data-title={destination}>Files already in {destination}</p>
-          </div>
-          {renderItem(destination).map((item) => {
-            return item;
-          })}
+        <div>
+          <label htmlFor="select-all-in-destination">
+            Select All In{" "}
+            <b data-title={destination} data-timing={0}>
+              Destination
+            </b>
+          </label>
+          <input type="checkbox" id="select-all-in-destination" />
         </div>
       </div>
+      <div id="file-comparison">{renderDuplicates()}</div>
     </div>
   );
 }

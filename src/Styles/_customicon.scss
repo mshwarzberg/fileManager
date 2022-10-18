@@ -1,0 +1,62 @@
+.custom-icon-container {
+  margin-top: auto;
+  width: 95%;
+  aspect-ratio: 0.95;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .custom-icon-body {
+    position: absolute;
+    width: 75%;
+    aspect-ratio: 0.75;
+    background-color: #bbb;
+    margin-bottom: auto;
+    border-radius: 3px;
+    clip-path: polygon(70% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 0%);
+  }
+  .triangle {
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+    width: 30%;
+    height: 25%;
+    right: -1%;
+    top: -1%;
+    background-color: #222;
+    border-bottom-left-radius: 3px;
+    position: absolute;
+  }
+  .bar-top,
+  .bar-bottom {
+    position: absolute;
+    width: 80%;
+    height: 5%;
+    background-color: #444;
+    left: 10%;
+    border-radius: 2rem;
+  }
+  .bar-top {
+    bottom: 52%;
+  }
+  .bar-bottom {
+    bottom: 42%;
+  }
+  .file-extension-container {
+    position: absolute;
+    bottom: 12%;
+    width: 85%;
+    height: 25%;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .file-extension {
+      bottom: -15%;
+      font-family: "bebas neue";
+      letter-spacing: 3px;
+      font-size: 2.4rem;
+      position: absolute;
+    }
+  }
+}

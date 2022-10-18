@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
 import DirectoryState from "./State/DirectoryState";
 import UIandUXState from "./State/UIandUXState";
@@ -16,7 +16,6 @@ import sortBy from "../../Helpers/SortBy";
 export const DirectoryContext = createContext();
 
 const fs = window.require("fs");
-const { execSync } = window.require("child_process");
 
 export default function App() {
   const {
@@ -156,16 +155,9 @@ export default function App() {
         setClipboard={setClipboard}
       />
       {/* <button
-        style={{ position: "fixed" }}
+        style={{ position: "fixed", zIndex: 1100 }}
         onClick={() => {
-          const array = [];
-          directoryItems.map((item) => {
-            if (item.fileextension === ".jpg") {
-              array.push(`"${item.path.replaceAll("/", "\\")}"`);
-            }
-          });
-          console.log(`copy /b ${array.join("+")} B:\\x.jpg`);
-          // execSync();
+          
         }}
       >
         Test Button

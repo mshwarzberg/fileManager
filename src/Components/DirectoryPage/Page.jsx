@@ -1,8 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import { findInArray } from "../../Helpers/SearchArray";
 import CornerInfo from "./CornerInfo";
+import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
+
+const { execSync, exec } = window.require("child_process");
 
 export default function Page({
   selectedItems,
@@ -11,9 +14,12 @@ export default function Page({
   children,
 }) {
   const {
+    setDirectoryItems,
     directoryItems,
     state: { currentDirectory },
   } = useContext(DirectoryContext);
+
+  const [rerender, setRerender] = useState(false);
 
   useEffect(() => {
     const pageBlocks = document.getElementsByClassName("display-page-block");
@@ -48,6 +54,106 @@ export default function Page({
     };
   }, [selectedItems]);
 
+  useEffect(() => {
+    handleVisibleItems();
+  }, [directoryItems]);
+
+  useEffect(() => {
+    if (rerender) {
+      const cmd = `powershell.exe ./MediaMetadata.ps1 """${currentDirectory}"""`;
+      function videoTimeToNum(str) {
+        if (!str) {
+          return "";
+        }
+        str = str.split(":");
+        let value = 0;
+        value += parseInt(str[2]);
+        value += parseInt(str[1]) * 60;
+        value += parseInt(str[0]) * 3600;
+        return value;
+      }
+
+      function clearString(str) {
+        if (!str) {
+          return "";
+        }
+        return str.replaceAll(" pixels", "").replaceAll("?", "");
+      }
+
+      exec(cmd, (error, duration) => {
+        if (error) console.log(error);
+        try {
+          let formattedDuration = duration?.replaceAll("\\r\\n", "");
+          formattedDuration = JSON.parse(duration || "[]");
+          setDirectoryItems((prevItems) =>
+            prevItems.map((prevItem) => {
+              let metadata;
+              if (typeof formattedDuration === "object") {
+                for (let item of formattedDuration) {
+                  metadata = JSON.parse(item);
+                  const {
+                    duration,
+                    name,
+                    width,
+                    height,
+                    dimensions,
+                    description,
+                    bitrate,
+                  } = metadata;
+
+                  if (name === prevItem.name) {
+                    return {
+                      ...prevItem,
+                      duration: videoTimeToNum(duration),
+                      width: parseInt(clearString(width)),
+                      height: parseInt(clearString(height)),
+                      ...(dimensions && {
+                        dimensions: clearString(dimensions),
+                      }),
+                      ...(description && { description: description }),
+                      ...(bitrate && {
+                        bitrate: bitRateToInt(clearString(bitrate)),
+                      }),
+                    };
+                  }
+                }
+              } else if (typeof formattedDuration === "string") {
+                metadata = JSON.parse(formattedDuration);
+                const {
+                  name,
+                  width,
+                  height,
+                  dimensions,
+                  description,
+                  bitrate,
+                  duration,
+                } = metadata;
+                if (name === prevItem.name) {
+                  return {
+                    ...prevItem,
+                    duration: videoTimeToNum(duration),
+                    width: parseInt(clearString(width)),
+                    height: parseInt(clearString(height)),
+                    dimensions: clearString(dimensions),
+                    ...(description && { description: description }),
+                    ...(bitrate && {
+                      bitrate: bitRateToInt(clearString(bitrate)),
+                    }),
+                  };
+                }
+              }
+              return prevItem;
+            })
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      });
+    }
+    setRerender(true);
+    // eslint-disable-next-line
+  }, [rerender, currentDirectory]);
+
   function handleVisibleItems() {
     const elements = document.getElementsByClassName("display-page-block");
     setVisibleItems([]);
@@ -65,11 +171,6 @@ export default function Page({
       }
     }
   }
-
-  useEffect(() => {
-    handleVisibleItems();
-  }, [directoryItems]);
-
   return (
     <div
       id="display-page"

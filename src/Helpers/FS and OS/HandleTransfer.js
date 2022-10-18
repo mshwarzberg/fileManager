@@ -5,7 +5,6 @@ const { execSync } = window.require("child_process");
 
 export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
   const { source, mode, info } = clipboard;
-
   function transfer(sourcePath, name, destination, isFile) {
     let command = "";
     // use location for files and path for everything else
@@ -29,9 +28,67 @@ export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
       setClipboard({});
       return;
     }
-    for (const { path, fileextension, isFile, location, prefix } of info) {
+    for (const { fileextension, location, prefix } of info) {
+      copyToSameDirectory(prefix, fileextension, location);
     }
   } else {
+    const duplicates = checkForDuplicates(
+      destination,
+      info.map((item) => item.name)
+    );
+    if (duplicates[0]) {
+      setPopup({
+        body: (
+          <div id="body">
+            There {duplicates.length > 1 ? "are" : "is"} {duplicates.length}{" "}
+            duplicate item{duplicates.length > 1 && "s"} in the destination
+          </div>
+        ),
+        ok: (
+          <button
+            onClick={() => {
+              for (const { name, isFile, location } of info) {
+                transfer(location, name, destination, isFile);
+              }
+              setPopup({});
+            }}
+          >
+            Replace All
+          </button>
+        ),
+        cancel: <button>Keep All</button>,
+        thirdButton: (
+          <button
+            onClick={() => {
+              setPopup((prevPopup) => {
+                return {
+                  body: (
+                    <CompareFiles
+                      duplicates={duplicates}
+                      source={source}
+                      destination={destination}
+                    />
+                  ),
+                  ok: <button>Confirm Selections</button>,
+                  cancel: (
+                    <button
+                      onClick={() => {
+                        setPopup(prevPopup);
+                      }}
+                    >
+                      Go Back
+                    </button>
+                  ),
+                };
+              });
+            }}
+          >
+            Compare Items
+          </button>
+        ),
+      });
+      return;
+    }
     for (const { path, location, isFile, name } of info) {
       transfer(isFile ? location : path, name, destination, isFile);
     }
@@ -48,19 +105,47 @@ function checkForDuplicates(directory, itemNames) {
   return duplicates;
 }
 
-function copyItems(source, destination, isFile) {
-  const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
-  if (isFile) {
-    const copy = `copy ${formatName}`;
-    try {
-      execSync(copy);
-    } catch (error) {}
-  } else {
-    execSync(`xcopy ${formatName}\\ /s /h /e`);
-  }
-}
+// function copyItems(source, destination, isFile) {
+//   const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
+//   if (isFile) {
+//     const copy = `copy ${formatName}`;
+//     try {
+//       execSync(copy);
+//     } catch (error) {}
+//   } else {
+//     execSync(`xcopy ${formatName}\\ /s /h /e`);
+//   }
+// }
 
-function moveItems(source, destination) {
-  const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
-  execSync(`move ${formatName}`);
+// function moveItems(source, destination) {
+//   const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
+//   execSync(`move ${formatName}`);
+// }
+
+function copyToSameDirectory(prefix, fileextension, location) {
+  const path = location + prefix + fileextension;
+  function generateNameForCopiedItem() {
+    let i = 2;
+    while (true) {
+      try {
+        fs.accessSync(location + prefix + fileextension);
+      } catch (error) {
+        return location + prefix + fileextension;
+      }
+      prefix += " - Copy";
+    }
+  }
+
+  const newPath = generateNameForCopiedItem();
+
+  const command = `powershell.exe copy-item '${path.replaceAll(
+    "'",
+    "''"
+  )}' '${newPath.replaceAll("'", "''")}' -recurse`;
+
+  try {
+    execSync(command);
+  } catch (error) {
+    console.log(error);
+  }
 }

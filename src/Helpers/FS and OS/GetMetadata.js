@@ -28,6 +28,15 @@ export default function formatMetadata(file, directory, drive) {
   const item = checkIfFileOrDir(file);
   const { name } = file;
 
+  if (
+    (name === "temp" ||
+      name === "$RECYCLE.BIN" ||
+      name === "System Volume Information" ||
+      name === "trash") &&
+    directory === drive
+  ) {
+    return {};
+  }
   let fileextension = file.isFile()
     ? path.extname(directory + name).toLowerCase()
     : "";
@@ -52,23 +61,20 @@ export default function formatMetadata(file, directory, drive) {
     permission = false;
   }
 
-  if (
-    (name === "temp" ||
-      name === "$RECYCLE.BIN" ||
-      name === "System Volume Information" ||
-      name === "trash") &&
-    item.isDirectory &&
-    directory === drive
-  ) {
-    return {};
-  }
   let isMedia, restOfPath, thumbPath;
-  if (itemtype === "video" || itemtype === "image" || itemtype === "gif") {
+  if (
+    itemtype === "video" ||
+    itemtype === "image" ||
+    itemtype === "gif" ||
+    itemtype === "audio"
+  ) {
     isMedia = true;
-    restOfPath = directory.slice(3, Infinity);
-    thumbPath = `${drive}temp/${restOfPath}${name}.jpeg`;
-    if (itemtype === "image" && sizeOf < 300000) {
-      thumbPath = directory + name;
+    if (itemtype !== "audio") {
+      restOfPath = directory.slice(3, Infinity);
+      thumbPath = `${drive}temp/${restOfPath}${name}.jpeg`;
+      if (itemtype === "image" && sizeOf < 300000) {
+        thumbPath = directory + name;
+      }
     }
   }
 

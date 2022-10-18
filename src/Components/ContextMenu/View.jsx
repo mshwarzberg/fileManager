@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 
 export default function View({ contextMenu }) {
   const { setSettings, settings } = useContext(DirectoryContext);

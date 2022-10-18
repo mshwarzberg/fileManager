@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import Sort from "./Sort";
@@ -56,12 +56,16 @@ export default function ContextMenuItem({
       className="context-menu-button"
       onMouseEnter={() => {
         if (contextName === "Sort By") {
-          setShowSort(true);
+          setTimeout(() => {
+            setShowSort(true);
+          }, 0);
         } else if (contextName === "View") {
-          setShowView(true);
+          setTimeout(() => {
+            setShowView(true);
+          }, 0);
         }
       }}
-      onMouseLeave={() => {
+      onMouseLeave={(e) => {
         if (contextName === "Sort By") {
           setShowSort();
         } else if (contextName === "View") {
@@ -98,23 +102,40 @@ export default function ContextMenuItem({
             break;
           case "Delete":
             try {
+              const id = "$" + randomID(10);
               handleMoveToTrash(
-                selectedItems.map((item) => {
-                  const { info } = item;
-                  const id = "$" + randomID(10);
-                  return {
-                    ...info,
-                    name: id + info.fileextension,
-                    location: state.drive + "trash/",
-                    path: state.drive + "trash/" + id + info.fileextension,
-                    current: state.drive + "trash/" + id + info.fileextension,
-                    original: info.path,
-                    ...(info.size < 300000 && {
-                      thumbPath:
-                        state.drive + "trash/" + id + info.fileextension,
-                    }),
-                  };
-                }),
+                selectedItems[0]
+                  ? selectedItems.map((item) => {
+                      const { info } = item;
+                      return {
+                        ...info,
+                        name: id + info.fileextension,
+                        location: state.drive + "trash/",
+                        path: state.drive + "trash/" + id + info.fileextension,
+                        current:
+                          state.drive + "trash/" + id + info.fileextension,
+                        original: info.path,
+                        ...(info.size < 300000 && {
+                          thumbPath:
+                            state.drive + "trash/" + id + info.fileextension,
+                        }),
+                      };
+                    })
+                  : [
+                      {
+                        ...info,
+                        name: id + info.fileextension,
+                        location: state.drive + "trash/",
+                        path: state.drive + "trash/" + id + info.fileextension,
+                        current:
+                          state.drive + "trash/" + id + info.fileextension,
+                        original: info.path,
+                        ...(info.size < 300000 && {
+                          thumbPath:
+                            state.drive + "trash/" + id + info.fileextension,
+                        }),
+                      },
+                    ],
                 state.drive
               );
             } catch (e) {

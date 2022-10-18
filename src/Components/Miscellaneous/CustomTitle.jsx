@@ -41,7 +41,7 @@ export default function CustomTitle() {
             x: e.clientX,
             y: e.clientY + 3,
           });
-        }, 800);
+        }, e.target.dataset.timing || 800);
       }
     }
 

@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import ChildDirectory from "./ChildDirectory";
 import ParentDirectory from "./ParentDirectory";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";

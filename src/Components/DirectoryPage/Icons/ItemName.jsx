@@ -1,11 +1,13 @@
 import { useState, useContext } from "react";
-import { DirectoryContext } from "../../Main/App";
+import { DirectoryContext } from "../../Main/App.jsx";
 
 const fs = window.require("fs");
 
 export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
-  const { displayName, name, fileextension, location } = directoryItem;
-  const { state } = useContext(DirectoryContext);
+  const { displayName, name, fileextension, location, path } = directoryItem;
+  const {
+    state: { currentDirectory },
+  } = useContext(DirectoryContext);
   const [newName, setNewName] = useState();
 
   const illegalChars = ['"', "\\", "/", ":", "*", "?", "|", "<", ">"];
@@ -16,9 +18,7 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
       <textarea
         spellCheck={false}
         className="block-name"
-        disabled={
-          renameItem !== location + name || state.currentDirectory === "Trash"
-        }
+        disabled={renameItem !== path || currentDirectory === "Trash"}
         onKeyDown={(e) => {
           e.stopPropagation();
           if (e.key === "Enter") {
@@ -42,19 +42,7 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
             return;
           }
           try {
-            fs.renameSync(location + name, location + e.target.value);
-            const prevUndo = JSON.parse(localStorage.getItem("undo") || []);
-            localStorage.setItem(
-              "undo",
-              JSON.stringify([
-                ...prevUndo,
-                {
-                  originalName: location + name,
-                  currentName: location + e.target.value,
-                  change: "rename",
-                },
-              ])
-            );
+            fs.renameSync(path, location + e.target.value);
           } catch {}
         }}
         onDoubleClick={(e) => {

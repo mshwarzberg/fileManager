@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { DirectoryContext } from "../Main/App";
+import { DirectoryContext } from "../Main/App.jsx";
 import {
   addToDirectoryTree,
   handleDirectoryTree,
