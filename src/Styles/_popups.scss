@@ -1,0 +1,129 @@
+@import "./uihelpers";
+@import "./general";
+
+#file-comparison-body {
+  @include Body;
+  #select-all {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    background-color: black;
+    height: 4rem;
+    font-size: 1.3rem;
+    border-bottom: 0.2rem solid white;
+    div {
+      margin-inline: auto;
+      * {
+        color: white;
+        font-family: "Akshar";
+        b {
+          color: pink;
+        }
+      }
+    }
+  }
+  #file-comparison {
+    height: 35rem;
+    width: 38rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding-top: 0rem;
+    background-color: black;
+    margin-inline: 1rem;
+    padding-bottom: 1rem;
+    .comparison {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-evenly;
+      align-items: center;
+      position: relative;
+      padding-top: 3rem;
+      height: 16rem;
+      .name {
+        position: absolute;
+        top: -0.4rem;
+        font-size: 1.2rem;
+        font-family: "Oswald";
+        font-weight: normal;
+      }
+      .size {
+        font-size: 1rem;
+        font-weight: normal;
+        font-family: "Oswald";
+      }
+      .date {
+        font-size: 0.9rem;
+        font-family: "Oswald";
+      }
+      .vertical-separator {
+        height: 16rem;
+        width: 0.3px;
+        background-color: #fff;
+        border-radius: 5rem;
+        filter: blur(1px);
+        position: relative;
+      }
+      .block-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1rem;
+        width: 12rem;
+        height: 14rem;
+        padding: 1rem;
+        position: relative;
+        * {
+          pointer-events: none;
+          margin: 0.1rem;
+        }
+        input {
+          position: absolute;
+          left: 0;
+          top: 30%;
+          pointer-events: all;
+        }
+        img {
+          max-width: 100%;
+          max-height: 10.8rem;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
+#settings-body {
+  @include Body;
+  h2 {
+    font-size: 1.2rem;
+    font-family: "bebas neue";
+    letter-spacing: 0.6px;
+    font-weight: normal;
+    @include Text;
+  }
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    width: 90%;
+  }
+  .settings-block {
+    padding-bottom: 1rem;
+  }
+  label {
+    font-size: 1rem;
+    font-family: akshar;
+    @include Text;
+  }
+  #icon-size-slider {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    input {
+      background-color: #fff;
+    }
+  }
+}

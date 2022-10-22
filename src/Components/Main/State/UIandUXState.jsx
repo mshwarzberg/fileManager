@@ -4,26 +4,28 @@ export default function UIandUXState() {
   const initSettings = JSON.parse(localStorage.getItem("settings") || "{}");
 
   const [settings, setSettings] = useState({
-    darkMode: initSettings.darkMode,
-    iconSize: initSettings.iconSize || "large",
+    appTheme: initSettings.appTheme || "dark-mode",
+    iconSize: initSettings.iconSize || 12,
     showDirectoryTree: initSettings.showDirectoryTree !== false,
     treeWidth: initSettings.treeWidth || 260,
     showThumbnails: initSettings.showThumbnails !== false,
-    singleClickToOpen: initSettings.singleClickToOpen,
-    compactView: initSettings.compactView,
+    clickToOpen: initSettings.clickToOpen || "double",
+    pageCompactView: initSettings.pageCompactView,
+    treeCompactView: initSettings.treeCompactView,
   });
 
   useEffect(() => {
     localStorage.setItem(
       "settings",
       JSON.stringify({
-        darkMode: settings.darkMode,
+        appTheme: settings.appTheme,
         iconSize: settings.iconSize,
         showDirectoryTree: settings.showDirectoryTree,
-        showThumbnails: settings.showThumbnails,
-        singleClickToOpen: settings.singleClickToOpen,
-        compactView: settings.compactView,
         treeWidth: settings.treeWidth,
+        showThumbnails: settings.showThumbnails,
+        clickToOpen: settings.clickToOpen,
+        pageCompactView: settings.pageCompactView,
+        treeCompactView: settings.treeCompactView,
       })
     );
   }, [settings]);

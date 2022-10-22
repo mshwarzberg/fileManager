@@ -1,10 +1,24 @@
 import { useContext } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 
 export default function View({ contextMenu }) {
-  const { setSettings, settings } = useContext(DirectoryContext);
+  const { setSettings, settings } = useContext(GeneralContext);
   const { iconSize } = settings;
   const views = ["Small", "Medium", "Large", "Extra Large"];
+
+  function matchSize() {
+    if (iconSize <= 8) {
+      return "Small";
+    }
+    if (iconSize > 8 && iconSize <= 10) {
+      return "Medium";
+    }
+    if (iconSize > 10 && iconSize <= 12) {
+      return "Large";
+    }
+    return "Extra Large";
+  }
+
   return (
     <div
       className={`sort-by-sub-menu ${
@@ -14,18 +28,25 @@ export default function View({ contextMenu }) {
       {views.map((viewOption) => {
         return (
           <button
-            className="context-menu-button"
             key={viewOption}
             onClick={() => {
+              let newSize;
+              if (viewOption === "Small") {
+                newSize = 8;
+              } else if (viewOption === "Medium") {
+                newSize = 10;
+              } else if (viewOption === "Large") {
+                newSize = 12;
+              } else if (viewOption === "Extra Large") {
+                newSize = 14;
+              }
               setSettings((prevSettings) => ({
                 ...prevSettings,
-                iconSize: viewOption.split(" ").join("").toLowerCase(),
+                iconSize: newSize,
               }));
             }}
           >
-            {iconSize === viewOption.split(" ").join("").toLowerCase() && (
-              <div id="dot" />
-            )}
+            {viewOption === matchSize() && <div id="dot" />}
             {viewOption}
           </button>
         );

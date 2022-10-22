@@ -5,11 +5,13 @@ const path = require("path");
 const isDev = require("electron-is-dev");
 
 function createWindow() {
-  let mainWindow = new BrowserWindow({
+  const options = {
     icon: "../src/Assets/images/folder.ico",
     modal: false,
     autoHideMenuBar: true,
+    backgroundColor: "#444",
     webPreferences: {
+      nativeWindowOpen: true,
       webSecurity: false,
       nodeIntegration: true,
       enableRemoteModule: true,
@@ -17,8 +19,8 @@ function createWindow() {
       nodeIntegrationInWorker: true,
       nodeIntegrationInSubFrames: true,
     },
-    backgroundColor: "#444",
-  });
+  };
+  let mainWindow = new BrowserWindow(options);
   mainWindow.webContents.on("before-input-event", (e, input) => {
     if (input.type === "keyDown" && input.key === "F12") {
       mainWindow.webContents.toggleDevTools();

@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext } from "react";
-import { DirectoryContext } from "../Components/Main/App.jsx";
+import { GeneralContext } from "../Components/Main/App.jsx";
 
 export default function useScaleDirectoryTree() {
   const [scalingTree, setScalingTree] = useState();
-  const { settings, setSettings } = useContext(DirectoryContext);
+  const { settings, setSettings } = useContext(GeneralContext);
 
   useEffect(() => {
     const lineSplit = document.getElementById("directory-tree-scaler");

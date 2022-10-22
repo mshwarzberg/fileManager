@@ -1,3 +1,5 @@
+@import "./general";
+
 #select-multiple-box {
   position: absolute;
   background-color: #11111188;
@@ -6,32 +8,11 @@
 
 #directory-tree-scaler {
   height: 100vh;
-  margin-top: 2.7rem;
-  flex: 0 0 1rem;
-  background-color: #fff;
+  margin-top: 2rem;
+  flex: 0 0 0.5rem;
   margin-left: -0.2rem;
   z-index: 1;
   cursor: ew-resize;
-  background: linear-gradient(
-    90deg,
-    #00000000 0%,
-    #00000000 40%,
-    #fff 50%,
-    #00000000 60%,
-    #00000000 100%
-  );
-  &:hover {
-    background: linear-gradient(
-      90deg,
-      #00000000 0%,
-      #00000000 30%,
-      #fff 35%,
-      #fff 50%,
-      #fff 65%,
-      #00000000 70%,
-      #00000000 100%
-    );
-  }
 }
 
 #custom-title {
@@ -58,12 +39,54 @@
   font-family: "Akshar";
 }
 
+@mixin Body {
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding-bottom: 1rem;
+  #description {
+    font-size: 1.4rem;
+    font-family: "Oswald";
+    letter-spacing: 0.75px;
+  }
+  .horizontal-separator {
+    position: absolute;
+    bottom: 0;
+    width: 95%;
+    height: 0.3px;
+    background-color: white;
+    filter: blur(1px);
+  }
+}
+#buttons-container {
+  height: 2rem;
+  width: 100%;
+  #buttons {
+    position: absolute;
+    right: 5%;
+    height: 2rem;
+    display: flex;
+    flex-direction: row;
+    button {
+      height: 100%;
+      width: max-content;
+      min-width: 4rem;
+      margin-left: 2rem;
+      font-family: "mukta";
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  }
+}
+
 #popup-body {
   min-width: 30rem;
   min-height: 10rem;
   height: max-content;
   position: fixed;
-  background-color: #111;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -72,131 +95,54 @@
   z-index: 3;
   transform: translateY(-50%);
   top: 50%;
+  border-radius: 0.5rem;
+  box-shadow: 2px 2px 1rem black;
+  &.popup-body-dark-mode {
+    background-color: #111;
+  }
+  &.popup-body-light-mode {
+    background-color: #ccc;
+  }
+
+  #frame-top {
+    width: 100%;
+    height: 2rem;
+    position: absolute;
+    border-top-left-radius: 0.2rem;
+    border-top-right-radius: 0.2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &.frame-top-dark-mode {
+      background-color: grey;
+    }
+    &.frame-top-light-mode {
+      background-color: #888;
+      outline: 1.5px solid #000;
+    }
+    #popup-label {
+      font-family: mukta;
+      font-size: 1.4rem;
+      margin-left: 0.5rem;
+      color: black;
+    }
+  }
   #close-container {
     width: 100%;
-    height: 1.5rem;
+    height: 2rem;
     position: relative;
-    button {
+    pointer-events: none;
+    #close {
+      pointer-events: all;
+      border-top-right-radius: 0.2rem;
       height: 100%;
+      width: 2rem;
       position: absolute;
       right: 0;
       font-weight: bold;
-      background-color: black;
-      color: white;
-      &:hover {
-        outline: 1.2px solid white;
-      }
-    }
-  }
-  #body {
-    width: 95%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    font-size: 1.3rem;
-    color: white;
-    padding-bottom: 1rem;
-    font-weight: normal;
-    #description {
-      font-size: 1.5rem;
-      font-weight: normal;
-      font-family: "Oswald";
-    }
-    #select-all {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      width: 100%;
-      background-color: black;
-      height: 4rem;
-      div {
-        margin-inline: auto;
-        * {
-          color: white;
-          font-family: "Akshar";
-          b {
-            color: pink;
-          }
-        }
-      }
-    }
-    #file-comparison {
-      height: 35rem;
-      width: 38rem;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      padding-top: 1rem;
-      background-color: black;
-      margin-inline: 1rem;
-      padding-bottom: 1rem;
-      .comparison {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        align-items: center;
-        position: relative;
-        padding-top: 3rem;
-        height: 16rem;
-        .horizontal-separator {
-          position: absolute;
-          bottom: 0;
-          width: 95%;
-          height: 0.3px;
-          background-color: #fff;
-          filter: blur(1px);
-        }
-        .name {
-          position: absolute;
-          top: -0.4rem;
-          font-size: 1.2rem;
-          font-family: "Oswald";
-          font-weight: normal;
-        }
-        .size {
-          font-size: 1rem;
-          font-weight: normal;
-          font-family: "Oswald";
-        }
-        .date {
-          font-size: 0.9rem;
-          font-family: "Oswald";
-        }
-        .vertical-separator {
-          height: 16rem;
-          width: 0.3px;
-          background-color: #fff;
-          border-radius: 5rem;
-          filter: blur(1px);
-          position: relative;
-        }
-        .block-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 1rem;
-          width: 12rem;
-          height: 14rem;
-          padding: 1rem;
-          position: relative;
-          // background-color: pink;
-          * {
-            pointer-events: none;
-            margin: 0.1rem;
-          }
-          input {
-            position: absolute;
-            left: 0;
-            top: 30%;
-            pointer-events: all;
-          }
-          img {
-            max-width: 100%;
-            max-height: 10.8rem;
-            pointer-events: none;
-          }
-        }
-      }
+      font-size: 1.3rem;
+      @include Buttons;
     }
   }
   #buttons-container {
@@ -209,19 +155,19 @@
       display: flex;
       flex-direction: row;
       button {
-        background-color: black;
-        color: white;
         height: 100%;
-        width: 4rem;
+        width: max-content;
+        min-width: 4rem;
         margin-left: 2rem;
         font-family: "mukta";
-        line-height: 0.7rem;
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         font-weight: bold;
-        &:hover {
-          outline: 1.2px solid white;
-        }
+        @include Buttons;
       }
     }
   }
+}
+
+#body {
+  @include Body;
 }

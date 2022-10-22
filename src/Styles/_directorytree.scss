@@ -1,14 +1,21 @@
+@import "./general";
+
 #directory-tree {
   z-index: 1;
   height: calc(100vh - 9rem);
-  top: 2.7rem;
+  top: 2rem;
   position: relative;
   padding-top: 1rem;
   padding-bottom: 6rem;
   flex: 0 0 20%;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: #000;
+  &.directory-tree-dark-mode {
+    background-color: #111;
+  }
+  &.directory-tree-light-mode {
+    background-color: #eee;
+  }
   .child-directories-container {
     left: 1rem;
     position: relative;
@@ -19,27 +26,48 @@
     .line-down {
       position: absolute;
       left: 0.3rem;
-      top: 1.5rem;
-      height: calc(100% - 1.5rem);
+      top: 1.75rem;
+      height: calc(100% - 1.75rem);
       width: 0.5rem;
-      background: linear-gradient(
-        to right,
-        #00000000 45%,
-        white 46%,
-        white 54%,
-        #00000000 56%
-      );
       background-size: 100%;
       border-radius: 40%;
-      &:hover {
-        cursor: pointer;
+      &.line-dark-mode {
         background: linear-gradient(
           to right,
-          #00000000 35%,
-          white 36%,
-          white 64%,
-          #00000000 65%
+          #00000000 45%,
+          white 48%,
+          white 52%,
+          #00000000 56%
         );
+        &:hover {
+          cursor: pointer;
+          background: linear-gradient(
+            to right,
+            #00000000 35%,
+            white 36%,
+            white 64%,
+            #00000000 65%
+          );
+        }
+      }
+      &.line-light-mode {
+        background: linear-gradient(
+          to right,
+          #00000000 45%,
+          black 47%,
+          black 53%,
+          #00000000 56%
+        );
+        &:hover {
+          cursor: pointer;
+          background: linear-gradient(
+            to right,
+            #00000000 35%,
+            black 36%,
+            black 64%,
+            #00000000 65%
+          );
+        }
       }
     }
     .collapsed {
@@ -61,6 +89,10 @@
       border: none;
       width: 100%;
       cursor: pointer;
+      &.compact-tree {
+        margin-block: 0.05rem;
+        height: 1.4rem;
+      }
       &.no-permission {
         background-color: #441111;
         color: red;
@@ -70,7 +102,14 @@
         }
       }
       &#current-directory {
-        background-color: #fff !important;
+        background-color: white;
+        * {
+          color: black;
+          font-weight: bold;
+        }
+      }
+      &:hover {
+        background-color: #999;
         * {
           color: black;
           font-weight: bold;
@@ -80,13 +119,7 @@
         outline: none;
         pointer-events: none;
         font-size: 1rem;
-      }
-      &:hover {
-        background-color: #999;
-        * {
-          color: black;
-          font-weight: bold;
-        }
+        @include Text;
       }
       .arrow-container {
         cursor: default;
@@ -105,7 +138,7 @@
       }
     }
     .parent-directory {
-      background-color: #111;
+      background-color: #444;
       .directory-tree-arrow {
         transform: rotate(90deg);
       }

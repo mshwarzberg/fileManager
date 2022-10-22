@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import ButtonNavigation from "./ButtonNavigation";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import TrashButtons from "./TrashButtons";
 import CurrentDirectory from "./CurrentDirectory";
 
@@ -9,13 +9,15 @@ export default function Navbar({ setPopup }) {
     state: { currentDirectory },
     setSettings,
     settings,
+    settings: { appTheme },
     directoryItems,
     setDirectoryItems,
-  } = useContext(DirectoryContext);
+  } = useContext(GeneralContext);
 
   return (
-    <div id="navbar">
+    <div id="navbar" className={`navbar-${appTheme}`}>
       <button
+        className={`button-${appTheme}`}
         id="toggle-directory-tree"
         onClick={() => {
           setSettings((prevSettings) => ({

@@ -13,7 +13,7 @@ import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
 import UIandUX from "./UIandUX";
 import sortBy from "../../Helpers/SortBy";
 
-export const DirectoryContext = createContext();
+export const GeneralContext = createContext();
 
 const fs = window.require("fs");
 
@@ -64,7 +64,11 @@ export default function App() {
         } catch (e) {
           setPopup({
             show: true,
-            body: <div id="body">{e.toString()}</div>,
+            body: (
+              <div id="body">
+                <h1 id="description">{e.toString()}</h1>
+              </div>
+            ),
             ok: (
               <button
                 onClick={() => {
@@ -80,6 +84,9 @@ export default function App() {
             value: "error",
           });
         }
+        setTimeout(() => {
+          setSelectedItems([]);
+        }, 100);
       } else {
         const drives = await formatDriveOutput();
         setDirectoryItems(drives);
@@ -109,6 +116,10 @@ export default function App() {
     }
   }, [currentDirectory]);
 
+  useEffect(() => {
+    document.body.className = settings.appTheme;
+  }, [settings.appTheme]);
+
   const renderDirectoryItems = directoryItems.map((directoryItem) => {
     return (
       <FilesAndDirectories
@@ -122,8 +133,9 @@ export default function App() {
       />
     );
   });
+
   return (
-    <DirectoryContext.Provider
+    <GeneralContext.Provider
       value={{
         state,
         dispatch,
@@ -154,14 +166,10 @@ export default function App() {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-      {/* <button
-        style={{ position: "fixed", zIndex: 1100 }}
-        onClick={() => {
-          
-        }}
-      >
+
+      {/* <button style={{ position: "fixed", zIndex: 10 }} onClick={() => {}}>
         Test Button
       </button> */}
-    </DirectoryContext.Provider>
+    </GeneralContext.Provider>
   );
 }

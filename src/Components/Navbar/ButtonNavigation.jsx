@@ -1,24 +1,17 @@
 import { useContext } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
-
-import arrowBlack from "../../Images/arrow-black.png";
-import arrowWhite from "../../Images/arrow-white.png";
+import { GeneralContext } from "../Main/App.jsx";
 
 export default function ButtonNavigation() {
-  const { state, dispatch } = useContext(DirectoryContext);
+  const {
+    state,
+    dispatch,
+    settings: { appTheme },
+  } = useContext(GeneralContext);
 
-  function handleMouse(e) {
-    if (e.type === "mousemove") {
-      e.target.firstChild.src = arrowBlack;
-    } else {
-      e.target.firstChild.src = arrowWhite;
-    }
-  }
   return (
     <div id="navbar-navigation">
       <button
-        onMouseMove={handleMouse}
-        onMouseLeave={handleMouse}
+        className={`button-${appTheme}`}
         onClick={() => {
           let uppedDirectory = "";
           for (let i = state.currentDirectory.length - 2; i >= 0; i--) {
@@ -32,22 +25,20 @@ export default function ButtonNavigation() {
         }}
         disabled={state.currentDirectory === ""}
       >
-        <img src={arrowWhite} alt="up" />
+        Up
       </button>
       <button
-        onMouseMove={handleMouse}
-        onMouseLeave={handleMouse}
+        className={`button-${appTheme}`}
         id="navigate-back"
         onClick={() => {
           dispatch({ type: "back" });
         }}
         disabled={state.navigatedIndex === 0}
       >
-        <img src={arrowWhite} alt="back" id="left-arrow" />
+        Back
       </button>
       <button
-        onMouseMove={handleMouse}
-        onMouseLeave={handleMouse}
+        className={`button-${appTheme}`}
         id="navigate-forwards"
         onClick={() => {
           dispatch({ type: "forwards" });
@@ -56,7 +47,7 @@ export default function ButtonNavigation() {
           state.navigatedIndex === state.navigatedDirectories.length - 1
         }
       >
-        <img src={arrowWhite} alt="forwards" id="right-arrow" />
+        Forwards
       </button>
     </div>
   );

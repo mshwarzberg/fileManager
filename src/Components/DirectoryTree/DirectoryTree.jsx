@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import ChildDirectory from "./ChildDirectory";
 import ParentDirectory from "./ParentDirectory";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
@@ -9,7 +9,12 @@ const fs = window.require("fs");
 const { execSync } = window.require("child_process");
 
 export default function DirectoryTree() {
-  const { state, settings, dispatch } = useContext(DirectoryContext);
+  const {
+    state,
+    settings,
+    settings: { appTheme },
+    dispatch,
+  } = useContext(GeneralContext);
 
   useEffect(() => {
     async function updateTree() {
@@ -24,9 +29,6 @@ export default function DirectoryTree() {
           if (!directoryTreeDriveNames.includes(driveName)) {
             newDrives.push(drives[driveNames.indexOf(driveName)]);
           }
-        }
-        function getPath(item) {
-          return item.path || item[0]?.path;
         }
         const updatedDrives = state.directoryTree.slice(7, Infinity);
         dispatch({
@@ -126,6 +128,7 @@ export default function DirectoryTree() {
     settings.showDirectoryTree && (
       <>
         <div
+          className={`directory-tree-${appTheme}`}
           id="directory-tree"
           style={{
             flex: `0 0 ${settings.treeWidth}px`,

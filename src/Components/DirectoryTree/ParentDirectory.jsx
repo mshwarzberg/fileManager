@@ -1,13 +1,11 @@
 import { useContext, useEffect, useRef } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import { updateDirectoryTree } from "../../Helpers/ChangeItemInTree";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 
 import formatTitle from "../../Helpers/FormatTitle";
 import { handleDirectoryTree } from "../../Helpers/ChangeItemInTree";
 import { getTreeItem } from "../../Helpers/FS and OS/GetChildDirectoriesTree";
-
-import useCaretColor, { handleMouse } from "../../Hooks/useCaretColor";
 
 const fs = window.require("fs");
 
@@ -17,7 +15,11 @@ export default function ParentDirectory({
   childDirsList,
 }) {
   const { path, name, permission, collapsed, isDirectory, isDrive } = parentDir;
-  const { state, dispatch } = useContext(DirectoryContext);
+  const {
+    state,
+    dispatch,
+    settings: { treeCompactView, appTheme },
+  } = useContext(GeneralContext);
 
   const isDirectoryCurrent = state.currentDirectory === path;
 
@@ -66,15 +68,18 @@ export default function ParentDirectory({
     });
   }
 
-  const { caretColor, setCaretColor } = useCaretColor();
-
   return (
     <div className="child-directories-container">
-      {name && <div className="line-down" onClick={handleCollapseAndExpanse} />}
+      {name && (
+        <div
+          className={`line-down line-${appTheme}`}
+          onClick={handleCollapseAndExpanse}
+        />
+      )}
       <button
-        className={
+        className={`${
           collapsed ? "parent-directory-collapsed" : "parent-directory"
-        }
+        } ${treeCompactView ? "compact-tree" : ""}`}
         id={isDirectoryCurrent ? "current-directory" : ""}
         onDoubleClick={() => {
           dispatch({
@@ -88,12 +93,6 @@ export default function ParentDirectory({
           e.stopPropagation();
           dispatch({ type: "open", value: path || "" });
         }}
-        onMouseMove={(e) => {
-          handleMouse(e, setCaretColor, isDirectoryCurrent);
-        }}
-        onMouseLeave={(e) => {
-          handleMouse(e, setCaretColor, isDirectoryCurrent);
-        }}
         data-contextmenu={contextMenuOptions(parentDir)}
         data-info={permission && JSON.stringify(parentDir)}
         data-title={formatTitle(parentDir)}
@@ -102,25 +101,15 @@ export default function ParentDirectory({
         })}
       >
         {name && (
-          <div
-            className="arrow-container"
-            onClick={handleCollapseAndExpanse}
-            onMouseMove={(e) => {
-              handleMouse(e, setCaretColor, isDirectoryCurrent);
-            }}
-            onMouseLeave={(e) => {
-              handleMouse(e, setCaretColor, isDirectoryCurrent);
-            }}
-          >
+          <div className="arrow-container" onClick={handleCollapseAndExpanse}>
             <img
               ref={arrow}
               className={`directory-tree-arrow ${collapsed ? "rotate-me" : ""}`}
-              src={caretColor}
               alt=">"
             />
           </div>
         )}
-        <div disabled={true} className="directory-name">
+        <div disabled={true} className={`directory-name text-${appTheme}`}>
           {name || "This PC"}
         </div>
       </button>

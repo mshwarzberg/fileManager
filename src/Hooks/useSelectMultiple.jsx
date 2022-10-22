@@ -1,54 +1,58 @@
 import { useEffect } from "react";
 import { findInArray } from "../Helpers/SearchArray";
 
+let timeout;
 export default function useSelectMultiple(setLastSelected, setSelectedItems) {
   function highlightItems(boxDimensions, e) {
-    const elements = document.getElementsByClassName("display-page-block");
-    let infoArray = [];
-    for (const element of elements) {
-      const elDimensions = element.getBoundingClientRect();
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const elements = document.getElementsByClassName("display-page-block");
+      let infoArray = [];
+      for (const element of elements) {
+        const elDimensions = element.getBoundingClientRect();
 
-      const notToRightOfBlock = elDimensions.x < boxDimensions.right;
-      const notToLeftOfBlock =
-        elDimensions.x + elDimensions.width > boxDimensions.x;
+        const notToRightOfBlock = elDimensions.x < boxDimensions.right;
+        const notToLeftOfBlock =
+          elDimensions.x + elDimensions.width > boxDimensions.x;
 
-      const notBelowBlock = elDimensions.y < boxDimensions.bottom;
-      const notAboveBlock =
-        elDimensions.y + elDimensions.height > boxDimensions.y;
+        const notBelowBlock = elDimensions.y < boxDimensions.bottom;
+        const notAboveBlock =
+          elDimensions.y + elDimensions.height > boxDimensions.y;
 
-      const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
-      const isWithinYAxis = notAboveBlock && notBelowBlock;
+        const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
+        const isWithinYAxis = notAboveBlock && notBelowBlock;
 
-      if (isWithinXAxis && isWithinYAxis) {
-        const info = JSON.parse(element.dataset.info || "{}");
-        if (info.name) {
-          infoArray.push({
-            info: info,
-            element: element,
-          });
-        }
-      }
-      if (!notBelowBlock) {
-        break;
-      }
-    }
-    setLastSelected(infoArray[0]?.element);
-    setSelectedItems((prevItems) => {
-      let array = [...prevItems];
-      if (e.shiftKey || e.ctrlKey) {
-        for (const { info, element } of infoArray) {
-          if (!prevItems.map((item) => item.element).includes(element)) {
-            array.push({
+        if (isWithinXAxis && isWithinYAxis) {
+          const info = JSON.parse(element.dataset.info || "{}");
+          if (info.name) {
+            infoArray.push({
               info: info,
               element: element,
             });
           }
         }
-      } else {
-        array = infoArray;
+        if (!notBelowBlock) {
+          break;
+        }
       }
-      return array;
-    });
+      setLastSelected(infoArray[0]?.element);
+      setSelectedItems((prevItems) => {
+        let array = [...prevItems];
+        if (e.shiftKey || e.ctrlKey) {
+          for (const { info, element } of infoArray) {
+            if (!prevItems.map((item) => item.element).includes(element)) {
+              array.push({
+                info: info,
+                element: element,
+              });
+            }
+          }
+        } else {
+          array = infoArray;
+        }
+        return array;
+      });
+    }, 0);
   }
   function changeBoxDimensions(
     box,
@@ -81,7 +85,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
       if (e.target.id !== "display-page" || e.button !== 0) {
         return;
       }
-      if (!e.shiftKey && !e.ctrlKey) {
+      if (!e.shiftKey && !e.ctrlKey && e.clientX < window.innerWidth - 12) {
         setSelectedItems([]);
         setLastSelected();
       }
@@ -164,6 +168,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mousemove", handleMouseMove);
       page.removeEventListener("mousedown", handleMouseDown);
+      clearTimeout(timeout);
     };
     // eslint-disable-next-line
   }, []);

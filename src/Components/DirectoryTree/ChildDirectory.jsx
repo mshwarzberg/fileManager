@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import {
   addToDirectoryTree,
   handleDirectoryTree,
@@ -7,13 +7,16 @@ import {
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import formatTitle from "../../Helpers/FormatTitle";
 import getChildDirectoriesTree from "../../Helpers/FS and OS/GetChildDirectoriesTree";
-import useCaretColor, { handleMouse } from "../../Hooks/useCaretColor";
 
 const fs = window.require("fs");
 
 export default function ChildDirectory({ childDir, containsDirectories }) {
-  const { state, dispatch } = useContext(DirectoryContext);
-  const { path, name, permission, isDirectory, isDrive, linkTo } = childDir;
+  const {
+    state,
+    dispatch,
+    settings: { treeCompactView, appTheme },
+  } = useContext(GeneralContext);
+  const { path, name, permission, linkTo } = childDir;
 
   useEffect(() => {
     try {
@@ -53,11 +56,11 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
     });
   }
 
-  const { caretColor, setCaretColor } = useCaretColor(isDirectoryCurrent);
-
   return (
     <button
-      className={`child-directory ${!permission && "no-permission"}`}
+      className={`child-directory ${!permission && "no-permission"} ${
+        treeCompactView ? "compact-tree" : ""
+      }`}
       id={isDirectoryCurrent ? "current-directory" : ""}
       onClick={(e) => {
         e.stopPropagation();
@@ -72,12 +75,6 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
           return;
         }
         clickDirectory(true, true, true);
-      }}
-      onMouseMove={(e) => {
-        handleMouse(e, setCaretColor, isDirectoryCurrent);
-      }}
-      onMouseLeave={(e) => {
-        handleMouse(e, setCaretColor, isDirectoryCurrent);
       }}
       data-contextmenu={contextMenuOptions(childDir)}
       data-info={permission && JSON.stringify(childDir)}
@@ -96,17 +93,11 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
             clickDirectory(false, true);
             e.stopPropagation();
           }}
-          onMouseMove={(e) => {
-            handleMouse(e, setCaretColor, isDirectoryCurrent);
-          }}
-          onMouseLeave={(e) => {
-            handleMouse(e, setCaretColor, isDirectoryCurrent);
-          }}
         >
-          <img className="directory-tree-arrow" src={caretColor} alt=">" />
+          <img className="directory-tree-arrow" alt=">" />
         </div>
       )}
-      <div className="directory-name">{name}</div>
+      <div className={`directory-name text-${appTheme}`}>{name}</div>
     </button>
   );
 }

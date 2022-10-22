@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import { findInArray } from "../../Helpers/SearchArray";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
 
-const { execSync, exec } = window.require("child_process");
+const { exec } = window.require("child_process");
 
 export default function Page({
   selectedItems,
@@ -17,7 +17,8 @@ export default function Page({
     setDirectoryItems,
     directoryItems,
     state: { currentDirectory },
-  } = useContext(DirectoryContext);
+    settings: { appTheme },
+  } = useContext(GeneralContext);
 
   const [rerender, setRerender] = useState(false);
 
@@ -171,8 +172,10 @@ export default function Page({
       }
     }
   }
+
   return (
     <div
+      className={`page-${appTheme}`}
       id="display-page"
       onScroll={() => {
         handleVisibleItems();

@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { DirectoryContext } from "../../Main/App.jsx";
+import { GeneralContext } from "../../Main/App.jsx";
 
 const fs = window.require("fs");
 
@@ -7,7 +7,8 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
   const { displayName, name, fileextension, location, path } = directoryItem;
   const {
     state: { currentDirectory },
-  } = useContext(DirectoryContext);
+    settings: { appTheme },
+  } = useContext(GeneralContext);
   const [newName, setNewName] = useState();
 
   const illegalChars = ['"', "\\", "/", ":", "*", "?", "|", "<", ">"];
@@ -17,7 +18,7 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
       {newName || newName === "" ? newName : displayName}
       <textarea
         spellCheck={false}
-        className="block-name"
+        className={`block-name text-${appTheme}`}
         disabled={renameItem !== path || currentDirectory === "Trash"}
         onKeyDown={(e) => {
           e.stopPropagation();

@@ -1,15 +1,6 @@
 import { useReducer, useEffect } from "react";
 
-function reducer(
-  state: {
-    networkDrives: string[];
-    drive: string;
-    navigatedDirectories: string[];
-    navigatedIndex: number;
-    currentDirectory: string;
-  },
-  action: { type: string; value: string }
-) {
+function reducer(state, action) {
   const { drive, navigatedDirectories, navigatedIndex, currentDirectory } =
     state;
   switch (action.type) {

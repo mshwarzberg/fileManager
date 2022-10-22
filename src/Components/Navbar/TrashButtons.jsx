@@ -1,4 +1,6 @@
 import { restoreFromTrash } from "../../Helpers/FS and OS/HandleTrash";
+import { useContext } from "react";
+import { GeneralContext } from "../Main/App";
 
 const fs = window.require("fs");
 
@@ -7,9 +9,14 @@ export default function TrashButtons({
   directoryItems,
   setDirectoryItems,
 }) {
+  const {
+    settings: { appTheme },
+  } = useContext(GeneralContext);
+
   return (
     <>
       <button
+        className={`button-${appTheme}`}
         onClick={() => {
           setDirectoryItems(
             restoreFromTrash(JSON.parse(localStorage.getItem("trash")) || [])
@@ -20,18 +27,21 @@ export default function TrashButtons({
         Restore All
       </button>
       <button
+        className={`button-${appTheme}`}
         onClick={() => {
           const trashedItems = JSON.parse(localStorage.getItem("trash")) || [];
           setPopup({
-            show: true,
             body: (
               <div id="body">
-                Deleted items cannot be recovered. Are you sure you want to
-                delete these {trashedItems.length} items?
+                <h1 id="description">
+                  Deleted items cannot be recovered. Are you sure you want to
+                  delete these {trashedItems.length} items?
+                </h1>
               </div>
             ),
             ok: (
               <button
+                className={`button-${appTheme}`}
                 onClick={() => {
                   for (const trashedItem of trashedItems) {
                     if (trashedItem.isDirectory) {
@@ -50,6 +60,7 @@ export default function TrashButtons({
             ),
             cancel: (
               <button
+                className={`button-${appTheme}`}
                 onClick={() => {
                   setPopup({});
                 }}

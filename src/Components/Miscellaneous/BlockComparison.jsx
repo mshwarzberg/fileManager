@@ -1,12 +1,20 @@
+import { useState } from "react";
+
 import formatDate from "../../Helpers/FormatDate";
 import formatSize from "../../Helpers/FormatSize";
 import formatTitle from "../../Helpers/FormatTitle";
 import formatDuration from "../../Helpers/FormatVideoTime";
-import CustomIcon from "../DirectoryPage/Icons/CustomIcon";
 
+import CustomIcon from "../DirectoryPage/Icons/CustomIcon";
 import folderImage from "../../Images/folder.png";
 
-export default function BlockComparison({ directoryItem }) {
+const exifr = window.require("exifr");
+
+export default function BlockComparison({
+  directoryItem,
+  location,
+  setChecked,
+}) {
   const {
     thumbPath,
     name,
@@ -17,20 +25,55 @@ export default function BlockComparison({ directoryItem }) {
     path,
     key,
     isDirectory,
-    prefix,
     fileextension,
     duration,
     isFile,
     isSymbolicLink,
   } = directoryItem;
 
+  const [description, setDescription] = useState();
+
   return (
-    <div
+    <label
       key={key}
       className="block-container"
-      data-title={formatTitle(directoryItem)}
+      data-title={formatTitle({ ...directoryItem, description: description })}
+      onMouseEnter={() => {
+        if (filetype === "image") {
+          exifr
+            .parse(path, true)
+            .then((data) => {
+              if (!data) {
+                return;
+              }
+              const description =
+                data.Comment || data.description?.value || data.description;
+              setDescription(description);
+            })
+            .catch(() => {});
+        }
+      }}
     >
-      <input type="checkbox" name={name} />
+      <input
+        type="checkbox"
+        className={location}
+        id={path}
+        value={false}
+        onChange={() => {
+          setChecked((prevChecked) => {
+            const locationArray = [...prevChecked[location]];
+            if (!locationArray.includes(name)) {
+              locationArray.push(name);
+            } else {
+              locationArray.splice(locationArray.indexOf(name), 1);
+            }
+            return {
+              ...prevChecked,
+              [location]: locationArray,
+            };
+          });
+        }}
+      />
       {thumbPath && isMedia ? (
         <>
           <img src={thumbPath} />
@@ -48,6 +91,6 @@ export default function BlockComparison({ directoryItem }) {
       )}
       {size ? <p className="size">{formatSize(size)}</p> : <></>}
       <pre className="date">{formatDate(new Date(modified))}</pre>
-    </div>
+    </label>
   );
 }

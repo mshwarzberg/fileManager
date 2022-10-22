@@ -7,6 +7,7 @@ import useShortcuts from "../../Hooks/useShortcuts";
 import useScaleDirectoryTree from "../../Hooks/useScaleDirectoryTree";
 import useWatch from "../../Hooks/useWatch";
 import Popup from "../Miscellaneous/Popup";
+import Settings from "../Miscellaneous/Settings/Settings";
 
 export const UIContext = createContext();
 
@@ -20,18 +21,6 @@ export default function UIandUX({
   setClipboard,
 }) {
   const [contextMenu, setContextMenu] = useState({});
-
-  useWatch();
-  useScaleDirectoryTree();
-  useSelectMultiple(setLastSelected, setSelectedItems);
-  useShortcuts(
-    selectedItems,
-    setClipboard,
-    clipboard,
-    setSelectedItems,
-    setPopup,
-    popup
-  );
 
   useEffect(() => {
     setClipboard(JSON.parse(sessionStorage.getItem("clipboard") || "{}"));
@@ -61,6 +50,18 @@ export default function UIandUX({
     sessionStorage.setItem("clipboard", JSON.stringify(clipboard));
   }, [clipboard]);
 
+  useWatch();
+  useScaleDirectoryTree();
+  useSelectMultiple(setLastSelected, setSelectedItems);
+  useShortcuts(
+    selectedItems,
+    setClipboard,
+    clipboard,
+    setSelectedItems,
+    setPopup,
+    popup
+  );
+
   return (
     <UIContext.Provider
       value={{
@@ -79,6 +80,7 @@ export default function UIandUX({
         setSelectedItems={setSelectedItems}
         setPopup={setPopup}
       />
+      <Settings setPopup={setPopup} />
     </UIContext.Provider>
   );
 }

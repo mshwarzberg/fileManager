@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import sortBy from "../../Helpers/SortBy";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 
 export default function Sort({ contextMenu }) {
   const sortOptions = ["Name", "Size", "Date", "Type"];
-  const { setDirectoryItems } = useContext(DirectoryContext);
+  const { setDirectoryItems } = useContext(GeneralContext);
 
   function subMenuClassNames() {
     let className = "sort-by-sub-menu";
@@ -21,7 +21,6 @@ export default function Sort({ contextMenu }) {
       {sortOptions.map((method) => {
         return (
           <button
-            className="context-menu-button"
             key={method}
             onClick={() => {
               sortBy(
@@ -38,7 +37,6 @@ export default function Sort({ contextMenu }) {
       })}
       <div id="line-break" />
       <button
-        className="context-menu-button"
         onClick={() => {
           sessionStorage.setItem("ascending", true);
           sortBy(
@@ -51,7 +49,6 @@ export default function Sort({ contextMenu }) {
         {sessionStorage.getItem("ascending") && <div id="dot" />} Ascending
       </button>
       <button
-        className="context-menu-button"
         onClick={() => {
           sessionStorage.removeItem("ascending");
           sortBy(

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import Sort from "./Sort";
@@ -33,7 +33,7 @@ export default function ContextMenuItem({
   }, []);
 
   const { state, setRenameItem, dispatch, setDirectoryItems } =
-    useContext(DirectoryContext);
+    useContext(GeneralContext);
   const { setClipboard, clipboard, setPopup } = useContext(UIContext);
 
   const [showSort, setShowSort] = useState();
@@ -53,7 +53,6 @@ export default function ContextMenuItem({
 
   return (
     <div
-      className="context-menu-button"
       onMouseEnter={() => {
         if (contextName === "Sort By") {
           setTimeout(() => {

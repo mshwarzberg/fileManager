@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
-import { DirectoryContext } from "../Components/Main/App.jsx";
+import { GeneralContext } from "../Components/Main/App.jsx";
 import clickOnItem from "../Helpers/ClickOnItem";
 import { handleMoveToTrash } from "../Helpers/FS and OS/HandleTrash";
 import randomID from "../Helpers/RandomID";
@@ -15,7 +15,7 @@ export default function useShortcuts(
   popup
 ) {
   const { state, dispatch, directoryItems, setRenameItem } =
-    useContext(DirectoryContext);
+    useContext(GeneralContext);
 
   useEffect(() => {
     function navigateDirectories(e) {

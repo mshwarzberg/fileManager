@@ -1,9 +1,7 @@
-import { useContext, useState, Fragment, useEffect } from "react";
-import { DirectoryContext } from "../Main/App";
+import { useContext, useState, Fragment } from "react";
+import { GeneralContext } from "../Main/App";
 import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 
-import rightCaretImageWhite from "../../Images/right-caret-white.png";
-import rightCaretImageBlack from "../../Images/right-caret-black.png";
 import formatTitle from "../../Helpers/FormatTitle";
 
 const fs = window.require("fs");
@@ -11,8 +9,9 @@ const fs = window.require("fs");
 export default function CurrentDirectory() {
   const {
     state: { currentDirectory, drive },
+    settings: { appTheme },
     dispatch,
-  } = useContext(DirectoryContext);
+  } = useContext(GeneralContext);
 
   const arrayifyCurrentDirectory = currentDirectory.split("/");
 
@@ -47,6 +46,7 @@ export default function CurrentDirectory() {
         return (
           <div className="arrow-and-name-container">
             <button
+              className={`button-${appTheme}`}
               key={index}
               onClick={() => {
                 dispatch({
@@ -58,22 +58,18 @@ export default function CurrentDirectory() {
               {directory}
             </button>
             {result[0] && (
-              <img
-                src={rightCaretImageWhite}
-                onMouseEnter={(e) => {
-                  e.target.src = rightCaretImageBlack;
-                }}
-                onMouseLeave={(e) => {
-                  e.target.src = rightCaretImageWhite;
-                }}
-                onClick={() => {
-                  if (showSubDirectories === path) {
-                    setShowSubDirectories();
-                  } else {
-                    setShowSubDirectories(path);
-                  }
-                }}
-              />
+              <button className={`directory-arrow button-${appTheme}`}>
+                <img
+                  src={""}
+                  onClick={() => {
+                    if (showSubDirectories === path) {
+                      setShowSubDirectories();
+                    } else {
+                      setShowSubDirectories(path);
+                    }
+                  }}
+                />
+              </button>
             )}
             {showSubDirectories === path && (
               <div className="sub-directories">

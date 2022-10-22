@@ -1,7 +1,7 @@
 import CompareFiles from "../../Components/Miscellaneous/CompareFiles";
 
 const fs = window.require("fs");
-const { execSync } = window.require("child_process");
+const { exec } = window.require("child_process");
 
 export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
   const { source, mode, info } = clipboard;
@@ -19,7 +19,9 @@ export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
     }
 
     try {
-      execSync(command);
+      exec(command, (err) => {
+        if (err) console.log(err);
+      });
     } catch (error) {}
   }
 
@@ -40,17 +42,20 @@ export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
       setPopup({
         body: (
           <div id="body">
-            There {duplicates.length > 1 ? "are" : "is"} {duplicates.length}{" "}
-            duplicate item{duplicates.length > 1 && "s"} in the destination
+            <h1 id="description">
+              There {duplicates.length > 1 ? "are" : "is"} {duplicates.length}
+              &nbsp;duplicate item{duplicates.length > 1 && "s"} in the
+              destination
+            </h1>
           </div>
         ),
         ok: (
           <button
             onClick={() => {
-              for (const { name, isFile, location } of info) {
-                transfer(location, name, destination, isFile);
-              }
-              setPopup({});
+              // for (const { name, isFile, location } of info) {
+              //   transfer(location, name, destination, isFile);
+              // }
+              // setPopup({});
             }}
           >
             Replace All
@@ -79,6 +84,7 @@ export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
                       Go Back
                     </button>
                   ),
+                  popupLabel: <h1 id="popup-label">Compare Items</h1>,
                 };
               });
             }}
@@ -110,22 +116,21 @@ function checkForDuplicates(directory, itemNames) {
 //   if (isFile) {
 //     const copy = `copy ${formatName}`;
 //     try {
-//       execSync(copy);
+//       exec(copy);
 //     } catch (error) {}
 //   } else {
-//     execSync(`xcopy ${formatName}\\ /s /h /e`);
+//     exec(`xcopy ${formatName}\\ /s /h /e`);
 //   }
 // }
 
 // function moveItems(source, destination) {
 //   const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
-//   execSync(`move ${formatName}`);
+//   exec(`move ${formatName}`);
 // }
 
 function copyToSameDirectory(prefix, fileextension, location) {
   const path = location + prefix + fileextension;
   function generateNameForCopiedItem() {
-    let i = 2;
     while (true) {
       try {
         fs.accessSync(location + prefix + fileextension);
@@ -144,7 +149,9 @@ function copyToSameDirectory(prefix, fileextension, location) {
   )}' '${newPath.replaceAll("'", "''")}' -recurse`;
 
   try {
-    execSync(command);
+    exec(command, (err) => {
+      if (err) console.log(err);
+    });
   } catch (error) {
     console.log(error);
   }

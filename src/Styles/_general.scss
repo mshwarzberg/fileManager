@@ -1,41 +1,90 @@
 body {
   margin: 0;
-  background-color: #222;
   user-select: none;
   overflow: hidden;
+  &.dark-mode {
+    background-color: #222;
+  }
+  &.light-mode {
+    background-color: #ccc;
+  }
 }
+
 #root {
   display: flex;
-  flex-direction: row;
   justify-content: center;
-  height: 100vh;
 }
 
 *::selection {
   background-color: rebeccapurple;
 }
 
-*::-webkit-scrollbar {
-  width: 0.5rem;
+.dark-mode {
+  *::-webkit-scrollbar {
+    width: 0.75rem;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #111117;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: #fffff0;
+  }
 }
 
-*::-webkit-scrollbar-track {
-  background: black;
+.light-mode {
+  *::-webkit-scrollbar {
+    width: 0.75rem;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #fffff7;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: #111117;
+  }
 }
 
-*::-webkit-scrollbar-thumb {
-  background-color: white;
-  border: 3px solid white;
+@mixin Buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  &.button-dark-mode {
+    background-color: #090909;
+    color: white;
+    border: 1px solid white;
+    &:hover {
+      background-color: white;
+      color: #090909;
+      border: 1px solid #090909;
+    }
+  }
+  &.button-light-mode {
+    background-color: #777;
+    color: black;
+    border: 1px solid black;
+    &:hover {
+      background-color: #444;
+      color: white;
+      border: 1px solid white;
+    }
+  }
+  &:disabled {
+    color: grey !important;
+    background-color: darkgrey !important;
+    border: grey !important;
+    cursor: not-allowed !important;
+  }
 }
 
-// font-family: "Bebas Neue";
-// font-family: "Roboto Slab";
-// font-family: "PT Serif";
-// font-family: "Bitter";
-// font-family: "Lato";
-// font-family: "Akshar";
-// font-family: "Jakarta";
-// font-family: "Roboto Flex";
-// font-family: "Oswald";
-// font-family: "Merriweather";
-// font-family: "Mukta";
+@mixin Text {
+  &.text-dark-mode {
+    color: white;
+  }
+  &.text-light-mode {
+    font-weight: bold;
+    color: black;
+  }
+}

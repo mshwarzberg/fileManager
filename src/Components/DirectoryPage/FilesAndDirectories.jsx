@@ -1,15 +1,15 @@
 import { useContext, useState, useEffect } from "react";
-import { DirectoryContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/App.jsx";
 import handleItemsSelected from "../../Helpers/HandleItemsSelected";
 import ItemName from "./Icons/ItemName";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import formatTitle from "../../Helpers/FormatTitle";
 import CustomIcon from "./Icons/CustomIcon";
 
-import folderImage from "../../Images/folder.png";
 import clickOnItem from "../../Helpers/ClickOnItem";
 import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpeg";
 import formatDuration from "../../Helpers/FormatVideoTime.js";
+import CustomFolderIcon from "./Icons/CustomFolderIcon.jsx";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
@@ -36,6 +36,7 @@ export default function FilesAndDirectories({
     isSymbolicLink,
     filetype,
     duration,
+    linkTo,
   } = directoryItem;
 
   const {
@@ -43,23 +44,26 @@ export default function FilesAndDirectories({
     state: { currentDirectory, drive },
     renameItem,
     setRenameItem,
-    settings: { singleClickToOpen, showThumbnails, iconSize },
+    settings: { clickToOpen, showThumbnails, iconSize, pageCompactView },
     setDirectoryItems,
-  } = useContext(DirectoryContext);
+    directoryItems,
+  } = useContext(GeneralContext);
 
   const [thumbnail, setThumbnail] = useState();
 
+  const selectedElements = selectedItems.map(
+    (selectedItem) => selectedItem.element
+  );
+  const tempPath = `${drive}temp/${currentDirectory.slice(
+    drive.length,
+    currentDirectory.length
+  )}`;
+
   useEffect(() => {
     let timeout;
-    if (isMedia && filetype !== "audio") {
+    if (isMedia && filetype !== "audio" && showThumbnails) {
       if (currentDirectory !== "Trash") {
-        fs.mkdirSync(
-          `${drive}temp/${currentDirectory.slice(
-            drive.length,
-            currentDirectory.length
-          )}`,
-          { recursive: true }
-        );
+        fs.mkdirSync(tempPath, { recursive: true });
       }
       function createThumbnails() {
         if (filetype === "image") {
@@ -78,30 +82,34 @@ export default function FilesAndDirectories({
           });
         }
       }
-      try {
-        fs.accessSync(thumbPath);
-        setThumbnail(thumbPath);
-      } catch {
-        if (currentDirectory === "Trash") {
-          setThumbnail(drive + "trash/" + name);
-          return;
-        }
-        timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
+        try {
+          fs.accessSync(thumbPath);
+          setThumbnail(thumbPath);
+        } catch {
+          if (currentDirectory === "Trash") {
+            setThumbnail(drive + "trash/" + name);
+            return;
+          }
           createThumbnails();
-        }, 200);
-      }
+        }
+      }, directoryItems.indexOf(directoryItem));
     }
     return () => {
       clearTimeout(timeout);
     };
-  }, [currentDirectory]);
+  }, [currentDirectory, showThumbnails]);
 
   return (
-    <button
+    <div
       className={`display-page-block ${
-        singleClickToOpen ? "single-click" : ""
-      } ${iconSize}`}
+        clickToOpen === "single" ? "single-click" : ""
+      } ${pageCompactView ? "compact-page" : ""}`}
       id={path}
+      style={{
+        width: iconSize + "rem",
+        minHeight: iconSize + "rem",
+      }}
       onMouseEnter={() => {
         if (filetype === "image") {
           exifr
@@ -127,11 +135,13 @@ export default function FilesAndDirectories({
             .catch(() => {});
         }
       }}
-      onMouseMove={() => {
-        clearTimeout(mouseDownTimeout);
+      onMouseMove={(e) => {
+        if (selectedElements.includes(e.target)) {
+          clearTimeout(mouseDownTimeout);
+        }
       }}
       onClick={() => {
-        if (singleClickToOpen) {
+        if (clickToOpen === "single") {
           clickOnItem(directoryItem, dispatch);
         }
       }}
@@ -156,18 +166,23 @@ export default function FilesAndDirectories({
         if (e.button === 0 || e.button === 2) {
           if (!e.shiftKey && !e.ctrlKey && renameItem !== path) {
             clickOnNameTimeout = setTimeout(() => {
-              setRenameItem(path);
+              setRenameItem((prevRename) =>
+                prevRename === path ? null : path
+              );
             }, 1000);
           }
-          mouseDownTimeout = setTimeout(() => {
-            handleItemsSelected(
-              e,
-              selectedItems,
-              setSelectedItems,
-              lastSelected,
-              setLastSelected
-            );
-          }, 300);
+          mouseDownTimeout = setTimeout(
+            () => {
+              handleItemsSelected(
+                e,
+                selectedItems,
+                setSelectedItems,
+                lastSelected,
+                setLastSelected
+              );
+            },
+            selectedElements.includes(e.target) ? 200 : 0
+          );
         }
       }}
       data-contextmenu={permission && contextMenuOptions(directoryItem)}
@@ -181,7 +196,16 @@ export default function FilesAndDirectories({
         <>
           {thumbnail && showThumbnails && isMedia ? (
             <div className="media-container">
-              <img src={thumbnail} className="media-thumbnail" />
+              <img
+                src={thumbnail}
+                className="media-thumbnail"
+                style={{
+                  maxHeight: iconSize * (9 / 10) + "rem",
+                }}
+                onError={() => {
+                  setThumbnail();
+                }}
+              />
               {duration && (
                 <div className="duration">{formatDuration(duration)}</div>
               )}
@@ -192,7 +216,9 @@ export default function FilesAndDirectories({
             )
           )}
           {(isDirectory || isSymbolicLink) && (
-            <img src={folderImage} alt="" className="block-icon" />
+            <>
+              <CustomFolderIcon path={tempPath + "/" + name} />
+            </>
           )}
           <ItemName
             directoryItem={directoryItem}
@@ -201,6 +227,6 @@ export default function FilesAndDirectories({
           />
         </>
       )}
-    </button>
+    </div>
   );
 }
