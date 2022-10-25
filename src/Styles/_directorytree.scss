@@ -12,6 +12,12 @@
   overflow-x: hidden;
   &.directory-tree-dark-mode {
     background-color: #111;
+    background: linear-gradient(
+      180deg,
+      #090909 0vh,
+      #0a0a0a 50vh,
+      #0c0c0c 100vh
+    );
   }
   &.directory-tree-light-mode {
     background-color: #eee;
@@ -121,7 +127,7 @@
         font-size: 1rem;
         @include Text;
       }
-      .arrow-container {
+      .expand-directory {
         cursor: default;
         display: flex;
         flex-direction: row;
@@ -131,9 +137,9 @@
         width: 1rem;
         height: 1.3rem;
         right: 0.3rem;
-        .directory-tree-arrow {
-          position: relative;
-          height: 0.7rem;
+        @include Text;
+        &.rotate-arrow {
+          transform: rotate(90deg);
         }
       }
     }

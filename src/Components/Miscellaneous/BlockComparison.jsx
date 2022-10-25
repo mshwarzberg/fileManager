@@ -5,8 +5,7 @@ import formatSize from "../../Helpers/FormatSize";
 import formatTitle from "../../Helpers/FormatTitle";
 import formatDuration from "../../Helpers/FormatVideoTime";
 
-import CustomIcon from "../DirectoryPage/Icons/CustomIcon";
-import folderImage from "../../Images/folder.png";
+import CustomFileIcon from "../DirectoryPage/Icons/CustomFileIcon";
 
 const exifr = window.require("exifr");
 
@@ -83,12 +82,10 @@ export default function BlockComparison({
         </>
       ) : (
         isFile && (
-          <CustomIcon fileextension={fileextension.split(".")[1] || ""} />
+          <CustomFileIcon fileextension={fileextension.split(".")[1] || ""} />
         )
       )}
-      {(isDirectory || isSymbolicLink) && (
-        <img src={folderImage} alt="folder" />
-      )}
+      {(isDirectory || isSymbolicLink) && <img src={""} alt="folder" />}
       {size ? <p className="size">{formatSize(size)}</p> : <></>}
       <pre className="date">{formatDate(new Date(modified))}</pre>
     </label>

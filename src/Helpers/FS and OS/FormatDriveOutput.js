@@ -9,6 +9,7 @@ export default function formatDriveOutput() {
     output = output.toString().split("\n");
     for (const i in output) {
       if (output[i].startsWith("Caption")) {
+        const capacity = parseInt(output[i * 1 + 3].split("=")[1]);
         const name = `${
           output[i * 1 + 4].split("\r\r")[0].split("=")[1] || "Local Disk"
         } (${output[i].split("=")[1].split("\r\r")[0]})`;
@@ -16,7 +17,7 @@ export default function formatDriveOutput() {
           name: name,
           displayName: name,
           isNetworkDrive: parseInt(output[i * 1 + 1].split("=")[1]) === 4,
-          size: parseInt(output[i * 1 + 3].split("=")[1]),
+          size: capacity,
           availableSpace: parseInt(output[i * 1 + 2].split("=")[1]),
           permission: true,
           isDrive: true,

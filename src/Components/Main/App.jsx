@@ -6,7 +6,7 @@ import UIandUXState from "./State/UIandUXState";
 import Page from "../DirectoryPage/Page";
 import Navbar from "../Navbar/Navbar";
 import DirectoryTree from "../DirectoryTree/DirectoryTree";
-import FilesAndDirectories from "../DirectoryPage/FilesAndDirectories";
+import PageItem from "../DirectoryPage/PageItem";
 
 import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
@@ -16,6 +16,7 @@ import sortBy from "../../Helpers/SortBy";
 export const GeneralContext = createContext();
 
 const fs = window.require("fs");
+const { exec } = window.require("child_process");
 
 export default function App() {
   const {
@@ -84,9 +85,6 @@ export default function App() {
             value: "error",
           });
         }
-        setTimeout(() => {
-          setSelectedItems([]);
-        }, 100);
       } else {
         const drives = await formatDriveOutput();
         setDirectoryItems(drives);
@@ -102,6 +100,8 @@ export default function App() {
         }
       }
     }
+    setRenameItem();
+    setSelectedItems([]);
     updatePage();
     // eslint-disable-next-line
   }, [currentDirectory, drive]);
@@ -122,7 +122,7 @@ export default function App() {
 
   const renderDirectoryItems = directoryItems.map((directoryItem) => {
     return (
-      <FilesAndDirectories
+      <PageItem
         key={directoryItem.key || directoryItem.name}
         directoryItem={directoryItem}
         visibleItems={visibleItems}
@@ -167,7 +167,12 @@ export default function App() {
         setClipboard={setClipboard}
       />
 
-      {/* <button style={{ position: "fixed", zIndex: 10 }} onClick={() => {}}>
+      {/* <button
+        style={{ position: "fixed", zIndex: 10 }}
+        onClick={() => {
+          
+        }}
+      >
         Test Button
       </button> */}
     </GeneralContext.Provider>

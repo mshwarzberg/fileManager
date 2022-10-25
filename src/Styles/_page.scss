@@ -5,19 +5,38 @@
   flex-direction: row;
   flex-wrap: wrap;
   position: relative;
-  height: calc(100vh - 23.5rem);
+  height: calc(100vh - 3rem);
   top: 2rem;
   align-content: flex-start;
-  padding: 0.2rem 0.2rem 22rem 0.2rem;
+  padding: 0.2rem 0.2rem 2rem 0.2rem;
   overflow-y: auto;
   overflow-x: hidden;
   flex-grow: 1;
-  box-shadow: inset 2px 2px 1rem #111;
+  box-shadow: inset 4rem 4rem 20rem #111;
   &.page-dark-mode {
     background-color: #222;
+    .display-page-block {
+      &:hover,
+      &.selected {
+        background-color: #111;
+      }
+      &.alternate {
+        background-color: #333;
+        outline: 1px solid white;
+      }
+    }
   }
   &.page-light-mode {
     background-color: #ccc;
+    .display-page-block {
+      &:hover,
+      &.selected {
+        background-color: #fff;
+      }
+      &.alternate {
+        background-color: #eee;
+      }
+    }
   }
   #empty-directory-header,
   #does-not-exist-error {
@@ -35,24 +54,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background-color: #00000000;
-    outline: none;
-    border: none;
+    justify-content: space-between;
     margin: 0.3rem;
-    padding-top: 1%;
     cursor: default;
+    padding-top: 0.8rem;
     &.compact-page {
-      margin: 0.1rem;
-      padding-top: 0.2%;
-    }
-    &:hover,
-    &.selected {
-      background-color: #666;
-      border-radius: 2px;
-    }
-    &.alternate {
-      background-color: #555;
+      margin: 0.05rem;
+      padding-top: 5px;
+      .media-container {
+        margin-bottom: 0;
+      }
     }
     &.single-click {
       cursor: pointer;
@@ -60,20 +71,12 @@
     * {
       pointer-events: none;
     }
-    svg {
-      image {
-        &#right {
-          x: 25;
-        }
-        x: 35;
-        y: -5;
-      }
-    }
     .media-container {
       margin-top: auto;
       position: relative;
       height: min-content;
       max-width: 90%;
+      margin-bottom: 0.5rem;
       .media-thumbnail {
         max-width: 100%;
         box-shadow: 2px 2px 0.3rem black;
@@ -100,10 +103,9 @@
       width: 95%;
       font-family: akshar;
       margin-top: auto;
-      height: max-content;
-      position: relative;
       word-wrap: break-word;
       text-align: center;
+      position: relative;
       @include Text;
       .block-name {
         @include Text;
@@ -153,7 +155,7 @@
       border-top-right-radius: 0.5rem;
       transform: translateY(-50%);
       bottom: -3px;
-      left: -0.5rem;
+      left: -0.2rem;
     }
   }
 }

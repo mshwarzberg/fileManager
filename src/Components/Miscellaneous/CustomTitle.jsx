@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import formatSize from "../../Helpers/FormatSize";
+
+const { exec } = window.require("child_process");
 
 let titleTimeout;
 export default function CustomTitle() {
@@ -25,9 +28,11 @@ export default function CustomTitle() {
         ...newDimensions,
       }));
     }
+    // eslint-disable-next-line
   }, [title.title]);
 
   useEffect(() => {
+    let process;
     function titleEvent(e) {
       clearTimeout(titleTimeout);
       if (Object.entries(title)) {
@@ -36,11 +41,42 @@ export default function CustomTitle() {
       if (e.target.dataset?.title) {
         setElement(e.target);
         titleTimeout = setTimeout(() => {
-          setTitle({
-            title: e.target.dataset.title,
-            x: e.clientX,
-            y: e.clientY + 3,
-          });
+          if (
+            e.target.dataset?.info &&
+            JSON.parse(e.target.dataset.info).isDirectory
+          ) {
+            const directoryPath = JSON.parse(e.target.dataset.info).path + "/";
+            const cmd = `powershell.exe ./DirectoryInfo.ps1 """${directoryPath}"""`;
+            function formatDirectoryTitleInfo(result) {
+              const { files, directories, hidden, combined, size } = result;
+              if (combined === 0) {
+                return "\nCount: 0 (Folder is empty)";
+              }
+              return `\nCount: ${combined} (${files ? files + " files" : ""}${
+                directories ? ", " + directories + " directories" : ""
+              }${hidden ? ", " + hidden + " hidden items" : ""})\n${
+                size?.Sum ? `Size: ${formatSize(size.Sum)}` : ""
+              }`;
+            }
+            try {
+              process = exec(cmd, (err, result) => {
+                if (err) return;
+                setTitle({
+                  title: `${e.target.dataset.title}${formatDirectoryTitleInfo(
+                    JSON.parse(result.replace("\\r\\n", ""))
+                  )}`,
+                  x: e.clientX,
+                  y: e.clientY + 3,
+                });
+              });
+            } catch (e) {}
+          } else {
+            setTitle({
+              title: e.target.dataset.title,
+              x: e.clientX,
+              y: e.clientY + 3,
+            });
+          }
         }, e.target.dataset.timing || 800);
       }
     }
@@ -55,6 +91,7 @@ export default function CustomTitle() {
     document.addEventListener("mousedown", clearTitle);
     document.addEventListener("wheel", clearTitle);
     return () => {
+      process?.kill("SIGINT");
       element?.removeEventListener("mouseleave", () => {
         clearTimeout(titleTimeout);
       });

@@ -51,26 +51,27 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 2px;
-  &.button-dark-mode {
-    background-color: #090909;
+  background-color: #777;
+  border: none;
+  box-shadow: 1px 1px 5px black;
+  font-family: "mukta";
+  font-weight: bold;
+  &:hover {
+    background-color: #444;
     color: white;
-    border: 1px solid white;
-    &:hover {
-      background-color: white;
-      color: #090909;
-      border: 1px solid #090909;
-    }
   }
-  &.button-light-mode {
-    background-color: #777;
-    color: black;
-    border: 1px solid black;
-    &:hover {
-      background-color: #444;
-      color: white;
-      border: 1px solid white;
-    }
-  }
+  // &.button-dark-mode {
+  //   background-color: #090909;
+  //   color: white;
+  //   border: 1px solid white;
+  //   &:hover {
+  //     background-color: white;
+  //     color: #090909;
+  //     border: 1px solid #090909;
+  //   }
+  // }
+  // &.button-light-mode {
+  // }
   &:disabled {
     color: grey !important;
     background-color: darkgrey !important;
@@ -88,3 +89,15 @@ body {
     color: black;
   }
 }
+
+// font-family: "Bebas Neue";
+// font-family: "Roboto Slab";
+// font-family: "PT Serif";
+// font-family: "Bitter";
+// font-family: "Lato";
+// font-family: "Akshar";
+// font-family: "Jakarta";
+// font-family: "Roboto Flex";
+// font-family: "Oswald";
+// font-family: "Merriweather";
+// font-family: "Mukta";

@@ -1,31 +1,30 @@
+@import "./general";
+
 #context-menu {
   position: fixed;
   width: 10rem;
   z-index: 1;
   div,
   button {
+    @include Buttons;
     height: 2rem;
-    background-color: black;
-    color: white;
     text-align: center;
-    font-family: "bebas neue";
     width: 100%;
     position: relative;
-    border: 1.2px solid white;
     display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
+    border-radius: 0;
     .sub-menu-arrow {
       position: absolute;
       right: 5px;
-      font-weight: bold;
     }
     .sort-by-sub-menu {
       position: absolute;
       width: 10rem;
-      top: 0;
-      left: calc(10rem + 1px);
+      transform: translateY(calc(100% + 0.475rem));
+      left: calc(10rem + 0.5px);
       button {
         height: 2rem;
         font-size: 1rem;

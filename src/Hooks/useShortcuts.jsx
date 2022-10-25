@@ -14,8 +14,14 @@ export default function useShortcuts(
   setPopup,
   popup
 ) {
-  const { state, dispatch, directoryItems, setRenameItem } =
-    useContext(GeneralContext);
+  const {
+    state,
+    dispatch,
+    directoryItems,
+    setRenameItem,
+    setSettings,
+    settings,
+  } = useContext(GeneralContext);
 
   useEffect(() => {
     function navigateDirectories(e) {
@@ -153,13 +159,30 @@ export default function useShortcuts(
         case "Escape":
           setPopup({});
           break;
+        case "F12":
+        // document.getElementById("settings-button").click();
         default:
           return;
       }
     }
+    function handleIconSizeChange(e) {
+      if (e.ctrlKey || e.shiftKey) {
+        setSettings((prevSettings) => {
+          return {
+            ...prevSettings,
+            iconSize:
+              e.deltaY < 0
+                ? Math.min(prevSettings.iconSize + 0.5, 16)
+                : Math.max(prevSettings.iconSize - 0.5, 6),
+          };
+        });
+      }
+    }
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("wheel", handleIconSizeChange);
     return () => {
+      window.removeEventListener("wheel", handleIconSizeChange);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedItems, clipboard, popup]);
+  }, [selectedItems, clipboard, popup, settings]);
 }

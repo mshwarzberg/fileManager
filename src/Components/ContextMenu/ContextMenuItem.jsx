@@ -32,8 +32,13 @@ export default function ContextMenuItem({
     };
   }, []);
 
-  const { state, setRenameItem, dispatch, setDirectoryItems } =
-    useContext(GeneralContext);
+  const {
+    state,
+    setRenameItem,
+    dispatch,
+    setDirectoryItems,
+    settings: { appTheme },
+  } = useContext(GeneralContext);
   const { setClipboard, clipboard, setPopup } = useContext(UIContext);
 
   const [showSort, setShowSort] = useState();
@@ -53,6 +58,7 @@ export default function ContextMenuItem({
 
   return (
     <div
+      className={`button-${appTheme}`}
       onMouseEnter={() => {
         if (contextName === "Sort By") {
           setTimeout(() => {

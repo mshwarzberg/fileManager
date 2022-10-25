@@ -1,25 +1,37 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { GeneralContext } from "../../Main/App.jsx";
 
 const fs = window.require("fs");
 
 export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
-  const { displayName, name, fileextension, location, path } = directoryItem;
+  const { displayName, name, fileextension, location, path, isDrive } =
+    directoryItem;
+
   const {
     state: { currentDirectory },
     settings: { appTheme },
   } = useContext(GeneralContext);
+
   const [newName, setNewName] = useState();
 
   const illegalChars = ['"', "\\", "/", ":", "*", "?", "|", "<", ">"];
+
+  useEffect(() => {
+    if (renameItem === path) {
+      document.getElementById(`name${path}`).focus();
+    }
+  }, [renameItem]);
 
   return (
     <div className="block-name-container">
       {newName || newName === "" ? newName : displayName}
       <textarea
+        id={`name${path}`}
         spellCheck={false}
         className={`block-name text-${appTheme}`}
-        disabled={renameItem !== path || currentDirectory === "Trash"}
+        disabled={
+          renameItem !== path || currentDirectory === "Trash" || isDrive
+        }
         onKeyDown={(e) => {
           e.stopPropagation();
           if (e.key === "Enter") {

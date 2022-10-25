@@ -85,7 +85,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
     >
       {containsDirectories && (
         <div
-          className="arrow-container"
+          className="expand-directory"
           onClick={(e) => {
             if (!permission) {
               return;
@@ -94,7 +94,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
             e.stopPropagation();
           }}
         >
-          <img className="directory-tree-arrow" alt=">" />
+          →
         </div>
       )}
       <div className={`directory-name text-${appTheme}`}>{name}</div>

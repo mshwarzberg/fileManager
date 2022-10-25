@@ -4,7 +4,7 @@ param(
 
 $Shell = New-Object -ComObject Shell.Application
 $Array = @()
-Get-ChildItem -Path $Directory -Force | ForEach {
+Get-ChildItem -Path $Directory -Force | ForEach-Object {
     $Folder = $Shell.Namespace($_.DirectoryName)
     $File = $Folder.ParseName($_.Name)
     $type = $Folder.GetDetailsOf($File, 9)

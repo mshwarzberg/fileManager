@@ -19,7 +19,7 @@
   }
   button {
     @include Buttons;
-    margin-inline: 2px;
+    font-size: 0.9rem;
     height: 80%;
   }
   #toggle-directory-tree {
@@ -57,11 +57,7 @@
       height: 100%;
       position: relative;
       .directory-arrow {
-        width: 1.8rem;
-        img {
-          height: 70%;
-          padding: 4.5px;
-        }
+        width: 1.75rem;
       }
     }
     .sub-directories {

@@ -4,19 +4,20 @@ import handleItemsSelected from "../../Helpers/HandleItemsSelected";
 import ItemName from "./Icons/ItemName";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import formatTitle from "../../Helpers/FormatTitle";
-import CustomIcon from "./Icons/CustomIcon";
+import CustomFileIcon from "./Icons/CustomFileIcon";
 
 import clickOnItem from "../../Helpers/ClickOnItem";
 import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpeg";
 import formatDuration from "../../Helpers/FormatVideoTime.js";
 import CustomFolderIcon from "./Icons/CustomFolderIcon.jsx";
+import CustomDriveIcon from "./Icons/CustomDriveIcon.jsx";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
 const exifr = window.require("exifr");
 
-let clickOnNameTimeout, mouseDownTimeout;
-export default function FilesAndDirectories({
+let clickOnNameTimeout, selectTimeout;
+export default function PageItem({
   directoryItem,
   visibleItems,
   setSelectedItems,
@@ -36,7 +37,8 @@ export default function FilesAndDirectories({
     isSymbolicLink,
     filetype,
     duration,
-    linkTo,
+    size,
+    isDrive,
   } = directoryItem;
 
   const {
@@ -73,9 +75,7 @@ export default function FilesAndDirectories({
             .then(() => {
               setThumbnail(thumbPath);
             })
-            .catch((e) => {
-              console.log(e);
-            });
+            .catch((e) => {});
         } else {
           ffmpegThumbs(path, thumbPath).then(() => {
             setThumbnail(thumbPath);
@@ -87,7 +87,7 @@ export default function FilesAndDirectories({
           fs.accessSync(thumbPath);
           setThumbnail(thumbPath);
         } catch {
-          if (currentDirectory === "Trash") {
+          if (currentDirectory === "Trash" && size < 300000) {
             setThumbnail(drive + "trash/" + name);
             return;
           }
@@ -137,8 +137,45 @@ export default function FilesAndDirectories({
       }}
       onMouseMove={(e) => {
         if (selectedElements.includes(e.target)) {
-          clearTimeout(mouseDownTimeout);
+          clearTimeout(selectTimeout);
+        } else if (clickToOpen === "single") {
+          clearTimeout(selectTimeout);
+          selectTimeout = setTimeout(() => {
+            handleItemsSelected(
+              e,
+              selectedItems,
+              setSelectedItems,
+              lastSelected,
+              setLastSelected
+            );
+          }, 1000);
         }
+      }}
+      onMouseDown={(e) => {
+        if (e.button === 0 || e.button === 2) {
+          if (!e.shiftKey && !e.ctrlKey && renameItem !== path) {
+            clickOnNameTimeout = setTimeout(() => {
+              setRenameItem((prevRename) =>
+                prevRename === path ? null : path
+              );
+            }, 1000);
+          }
+          selectTimeout = setTimeout(
+            () => {
+              handleItemsSelected(
+                e,
+                selectedItems,
+                setSelectedItems,
+                lastSelected,
+                setLastSelected
+              );
+            },
+            selectedElements.includes(e.target) ? 200 : 0
+          );
+        }
+      }}
+      onMouseLeave={() => {
+        clearTimeout(selectTimeout);
       }}
       onClick={() => {
         if (clickToOpen === "single") {
@@ -162,32 +199,10 @@ export default function FilesAndDirectories({
           setRenameItem();
         }
       }}
-      onMouseDown={(e) => {
-        if (e.button === 0 || e.button === 2) {
-          if (!e.shiftKey && !e.ctrlKey && renameItem !== path) {
-            clickOnNameTimeout = setTimeout(() => {
-              setRenameItem((prevRename) =>
-                prevRename === path ? null : path
-              );
-            }, 1000);
-          }
-          mouseDownTimeout = setTimeout(
-            () => {
-              handleItemsSelected(
-                e,
-                selectedItems,
-                setSelectedItems,
-                lastSelected,
-                setLastSelected
-              );
-            },
-            selectedElements.includes(e.target) ? 200 : 0
-          );
-        }
-      }}
       data-contextmenu={permission && contextMenuOptions(directoryItem)}
       data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
       data-title={formatTitle(directoryItem)}
+      data-timing={isDirectory && 400}
       data-destination={JSON.stringify({
         destination: path + "/",
       })}
@@ -212,14 +227,13 @@ export default function FilesAndDirectories({
             </div>
           ) : (
             isFile && (
-              <CustomIcon fileextension={fileextension.split(".")[1] || ""} />
+              <CustomFileIcon fileextension={fileextension.split(".")[1]} />
             )
           )}
           {(isDirectory || isSymbolicLink) && (
-            <>
-              <CustomFolderIcon path={tempPath + "/" + name} />
-            </>
+            <CustomFolderIcon directoryName={name + "/"} />
           )}
+          {isDrive && <CustomDriveIcon directoryItem={directoryItem} />}
           <ItemName
             directoryItem={directoryItem}
             renameItem={renameItem}

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect } from "react";
 import { GeneralContext } from "../Main/App.jsx";
 import { updateDirectoryTree } from "../../Helpers/ChangeItemInTree";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
@@ -22,8 +22,6 @@ export default function ParentDirectory({
   } = useContext(GeneralContext);
 
   const isDirectoryCurrent = state.currentDirectory === path;
-
-  const arrow = useRef();
 
   useEffect(() => {
     try {
@@ -101,12 +99,11 @@ export default function ParentDirectory({
         })}
       >
         {name && (
-          <div className="arrow-container" onClick={handleCollapseAndExpanse}>
-            <img
-              ref={arrow}
-              className={`directory-tree-arrow ${collapsed ? "rotate-me" : ""}`}
-              alt=">"
-            />
+          <div
+            className={`expand-directory ${collapsed ? "" : "rotate-arrow"}`}
+            onClick={handleCollapseAndExpanse}
+          >
+            →
           </div>
         )}
         <div disabled={true} className={`directory-name text-${appTheme}`}>

@@ -58,17 +58,22 @@ export default function CurrentDirectory() {
               {directory}
             </button>
             {result[0] && (
-              <button className={`directory-arrow button-${appTheme}`}>
-                <img
-                  src={""}
-                  onClick={() => {
-                    if (showSubDirectories === path) {
-                      setShowSubDirectories();
-                    } else {
-                      setShowSubDirectories(path);
-                    }
-                  }}
-                />
+              <button
+                className={`directory-arrow button-${appTheme}`}
+                onClick={() => {
+                  if (showSubDirectories === path) {
+                    setShowSubDirectories();
+                  } else {
+                    setShowSubDirectories(path);
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.relatedTarget?.className !== "sub-directory-button") {
+                    setShowSubDirectories();
+                  }
+                }}
+              >
+                {showSubDirectories === path ? "↓" : "→"}
               </button>
             )}
             {showSubDirectories === path && (
@@ -76,6 +81,7 @@ export default function CurrentDirectory() {
                 {result.map((item) => {
                   return (
                     <button
+                      className="sub-directory-button"
                       onClick={() => {
                         dispatch({
                           type: "open",
