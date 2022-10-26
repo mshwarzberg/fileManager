@@ -231,7 +231,7 @@ export default function PageItem({
             )
           )}
           {(isDirectory || isSymbolicLink) && (
-            <CustomFolderIcon directoryName={name + "/"} />
+            <CustomFolderIcon directoryPath={path + "/"} />
           )}
           {isDrive && <CustomDriveIcon directoryItem={directoryItem} />}
           <ItemName

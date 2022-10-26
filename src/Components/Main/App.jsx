@@ -170,7 +170,9 @@ export default function App() {
       {/* <button
         style={{ position: "fixed", zIndex: 10 }}
         onClick={() => {
-          
+          for (const directoryItem of directoryItems) {
+            console.log(directoryItem.name, fs.statSync(directoryItem.path));
+          }
         }}
       >
         Test Button

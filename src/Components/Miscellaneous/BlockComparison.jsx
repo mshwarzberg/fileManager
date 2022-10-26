@@ -6,13 +6,15 @@ import formatTitle from "../../Helpers/FormatTitle";
 import formatDuration from "../../Helpers/FormatVideoTime";
 
 import CustomFileIcon from "../DirectoryPage/Icons/CustomFileIcon";
+import CustomFolderIcon from "../DirectoryPage/Icons/CustomFolderIcon";
 
 const exifr = window.require("exifr");
 
 export default function BlockComparison({
   directoryItem,
   location,
-  setChecked,
+  checked,
+  handleChecked,
 }) {
   const {
     thumbPath,
@@ -28,6 +30,7 @@ export default function BlockComparison({
     duration,
     isFile,
     isSymbolicLink,
+    prefix,
   } = directoryItem;
 
   const [description, setDescription] = useState();
@@ -56,36 +59,24 @@ export default function BlockComparison({
       <input
         type="checkbox"
         className={location}
-        id={path}
-        value={false}
+        checked={checked[location].includes(prefix + "\\:" + fileextension)}
         onChange={() => {
-          setChecked((prevChecked) => {
-            const locationArray = [...prevChecked[location]];
-            if (!locationArray.includes(name)) {
-              locationArray.push(name);
-            } else {
-              locationArray.splice(locationArray.indexOf(name), 1);
-            }
-            return {
-              ...prevChecked,
-              [location]: locationArray,
-            };
-          });
+          handleChecked(prefix + "\\:" + fileextension, location);
         }}
       />
       {thumbPath && isMedia ? (
         <>
-          <img src={thumbPath} />
+          <img src={thumbPath} alt={path} />
           {duration && (
             <div className="duration">{formatDuration(duration)}</div>
           )}
         </>
       ) : (
-        isFile && (
-          <CustomFileIcon fileextension={fileextension.split(".")[1] || ""} />
-        )
+        isFile && <CustomFileIcon fileextension={fileextension.split(".")[1]} />
       )}
-      {(isDirectory || isSymbolicLink) && <img src={""} alt="folder" />}
+      {(isDirectory || isSymbolicLink) && (
+        <CustomFolderIcon directoryPath={path} />
+      )}
       {size ? <p className="size">{formatSize(size)}</p> : <></>}
       <pre className="date">{formatDate(new Date(modified))}</pre>
     </label>

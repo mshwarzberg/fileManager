@@ -6,23 +6,23 @@ import randomIntBetweenTwoNums from "../../../Helpers/RandomIntBetweenTwoNums";
 
 const fs = window.require("fs");
 
-export default function CustomFolderIcon({ directoryName }) {
+export default function CustomFolderIcon({ directoryPath }) {
   const [innerContent, setInnerContent] = useState();
   const [isDirectoryEmpty, setIsDirectoryEmpty] = useState();
 
   const {
-    state: { drive, currentDirectory },
     settings: { showThumbnails },
   } = useContext(GeneralContext);
 
+  const drive = directoryPath.slice(0, 3);
   useEffect(() => {
     try {
       const content = fs
-        .readdirSync(currentDirectory + directoryName, {
+        .readdirSync(directoryPath, {
           withFileTypes: true,
         })
         .map((file) => {
-          return formatMetadata(file, currentDirectory + directoryName, drive);
+          return formatMetadata(file, directoryPath, drive);
         })
         .filter((item) => item.isFile && item);
 
@@ -31,9 +31,7 @@ export default function CustomFolderIcon({ directoryName }) {
         !content.map((item) => item.isFile).includes(true) ||
         !showThumbnails
       ) {
-        setIsDirectoryEmpty(
-          fs.readdirSync(currentDirectory + directoryName).length === 0
-        );
+        setIsDirectoryEmpty(fs.readdirSync(directoryPath).length === 0);
       } else {
         const randomFromFolder =
           content[randomIntBetweenTwoNums(0, content.length)];
@@ -62,7 +60,7 @@ export default function CustomFolderIcon({ directoryName }) {
         }
       }
     } catch (error) {}
-  }, [directoryName, showThumbnails]);
+  }, [directoryPath, showThumbnails]);
 
   return (
     <svg viewBox="0 0 100 90">

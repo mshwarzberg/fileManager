@@ -12,8 +12,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   flex-grow: 1;
-  box-shadow: inset 4rem 4rem 20rem #111;
   &.page-dark-mode {
+    box-shadow: inset 4rem 4rem 20rem #111;
     background-color: #222;
     .display-page-block {
       &:hover,
@@ -27,6 +27,7 @@
     }
   }
   &.page-light-mode {
+    box-shadow: inset 4rem 4rem 20rem #eee;
     background-color: #ccc;
     .display-page-block {
       &:hover,
