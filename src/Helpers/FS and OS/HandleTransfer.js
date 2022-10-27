@@ -1,55 +1,19 @@
 import CompareFiles from "../../Components/Miscellaneous/CompareFiles";
-import formatMetadata from "./GetMetadata";
+
+import {
+  transfer,
+  copyItems,
+  moveItems,
+  checkForDuplicates,
+} from "./TransferFunctions";
 
 const fs = window.require("fs");
 const { exec } = window.require("child_process");
 
-function copyItems(source, destination, isFile) {
-  const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
-  if (isFile) {
-    const copy = `copy ${formatName}`;
-    try {
-      exec(copy);
-    } catch (error) {}
-  } else {
-    exec(`xcopy ${formatName}\\ /s /h /e`);
-  }
-}
-
-function moveItems(source, destination) {
-  const formatName = `"${source}" "${destination}"`.replaceAll("/", "\\");
-  exec(`move ${formatName}`);
-}
-
-export function handleTransfer(
-  destination,
-  setPopup,
-  data,
-  setClipboard,
-  isDragAndDrop
-) {
+export function handleTransfer(destination, setPopup, data, setClipboard) {
   const { source, mode, info } = data;
-  function transfer(sourcePath, destinationPath, name, isFile, mode) {
-    let command = "";
-    // use location for files and path for everything else
-    if (!isFile) {
-      command = `robocopy "${sourcePath}" "${destinationPath}/${name}" ${
-        mode === "copy" ? "" : "/move"
-      }`;
-    } else {
-      command = `robocopy "${sourcePath}" "${destinationPath}" "${name}" ${
-        mode === "copy" ? "" : "/mov"
-      }`;
-    }
 
-    try {
-      exec(command, (err) => {
-        if (err) console.log(err);
-      });
-    } catch (error) {}
-  }
-
-  if (source === destination && !isDragAndDrop) {
+  if (source === destination) {
     if (mode === "cut") {
       setClipboard({});
       return;
@@ -89,25 +53,29 @@ export function handleTransfer(
         cancel: (
           <button
             onClick={() => {
-              for (const {
-                source,
-                prefix,
-                fileextension,
-                isFile,
-              } of duplicates) {
+              const duplicateNames = duplicates.map((item) => item.name);
+
+              for (const { location, prefix, fileextension, isFile } of info) {
+                let name;
+                if (duplicateNames.includes(prefix + fileextension)) {
+                  name = newName(location, prefix, fileextension);
+                } else {
+                  name = prefix + fileextension;
+                }
                 if (mode === "copy") {
                   copyItems(
-                    source,
-                    destination + prefix + " (1)" + fileextension,
+                    source + prefix + fileextension,
+                    destination + name,
                     isFile
                   );
                 } else {
                   moveItems(
-                    source,
-                    destination + prefix + " (1)" + fileextension
+                    source + prefix + fileextension,
+                    destination + name
                   );
                 }
               }
+              setPopup({});
             }}
           >
             Keep All
@@ -124,8 +92,6 @@ export function handleTransfer(
                       source={source}
                       destination={destination}
                       mode={mode}
-                      copyItems={copyItems}
-                      moveItems={moveItems}
                       setPopup={setPopup}
                     />
                   ),
@@ -160,31 +126,13 @@ export function handleTransfer(
   }
 }
 
-function checkForDuplicates(destination, source, itemNames) {
-  const duplicates = [];
-
-  const result = fs.readdirSync(destination, { withFileTypes: true });
-  for (const item of result) {
-    const formatted = formatMetadata(
-      item,
-      destination,
-      destination.slice(0, 3)
-    );
-    if (itemNames.includes(formatted.name)) {
-      duplicates.push({ ...formatted, source: source + formatted.name });
-    }
-  }
-
-  return duplicates;
-}
-
 function copyToSameDirectory(prefix, fileextension, location) {
   const path = location + prefix + fileextension;
   function generateNameForCopiedItem() {
     while (true) {
       try {
         fs.accessSync(location + prefix + fileextension);
-      } catch (error) {
+      } catch {
         return location + prefix + fileextension;
       }
       prefix += " - Copy";
@@ -204,5 +152,19 @@ function copyToSameDirectory(prefix, fileextension, location) {
     });
   } catch (error) {
     console.log(error);
+  }
+}
+
+function newName(directory, prefix, fileextension) {
+  let i = 1;
+  while (true) {
+    const newFileName = `${prefix}${i > 1 ? ` (${i})` : ""}${fileextension}`;
+    try {
+      fs.accessSync(directory + newFileName);
+    } catch (e) {
+      console.log(e);
+      return newFileName;
+    }
+    i++;
   }
 }

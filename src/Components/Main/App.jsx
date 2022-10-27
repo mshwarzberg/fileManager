@@ -35,7 +35,7 @@ export default function App() {
   const [visibleItems, setVisibleItems] = useState([]);
   const [popup, setPopup] = useState({});
   const [clipboard, setClipboard] = useState({});
-  const [drag, setDrag] = useState();
+  const [drag, setDrag] = useState({});
 
   useEffect(() => {
     console.clear();
@@ -174,7 +174,24 @@ export default function App() {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-      {drag}
+      {drag.x && drag.y && (
+        <div
+          id="drag-box"
+          style={{
+            left: drag.x + "px",
+            top: drag.y + "px",
+          }}
+        >
+          <p id="count">{selectedItems.length}</p>
+          {drag.mode && (
+            <p id="mode">
+              {" "}
+              + {drag.mode === "cut" ? "Move" : "Copy"} items to{" "}
+              {drag.destination}{" "}
+            </p>
+          )}
+        </div>
+      )}
       {/* <button
         style={{ position: "fixed", zIndex: 10 }}
         onClick={() => {

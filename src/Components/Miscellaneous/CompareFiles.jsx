@@ -4,15 +4,17 @@ import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 import { GeneralContext } from "../Main/App.jsx";
 import BlockComparison from "./BlockComparison";
 
+import {
+  copyItems,
+  moveItems,
+} from "../../Helpers/FS and OS/TransferFunctions";
 const fs = window.require("fs");
 
 export default function CompareFiles({
   duplicates,
   source,
   destination,
-  copyItems,
   mode,
-  moveItems,
   setPopup,
 }) {
   const {

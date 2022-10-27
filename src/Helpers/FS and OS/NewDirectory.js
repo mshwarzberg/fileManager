@@ -1,7 +1,8 @@
 const fs = window.require("fs");
 
 export default function newDirectory(state) {
-  for (let i = 0; i < 1000; i++) {
+  let i = 1;
+  while (true) {
     const newDirectoryName = `New Folder${i > 1 ? ` (${i})` : ""}`;
     try {
       fs.accessSync(state.currentDirectory + newDirectoryName);
@@ -9,5 +10,6 @@ export default function newDirectory(state) {
       fs.mkdirSync(state.currentDirectory + newDirectoryName);
       return newDirectoryName;
     }
+    i++;
   }
 }

@@ -161,17 +161,10 @@ export default function PageItem({
           );
           if (selectedElements.includes(e.target)) {
             dragTimeout = setTimeout(() => {
-              setDrag(
-                <div
-                  id="drag-box"
-                  style={{
-                    left: e.clientX - 64 + "px",
-                    top: e.clientY - 64 + "px",
-                  }}
-                >
-                  <p id="count">{selectedItems.length}</p>
-                </div>
-              );
+              setDrag({
+                x: e.clientX - 64,
+                y: e.clientY - 64,
+              });
             }, 200);
           }
           if (!e.shiftKey && !e.ctrlKey) {

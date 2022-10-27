@@ -24,6 +24,16 @@
     position: relative;
     bottom: 1rem;
   }
+  #mode {
+    font-family: "akshar";
+    font-weight: bold;
+    width: max-content;
+    position: absolute;
+    background-color: #ffffffcc;
+    bottom: -2rem;
+    padding-inline: 5px;
+    border-radius: 5px;
+  }
 }
 
 #directory-tree-scaler {
