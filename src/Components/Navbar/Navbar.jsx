@@ -4,7 +4,7 @@ import { GeneralContext } from "../Main/App.jsx";
 import TrashButtons from "./TrashButtons";
 import CurrentDirectory from "./CurrentDirectory";
 
-export default function Navbar({ setPopup }) {
+export default function Navbar({ setPopup, drag }) {
   const {
     state: { currentDirectory },
     setSettings,
@@ -36,7 +36,7 @@ export default function Navbar({ setPopup }) {
           setDirectoryItems={setDirectoryItems}
         />
       ) : (
-        <CurrentDirectory />
+        <CurrentDirectory drag={drag} />
       )}
     </div>
   );

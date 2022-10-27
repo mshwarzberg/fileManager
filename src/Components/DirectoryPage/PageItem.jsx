@@ -1,22 +1,22 @@
 import { useContext, useState, useEffect } from "react";
 import { GeneralContext } from "../Main/App.jsx";
-import handleItemsSelected from "../../Helpers/HandleItemsSelected";
-import ItemName from "./Icons/ItemName";
-import contextMenuOptions from "../../Helpers/ContextMenuOptions";
-import formatTitle from "../../Helpers/FormatTitle";
-import CustomFileIcon from "./Icons/CustomFileIcon";
 
 import clickOnItem from "../../Helpers/ClickOnItem";
+import handleItemsSelected from "../../Helpers/HandleItemsSelected";
+
+import ItemName from "./Icons/ItemName";
+
+import blockContent from "../../Helpers/BlockContent.js";
+import contextMenuOptions from "../../Helpers/ContextMenuOptions";
+import formatTitle from "../../Helpers/FormatTitle";
+
 import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpeg";
-import formatDuration from "../../Helpers/FormatVideoTime.js";
-import CustomFolderIcon from "./Icons/CustomFolderIcon.jsx";
-import CustomDriveIcon from "./Icons/CustomDriveIcon.jsx";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
 const exifr = window.require("exifr");
 
-let clickOnNameTimeout, selectTimeout;
+let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
   directoryItem,
   visibleItems,
@@ -24,21 +24,20 @@ export default function PageItem({
   selectedItems,
   lastSelected,
   setLastSelected,
+  setDrag,
 }) {
   const {
     path,
     name,
     isDirectory,
-    isFile,
     permission,
-    fileextension,
     thumbPath,
     isMedia,
-    isSymbolicLink,
     filetype,
-    duration,
     size,
     isDrive,
+    isSymbolicLink,
+    linkTo,
   } = directoryItem;
 
   const {
@@ -47,11 +46,11 @@ export default function PageItem({
     renameItem,
     setRenameItem,
     settings: { clickToOpen, showThumbnails, iconSize, pageCompactView },
-    setDirectoryItems,
     directoryItems,
   } = useContext(GeneralContext);
 
   const [thumbnail, setThumbnail] = useState();
+  const [description, setDescription] = useState();
 
   const selectedElements = selectedItems.map(
     (selectedItem) => selectedItem.element
@@ -100,11 +99,11 @@ export default function PageItem({
     };
   }, [currentDirectory, showThumbnails]);
 
-  return (
+  return visibleItems.includes(document.getElementById(path)) ? (
     <div
       className={`display-page-block ${
         clickToOpen === "single" ? "single-click" : ""
-      } ${pageCompactView ? "compact-page" : ""}`}
+      } ${pageCompactView ? "compacted-block" : ""}`}
       id={path}
       style={{
         width: iconSize + "rem",
@@ -118,18 +117,8 @@ export default function PageItem({
               if (!data) {
                 return;
               }
-              const description =
-                data.Comment || data.description?.value || data.description;
-              setDirectoryItems((prevItems) =>
-                prevItems.map((prevItem) => {
-                  if (prevItem.name === name) {
-                    return {
-                      ...prevItem,
-                      description: description,
-                    };
-                  }
-                  return prevItem;
-                })
+              setDescription(
+                data.Comment || data.description?.value || data.description
               );
             })
             .catch(() => {});
@@ -151,15 +140,12 @@ export default function PageItem({
           }, 1000);
         }
       }}
+      onMouseUp={() => {
+        clearTimeout(dragTimeout);
+      }}
       onMouseDown={(e) => {
+        // left click or right click
         if (e.button === 0 || e.button === 2) {
-          if (!e.shiftKey && !e.ctrlKey && renameItem !== path) {
-            clickOnNameTimeout = setTimeout(() => {
-              setRenameItem((prevRename) =>
-                prevRename === path ? null : path
-              );
-            }, 1000);
-          }
           selectTimeout = setTimeout(
             () => {
               handleItemsSelected(
@@ -170,8 +156,32 @@ export default function PageItem({
                 setLastSelected
               );
             },
+            // don't unselect selected element for 200ms to allow drag and drop
             selectedElements.includes(e.target) ? 200 : 0
           );
+          if (selectedElements.includes(e.target)) {
+            dragTimeout = setTimeout(() => {
+              setDrag(
+                <div
+                  id="drag-box"
+                  style={{
+                    left: e.clientX - 64 + "px",
+                    top: e.clientY - 64 + "px",
+                  }}
+                >
+                  <p id="count">{selectedItems.length}</p>
+                </div>
+              );
+            }, 200);
+          }
+          if (!e.shiftKey && !e.ctrlKey) {
+            clickOnNameTimeout = setTimeout(() => {
+              setRenameItem({
+                element: null,
+                path: path,
+              });
+            }, 1000);
+          }
         }
       }}
       onMouseLeave={() => {
@@ -187,60 +197,44 @@ export default function PageItem({
         if (!permission || e.ctrlKey || e.shiftKey) {
           return;
         }
-        setRenameItem();
+        setRenameItem({});
         clickOnItem(directoryItem, dispatch);
       }}
       onContextMenu={() => {
         clearTimeout(clickOnNameTimeout);
-        setRenameItem();
-      }}
-      onBlur={(e) => {
-        if (e.relatedTarget?.className !== "block-name") {
-          setRenameItem();
-        }
+        setRenameItem({});
       }}
       data-contextmenu={permission && contextMenuOptions(directoryItem)}
       data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
-      data-title={formatTitle(directoryItem)}
+      data-title={formatTitle({ ...directoryItem, description: description })}
       data-timing={isDirectory && 400}
-      data-destination={JSON.stringify({
-        destination: path + "/",
-      })}
+      data-destination={
+        isDirectory || isDrive ? path + "/" : isSymbolicLink ? linkTo : null
+      }
     >
-      {visibleItems.includes(document.getElementById(path)) && (
-        <>
-          {thumbnail && showThumbnails && isMedia ? (
-            <div className="media-container">
-              <img
-                src={thumbnail}
-                className="media-thumbnail"
-                style={{
-                  maxHeight: iconSize * (9 / 10) + "rem",
-                }}
-                onError={() => {
-                  setThumbnail();
-                }}
-              />
-              {duration && (
-                <div className="duration">{formatDuration(duration)}</div>
-              )}
-            </div>
-          ) : (
-            isFile && (
-              <CustomFileIcon fileextension={fileextension.split(".")[1]} />
-            )
-          )}
-          {(isDirectory || isSymbolicLink) && (
-            <CustomFolderIcon directoryPath={path + "/"} />
-          )}
-          {isDrive && <CustomDriveIcon directoryItem={directoryItem} />}
-          <ItemName
-            directoryItem={directoryItem}
-            renameItem={renameItem}
-            setRenameItem={setRenameItem}
-          />
-        </>
-      )}
+      <>
+        {blockContent(directoryItem, showThumbnails, iconSize, [
+          thumbnail,
+          setThumbnail,
+        ])}
+        <ItemName
+          directoryItem={directoryItem}
+          renameItem={renameItem}
+          setRenameItem={setRenameItem}
+        />
+      </>
     </div>
+  ) : (
+    <div
+      className={`display-page-block ${
+        clickToOpen === "single" ? "single-click" : ""
+      } ${pageCompactView ? "compacted-block" : ""}`}
+      id={path}
+      style={{
+        width: iconSize + "rem",
+        minHeight: iconSize + "rem",
+      }}
+      data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
+    />
   );
 }

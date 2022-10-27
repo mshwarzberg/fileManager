@@ -79,9 +79,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       data-contextmenu={contextMenuOptions(childDir)}
       data-info={permission && JSON.stringify(childDir)}
       data-title={formatTitle(childDir)}
-      data-destination={JSON.stringify({
-        destination: path,
-      })}
+      data-destination={path}
     >
       {containsDirectories && (
         <div

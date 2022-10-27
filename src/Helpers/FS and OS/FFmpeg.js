@@ -1,8 +1,6 @@
-import checkFileType from "./CheckFileType";
 import GetVideoAtPercentage from "./GetVideoAtPercentage";
 
 const child = window.require("child_process");
-const exifr = window.require("exifr");
 
 export function ffmpegThumbs(inputFile, outputFile) {
   return new Promise((resolve, reject) => {

@@ -94,9 +94,7 @@ export default function ParentDirectory({
         data-contextmenu={contextMenuOptions(parentDir)}
         data-info={permission && JSON.stringify(parentDir)}
         data-title={formatTitle(parentDir)}
-        data-destination={JSON.stringify({
-          destination: path,
-        })}
+        data-destination={path}
       >
         {name && (
           <div

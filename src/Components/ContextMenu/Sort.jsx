@@ -3,7 +3,7 @@ import sortBy from "../../Helpers/SortBy";
 import { GeneralContext } from "../Main/App.jsx";
 
 export default function Sort({ contextMenu }) {
-  const sortOptions = ["Name", "Size", "Date", "Type"];
+  const sortOptions = ["Name", "Size", "Date", "Type", "Duration"];
   const { setDirectoryItems } = useContext(GeneralContext);
 
   function subMenuClassNames() {

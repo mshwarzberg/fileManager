@@ -20,6 +20,7 @@ export default function ContextMenuItem({
   contextMenu: {
     info,
     info: { isFile, path },
+    element,
   },
   selectedItems,
 }) {
@@ -84,7 +85,11 @@ export default function ContextMenuItem({
             break;
           case "Show In Explorer":
             let CMDpath = path.replaceAll("/", "\\");
-            exec(`explorer.exe ${isFile ? `/select, ${CMDpath}` : CMDpath}`);
+            exec(
+              `explorer.exe ${
+                isFile ? `/select, "${CMDpath}"` : `"${CMDpath}"`
+              }`
+            );
             break;
           case "Cut":
           case "Copy":
@@ -103,7 +108,7 @@ export default function ContextMenuItem({
             );
             break;
           case "Rename":
-            setRenameItem(path);
+            setRenameItem({ path: path, element: element });
             break;
           case "Delete":
             try {

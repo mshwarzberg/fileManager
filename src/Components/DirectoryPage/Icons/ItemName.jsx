@@ -10,6 +10,7 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
   const {
     state: { currentDirectory },
     settings: { appTheme },
+    directoryItems,
   } = useContext(GeneralContext);
 
   const [newName, setNewName] = useState();
@@ -17,7 +18,7 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
   const illegalChars = ['"', "\\", "/", ":", "*", "?", "|", "<", ">"];
 
   useEffect(() => {
-    if (renameItem === path) {
+    if (renameItem.element === document.getElementById(path)) {
       document.getElementById(`name${path}`).focus();
     }
   }, [renameItem]);
@@ -30,8 +31,11 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
         spellCheck={false}
         className={`block-name text-${appTheme}`}
         disabled={
-          renameItem !== path || currentDirectory === "Trash" || isDrive
+          renameItem.path !== path || currentDirectory === "Trash" || isDrive
         }
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
         onKeyDown={(e) => {
           e.stopPropagation();
           if (e.key === "Enter") {
@@ -42,8 +46,8 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
           e.target.setSelectionRange(0, name.length - fileextension.length);
         }}
         onBlur={(e) => {
-          setRenameItem();
           document.getSelection().removeAllRanges();
+          setRenameItem({});
           if (
             illegalChars
               .map((char) => {
@@ -54,9 +58,17 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
           ) {
             return;
           }
-          try {
-            fs.renameSync(path, location + e.target.value);
-          } catch {}
+          if (
+            !directoryItems
+              .map((directoryItem) => {
+                return directoryItem.name;
+              })
+              .includes(e.target.value)
+          ) {
+            try {
+              fs.renameSync(path, location + e.target.value);
+            } catch {}
+          }
         }}
         onDoubleClick={(e) => {
           e.stopPropagation();

@@ -12,6 +12,7 @@ import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
 import UIandUX from "./UIandUX";
 import sortBy from "../../Helpers/SortBy";
+import useDragAndDrop from "../../Hooks/useDragAndDrop";
 
 export const GeneralContext = createContext();
 
@@ -30,10 +31,11 @@ export default function App() {
   const [directoryItems, setDirectoryItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [lastSelected, setLastSelected] = useState();
-  const [renameItem, setRenameItem] = useState();
+  const [renameItem, setRenameItem] = useState({});
   const [visibleItems, setVisibleItems] = useState([]);
   const [popup, setPopup] = useState({});
   const [clipboard, setClipboard] = useState({});
+  const [drag, setDrag] = useState();
 
   useEffect(() => {
     console.clear();
@@ -100,8 +102,6 @@ export default function App() {
         }
       }
     }
-    setRenameItem();
-    setSelectedItems([]);
     updatePage();
     // eslint-disable-next-line
   }, [currentDirectory, drive]);
@@ -120,6 +120,13 @@ export default function App() {
     document.body.className = settings.appTheme;
   }, [settings.appTheme]);
 
+  useDragAndDrop(
+    [selectedItems, setSelectedItems],
+    [drag, setDrag],
+    currentDirectory,
+    setPopup
+  );
+
   const renderDirectoryItems = directoryItems.map((directoryItem) => {
     return (
       <PageItem
@@ -130,6 +137,7 @@ export default function App() {
         setLastSelected={setLastSelected}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
+        setDrag={setDrag}
       />
     );
   });
@@ -147,7 +155,7 @@ export default function App() {
         setRenameItem,
       }}
     >
-      <Navbar setPopup={setPopup} />
+      <Navbar setPopup={setPopup} drag={drag} />
       <DirectoryTree />
       <Page
         setVisibleItems={setVisibleItems}
@@ -166,7 +174,7 @@ export default function App() {
         clipboard={clipboard}
         setClipboard={setClipboard}
       />
-
+      {drag}
       {/* <button
         style={{ position: "fixed", zIndex: 10 }}
         onClick={() => {

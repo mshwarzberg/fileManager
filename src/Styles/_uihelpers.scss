@@ -6,6 +6,26 @@
   z-index: 2;
 }
 
+#drag-box {
+  position: fixed;
+  width: 8rem;
+  height: 8rem;
+  background-color: #ffffffcc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 3;
+  #count {
+    font-family: "bebas neue";
+    font-size: 2rem;
+    position: relative;
+    bottom: 1rem;
+  }
+}
+
 #directory-tree-scaler {
   height: 100vh;
   margin-top: 2rem;

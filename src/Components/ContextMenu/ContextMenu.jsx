@@ -16,17 +16,15 @@ export default function ContextMenu({ selectedItems }) {
     }
     function handleContextMenu(e) {
       if (e.target.dataset.contextmenu) {
-        const info = JSON.parse(
-          e.target.dataset.info || e.target.dataset.destination || "{}"
-        );
+        const info = JSON.parse(e.target.dataset.info || "{}");
         setTimeout(() => {
           setContextMenu({
             items: JSON.parse(e.target.dataset.contextmenu),
             info: info,
-            destination: JSON.parse(e.target.dataset.destination || "{}")
-              .destination,
+            destination: e.target.dataset.destination,
             x: e.clientX,
             y: e.clientY,
+            element: e.target,
           });
         }, 0);
         e.stopImmediatePropagation();

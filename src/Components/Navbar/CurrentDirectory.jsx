@@ -6,7 +6,7 @@ import formatTitle from "../../Helpers/FormatTitle";
 
 const fs = window.require("fs");
 
-export default function CurrentDirectory() {
+export default function CurrentDirectory({ drag }) {
   const {
     state: { currentDirectory, drive },
     settings: { appTheme },
@@ -54,6 +54,7 @@ export default function CurrentDirectory() {
                   value: path,
                 });
               }}
+              data-destination={path}
             >
               {directory}
             </button>
@@ -65,6 +66,15 @@ export default function CurrentDirectory() {
                     setShowSubDirectories();
                   } else {
                     setShowSubDirectories(path);
+                  }
+                }}
+                onMouseEnter={() => {
+                  if (drag) {
+                    if (showSubDirectories === path) {
+                      setShowSubDirectories();
+                    } else {
+                      setShowSubDirectories(path);
+                    }
                   }
                 }}
                 onBlur={(e) => {
@@ -90,6 +100,7 @@ export default function CurrentDirectory() {
                         setShowSubDirectories();
                       }}
                       data-title={formatTitle(item)}
+                      data-destination={item.path + "/"}
                     >
                       {item.name}
                     </button>

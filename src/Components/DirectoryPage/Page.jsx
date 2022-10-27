@@ -22,6 +22,24 @@ export default function Page({
 
   const [rerender, setRerender] = useState(false);
 
+  function handleVisibleItems() {
+    const elements = document.getElementsByClassName("display-page-block");
+    setVisibleItems([]);
+    for (const element of elements) {
+      const elementDimensions = element.getBoundingClientRect();
+
+      const notAboveScreen =
+        elementDimensions.top + elementDimensions.height >= 0;
+      const notBelowScreen = elementDimensions.top < window.innerHeight;
+      if (notBelowScreen && notAboveScreen) {
+        setVisibleItems((prevVisible) => [...prevVisible, element]);
+      }
+      if (!notBelowScreen) {
+        break;
+      }
+    }
+  }
+
   useEffect(() => {
     const pageBlocks = document.getElementsByClassName("display-page-block");
     function focusPage(e) {
@@ -155,24 +173,6 @@ export default function Page({
     // eslint-disable-next-line
   }, [rerender, currentDirectory]);
 
-  function handleVisibleItems() {
-    const elements = document.getElementsByClassName("display-page-block");
-    setVisibleItems([]);
-    for (const element of elements) {
-      const elementDimensions = element.getBoundingClientRect();
-
-      const notAboveScreen =
-        elementDimensions.top + elementDimensions.height + 1000 >= 0;
-      const notBelowScreen = elementDimensions.top - 1000 < window.innerHeight;
-      if (notBelowScreen && notAboveScreen) {
-        setVisibleItems((prevVisible) => [...prevVisible, element]);
-      }
-      if (!notBelowScreen) {
-        break;
-      }
-    }
-  }
-
   return (
     <div
       className={`page-${appTheme}`}
@@ -185,9 +185,7 @@ export default function Page({
         isDirectory: true,
         path: currentDirectory,
       })}
-      data-destination={JSON.stringify({
-        destination: currentDirectory,
-      })}
+      data-destination={currentDirectory}
     >
       <div id="select-multiple-box" />
       {children}

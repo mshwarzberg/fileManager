@@ -21,8 +21,14 @@ function moveItems(source, destination) {
   exec(`move ${formatName}`);
 }
 
-export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
-  const { source, mode, info } = clipboard;
+export function handleTransfer(
+  destination,
+  setPopup,
+  data,
+  setClipboard,
+  isDragAndDrop
+) {
+  const { source, mode, info } = data;
   function transfer(sourcePath, destinationPath, name, isFile, mode) {
     let command = "";
     // use location for files and path for everything else
@@ -43,7 +49,7 @@ export function handleTransfer(destination, setPopup, clipboard, setClipboard) {
     } catch (error) {}
   }
 
-  if (source === destination) {
+  if (source === destination && !isDragAndDrop) {
     if (mode === "cut") {
       setClipboard({});
       return;

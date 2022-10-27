@@ -94,7 +94,10 @@ export default function useShortcuts(
       switch (e.key) {
         case "F2":
           if (selectedItems[0]) {
-            setRenameItem(selectedItems[0].info.name);
+            setRenameItem({
+              path: selectedItems[0].info.path,
+              element: selectedItems[0].element,
+            });
           }
           break;
         case "Delete":
@@ -137,7 +140,7 @@ export default function useShortcuts(
                 index--;
               }
               if (!directoryItems[index]) {
-                return;
+                return <></>;
               }
               const { name, location } = directoryItems[index];
               setSelectedItems([
@@ -160,7 +163,8 @@ export default function useShortcuts(
           setPopup({});
           break;
         case "F12":
-        // document.getElementById("settings-button").click();
+          // document.getElementById("settings-button").click();
+          break;
         default:
           return;
       }
