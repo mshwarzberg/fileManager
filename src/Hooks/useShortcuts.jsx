@@ -59,7 +59,7 @@ export default function useShortcuts(
           case "c":
             setClipboard({
               source: state.currentDirectory,
-              mode: e.key === "c" ? "copy" : "cut",
+              mode: e.key === "c" ? "copy" : "move",
               info: selectedItems.map((itemSelected) => {
                 return itemSelected.info;
               }),

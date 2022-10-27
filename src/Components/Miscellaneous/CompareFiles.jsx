@@ -4,10 +4,7 @@ import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
 import { GeneralContext } from "../Main/App.jsx";
 import BlockComparison from "./BlockComparison";
 
-import {
-  copyItems,
-  moveItems,
-} from "../../Helpers/FS and OS/TransferFunctions";
+import { transfer } from "../../Helpers/FS and OS/TransferFunctions";
 const fs = window.require("fs");
 
 export default function CompareFiles({
@@ -65,12 +62,7 @@ export default function CompareFiles({
     }
     function submitTransfers() {
       duplicates.map((duplicate, i) => {
-        const { isFile } = duplicate;
-        if (mode === "copy") {
-          copyItems(duplicate.source, destination + temp[i], isFile);
-        } else {
-          moveItems(duplicate.source, destination + temp[i]);
-        }
+        transfer(duplicate.source, destination + temp[i], mode);
         setPopup({});
       });
     }

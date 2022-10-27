@@ -1,7 +1,6 @@
 import { useEffect, useContext, Fragment } from "react";
 import { UIContext } from "../Main/UIandUX";
 import ContextMenuItem from "./ContextMenuItem";
-import randomID from "../../Helpers/RandomID";
 
 export default function ContextMenu({ selectedItems }) {
   const { contextMenu, setContextMenu, clipboard } = useContext(UIContext);
@@ -78,7 +77,7 @@ export default function ContextMenu({ selectedItems }) {
         contextName={item}
         contextMenu={contextMenu}
         selectedItems={selectedItems}
-        key={randomID()}
+        key={item}
         clearContextMenu={() => {
           return setContextMenu({});
         }}

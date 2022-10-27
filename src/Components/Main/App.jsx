@@ -17,7 +17,7 @@ import useDragAndDrop from "../../Hooks/useDragAndDrop";
 export const GeneralContext = createContext();
 
 const fs = window.require("fs");
-const { exec } = window.require("child_process");
+const { execSync } = window.require("child_process");
 
 export default function App() {
   const {
@@ -186,7 +186,7 @@ export default function App() {
           {drag.mode && (
             <p id="mode">
               {" "}
-              + {drag.mode === "cut" ? "Move" : "Copy"} items to{" "}
+              + {drag.mode === "move" ? "Move" : "Copy"} items to{" "}
               {drag.destination}{" "}
             </p>
           )}
@@ -195,9 +195,11 @@ export default function App() {
       {/* <button
         style={{ position: "fixed", zIndex: 10 }}
         onClick={() => {
-          for (const directoryItem of directoryItems) {
-            console.log(directoryItem.name, fs.statSync(directoryItem.path));
-          }
+          console.log(
+            execSync(
+              `powershell.exe ./PS1Scripts/Transfer.ps1 'B:/Test Files/Destination/x (5)' 'B:/Test Files/New/' 'move'`
+            ).toString()
+          );
         }}
       >
         Test Button

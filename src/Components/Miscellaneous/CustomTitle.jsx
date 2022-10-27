@@ -46,7 +46,7 @@ export default function CustomTitle() {
             JSON.parse(e.target.dataset.info).isDirectory
           ) {
             const directoryPath = JSON.parse(e.target.dataset.info).path + "/";
-            const cmd = `powershell.exe ./DirectoryInfo.ps1 """${directoryPath}"""`;
+            const cmd = `powershell.exe ./PS1Scripts/DirectoryInfo.ps1 """${directoryPath}"""`;
             function formatDirectoryTitleInfo(result) {
               const { files, directories, hidden, combined, size } = result;
               if (combined === 0) {

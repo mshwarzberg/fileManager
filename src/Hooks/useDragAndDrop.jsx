@@ -19,7 +19,7 @@ export default function useDragAndDrop(
           if (destination.startsWith(drive)) {
             setDrag((prevDrag) => ({
               ...prevDrag,
-              mode: "cut",
+              mode: "move",
               destination: destination,
             }));
           } else {
@@ -51,7 +51,7 @@ export default function useDragAndDrop(
             },
             () => {}
           );
-          if (currentDirectory !== destination && drag.mode === "cut") {
+          if (currentDirectory !== destination && drag.mode === "move") {
             setSelectedItems([]);
           }
         }

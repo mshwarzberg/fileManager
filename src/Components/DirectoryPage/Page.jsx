@@ -79,7 +79,7 @@ export default function Page({
 
   useEffect(() => {
     if (rerender) {
-      const cmd = `powershell.exe ./MediaMetadata.ps1 """${currentDirectory}"""`;
+      const cmd = `powershell.exe ./PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
       function videoTimeToNum(str) {
         if (!str) {
           return "";

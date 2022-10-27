@@ -28,7 +28,7 @@ export default function UIandUX({
 
   useEffect(() => {
     const pageBlocks = document.getElementsByClassName("display-page-block");
-    if (clipboard.mode === "cut") {
+    if (clipboard.mode === "move") {
       for (const item of pageBlocks) {
         if (
           clipboard.info

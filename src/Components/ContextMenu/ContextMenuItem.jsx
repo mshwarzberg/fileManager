@@ -95,7 +95,7 @@ export default function ContextMenuItem({
           case "Copy":
             setClipboard({
               source: state.currentDirectory,
-              mode: contextName.toLowerCase(),
+              mode: contextName === "Cut" ? "move" : "copy",
               info: selectedItems.map((itemSelected) => itemSelected.info),
             });
             break;
@@ -116,6 +116,7 @@ export default function ContextMenuItem({
               handleMoveToTrash(
                 selectedItems[0]
                   ? selectedItems.map((item) => {
+                      const id = "$" + randomID(10);
                       const { info } = item;
                       return {
                         ...info,

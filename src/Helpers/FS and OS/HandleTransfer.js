@@ -1,11 +1,6 @@
 import CompareFiles from "../../Components/Miscellaneous/CompareFiles";
 
-import {
-  transfer,
-  copyItems,
-  moveItems,
-  checkForDuplicates,
-} from "./TransferFunctions";
+import { transfer, checkForDuplicates } from "./TransferFunctions";
 
 const fs = window.require("fs");
 const { exec } = window.require("child_process");
@@ -14,7 +9,7 @@ export function handleTransfer(destination, setPopup, data, setClipboard) {
   const { source, mode, info } = data;
 
   if (source === destination) {
-    if (mode === "cut") {
+    if (mode === "move") {
       setClipboard({});
       return;
     }
@@ -41,8 +36,8 @@ export function handleTransfer(destination, setPopup, data, setClipboard) {
         ok: (
           <button
             onClick={() => {
-              for (const { name, isFile, location } of info) {
-                transfer(location, name, destination, isFile);
+              for (const { path } of info) {
+                transfer(path, destination, mode);
               }
               setPopup({});
             }}
@@ -55,25 +50,18 @@ export function handleTransfer(destination, setPopup, data, setClipboard) {
             onClick={() => {
               const duplicateNames = duplicates.map((item) => item.name);
 
-              for (const { location, prefix, fileextension, isFile } of info) {
+              for (const { location, prefix, fileextension } of info) {
                 let name;
                 if (duplicateNames.includes(prefix + fileextension)) {
                   name = newName(location, prefix, fileextension);
                 } else {
                   name = prefix + fileextension;
                 }
-                if (mode === "copy") {
-                  copyItems(
-                    source + prefix + fileextension,
-                    destination + name,
-                    isFile
-                  );
-                } else {
-                  moveItems(
-                    source + prefix + fileextension,
-                    destination + name
-                  );
-                }
+                transfer(
+                  source + prefix + fileextension,
+                  destination + name,
+                  mode
+                );
               }
               setPopup({});
             }}
@@ -120,8 +108,8 @@ export function handleTransfer(destination, setPopup, data, setClipboard) {
       });
       return;
     }
-    for (const { path, location, isFile, name } of info) {
-      transfer(isFile ? location : path, destination, name, isFile, mode);
+    for (const { path } of info) {
+      transfer(path, destination, mode);
     }
   }
 }
