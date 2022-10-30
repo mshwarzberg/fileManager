@@ -9,15 +9,16 @@ import DirectoryTree from "../DirectoryTree/DirectoryTree";
 import PageItem from "../DirectoryPage/PageItem";
 
 import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
-import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
+import randomID from "../../Helpers/RandomID";
 import UIandUX from "./UIandUX";
 import sortBy from "../../Helpers/SortBy";
 import useDragAndDrop from "../../Hooks/useDragAndDrop";
+import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
 
 export const GeneralContext = createContext();
 
 const fs = window.require("fs");
-const { execSync } = window.require("child_process");
+const { execSync, exec } = window.require("child_process");
 
 export default function App() {
   const {
@@ -88,18 +89,12 @@ export default function App() {
           });
         }
       } else {
-        const drives = await formatDriveOutput();
-        setDirectoryItems(drives);
-        if (state.directoryTree[0]) {
-          for (const item of drives) {
-            if (item.isNetworkDrive) {
-              dispatch({
-                type: "addNetworkDrive",
-                value: item.path,
-              });
-            }
+        exec(
+          `wmic LogicalDisk where(DriveType=3) get Name,Size,VolumeName, FreeSpace, FileSystem`,
+          (_, data) => {
+            setDirectoryItems(formatDriveOutput(data));
           }
-        }
+        );
       }
     }
     updatePage();
@@ -173,6 +168,7 @@ export default function App() {
         setPopup={setPopup}
         clipboard={clipboard}
         setClipboard={setClipboard}
+        drag={drag}
       />
       {drag.x && drag.y && (
         <div
@@ -183,26 +179,25 @@ export default function App() {
           }}
         >
           <p id="count">{selectedItems.length}</p>
-          {drag.mode && (
-            <p id="mode">
-              {" "}
-              + {drag.mode === "move" ? "Move" : "Copy"} items to{" "}
-              {drag.destination}{" "}
-            </p>
-          )}
+          <div id="mode">
+            {drag.mode ? (
+              `
+              + ${drag.mode === "move" ? "Move" : "Copy"} items to ${
+                drag.destination
+              }`
+            ) : (
+              <div id="not-allowed">
+                <div id="line-through" />
+              </div>
+            )}
+          </div>
         </div>
       )}
       {/* <button
-        style={{ position: "fixed", zIndex: 10 }}
-        onClick={() => {
-          console.log(
-            execSync(
-              `powershell.exe ./PS1Scripts/Transfer.ps1 'B:/Test Files/Destination/x (5)' 'B:/Test Files/New/' 'move'`
-            ).toString()
-          );
-        }}
+        style={{ position: "fixed", zIndex: 10, width: "2rem" }}
+        onClick={() => {}}
       >
-        Test Button
+        Test`
       </button> */}
     </GeneralContext.Provider>
   );

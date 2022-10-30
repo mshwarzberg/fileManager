@@ -1,30 +1,47 @@
-const { execSync } = window.require("child_process");
+import randomID from "../RandomID";
 
-export default function formatDriveOutput() {
-  return new Promise((resolve, _) => {
-    let output = execSync(
-      "wmic logicaldisk get caption,drivetype, size, freespace, volumename /format:Textvaluelist"
-    );
-    const sortedDrives = [];
-    output = output.toString().split("\n");
-    for (const i in output) {
-      if (output[i].startsWith("Caption")) {
-        const capacity = parseInt(output[i * 1 + 3].split("=")[1]);
-        const name = `${
-          output[i * 1 + 4].split("\r\r")[0].split("=")[1] || "Local Disk"
-        } (${output[i].split("=")[1].split("\r\r")[0]})`;
-        sortedDrives.push({
-          name: name,
-          displayName: name,
-          isNetworkDrive: parseInt(output[i * 1 + 1].split("=")[1]) === 4,
-          size: capacity,
-          availableSpace: parseInt(output[i * 1 + 2].split("=")[1]),
+export default function formatDriveOutput(output) {
+  return output
+    .toString()
+    .split("\r\r\n")
+    .filter(
+      (item) =>
+        item && !item.startsWith("Name") && !item.startsWith("FileSystem")
+    )
+    .map((item) => {
+      const driveInfo = item
+        .trim()
+        .split(" ")
+        .filter((item) => item);
+
+      let formatted;
+      if (driveInfo.length === 4) {
+        formatted = {
+          isNetworkDrive: false,
+          name: "Local Disk (" + driveInfo[2] + ")",
+          size: driveInfo[3],
+          availableSpace: driveInfo[1],
+          displayName: "Local Disk (" + driveInfo[2] + ")",
           permission: true,
+          path: driveInfo[2] + "/",
           isDrive: true,
-          path: output[i].split("=")[1].split("\r\r")[0] + "/",
-        });
+          online: true,
+          key: randomID(),
+          fileSystem: driveInfo[0],
+        };
+      } else {
+        formatted = {
+          name: driveInfo[0] + "/",
+          isNetworkDrive: true,
+          displayName: "(" + driveInfo[0][0] + ")",
+          permission: true,
+          path: driveInfo[0] + "/",
+          isDrive: true,
+          online: false,
+          key: randomID(),
+        };
       }
-    }
-    resolve(sortedDrives);
-  });
+
+      return formatted;
+    });
 }

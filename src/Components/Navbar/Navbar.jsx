@@ -36,7 +36,7 @@ export default function Navbar({ setPopup, drag }) {
           setDirectoryItems={setDirectoryItems}
         />
       ) : (
-        <CurrentDirectory drag={drag} />
+        <CurrentDirectory drag={drag} setPopup={setPopup} />
       )}
     </div>
   );

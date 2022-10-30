@@ -33,6 +33,23 @@
     bottom: -2rem;
     padding-inline: 5px;
     border-radius: 5px;
+    #not-allowed {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 50%;
+      left: -50%;
+      position: absolute;
+      bottom: 1rem;
+      border: 2px solid red;
+      #line-through {
+        position: absolute;
+        right: 7.5px;
+        width: 2px;
+        height: 1.05rem;
+        background-color: red;
+        transform: rotate(35deg);
+      }
+    }
   }
 }
 

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function CustomDriveIcon({
   directoryItem,
-  directoryItem: { size: capacity, availableSpace, name },
+  directoryItem: { size: capacity, availableSpace, online, key },
 }) {
   const spaceUsed = 1 - availableSpace / capacity;
 
@@ -30,20 +30,27 @@ export default function CustomDriveIcon({
         <circle cx="74" cy="78" r="2" fill="silver" name="bottom-right" />
       </React.Fragment>
       <React.Fragment key="platter">
-        <linearGradient id={capacity}>
-          <stop offset={0} stopColor={spaceUsed < 0.9 ? "green" : "red"} />
-          <stop
-            offset={1 - availableSpace / capacity}
-            stopColor={spaceUsed < 0.9 ? "green" : "red"}
-          />
-          <stop offset={1 - availableSpace / capacity} stopColor="white" />
-          <stop offset={1} stopColor="white" />
-        </linearGradient>
+        {online ? (
+          <linearGradient id={key}>
+            <stop offset={0} stopColor={spaceUsed < 0.9 ? "green" : "red"} />
+            <stop
+              offset={1 - availableSpace / capacity}
+              stopColor={spaceUsed < 0.9 ? "green" : "red"}
+            />
+            <stop offset={1 - availableSpace / capacity} stopColor="white" />
+            <stop offset={1} stopColor="white" />
+          </linearGradient>
+        ) : (
+          <linearGradient id={key}>
+            <stop offset={0} stopColor="red" />
+            <stop offset={1} stopColor="red" />
+          </linearGradient>
+        )}
         <circle
           cx="-35"
           cy="50"
           r="23"
-          fill={`url(#${capacity})`}
+          fill={`url(#${key})`}
           name="platter"
           transform="rotate(-90)"
         />

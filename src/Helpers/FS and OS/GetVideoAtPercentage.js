@@ -1,7 +1,7 @@
 function betweenTwoNumbers(min, max) {
   return Math.random() * (max - min + 1) + min;
 }
-export default function GetVideoAtPercentage(
+export default function getVideoAtPercentage(
   time,
   value = betweenTwoNumbers(0, 100)
 ) {

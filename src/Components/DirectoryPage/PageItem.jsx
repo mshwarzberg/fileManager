@@ -9,12 +9,12 @@ import ItemName from "./Icons/ItemName";
 import blockContent from "../../Helpers/BlockContent.js";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import formatTitle from "../../Helpers/FormatTitle";
-
-import { ffmpegThumbs } from "../../Helpers/FS and OS/FFmpeg";
+import getVideoAtPercentage from "../../Helpers/FS and OS/GetVideoAtPercentage.js";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
 const exifr = window.require("exifr");
+const child = window.require("child_process");
 
 let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
@@ -61,7 +61,7 @@ export default function PageItem({
   )}`;
 
   useEffect(() => {
-    let timeout;
+    let timeout, test;
     if (isMedia && filetype !== "audio" && showThumbnails) {
       if (currentDirectory !== "Trash") {
         fs.mkdirSync(tempPath, { recursive: true });
@@ -76,9 +76,36 @@ export default function PageItem({
             })
             .catch((e) => {});
         } else {
-          ffmpegThumbs(path, thumbPath).then(() => {
-            setThumbnail(thumbPath);
-          });
+          test = setTimeout(() => {
+            let output = child.execFileSync("ffprobe.exe", [
+              "-show_format",
+              "-print_format",
+              "json",
+              path,
+            ]);
+            output = JSON.parse(output || "{}");
+            let { duration } = output["format"];
+            child.execFile(
+              "ffmpeg.exe",
+              [
+                "-ss",
+                getVideoAtPercentage(duration * 1),
+                "-i",
+                path,
+                "-vf",
+                "scale=400:-2",
+                "-vframes",
+                "1",
+                "-y",
+                thumbPath,
+              ],
+              (err, _) => {
+                if (!err) {
+                  setThumbnail(thumbPath);
+                }
+              }
+            );
+          }, directoryItems.indexOf(directoryItem) * 3);
         }
       }
       timeout = setTimeout(() => {
@@ -96,6 +123,7 @@ export default function PageItem({
     }
     return () => {
       clearTimeout(timeout);
+      clearTimeout(test);
     };
   }, [currentDirectory, showThumbnails]);
 
@@ -165,7 +193,7 @@ export default function PageItem({
                 x: e.clientX - 64,
                 y: e.clientY - 64,
               });
-            }, 200);
+            }, 500);
           }
           if (!e.shiftKey && !e.ctrlKey) {
             clickOnNameTimeout = setTimeout(() => {

@@ -5,7 +5,7 @@ import { intToBitRateStr } from "./FormatBitRate";
 export default function formatTitle(item) {
   const {
     name,
-    location,
+    fileSystem,
     size,
     isDrive,
     availableSpace,
@@ -31,7 +31,10 @@ export default function formatTitle(item) {
       bitrate ? `\nBit Rate: ${intToBitRateStr(bitrate)}` : ""
     }`;
   } else if (isDrive) {
-    return `Name: ${name}\nSpace Remaining: ${formatSize(
+    if (!size && !fileSystem) {
+      return "Status: offline";
+    }
+    return `Name: ${name}\nFile System: ${fileSystem}\nSpace Remaining: ${formatSize(
       availableSpace
     )}\nDrive Size: ${formatSize(size)}`;
   } else {

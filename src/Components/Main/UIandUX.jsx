@@ -19,6 +19,7 @@ export default function UIandUX({
   setPopup,
   clipboard,
   setClipboard,
+  drag,
 }) {
   const [contextMenu, setContextMenu] = useState({});
 
@@ -69,12 +70,10 @@ export default function UIandUX({
         setContextMenu,
         clipboard,
         setClipboard,
-        popup,
-        setPopup,
       }}
     >
       {popup.body && <Popup popup={popup} setPopup={setPopup} />}
-      <CustomTitle />
+      {!drag.x && !drag.y && <CustomTitle />}
       <ContextMenu
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}

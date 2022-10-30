@@ -6,7 +6,7 @@ import formatTitle from "../../Helpers/FormatTitle";
 
 const fs = window.require("fs");
 
-export default function CurrentDirectory({ drag }) {
+export default function CurrentDirectory({ drag, setPopup }) {
   const {
     state: { currentDirectory, drive },
     settings: { appTheme },
@@ -39,8 +39,28 @@ export default function CurrentDirectory({ drag }) {
             .filter((item) => {
               return item?.name && item;
             });
-        } catch (error) {
-          console.error(error);
+        } catch (e) {
+          setPopup({
+            show: true,
+            body: (
+              <div id="body">
+                <h1 id="description">{e.toString()}</h1>
+              </div>
+            ),
+            ok: (
+              <button
+                onClick={() => {
+                  setPopup({});
+                }}
+              >
+                OK
+              </button>
+            ),
+          });
+          dispatch({
+            type: "back",
+            value: "error",
+          });
         }
 
         return (
