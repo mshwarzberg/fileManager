@@ -17,6 +17,7 @@ export default function ContextMenuItem({
   contextName,
   clearContextMenu,
   contextMenu,
+  setReload,
   contextMenu: {
     info,
     info: { isFile, path },
@@ -157,7 +158,12 @@ export default function ContextMenuItem({
             newDirectory(state);
             break;
           case "Refresh":
-            window.location.reload(true);
+            setReload((prevReload) => !prevReload);
+            break;
+          case "Properties":
+            setPopup({
+              body: <div id="description">blah</div>,
+            });
             break;
           case "Restore":
             setDirectoryItems(

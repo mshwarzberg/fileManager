@@ -6,12 +6,14 @@ import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
 
 const { exec } = window.require("child_process");
+const fs = window.require("fs");
 
 export default function Page({
   selectedItems,
   setVisibleItems,
   clipboard,
   children,
+  reload,
 }) {
   const {
     setDirectoryItems,
@@ -19,8 +21,6 @@ export default function Page({
     state: { currentDirectory },
     settings: { appTheme },
   } = useContext(GeneralContext);
-
-  const [rerender, setRerender] = useState(false);
 
   function handleVisibleItems() {
     const elements = document.getElementsByClassName("display-page-block");
@@ -78,82 +78,56 @@ export default function Page({
   }, [directoryItems]);
 
   useEffect(() => {
-    if (rerender) {
-      const cmd = `powershell.exe ./PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
-      function videoTimeToNum(str) {
-        if (!str) {
-          return "";
-        }
-        str = str.split(":");
-        let value = 0;
-        value += parseInt(str[2]);
-        value += parseInt(str[1]) * 60;
-        value += parseInt(str[0]) * 3600;
-        return value;
+    const cmd = `powershell.exe ./PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
+    function videoTimeToNum(str) {
+      if (!str) {
+        return "";
       }
+      str = str.split(":");
+      let value = 0;
+      value += parseInt(str[2]);
+      value += parseInt(str[1]) * 60;
+      value += parseInt(str[0]) * 3600;
+      return value;
+    }
 
-      function clearString(str) {
-        if (!str) {
-          return "";
-        }
-        return str.replaceAll(" pixels", "").replaceAll("?", "");
+    function clearString(str) {
+      if (!str) {
+        return "";
       }
+      return str.replaceAll(" pixels", "").replaceAll("?", "");
+    }
 
-      exec(cmd, (error, duration) => {
-        if (error) console.log(error);
-        try {
-          let formattedDuration = duration?.replaceAll("\\r\\n", "");
-          formattedDuration = JSON.parse(duration || "[]");
-          setDirectoryItems((prevItems) =>
-            prevItems.map((prevItem) => {
-              let metadata;
-              if (typeof formattedDuration === "object") {
-                for (let item of formattedDuration) {
-                  metadata = JSON.parse(item);
-                  const {
-                    duration,
-                    name,
-                    width,
-                    height,
-                    dimensions,
-                    description,
-                    bitrate,
-                  } = metadata;
-
-                  if (name === prevItem.name) {
-                    return {
-                      ...prevItem,
-                      duration: videoTimeToNum(duration),
-                      width: parseInt(clearString(width)),
-                      height: parseInt(clearString(height)),
-                      ...(dimensions && {
-                        dimensions: clearString(dimensions),
-                      }),
-                      ...(description && { description: description }),
-                      ...(bitrate && {
-                        bitrate: bitRateToInt(clearString(bitrate)),
-                      }),
-                    };
-                  }
-                }
-              } else if (typeof formattedDuration === "string") {
-                metadata = JSON.parse(formattedDuration);
+    exec(cmd, (error, duration) => {
+      if (error) console.log(error);
+      try {
+        let formattedDuration = duration?.replaceAll("\\r\\n", "");
+        formattedDuration = JSON.parse(duration || "[]");
+        setDirectoryItems((prevItems) =>
+          prevItems.map((prevItem) => {
+            let metadata;
+            if (typeof formattedDuration === "object") {
+              for (let item of formattedDuration) {
+                metadata = JSON.parse(item);
                 const {
+                  duration,
                   name,
                   width,
                   height,
                   dimensions,
                   description,
                   bitrate,
-                  duration,
                 } = metadata;
+
                 if (name === prevItem.name) {
                   return {
                     ...prevItem,
                     duration: videoTimeToNum(duration),
                     width: parseInt(clearString(width)),
                     height: parseInt(clearString(height)),
-                    dimensions: clearString(dimensions),
+                    ...(dimensions && {
+                      dimensions: clearString(dimensions),
+                    }),
                     ...(description && { description: description }),
                     ...(bitrate && {
                       bitrate: bitRateToInt(clearString(bitrate)),
@@ -161,17 +135,49 @@ export default function Page({
                   };
                 }
               }
-              return prevItem;
-            })
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      });
+            } else if (typeof formattedDuration === "string") {
+              metadata = JSON.parse(formattedDuration);
+              const {
+                name,
+                width,
+                height,
+                dimensions,
+                description,
+                bitrate,
+                duration,
+              } = metadata;
+              if (name === prevItem.name) {
+                return {
+                  ...prevItem,
+                  duration: videoTimeToNum(duration),
+                  width: parseInt(clearString(width)),
+                  height: parseInt(clearString(height)),
+                  dimensions: clearString(dimensions),
+                  ...(description && { description: description }),
+                  ...(bitrate && {
+                    bitrate: bitRateToInt(clearString(bitrate)),
+                  }),
+                };
+              }
+            }
+            return prevItem;
+          })
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }, [currentDirectory, reload]);
+
+  useEffect(() => {
+    if (
+      directoryItems.map((item) => item.isMedia).includes(true) &&
+      currentDirectory !== "Trash"
+    ) {
+      fs.mkdirSync(currentDirectory + "$Thumbs$", { recursive: true });
+      exec(`attrib +s +h "${currentDirectory}$Thumbs$"`, () => {});
     }
-    setRerender(true);
-    // eslint-disable-next-line
-  }, [rerender, currentDirectory]);
+  }, [currentDirectory, reload]);
 
   return (
     <div

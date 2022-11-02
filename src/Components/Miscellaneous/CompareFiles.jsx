@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
+import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
 import { GeneralContext } from "../Main/App.jsx";
 import BlockComparison from "./BlockComparison";
 

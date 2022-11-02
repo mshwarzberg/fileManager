@@ -1,21 +1,31 @@
 import { useEffect, useState } from "react";
+import clickOnItem from "../Helpers/ClickOnItem";
 import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 
+let enterFolderTimeout;
 export default function useDragAndDrop(
-  [selectedItems, setSelectedItems],
-  [drag, setDrag],
+  [selectedItems, setSelectedItems = () => {}],
+  [drag, setDrag = () => {}],
   currentDirectory,
-  setPopup
+  setPopup = () => {},
+  dispatch = () => {}
 ) {
+  const [sourceDirectory, setSourceDirectory] = useState();
+
+  useEffect(() => {
+    setSourceDirectory(currentDirectory);
+  }, [drag.x, drag.y]);
+
   useEffect(() => {
     function handleMouseMove(e) {
+      clearTimeout(enterFolderTimeout);
       if (drag.x && drag.y) {
         const dragElement = document.getElementById("drag-box");
         dragElement.style.left = e.clientX - 64 + "px";
         dragElement.style.top = e.clientY - 64 + "px";
         const { destination } = e.target.dataset;
-        if (destination && currentDirectory !== destination) {
-          const drive = currentDirectory.slice(0, 3);
+        if (destination && sourceDirectory !== destination) {
+          const drive = sourceDirectory.slice(0, 3);
           if (destination.startsWith(drive)) {
             setDrag((prevDrag) => ({
               ...prevDrag,
@@ -29,29 +39,36 @@ export default function useDragAndDrop(
               destination: destination,
             }));
           }
+          enterFolderTimeout = setTimeout(() => {
+            clickOnItem(JSON.parse(e.target.dataset.info || "{}"), dispatch);
+          }, 1000);
         } else {
           setDrag((prevDrag) => ({
             ...prevDrag,
             mode: null,
           }));
         }
+
+        if (e.buttons !== 1 && e.buttons !== 2) {
+          setDrag({});
+        }
       }
     }
     function handleMouseUp(e) {
       if (drag.x && drag.y) {
         const { destination } = e.target.dataset;
-        if (destination) {
+        if (destination && drag.mode) {
           handleTransfer(
             destination,
             setPopup,
             {
-              source: currentDirectory,
+              source: sourceDirectory,
               mode: drag.mode,
               info: selectedItems.map((selectedItem) => selectedItem.info),
             },
             () => {}
           );
-          if (currentDirectory !== destination && drag.mode === "move") {
+          if (sourceDirectory !== destination && drag.mode === "move") {
             setSelectedItems([]);
           }
         }

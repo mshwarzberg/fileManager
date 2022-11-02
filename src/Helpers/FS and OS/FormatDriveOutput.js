@@ -11,17 +11,20 @@ export default function formatDriveOutput(output) {
     .map((item) => {
       const driveInfo = item
         .trim()
-        .split(" ")
-        .filter((item) => item);
-
+        .split("  ")
+        .filter((item) => item)
+        .map((item) => {
+          return item.trim();
+        });
       let formatted;
-      if (driveInfo.length === 4) {
+      if (driveInfo.length > 2) {
         formatted = {
           isNetworkDrive: false,
-          name: "Local Disk (" + driveInfo[2] + ")",
+          name: (driveInfo[4] || "Local Disk") + " (" + driveInfo[2] + ")",
           size: driveInfo[3],
           availableSpace: driveInfo[1],
-          displayName: "Local Disk (" + driveInfo[2] + ")",
+          displayName:
+            (driveInfo[4] || "Local Disk") + " (" + driveInfo[2] + ")",
           permission: true,
           path: driveInfo[2] + "/",
           isDrive: true,

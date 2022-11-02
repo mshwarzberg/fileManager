@@ -1,26 +1,31 @@
-import { useState, createContext, useEffect } from "react";
-import ContextMenu from "../ContextMenu/ContextMenu";
+import { useState, createContext, useEffect, useContext } from "react";
 
-import CustomTitle from "../Miscellaneous/CustomTitle";
+import { GeneralContext } from "./App";
+
 import useSelectMultiple from "../../Hooks/useSelectMultiple";
 import useShortcuts from "../../Hooks/useShortcuts";
 import useScaleDirectoryTree from "../../Hooks/useScaleDirectoryTree";
 import useWatch from "../../Hooks/useWatch";
+import useDragAndDrop from "../../Hooks/useDragAndDrop";
 import Popup from "../Miscellaneous/Popup";
+import Title from "../Miscellaneous/Title";
 import Settings from "../Miscellaneous/Settings/Settings";
+import ContextMenu from "../ContextMenu/ContextMenu";
 
 export const UIContext = createContext();
 
 export default function UIandUX({
-  setLastSelected,
-  selectedItems,
-  setSelectedItems,
-  popup,
-  setPopup,
-  clipboard,
-  setClipboard,
-  drag,
+  lastSelected: [lastSelected, setLastSelected = () => {}],
+  selectedItems: [selectedItems, setSelectedItems = () => {}],
+  popup: [popup, setPopup = () => {}],
+  clipboard: [clipboard, setClipboard = () => {}],
+  drag: [drag, setDrag = () => {}],
+  reload: [reload, setReload = () => {}],
 }) {
+  const {
+    state: { currentDirectory },
+    dispatch,
+  } = useContext(GeneralContext);
   const [contextMenu, setContextMenu] = useState({});
 
   useEffect(() => {
@@ -55,12 +60,17 @@ export default function UIandUX({
   useScaleDirectoryTree();
   useSelectMultiple(setLastSelected, setSelectedItems);
   useShortcuts(
-    selectedItems,
-    setClipboard,
-    clipboard,
-    setSelectedItems,
+    [selectedItems, setSelectedItems],
+    [clipboard, setClipboard],
+    [popup, setPopup],
+    setReload
+  );
+  useDragAndDrop(
+    [selectedItems, setSelectedItems],
+    [drag, setDrag],
+    currentDirectory,
     setPopup,
-    popup
+    dispatch
   );
 
   return (
@@ -70,14 +80,15 @@ export default function UIandUX({
         setContextMenu,
         clipboard,
         setClipboard,
+        setPopup,
       }}
     >
       {popup.body && <Popup popup={popup} setPopup={setPopup} />}
-      {!drag.x && !drag.y && <CustomTitle />}
+      {!drag.x && !drag.y && <Title />}
       <ContextMenu
         selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
         setPopup={setPopup}
+        setReload={setReload}
       />
       <Settings setPopup={setPopup} />
     </UIContext.Provider>

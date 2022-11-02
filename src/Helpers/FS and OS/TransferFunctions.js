@@ -1,4 +1,4 @@
-import formatMetadata from "./GetMetadata";
+import formatMetadata from "./FormatMetadata";
 
 const fs = window.require("fs");
 const { exec } = window.require("child_process");

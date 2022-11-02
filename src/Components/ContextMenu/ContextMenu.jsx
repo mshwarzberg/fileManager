@@ -2,7 +2,7 @@ import { useEffect, useContext, Fragment } from "react";
 import { UIContext } from "../Main/UIandUX";
 import ContextMenuItem from "./ContextMenuItem";
 
-export default function ContextMenu({ selectedItems }) {
+export default function ContextMenu({ selectedItems, setPopup, setReload }) {
   const { contextMenu, setContextMenu, clipboard } = useContext(UIContext);
 
   useEffect(() => {
@@ -78,6 +78,7 @@ export default function ContextMenu({ selectedItems }) {
         contextMenu={contextMenu}
         selectedItems={selectedItems}
         key={item}
+        setReload={setReload}
         clearContextMenu={() => {
           return setContextMenu({});
         }}

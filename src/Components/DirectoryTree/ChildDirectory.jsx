@@ -12,7 +12,7 @@ const fs = window.require("fs");
 
 export default function ChildDirectory({ childDir, containsDirectories }) {
   const {
-    state,
+    state: { directoryTree, currentDirectory },
     dispatch,
     settings: { treeCompactView, appTheme },
   } = useContext(GeneralContext);
@@ -25,18 +25,13 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       }
       fs.readdirSync(path);
     } catch {
-      handleDirectoryTree(state.directoryTree, path);
+      handleDirectoryTree(directoryTree, path);
     }
   }, []);
 
-  const isDirectoryCurrent = state.currentDirectory === path;
+  const isDirectoryCurrent = currentDirectory === path;
 
-  let isPathClickedAlready;
-  function clickDirectory(toOpenDirectory, toExpandTree, dblClick) {
-    if (isPathClickedAlready && !dblClick) {
-      return;
-    }
-    isPathClickedAlready = path;
+  function clickDirectory(toOpenDirectory, toExpandTree) {
     if (toOpenDirectory) {
       dispatch({
         type: "open",
@@ -49,7 +44,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
     dispatch({
       type: "updateDirectoryTree",
       value: addToDirectoryTree(
-        state.directoryTree,
+        directoryTree,
         path,
         getChildDirectoriesTree(path)
       ),
@@ -58,10 +53,18 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
 
   return (
     <button
-      className={`child-directory ${!permission && "no-permission"} ${
-        treeCompactView ? "compact-tree" : ""
-      }`}
-      id={isDirectoryCurrent ? "current-directory" : ""}
+      className={(() => {
+        let className = "child-directory";
+        if (!permission) {
+          className += " no-permission";
+        }
+        if (treeCompactView) {
+          className += " compact-tree";
+        }
+        className += ` child-directory-${appTheme}`;
+        return className;
+      })()}
+      id={isDirectoryCurrent ? `current-directory-${appTheme}` : ""}
       onClick={(e) => {
         e.stopPropagation();
         if (!permission) {
@@ -91,6 +94,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
             clickDirectory(false, true);
             e.stopPropagation();
           }}
+          data-destination={path}
         >
           →
         </div>

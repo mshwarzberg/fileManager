@@ -150,7 +150,6 @@ function newName(directory, prefix, fileextension) {
     try {
       fs.accessSync(directory + newFileName);
     } catch (e) {
-      console.log(e);
       return newFileName;
     }
     i++;

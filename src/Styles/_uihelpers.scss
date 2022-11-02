@@ -2,7 +2,8 @@
 
 #select-multiple-box {
   position: absolute;
-  background-color: #11111188;
+  background-color: #3333cc22;
+  outline: 1.5px solid #3333cc99;
   z-index: 2;
 }
 
@@ -62,6 +63,19 @@
   cursor: ew-resize;
 }
 
+@keyframes showTitle {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+    transform-origin: top left;
+  }
+  100% {
+    transform-origin: top left;
+    transform: scale(100%);
+    opacity: 1;
+  }
+}
+
 #custom-title {
   padding: 4px 1rem 4px 4px;
   font-size: 0.9rem;
@@ -84,6 +98,7 @@
   backdrop-filter: blur(35px);
   letter-spacing: 1px;
   font-family: "Akshar";
+  animation: showTitle 100ms ease-in-out;
 }
 
 @mixin Body {

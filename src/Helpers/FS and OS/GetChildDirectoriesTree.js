@@ -14,13 +14,15 @@ export default function getChildDirectoriesTree(location) {
 }
 
 export function getTreeItem(location, item) {
+  const { name } = item;
   if (
-    (item.name === "temp" ||
-      item.name === "System Volume Information" ||
-      item.name.startsWith("$") ||
-      item.name === "trash") &&
+    (name.toLowerCase() === "system volume information" ||
+      name.toLowerCase() === "trash") &&
     location.length === 3
   ) {
+    return "";
+  }
+  if (name.startsWith("$")) {
     return "";
   }
   let permission = true;

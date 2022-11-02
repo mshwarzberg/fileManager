@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import { GeneralContext } from "../Components/Main/App.jsx";
-import formatMetadata from "../Helpers/FS and OS/GetMetadata";
+import formatMetadata from "../Helpers/FS and OS/FormatMetadata";
 import { findInArray } from "../Helpers/SearchArray";
 
 const fs = window.require("fs");
@@ -54,6 +54,11 @@ export default function useWatch() {
                 prevItems
                   .map((prevItem) => {
                     if (prevItem.path === name) {
+                      if (prevItem.isMedia) {
+                        try {
+                          fs.unlinkSync(currentDirectory + "$Thumbs$/" + name);
+                        } catch (error) {}
+                      }
                       return {};
                     }
                     return prevItem;

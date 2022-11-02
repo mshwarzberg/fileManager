@@ -12,7 +12,7 @@ export default function contextMenuOptions(item) {
   }
   const { isDirectory, isDrive, isFile, permission } = item;
   if (!permission) {
-    return [];
+    return JSON.stringify([]);
   }
   if (isDirectory) {
     return JSON.stringify([

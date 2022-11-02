@@ -11,10 +11,10 @@ export default function clickOnItem(item, dispatch) {
     path,
     isSymbolicLink,
     linkTo,
-    displayName,
+    permission,
   } = item;
 
-  if (displayName !== name) {
+  if (!permission) {
     return;
   }
   if (isDrive) {
@@ -33,11 +33,11 @@ export default function clickOnItem(item, dispatch) {
       });
     }
   } else if (isFile) {
-    exec(`"${location + name}"`);
+    exec(`"${path}"`);
   } else if (isDirectory) {
     dispatch({
       type: "open",
-      value: location + name + "/",
+      value: path + "/",
     });
   } else if (isSymbolicLink) {
     dispatch({

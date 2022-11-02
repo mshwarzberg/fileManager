@@ -14,7 +14,7 @@ export default function ParentDirectory({
   children,
   childDirsList,
 }) {
-  const { path, name, permission, collapsed, isDirectory, isDrive } = parentDir;
+  const { path, name, permission, collapsed } = parentDir;
   const {
     state,
     dispatch,
@@ -75,10 +75,20 @@ export default function ParentDirectory({
         />
       )}
       <button
-        className={`${
-          collapsed ? "parent-directory-collapsed" : "parent-directory"
-        } ${treeCompactView ? "compact-tree" : ""}`}
-        id={isDirectoryCurrent ? "current-directory" : ""}
+        className={(() => {
+          let className = "";
+          if (collapsed) {
+            className = "parent-directory-collapsed";
+          } else {
+            className = "parent-directory";
+          }
+          if (treeCompactView) {
+            className += " compact-tree";
+          }
+          className += ` parent-directory-${appTheme}`;
+          return className;
+        })()}
+        id={isDirectoryCurrent ? `current-directory-${appTheme}` : ""}
         onDoubleClick={() => {
           dispatch({
             type: "updateDirectoryTree",
@@ -100,11 +110,12 @@ export default function ParentDirectory({
           <div
             className={`expand-directory ${collapsed ? "" : "rotate-arrow"}`}
             onClick={handleCollapseAndExpanse}
+            data-destination={path}
           >
             →
           </div>
         )}
-        <div disabled={true} className={`directory-name text-${appTheme}`}>
+        <div className={`directory-name text-${appTheme}`}>
           {name || "This PC"}
         </div>
       </button>

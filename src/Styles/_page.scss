@@ -15,29 +15,10 @@
   &.page-dark-mode {
     box-shadow: inset 4rem 4rem 20rem #111;
     background-color: #222;
-    .display-page-block {
-      &:hover,
-      &.selected {
-        background-color: #111;
-      }
-      &.alternate {
-        background-color: #333;
-        outline: 1px solid white;
-      }
-    }
   }
   &.page-light-mode {
     box-shadow: inset 4rem 4rem 20rem #eee;
     background-color: #ccc;
-    .display-page-block {
-      &:hover,
-      &.selected {
-        background-color: #fff;
-      }
-      &.alternate {
-        background-color: #eee;
-      }
-    }
   }
   #empty-directory-header,
   #does-not-exist-error {
@@ -59,6 +40,22 @@
     margin: 0.3rem;
     cursor: default;
     padding-top: 0.8rem;
+    border-radius: 2px;
+    &:hover,
+    &.selected {
+      background-color: #ffc0cb99;
+    }
+    &.alternate {
+      background-color: #ffc0cb66;
+    }
+    &.no-permission {
+      cursor: not-allowed;
+      background-color: #ff444488 !important;
+      outline: 1px solid red !important;
+      &:hover {
+        background-color: #ff444488;
+      }
+    }
     &.compacted-block {
       margin: 0.05rem;
       padding-top: 5px;

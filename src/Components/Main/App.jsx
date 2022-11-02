@@ -7,12 +7,10 @@ import Page from "../DirectoryPage/Page";
 import Navbar from "../Navbar/Navbar";
 import DirectoryTree from "../DirectoryTree/DirectoryTree";
 import PageItem from "../DirectoryPage/PageItem";
-
-import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
-import randomID from "../../Helpers/RandomID";
 import UIandUX from "./UIandUX";
+
 import sortBy from "../../Helpers/SortBy";
-import useDragAndDrop from "../../Hooks/useDragAndDrop";
+import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
 
 export const GeneralContext = createContext();
@@ -37,6 +35,7 @@ export default function App() {
   const [popup, setPopup] = useState({});
   const [clipboard, setClipboard] = useState({});
   const [drag, setDrag] = useState({});
+  const [reload, setReload] = useState();
 
   useEffect(() => {
     console.clear();
@@ -99,7 +98,7 @@ export default function App() {
     }
     updatePage();
     // eslint-disable-next-line
-  }, [currentDirectory, drive]);
+  }, [currentDirectory, drive, reload]);
 
   useEffect(() => {
     if (!currentDirectory?.startsWith(drive) || !drive) {
@@ -114,13 +113,6 @@ export default function App() {
   useEffect(() => {
     document.body.className = settings.appTheme;
   }, [settings.appTheme]);
-
-  useDragAndDrop(
-    [selectedItems, setSelectedItems],
-    [drag, setDrag],
-    currentDirectory,
-    setPopup
-  );
 
   const renderDirectoryItems = directoryItems.map((directoryItem) => {
     return (
@@ -156,19 +148,17 @@ export default function App() {
         setVisibleItems={setVisibleItems}
         selectedItems={selectedItems}
         clipboard={clipboard}
+        reload={reload}
       >
         {renderDirectoryItems}
       </Page>
       <UIandUX
-        setLastSelected={setLastSelected}
-        lastSelected={lastSelected}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
-        popup={popup}
-        setPopup={setPopup}
-        clipboard={clipboard}
-        setClipboard={setClipboard}
-        drag={drag}
+        lastSelected={[lastSelected, setLastSelected]}
+        selectedItems={[selectedItems, setSelectedItems]}
+        popup={[popup, setPopup]}
+        clipboard={[clipboard, setClipboard]}
+        drag={[drag, setDrag]}
+        reload={[reload, setReload]}
       />
       {drag.x && drag.y && (
         <div
@@ -193,12 +183,23 @@ export default function App() {
           </div>
         </div>
       )}
-      {/* <button
-        style={{ position: "fixed", zIndex: 10, width: "2rem" }}
-        onClick={() => {}}
+      <button
+        style={{ position: "fixed", zIndex: 10 }}
+        onClick={() => {
+          function formatPowershellJSON(output) {
+            output = output.toString();
+            console.log(output);
+          }
+          exec(
+            `powershell.exe ./PS1Scripts/DocumentMetadata.ps1 """${currentDirectory}"""`,
+            (e, output) => {
+              formatPowershellJSON(output);
+            }
+          );
+        }}
       >
-        Test`
-      </button> */}
+        Test
+      </button>
     </GeneralContext.Provider>
   );
 }

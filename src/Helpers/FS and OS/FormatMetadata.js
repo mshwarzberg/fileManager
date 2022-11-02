@@ -29,12 +29,13 @@ export default function formatMetadata(file, directory, drive) {
   const { name } = file;
 
   if (
-    (name === "temp" ||
-      name === "$RECYCLE.BIN" ||
-      name === "System Volume Information" ||
-      name === "trash") &&
+    (name.toLowerCase() === "system volume information" ||
+      name.toLowerCase() === "trash") &&
     directory === drive
   ) {
+    return {};
+  }
+  if (name.startsWith("$")) {
     return {};
   }
   let fileextension = file.isFile()
@@ -46,7 +47,7 @@ export default function formatMetadata(file, directory, drive) {
   let permission = true;
   try {
     var { size, birthtimeMs, mtimeMs, atimeMs } = fs.statSync(
-      `${directory === "/" ? directory : directory + "/"}${name}`
+      `${directory}${name}`
     );
     dateAccessed = atimeMs;
     dateModified = mtimeMs;
@@ -61,7 +62,7 @@ export default function formatMetadata(file, directory, drive) {
     permission = false;
   }
 
-  let isMedia, restOfPath, thumbPath;
+  let isMedia, thumbPath;
   if (
     itemtype === "video" ||
     itemtype === "image" ||
@@ -70,8 +71,7 @@ export default function formatMetadata(file, directory, drive) {
   ) {
     isMedia = true;
     if (itemtype !== "audio") {
-      restOfPath = directory.slice(3, Infinity);
-      thumbPath = `${drive}temp/${restOfPath}${name}.jpeg`;
+      thumbPath = `${directory}$Thumbs$/${name}.jpeg`;
       if (itemtype === "image" && sizeOf < 300000) {
         thumbPath = directory + name;
       }
@@ -86,9 +86,9 @@ export default function formatMetadata(file, directory, drive) {
     displayPath: directory + name,
     key: randomID(),
     location: directory,
-    fileextension: fileextension || "",
+    fileextension: fileextension,
     permission: permission,
-    size: sizeOf || 0,
+    size: sizeOf,
     accessed: dateAccessed || 0,
     modified: dateModified || 0,
     created: dateCreated || 0,

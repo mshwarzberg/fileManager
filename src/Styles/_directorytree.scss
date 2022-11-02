@@ -1,6 +1,32 @@
 @import "./general";
+@keyframes showTree {
+  0% {
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  100% {
+    transform-origin: left;
+    transform: scaleX(100%);
+  }
+}
+@keyframes hideTree {
+  0% {
+    transform-origin: left;
+    transform: scaleX(100%);
+  }
+  100% {
+    transform-origin: left;
+    transform: scaleX(0%);
+    flex: 0 0 0;
+  }
+}
 
-#directory-tree {
+#directory-tree-hide {
+  animation: hideTree 100ms ease-in-out forwards !important;
+}
+
+#directory-tree-show,
+#directory-tree-hide {
   z-index: 1;
   height: calc(100vh - 9rem);
   top: 2rem;
@@ -10,6 +36,7 @@
   flex: 0 0 20%;
   overflow-y: auto;
   overflow-x: hidden;
+  animation: showTree 100ms ease-in-out;
   &.directory-tree-dark-mode {
     background-color: #111;
     background: linear-gradient(
@@ -107,19 +134,48 @@
           background-color: #441111;
         }
       }
-      &#current-directory {
-        background-color: white;
+      &#current-directory-dark-mode {
+        background-color: #ccc;
+        &:hover {
+          background-color: #fff;
+          transition: all 50ms ease-in;
+        }
         * {
           color: black;
           font-weight: bold;
         }
       }
-      &:hover {
-        background-color: #999;
+      &.parent-directory-dark-mode {
+        background-color: #222;
+        &:hover {
+          background-color: #333;
+          transition: all 50ms ease-in;
+        }
+      }
+      &.child-directory-dark-mode:hover {
+        background-color: #222;
+        transition: all 50ms ease-in;
+      }
+      &#current-directory-light-mode {
+        background-color: #111;
+        &:hover {
+          background-color: black;
+        }
         * {
-          color: black;
+          color: white;
           font-weight: bold;
         }
+      }
+      &.parent-directory-light-mode {
+        background-color: #999;
+        &:hover {
+          background-color: #888;
+          transition: all 50ms ease-in;
+        }
+      }
+      &.child-directory-light-mode:hover {
+        background-color: #999;
+        transition: all 50ms ease-in;
       }
       .directory-name {
         outline: none;
@@ -143,12 +199,7 @@
         }
       }
     }
-    .parent-directory {
-      background-color: #444;
-      .directory-tree-arrow {
-        transform: rotate(90deg);
-      }
-    }
+
     .child-directory {
       display: flex;
       flex-direction: row;

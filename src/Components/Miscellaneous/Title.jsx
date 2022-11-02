@@ -4,7 +4,7 @@ import formatSize from "../../Helpers/FormatSize";
 const { exec } = window.require("child_process");
 
 let titleTimeout;
-export default function CustomTitle() {
+export default function Title() {
   const [element, setElement] = useState();
   const [title, setTitle] = useState({});
 

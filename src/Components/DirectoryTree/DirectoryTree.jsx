@@ -91,7 +91,7 @@ export default function DirectoryTree() {
     try {
       return fs
         .readdirSync(path, { withFileTypes: true })
-        .map((item) => item.isDirectory())
+        .map((item) => item.isDirectory() && item.name !== "$Thumbs$")
         .includes(true);
     } catch {
       return false;
@@ -132,19 +132,21 @@ export default function DirectoryTree() {
   }
 
   return (
-    settings.showDirectoryTree && (
-      <>
-        <div
-          className={`directory-tree-${appTheme}`}
-          id="directory-tree"
-          style={{
-            flex: `0 0 ${settings.treeWidth}px`,
-          }}
-        >
-          {mapDirectoryTreeLoop()}
-        </div>
-        <div id="directory-tree-scaler" />
-      </>
-    )
+    <>
+      <div
+        className={`directory-tree-${appTheme}`}
+        id={
+          settings.showDirectoryTree
+            ? "directory-tree-show"
+            : "directory-tree-hide"
+        }
+        style={{
+          flex: `0 0 ${settings.treeWidth}px`,
+        }}
+      >
+        {mapDirectoryTreeLoop()}
+      </div>
+      <div id="directory-tree-scaler" />
+    </>
   );
 }

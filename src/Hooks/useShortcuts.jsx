@@ -7,12 +7,10 @@ import randomID from "../Helpers/RandomID";
 import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 
 export default function useShortcuts(
-  selectedItems,
-  setClipboard,
-  clipboard,
-  setSelectedItems,
-  setPopup,
-  popup
+  [selectedItems, setSelectedItems = () => {}],
+  [clipboard, setClipboard = () => {}],
+  [popup, setPopup = () => {}],
+  setReload
 ) {
   const {
     state,
@@ -39,6 +37,7 @@ export default function useShortcuts(
 
   useEffect(() => {
     function handleKeyDown(e) {
+      e.preventDefault();
       if (e.repeat && !e.key.includes("Arrow")) {
         return;
       }
@@ -55,6 +54,9 @@ export default function useShortcuts(
       }
       if (e.ctrlKey) {
         switch (e.key) {
+          case "r":
+            setReload((prevTest) => !prevTest);
+            break;
           case "x":
           case "c":
             setClipboard({
@@ -154,7 +156,6 @@ export default function useShortcuts(
           });
           break;
         case "Enter":
-          e.preventDefault();
           selectedItems.map((item) => {
             clickOnItem(item.info, dispatch);
           });

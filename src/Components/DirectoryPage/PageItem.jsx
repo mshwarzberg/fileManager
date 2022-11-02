@@ -14,7 +14,7 @@ import getVideoAtPercentage from "../../Helpers/FS and OS/GetVideoAtPercentage.j
 const fs = window.require("fs");
 const sharp = window.require("sharp");
 const exifr = window.require("exifr");
-const child = window.require("child_process");
+const { execFile, exec, execFileSync } = window.require("child_process");
 
 let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
@@ -55,29 +55,21 @@ export default function PageItem({
   const selectedElements = selectedItems.map(
     (selectedItem) => selectedItem.element
   );
-  const tempPath = `${drive}temp/${currentDirectory.slice(
-    drive.length,
-    currentDirectory.length
-  )}`;
-
   useEffect(() => {
-    let timeout, test;
+    let timeout;
     if (isMedia && filetype !== "audio" && showThumbnails) {
-      if (currentDirectory !== "Trash") {
-        fs.mkdirSync(tempPath, { recursive: true });
-      }
       function createThumbnails() {
-        if (filetype === "image") {
-          sharp(path)
-            .resize({ width: 400 })
-            .toFile(thumbPath)
-            .then(() => {
-              setThumbnail(thumbPath);
-            })
-            .catch((e) => {});
-        } else {
-          test = setTimeout(() => {
-            let output = child.execFileSync("ffprobe.exe", [
+        timeout = setTimeout(() => {
+          if (filetype === "image") {
+            sharp(path)
+              .resize({ width: 400 })
+              .toFile(thumbPath)
+              .then(() => {
+                setThumbnail(thumbPath);
+              })
+              .catch((e) => {});
+          } else {
+            let output = execFileSync("ffprobe.exe", [
               "-show_format",
               "-print_format",
               "json",
@@ -85,7 +77,7 @@ export default function PageItem({
             ]);
             output = JSON.parse(output || "{}");
             let { duration } = output["format"];
-            child.execFile(
+            execFile(
               "ffmpeg.exe",
               [
                 "-ss",
@@ -105,8 +97,8 @@ export default function PageItem({
                 }
               }
             );
-          }, directoryItems.indexOf(directoryItem) * 3);
-        }
+          }
+        }, directoryItems.indexOf(directoryItem) * 10);
       }
       timeout = setTimeout(() => {
         try {
@@ -115,23 +107,34 @@ export default function PageItem({
         } catch {
           if (currentDirectory === "Trash" && size < 300000) {
             setThumbnail(drive + "trash/" + name);
-            return;
+          } else {
+            createThumbnails();
           }
-          createThumbnails();
         }
-      }, directoryItems.indexOf(directoryItem));
+      }, directoryItems.indexOf(directoryItem) * 3);
     }
     return () => {
       clearTimeout(timeout);
-      clearTimeout(test);
     };
   }, [currentDirectory, showThumbnails]);
 
+  function className() {
+    let clsName = "display-page-block";
+    if (clickToOpen === "single") {
+      clsName += " single-click";
+    }
+    if (pageCompactView) {
+      clsName += " compacted-block";
+    }
+    if (!permission) {
+      clsName += " no-permission";
+    }
+    return clsName;
+  }
+
   return visibleItems.includes(document.getElementById(path)) ? (
     <div
-      className={`display-page-block ${
-        clickToOpen === "single" ? "single-click" : ""
-      } ${pageCompactView ? "compacted-block" : ""}`}
+      className={className()}
       id={path}
       style={{
         width: iconSize + "rem",
@@ -172,7 +175,6 @@ export default function PageItem({
         clearTimeout(dragTimeout);
       }}
       onMouseDown={(e) => {
-        // left click or right click
         if (e.button === 0 || e.button === 2) {
           selectTimeout = setTimeout(
             () => {
@@ -184,7 +186,6 @@ export default function PageItem({
                 setLastSelected
               );
             },
-            // don't unselect selected element for 200ms to allow drag and drop
             selectedElements.includes(e.target) ? 200 : 0
           );
           if (selectedElements.includes(e.target)) {
@@ -193,7 +194,7 @@ export default function PageItem({
                 x: e.clientX - 64,
                 y: e.clientY - 64,
               });
-            }, 500);
+            }, 150);
           }
           if (!e.shiftKey && !e.ctrlKey) {
             clickOnNameTimeout = setTimeout(() => {
@@ -215,9 +216,6 @@ export default function PageItem({
       }}
       onDoubleClick={(e) => {
         clearTimeout(clickOnNameTimeout);
-        if (!permission || e.ctrlKey || e.shiftKey) {
-          return;
-        }
         setRenameItem({});
         clickOnItem(directoryItem, dispatch);
       }}
@@ -225,13 +223,21 @@ export default function PageItem({
         clearTimeout(clickOnNameTimeout);
         setRenameItem({});
       }}
-      data-contextmenu={permission && contextMenuOptions(directoryItem)}
+      data-contextmenu={contextMenuOptions(directoryItem)}
       data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
       data-title={formatTitle({ ...directoryItem, description: description })}
       data-timing={isDirectory && 400}
-      data-destination={
-        isDirectory || isDrive ? path + "/" : isSymbolicLink ? linkTo : null
-      }
+      data-destination={(() => {
+        if (isDirectory) {
+          return path + "/";
+        } else if (isDrive) {
+          return path;
+        } else if (isSymbolicLink) {
+          return linkTo;
+        } else {
+          return null;
+        }
+      })()}
     >
       <>
         {blockContent(directoryItem, showThumbnails, iconSize, [

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { GeneralContext } from "../../Main/App";
-import formatMetadata from "../../../Helpers/FS and OS/GetMetadata";
+import formatMetadata from "../../../Helpers/FS and OS/FormatMetadata";
 import CustomFileIcon from "./CustomFileIcon";
 import randomIntBetweenTwoNums from "../../../Helpers/RandomIntBetweenTwoNums";
 

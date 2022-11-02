@@ -1,6 +1,6 @@
 import { useContext, useState, Fragment } from "react";
 import { GeneralContext } from "../Main/App";
-import formatMetadata from "../../Helpers/FS and OS/GetMetadata";
+import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
 
 import formatTitle from "../../Helpers/FormatTitle";
 
@@ -64,10 +64,9 @@ export default function CurrentDirectory({ drag, setPopup }) {
         }
 
         return (
-          <div className="arrow-and-name-container">
+          <div className="arrow-and-name-container" key={index}>
             <button
               className={`button-${appTheme}`}
-              key={index}
               onClick={() => {
                 dispatch({
                   type: "open",
