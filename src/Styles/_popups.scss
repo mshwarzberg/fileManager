@@ -95,6 +95,21 @@
 
 #settings-body {
   @include Body;
+  max-height: 70vh;
+  min-height: 40rem;
+  overflow-y: auto;
+  #tab-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    margin-top: 5px;
+    button {
+      @include Buttons;
+      margin-inline: auto;
+      width: 8rem;
+    }
+  }
   h2 {
     font-size: 1.2rem;
     font-family: "bebas neue";
@@ -111,6 +126,18 @@
   }
   .settings-block {
     padding-bottom: 1rem;
+    #view-selection {
+      @include Buttons;
+      width: 10rem;
+    }
+    #options-container {
+      position: absolute;
+      bottom: calc(-100% - 0.75rem);
+      #view-option {
+        @include Buttons;
+        width: 10rem;
+      }
+    }
   }
   label {
     font-size: 1rem;

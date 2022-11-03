@@ -7,10 +7,10 @@ $Array = @()
 Get-ChildItem -Path $Directory -Force | ForEach-Object {
     $Folder = $Shell.Namespace($_.DirectoryName)
     $File = $Folder.ParseName($_.Name)
-    $type = $Folder.GetDetailsOf($File, 9)
-    if (($type -eq 'Video') -or ($type -eq 'Image') -or ($type -eq 'Audio')) {
+    $Type = $Folder.GetDetailsOf($File, 9)
+    if (($Type -eq 'Video') -or ($Type -eq 'Image') -or ($Type -eq 'Audio')) {
       $Duration = $Folder.GetDetailsOf($File, 27)
-      if ($type -eq 'Video') {
+      if ($Type -eq 'Video') {
         $VideoWidth = $Folder.GetDetailsOf($File, 314)
         $VideoHeight = $Folder.GetDetailsOf($File, 316)
         $BitRate = $Folder.GetDetailsOf($File, 320)
@@ -22,7 +22,7 @@ Get-ChildItem -Path $Directory -Force | ForEach-Object {
           'dimensions' = $VideoWidth + 'x' + $VideoHeight
           'bitrate' = $BitRate
         }
-      } elseif ($type -eq 'Image'){
+      } elseif ($Type -eq 'Image'){
         $ImageWidth = $Folder.GetDetailsOf($File, 176)
         $ImageHeight = $Folder.GetDetailsOf($File, 178)
         $Description = $Folder.GetDetailsOf($File, 21)

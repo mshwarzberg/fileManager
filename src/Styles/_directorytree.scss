@@ -38,22 +38,22 @@
   overflow-x: hidden;
   animation: showTree 100ms ease-in-out;
   &.directory-tree-dark-mode {
-    background-color: #111;
-    background: linear-gradient(
-      180deg,
-      #090909 0vh,
-      #0a0a0a 50vh,
-      #0c0c0c 100vh
-    );
+    background-color: #080808;
+    * {
+      color: white;
+      font-family: mukta;
+    }
   }
   &.directory-tree-light-mode {
     background-color: #eee;
+  }
+  &.directory-tree-sky-blue {
+    background-color: #456c7c;
   }
   .child-directories-container {
     left: 1rem;
     position: relative;
     * {
-      color: white;
       font-family: mukta;
     }
     .line-down {

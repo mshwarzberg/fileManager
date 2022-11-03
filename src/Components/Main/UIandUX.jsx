@@ -9,7 +9,7 @@ import useWatch from "../../Hooks/useWatch";
 import useDragAndDrop from "../../Hooks/useDragAndDrop";
 import Popup from "../Miscellaneous/Popup";
 import Title from "../Miscellaneous/Title";
-import Settings from "../Miscellaneous/Settings/Settings";
+import SettingsButton from "../Miscellaneous/Settings/SettingsButton";
 import ContextMenu from "../ContextMenu/ContextMenu";
 
 export const UIContext = createContext();
@@ -33,9 +33,9 @@ export default function UIandUX({
   }, []);
 
   useEffect(() => {
-    const pageBlocks = document.getElementsByClassName("display-page-block");
+    const pageItems = document.getElementsByClassName("page-item");
     if (clipboard.mode === "move") {
-      for (const item of pageBlocks) {
+      for (const item of pageItems) {
         if (
           clipboard.info
             .map((item) => {
@@ -49,7 +49,7 @@ export default function UIandUX({
         }
       }
     } else {
-      for (const item of pageBlocks) {
+      for (const item of pageItems) {
         item.style.opacity = 1;
       }
     }
@@ -90,7 +90,7 @@ export default function UIandUX({
         setPopup={setPopup}
         setReload={setReload}
       />
-      <Settings setPopup={setPopup} />
+      <SettingsButton setPopup={setPopup} />
     </UIContext.Provider>
   );
 }

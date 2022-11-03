@@ -3,7 +3,7 @@ import { GeneralContext } from "../../Main/App";
 
 import SettingsBody from "./SettingsBody";
 
-export default function Settings({ setPopup }) {
+export default function SettingsButton({ setPopup }) {
   const {
     settings: { appTheme },
   } = useContext(GeneralContext);

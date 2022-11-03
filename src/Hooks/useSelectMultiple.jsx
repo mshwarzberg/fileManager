@@ -6,7 +6,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
   function highlightItems(boxDimensions, e) {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      const elements = document.getElementsByClassName("display-page-block");
+      const elements = document.getElementsByClassName("page-item");
       let infoArray = [];
       for (const element of elements) {
         const elDimensions = element.getBoundingClientRect();

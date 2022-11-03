@@ -16,7 +16,7 @@ export default function Popup({ popup, setPopup }) {
         const popupDimensions = popup.getBoundingClientRect();
 
         popup.style.left = e.clientX - popupDimensions.width / 2 + "px";
-        popup.style.top = e.clientY + popupDimensions.height / 2 + "px";
+        popup.style.top = e.clientY + popupDimensions.height / 2 - 10 + "px";
       }
     }
     function handleMouseUp() {

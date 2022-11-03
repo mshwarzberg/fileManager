@@ -7,7 +7,8 @@ export default function blockContent(
   directoryItem,
   showThumbnails,
   iconSize,
-  [thumbnail, setThumbnail]
+  [thumbnail, setThumbnail],
+  pageView = "icon"
 ) {
   const {
     isMedia,
@@ -27,7 +28,9 @@ export default function blockContent(
           src={thumbnail}
           className="media-thumbnail"
           style={{
-            maxHeight: iconSize * (9 / 10) + "rem",
+            ...(pageView === "icon" && {
+              maxHeight: iconSize * (9 / 10) + "rem",
+            }),
           }}
           onError={() => {
             setThumbnail();

@@ -9,8 +9,8 @@ const { exec } = window.require("child_process");
 const fs = window.require("fs");
 
 export default function Page({
+  visibleItems: [visibleItems, setVisibleItems],
   selectedItems,
-  setVisibleItems,
   clipboard,
   children,
   reload,
@@ -19,18 +19,18 @@ export default function Page({
     setDirectoryItems,
     directoryItems,
     state: { currentDirectory },
-    settings: { appTheme },
+    settings: { appTheme, pageView },
   } = useContext(GeneralContext);
 
   function handleVisibleItems() {
-    const elements = document.getElementsByClassName("display-page-block");
+    const elements = document.getElementsByClassName("page-item");
     setVisibleItems([]);
     for (const element of elements) {
       const elementDimensions = element.getBoundingClientRect();
 
       const notAboveScreen =
-        elementDimensions.top + elementDimensions.height >= 0;
-      const notBelowScreen = elementDimensions.top < window.innerHeight;
+        elementDimensions.top + 500 + elementDimensions.height >= 0;
+      const notBelowScreen = elementDimensions.top - 500 < window.innerHeight;
       if (notBelowScreen && notAboveScreen) {
         setVisibleItems((prevVisible) => [...prevVisible, element]);
       }
@@ -41,9 +41,9 @@ export default function Page({
   }
 
   useEffect(() => {
-    const pageBlocks = document.getElementsByClassName("display-page-block");
+    const pageItems = document.getElementsByClassName("page-item");
     function focusPage(e) {
-      for (const element of pageBlocks) {
+      for (const element of pageItems) {
         if (findInArray(selectedItems, element, "element")) {
           element.classList.add("selected");
           element.classList.remove("alternate");
@@ -55,7 +55,7 @@ export default function Page({
     }
     focusPage();
     function blurredPage() {
-      for (const element of pageBlocks) {
+      for (const element of pageItems) {
         if (findInArray(selectedItems, element, "element")) {
           element.classList.add("selected");
           element.classList.add("alternate");
@@ -71,11 +71,11 @@ export default function Page({
       window.removeEventListener("blur", blurredPage);
       window.removeEventListener("focus", focusPage);
     };
-  }, [selectedItems]);
+  }, [selectedItems, visibleItems]);
 
   useEffect(() => {
     handleVisibleItems();
-  }, [directoryItems]);
+  }, [directoryItems, pageView]);
 
   useEffect(() => {
     const cmd = `powershell.exe ./PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
@@ -175,13 +175,13 @@ export default function Page({
       currentDirectory !== "Trash"
     ) {
       fs.mkdirSync(currentDirectory + "$Thumbs$", { recursive: true });
-      exec(`attrib +s +h "${currentDirectory}$Thumbs$"`, () => {});
+      exec(`attrib +s +h "${currentDirectory}$Thumbs$"`);
     }
   }, [currentDirectory, reload]);
 
   return (
     <div
-      className={`page-${appTheme}`}
+      className={`page-${appTheme} page-${pageView}-view`}
       id="display-page"
       onScroll={() => {
         handleVisibleItems();

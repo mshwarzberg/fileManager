@@ -145,7 +145,7 @@ export default function App() {
       <Navbar setPopup={setPopup} drag={drag} />
       <DirectoryTree />
       <Page
-        setVisibleItems={setVisibleItems}
+        visibleItems={[visibleItems, setVisibleItems]}
         selectedItems={selectedItems}
         clipboard={clipboard}
         reload={reload}
@@ -186,16 +186,17 @@ export default function App() {
       <button
         style={{ position: "fixed", zIndex: 10 }}
         onClick={() => {
-          function formatPowershellJSON(output) {
-            output = output.toString();
-            console.log(output);
-          }
-          exec(
-            `powershell.exe ./PS1Scripts/DocumentMetadata.ps1 """${currentDirectory}"""`,
-            (e, output) => {
-              formatPowershellJSON(output);
-            }
-          );
+          window.location.reload(true);
+          // function formatPowershellJSON(output) {
+          //   output = output.toString();
+          //   console.log(output);
+          // }
+          // exec(
+          //   `powershell.exe ./PS1Scripts/DocumentMetadata.ps1 """${currentDirectory}"""`,
+          //   (e, output) => {
+          //     formatPowershellJSON(output);
+          //   }
+          // );
         }}
       >
         Test

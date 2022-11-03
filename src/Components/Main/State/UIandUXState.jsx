@@ -12,6 +12,7 @@ export default function UIandUXState() {
     clickToOpen: initSettings.clickToOpen || "double",
     pageCompactView: initSettings.pageCompactView,
     treeCompactView: initSettings.treeCompactView,
+    pageView: initSettings.pageView || "icon",
   });
 
   useEffect(() => {
@@ -26,6 +27,7 @@ export default function UIandUXState() {
         clickToOpen: settings.clickToOpen,
         pageCompactView: settings.pageCompactView,
         treeCompactView: settings.treeCompactView,
+        pageView: settings.pageView,
       })
     );
   }, [settings]);

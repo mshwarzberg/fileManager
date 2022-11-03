@@ -68,11 +68,9 @@ export default function useShortcuts(
             });
             break;
           case "a":
-            const pageBlocks = [
-              ...document.getElementsByClassName("display-page-block"),
-            ];
+            const pageItems = [...document.getElementsByClassName("page-item")];
             setSelectedItems(
-              pageBlocks.map((block) => ({
+              pageItems.map((block) => ({
                 element: block,
                 info: JSON.parse(block.dataset.info || "{}"),
               }))

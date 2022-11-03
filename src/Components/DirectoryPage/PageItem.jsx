@@ -10,6 +10,8 @@ import blockContent from "../../Helpers/BlockContent.js";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import formatTitle from "../../Helpers/FormatTitle";
 import getVideoAtPercentage from "../../Helpers/FS and OS/GetVideoAtPercentage.js";
+import formatDate from "../../Helpers/FormatDate.js";
+import formatSize from "../../Helpers/FormatSize.js";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
@@ -38,6 +40,9 @@ export default function PageItem({
     isDrive,
     isSymbolicLink,
     linkTo,
+    modified,
+    dimensions,
+    fileextension,
   } = directoryItem;
 
   const {
@@ -45,7 +50,13 @@ export default function PageItem({
     state: { currentDirectory, drive },
     renameItem,
     setRenameItem,
-    settings: { clickToOpen, showThumbnails, iconSize, pageCompactView },
+    settings: {
+      clickToOpen,
+      showThumbnails,
+      iconSize,
+      pageView,
+      pageCompactView,
+    },
     directoryItems,
   } = useContext(GeneralContext);
 
@@ -119,7 +130,7 @@ export default function PageItem({
   }, [currentDirectory, showThumbnails]);
 
   function className() {
-    let clsName = "display-page-block";
+    let clsName = "page-item";
     if (clickToOpen === "single") {
       clsName += " single-click";
     }
@@ -137,8 +148,10 @@ export default function PageItem({
       className={className()}
       id={path}
       style={{
-        width: iconSize + "rem",
-        minHeight: iconSize + "rem",
+        ...(pageView === "icon" && {
+          width: iconSize + "rem",
+          minHeight: iconSize + "rem",
+        }),
       }}
       onMouseEnter={() => {
         if (filetype === "image") {
@@ -239,27 +252,47 @@ export default function PageItem({
         }
       })()}
     >
-      <>
-        {blockContent(directoryItem, showThumbnails, iconSize, [
-          thumbnail,
-          setThumbnail,
-        ])}
-        <ItemName
-          directoryItem={directoryItem}
-          renameItem={renameItem}
-          setRenameItem={setRenameItem}
-        />
-      </>
+      {blockContent(
+        directoryItem,
+        showThumbnails,
+        iconSize,
+        [thumbnail, setThumbnail],
+        pageView
+      )}
+      <ItemName
+        directoryItem={directoryItem}
+        renameItem={renameItem}
+        setRenameItem={setRenameItem}
+      />
+      {pageView === "content" && (
+        <>
+          <div className="information-container">
+            <p className="date">
+              Date Modified: {formatDate(new Date(modified))}
+            </p>
+            {size ? <p>Size: {formatSize(size)}</p> : <></>}
+          </div>
+          <div className="metadata-container">
+            <p className="dimensions">Dimensions: {dimensions}</p>
+            <p className="type">
+              Type:&nbsp;
+              {fileextension
+                ? fileextension.slice(1, Infinity).toUpperCase() + " File"
+                : "Folder"}
+            </p>
+          </div>
+        </>
+      )}
     </div>
   ) : (
     <div
-      className={`display-page-block ${
-        clickToOpen === "single" ? "single-click" : ""
-      } ${pageCompactView ? "compacted-block" : ""}`}
+      className={className()}
       id={path}
       style={{
-        width: iconSize + "rem",
-        minHeight: iconSize + "rem",
+        ...(pageView === "icon" && {
+          width: iconSize + "rem",
+          minHeight: iconSize + "rem",
+        }),
       }}
       data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
     />
