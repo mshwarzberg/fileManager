@@ -1,20 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { GeneralContext } from "../Main/App.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
-import { findInArray } from "../../Helpers/SearchArray";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
 
 const { exec } = window.require("child_process");
 const fs = window.require("fs");
 
-export default function Page({
-  visibleItems: [visibleItems, setVisibleItems],
-  selectedItems,
-  clipboard,
-  children,
-  reload,
-}) {
+export default function Page({ selectedItems, clipboard, children, reload }) {
   const {
     setDirectoryItems,
     directoryItems,
@@ -22,60 +15,7 @@ export default function Page({
     settings: { appTheme, pageView },
   } = useContext(GeneralContext);
 
-  function handleVisibleItems() {
-    const elements = document.getElementsByClassName("page-item");
-    setVisibleItems([]);
-    for (const element of elements) {
-      const elementDimensions = element.getBoundingClientRect();
-
-      const notAboveScreen =
-        elementDimensions.top + 500 + elementDimensions.height >= 0;
-      const notBelowScreen = elementDimensions.top - 500 < window.innerHeight;
-      if (notBelowScreen && notAboveScreen) {
-        setVisibleItems((prevVisible) => [...prevVisible, element]);
-      }
-      if (!notBelowScreen) {
-        break;
-      }
-    }
-  }
-
-  useEffect(() => {
-    const pageItems = document.getElementsByClassName("page-item");
-    function focusPage(e) {
-      for (const element of pageItems) {
-        if (findInArray(selectedItems, element, "element")) {
-          element.classList.add("selected");
-          element.classList.remove("alternate");
-        } else {
-          element.classList.remove("selected");
-          element.classList.remove("alternate");
-        }
-      }
-    }
-    focusPage();
-    function blurredPage() {
-      for (const element of pageItems) {
-        if (findInArray(selectedItems, element, "element")) {
-          element.classList.add("selected");
-          element.classList.add("alternate");
-        } else {
-          element.classList.remove("selected");
-          element.classList.remove("alternate");
-        }
-      }
-    }
-    window.addEventListener("blur", blurredPage);
-    window.addEventListener("focus", focusPage);
-    return () => {
-      window.removeEventListener("blur", blurredPage);
-      window.removeEventListener("focus", focusPage);
-    };
-  }, [selectedItems, visibleItems]);
-
-  useEffect(() => {
-    handleVisibleItems();
-  }, [directoryItems, pageView]);
+  const [metadata, setMetadata] = useState();
 
   useEffect(() => {
     const cmd = `powershell.exe ./PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
@@ -98,76 +38,93 @@ export default function Page({
       return str.replaceAll(" pixels", "").replaceAll("?", "");
     }
 
-    exec(cmd, (error, duration) => {
-      if (error) console.log(error);
-      try {
-        let formattedDuration = duration?.replaceAll("\\r\\n", "");
-        formattedDuration = JSON.parse(duration || "[]");
-        setDirectoryItems((prevItems) =>
-          prevItems.map((prevItem) => {
-            let metadata;
-            if (typeof formattedDuration === "object") {
-              for (let item of formattedDuration) {
-                metadata = JSON.parse(item);
-                const {
-                  duration,
-                  name,
-                  width,
-                  height,
-                  dimensions,
-                  description,
-                  bitrate,
-                } = metadata;
+    if (sessionStorage.getItem(currentDirectory)) {
+      setMetadata(
+        JSON.parse(sessionStorage.getItem(currentDirectory) || "[]").map(
+          (data) => JSON.parse(data)
+        )
+      );
+    } else {
+      exec(cmd, (error, output) => {
+        if (error) console.log(error);
+        let formattedMetadata = output?.replaceAll("\\r\\n", "");
+        try {
+          formattedMetadata = JSON.parse(output || "[]").map((data) => {
+            const {
+              name,
+              width,
+              height,
+              dimensions,
+              description,
+              bitrate,
+              duration,
+            } = JSON.parse(data);
 
-                if (name === prevItem.name) {
-                  return {
-                    ...prevItem,
-                    duration: videoTimeToNum(duration),
-                    width: parseInt(clearString(width)),
-                    height: parseInt(clearString(height)),
-                    ...(dimensions && {
-                      dimensions: clearString(dimensions),
-                    }),
-                    ...(description && { description: description }),
-                    ...(bitrate && {
-                      bitrate: bitRateToInt(clearString(bitrate)),
-                    }),
-                  };
-                }
-              }
-            } else if (typeof formattedDuration === "string") {
-              metadata = JSON.parse(formattedDuration);
-              const {
-                name,
-                width,
-                height,
-                dimensions,
-                description,
-                bitrate,
-                duration,
-              } = metadata;
-              if (name === prevItem.name) {
-                return {
-                  ...prevItem,
-                  duration: videoTimeToNum(duration),
-                  width: parseInt(clearString(width)),
-                  height: parseInt(clearString(height)),
-                  dimensions: clearString(dimensions),
-                  ...(description && { description: description }),
-                  ...(bitrate && {
-                    bitrate: bitRateToInt(clearString(bitrate)),
-                  }),
-                };
-              }
-            }
-            return prevItem;
-          })
+            return {
+              name: name,
+              duration: videoTimeToNum(duration),
+              width: parseInt(clearString(width)),
+              height: parseInt(clearString(height)),
+              ...(dimensions && {
+                dimensions: clearString(dimensions),
+              }),
+              ...(description && { description: description }),
+              ...(bitrate && {
+                bitrate: bitRateToInt(clearString(bitrate)),
+              }),
+            };
+          });
+        } catch {
+          const {
+            name,
+            duration,
+            width,
+            height,
+            dimensions,
+            description,
+            bitrate,
+          } = JSON.parse(JSON.parse(formattedMetadata || "{}") || "{}");
+
+          formattedMetadata = [
+            {
+              name: name,
+              duration: videoTimeToNum(duration),
+              width: parseInt(clearString(width)),
+              height: parseInt(clearString(height)),
+              ...(dimensions && {
+                dimensions: clearString(dimensions),
+              }),
+              ...(description && { description: description }),
+              ...(bitrate && {
+                bitrate: bitRateToInt(clearString(bitrate)),
+              }),
+            },
+          ];
+        }
+        sessionStorage.setItem(
+          currentDirectory,
+          JSON.stringify(formattedMetadata.map((data) => JSON.stringify(data)))
         );
-      } catch (error) {
-        console.error(error);
-      }
-    });
+        setMetadata(formattedMetadata);
+      });
+    }
   }, [currentDirectory, reload]);
+
+  useEffect(() => {
+    setDirectoryItems((prevItems) =>
+      prevItems.map((prevItem) => {
+        for (const data of metadata) {
+          if (data.name === prevItem.name) {
+            return {
+              ...prevItem,
+              ...data,
+            };
+          }
+        }
+        return prevItem;
+      })
+    );
+  }, [metadata]);
 
   useEffect(() => {
     if (
@@ -183,9 +140,6 @@ export default function Page({
     <div
       className={`page-${appTheme} page-${pageView}-view`}
       id="display-page"
-      onScroll={() => {
-        handleVisibleItems();
-      }}
       data-contextmenu={contextMenuOptions()}
       data-info={JSON.stringify({
         isDirectory: true,

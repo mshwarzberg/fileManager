@@ -1,0 +1,41 @@
+.page-tiles-view {
+  .page-item {
+    height: 4rem;
+    width: 16rem;
+    svg {
+      height: 3rem;
+      margin-top: 0.5rem;
+    }
+    .media-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      height: 4rem;
+      margin-left: 0.5rem;
+      .media-thumbnail {
+        max-height: 3rem;
+        max-width: 3rem;
+      }
+    }
+    .block-name-container {
+      width: max-content;
+      max-width: 11rem;
+      height: 2rem;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      position: absolute;
+      left: 4rem;
+      top: 0.5rem;
+      .block-name {
+        height: 2rem;
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
+      }
+    }
+    .duration {
+      display: none;
+    }
+  }
+}

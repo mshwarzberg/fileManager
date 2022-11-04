@@ -15,7 +15,10 @@ export default function sortBy(setDirectoryItems, method, ascending) {
         }
       })
       .sort((a, b) => {
-        return parseInt(a[method]) - parseInt(b[method]);
+        if (parseInt(a[method])) {
+          return parseInt(a[method]) - parseInt(b[method]);
+        }
+        return 0;
       });
     if (ascending) {
       newSort.reverse();

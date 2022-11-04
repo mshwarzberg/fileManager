@@ -143,7 +143,7 @@ export default function PageItem({
     return clsName;
   }
 
-  return visibleItems.includes(document.getElementById(path)) ? (
+  return visibleItems.includes(document.getElementById(path)) && name ? (
     <div
       className={className()}
       id={path}
@@ -268,7 +268,7 @@ export default function PageItem({
         <>
           <div className="information-container">
             <p className="date">
-              Date Modified: {formatDate(new Date(modified))}
+              Date Modified: {formatDate(new Date(modified), true)}
             </p>
             {size ? <p>Size: {formatSize(size)}</p> : <></>}
           </div>
@@ -276,9 +276,7 @@ export default function PageItem({
             <p className="dimensions">Dimensions: {dimensions}</p>
             <p className="type">
               Type:&nbsp;
-              {fileextension
-                ? fileextension.slice(1, Infinity).toUpperCase() + " File"
-                : "Folder"}
+              {fileextension ? filetype.toUpperCase() : "FOLDER"}
             </p>
           </div>
         </>

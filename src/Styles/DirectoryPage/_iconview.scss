@@ -1,0 +1,54 @@
+.page-icon-view {
+  flex-wrap: wrap;
+  .page-item {
+    width: 12rem;
+    height: min-content;
+    min-height: 12rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0.3rem;
+    padding-top: 0.8rem;
+    border-radius: 2px;
+    .media-container {
+      margin-top: auto;
+      position: relative;
+      max-width: 90%;
+      margin-bottom: 0.5rem;
+      .media-thumbnail {
+        max-width: 100%;
+        box-shadow: 2px 2px 0.3rem black;
+      }
+      .duration {
+        position: absolute;
+        right: 0;
+        bottom: 3.5px;
+        background-color: black;
+        color: white;
+        font-size: 0.85rem;
+        padding-inline: 3px;
+        font-family: "akshar";
+        pointer-events: all;
+        &:hover {
+          opacity: 0.5;
+        }
+      }
+    }
+    .block-name-container {
+      margin-top: auto;
+      word-wrap: break-word;
+      width: 95%;
+      font-size: 0.9rem;
+      position: relative;
+      .block-name {
+        position: absolute;
+        left: 0;
+        font-size: 0.9rem;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+      }
+    }
+  }
+}

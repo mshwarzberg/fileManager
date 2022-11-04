@@ -1,0 +1,36 @@
+.page-list-view {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  flex-wrap: wrap !important;
+  column-gap: 0.5rem;
+  .page-item {
+    flex-grow: 5rem !important;
+    min-height: 1.5rem;
+    max-height: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    -width: max-content;
+    svg {
+      height: 1rem;
+    }
+    .media-container {
+      height: 1rem;
+    }
+    .block-name-container {
+      width: max-content;
+      white-space: nowrap;
+      height: 1.5rem;
+      display: flex;
+      flex-direction: row;
+      left: 1.5rem;
+      .block-name {
+        white-space: nowrap;
+        height: 1.5rem;
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
+      }
+    }
+  }
+}

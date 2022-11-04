@@ -8,7 +8,7 @@ export default function blockContent(
   showThumbnails,
   iconSize,
   [thumbnail, setThumbnail],
-  pageView = "icon"
+  pageView
 ) {
   const {
     isMedia,
@@ -21,7 +21,13 @@ export default function blockContent(
     isFile,
   } = directoryItem;
 
-  if (thumbnail && showThumbnails && isMedia) {
+  if (
+    thumbnail &&
+    showThumbnails &&
+    isMedia &&
+    pageView !== "list" &&
+    pageView !== "details"
+  ) {
     return (
       <div className="media-container">
         <img

@@ -29,6 +29,7 @@ body {
   }
   *::-webkit-scrollbar-thumb {
     background-color: #fffff0;
+    border-radius: 0.2rem;
   }
 }
 
@@ -36,7 +37,6 @@ body {
   *::-webkit-scrollbar {
     width: 0.75rem;
   }
-
   *::-webkit-scrollbar-track {
     background: #fffff7;
   }
@@ -60,18 +60,6 @@ body {
     background-color: #444;
     color: white;
   }
-  // &.button-dark-mode {
-  //   background-color: #090909;
-  //   color: white;
-  //   border: 1px solid white;
-  //   &:hover {
-  //     background-color: white;
-  //     color: #090909;
-  //     border: 1px solid #090909;
-  //   }
-  // }
-  // &.button-light-mode {
-  // }
   &:disabled {
     color: grey !important;
     background-color: darkgrey !important;

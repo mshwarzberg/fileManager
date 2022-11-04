@@ -1,0 +1,35 @@
+.page-details-view {
+  .details-view-buttons-container {
+    display: flex;
+  }
+  .details-view-button {
+    background-color: #fff;
+    margin-inline: 1rem;
+    padding-inline: 1rem;
+  }
+  .page-item {
+    min-height: 1.5rem;
+    max-height: 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    svg {
+      height: 1rem;
+    }
+    .block-name-container {
+      white-space: nowrap;
+      height: 1.5rem;
+      display: flex;
+      flex-direction: row;
+      position: absolute;
+      left: 2rem;
+      .block-name {
+        white-space: nowrap;
+        height: 2rem;
+        width: 100%;
+        position: absolute;
+        overflow: hidden;
+      }
+    }
+  }
+}

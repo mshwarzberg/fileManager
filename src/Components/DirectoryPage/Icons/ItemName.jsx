@@ -24,21 +24,12 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
   }, [renameItem]);
 
   return (
-    <div
-      className="block-name-container"
-      style={{
-        width: renameItem.path === path ? "max-content" : "15rem",
-        maxWidth: "none",
-      }}
-    >
+    <div className="block-name-container">
       {newName || newName === "" ? newName : displayName}
       <textarea
         id={`name${path}`}
         spellCheck={false}
         className={`block-name text-${appTheme}`}
-        style={{
-          width: renameItem.path === path ? "100%" : "15rem",
-        }}
         disabled={
           renameItem.path !== path || currentDirectory === "Trash" || isDrive
         }

@@ -2,8 +2,10 @@ import { useContext } from "react";
 import { GeneralContext } from "../Main/App.jsx";
 
 export default function View({ contextMenu }) {
-  const { setSettings, settings } = useContext(GeneralContext);
-  const { iconSize } = settings;
+  const {
+    setSettings,
+    settings: { iconSize, pageView },
+  } = useContext(GeneralContext);
   const views = ["Small", "Medium", "Large", "Extra Large"];
 
   function matchSize() {
@@ -43,11 +45,38 @@ export default function View({ contextMenu }) {
               setSettings((prevSettings) => ({
                 ...prevSettings,
                 iconSize: newSize,
+                pageView: "icon",
               }));
             }}
           >
-            {viewOption === matchSize() && <div id="dot" />}
-            {viewOption}
+            {viewOption === matchSize() && pageView === "icon" && (
+              <div id="dot" />
+            )}
+            {viewOption} Icons
+          </button>
+        );
+      })}
+      <div
+        id="divider"
+        style={{
+          height: "1rem",
+          backgroundColor: "rebeccapurple",
+          width: "100%",
+        }}
+      />
+      {["List", "Details", "Tiles", "Content"].map((view) => {
+        return (
+          <button
+            key={view}
+            onClick={() => {
+              setSettings((prevSettings) => ({
+                ...prevSettings,
+                pageView: view.toLowerCase(),
+              }));
+            }}
+          >
+            {view.toLowerCase() === pageView && <div id="dot" />}
+            {view}
           </button>
         );
       })}

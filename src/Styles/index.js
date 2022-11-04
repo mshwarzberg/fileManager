@@ -1,4 +1,9 @@
-import "./_page.scss";
+import "./DirectoryPage/_page.scss";
+import "./DirectoryPage/_iconview.scss";
+import "./DirectoryPage/_contentview.scss";
+import "./DirectoryPage/_listview.scss";
+import "./DirectoryPage/_tilesview.scss";
+import "./DirectoryPage/_detailsview.scss";
 import "./_general.scss";
 import "./_directorytree.scss";
 import "./_navbar.scss";

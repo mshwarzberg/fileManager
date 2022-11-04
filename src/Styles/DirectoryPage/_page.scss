@@ -1,0 +1,111 @@
+@import "../general";
+
+#display-page {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  height: calc(100vh - 4rem);
+  top: 2rem;
+  align-content: flex-start;
+  padding: 0.2rem 0.2rem 2rem 0.2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-grow: 1;
+  &.page-dark-mode {
+    box-shadow: inset 4rem 4rem 20rem #111;
+    background-color: #222;
+  }
+  &.page-light-mode {
+    box-shadow: inset 4rem 4rem 20rem #eee;
+    background-color: #ccc;
+  }
+  &.page-sky-blue {
+    background-color: #87ceeb99;
+    box-shadow: inset 4rem 4rem 20rem #184a52 !important;
+  }
+  #empty-directory-header,
+  #does-not-exist-error {
+    margin-inline: auto;
+    font-size: 4rem;
+    font-family: merriweather;
+    color: #777;
+    pointer-events: none;
+  }
+  &.page-details-view,
+  &.page-content-view,
+  &.page-list-view {
+    display: flex;
+    flex-direction: column;
+  }
+  &.page-tiles-view,
+  &.page-icon-view {
+    flex-wrap: wrap;
+  }
+  .page-item {
+    margin: 0.1rem;
+    position: relative;
+    &:hover,
+    &.selected {
+      background-color: #555555;
+    }
+    &.alternate {
+      background-color: #646464;
+    }
+    &.no-permission {
+      cursor: not-allowed;
+      background-color: #ff444488 !important;
+      outline: 1px solid red !important;
+      &:hover {
+        background-color: #ff444488;
+      }
+    }
+    &.compacted-block {
+      margin: 0.05rem;
+      padding-top: 5px;
+      .media-container {
+        margin-bottom: 0;
+        max-width: 95%;
+      }
+    }
+    &.single-click {
+      cursor: pointer;
+    }
+    * {
+      pointer-events: none;
+    }
+    .media-container {
+      .duration {
+        background-color: black;
+        color: white;
+        font-size: 0.85rem;
+        font-family: "akshar";
+        pointer-events: all;
+        &:hover {
+          opacity: 0.5;
+        }
+      }
+    }
+    .block-name-container {
+      color: #00000000;
+      background-color: #00000000;
+      font-family: akshar;
+      @include Text;
+      .block-name {
+        @include Text;
+        resize: none;
+        background-color: #00000000;
+        color: white;
+        outline: none;
+        border: none;
+        font-family: akshar;
+        &:disabled {
+          pointer-events: none;
+        }
+        &:enabled {
+          cursor: text;
+          pointer-events: all;
+        }
+      }
+    }
+  }
+}

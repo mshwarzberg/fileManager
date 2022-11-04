@@ -7,6 +7,8 @@ import useShortcuts from "../../Hooks/useShortcuts";
 import useScaleDirectoryTree from "../../Hooks/useScaleDirectoryTree";
 import useWatch from "../../Hooks/useWatch";
 import useDragAndDrop from "../../Hooks/useDragAndDrop";
+import useVisibleElements from "../../Hooks/useVisibleElements";
+
 import Popup from "../Miscellaneous/Popup";
 import Title from "../Miscellaneous/Title";
 import SettingsButton from "../Miscellaneous/Settings/SettingsButton";
@@ -15,6 +17,7 @@ import ContextMenu from "../ContextMenu/ContextMenu";
 export const UIContext = createContext();
 
 export default function UIandUX({
+  visibleItems: [visibleItems, setVisibleItems = () => {}],
   lastSelected: [lastSelected, setLastSelected = () => {}],
   selectedItems: [selectedItems, setSelectedItems = () => {}],
   popup: [popup, setPopup = () => {}],
@@ -25,6 +28,8 @@ export default function UIandUX({
   const {
     state: { currentDirectory },
     dispatch,
+    directoryItems,
+    settings: { pageView },
   } = useContext(GeneralContext);
   const [contextMenu, setContextMenu] = useState({});
 
@@ -72,7 +77,13 @@ export default function UIandUX({
     setPopup,
     dispatch
   );
-
+  useVisibleElements(
+    setVisibleItems,
+    selectedItems,
+    visibleItems,
+    directoryItems,
+    pageView
+  );
   return (
     <UIContext.Provider
       value={{

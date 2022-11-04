@@ -171,13 +171,34 @@ export default function useShortcuts(
     function handleIconSizeChange(e) {
       if (e.ctrlKey || e.shiftKey) {
         setSettings((prevSettings) => {
-          return {
-            ...prevSettings,
-            iconSize:
-              e.deltaY < 0
-                ? Math.min(prevSettings.iconSize + 0.5, 16)
-                : Math.max(prevSettings.iconSize - 0.5, 6),
-          };
+          const { pageView, iconSize } = prevSettings;
+          const scrollingUp = e.deltaY < 0;
+          const scrollingDown = e.deltaY > 0;
+
+          const views = ["list", "details", "tiles", "content"];
+
+          if (Math.max(iconSize - 0.5, 6) === 6 && scrollingDown) {
+            return {
+              ...prevSettings,
+              pageView:
+                pageView === "content"
+                  ? pageView
+                  : views[views.indexOf(pageView) + 1 || 0],
+            };
+          } else {
+            return {
+              ...prevSettings,
+              pageView:
+                pageView === "list"
+                  ? "icon"
+                  : views[views.indexOf(pageView) - 1] || "icon",
+              ...((pageView === "list" || pageView === "icon") && {
+                iconSize: scrollingUp
+                  ? Math.min(iconSize + 0.5, 16)
+                  : Math.max(iconSize - 0.5, 6),
+              }),
+            };
+          }
         });
       }
     }

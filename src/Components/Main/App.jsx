@@ -25,7 +25,11 @@ export default function App() {
     dispatch,
   } = DirectoryState();
 
-  const { settings, setSettings } = UIandUXState();
+  const {
+    settings,
+    settings: { pageView },
+    setSettings,
+  } = UIandUXState();
 
   const [directoryItems, setDirectoryItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -144,15 +148,20 @@ export default function App() {
     >
       <Navbar setPopup={setPopup} drag={drag} />
       <DirectoryTree />
-      <Page
-        visibleItems={[visibleItems, setVisibleItems]}
-        selectedItems={selectedItems}
-        clipboard={clipboard}
-        reload={reload}
-      >
+      <Page selectedItems={selectedItems} clipboard={clipboard} reload={reload}>
+        {pageView === "details" && (
+          <div className="details-view-buttons-container">
+            <div className="details-view-button">Name</div>
+            <div className="details-view-button">Date Modified</div>
+            <div className="details-view-button">Type</div>
+            <div className="details-view-button">Size</div>
+            <div className="details-view-button">Duration</div>
+          </div>
+        )}
         {renderDirectoryItems}
       </Page>
       <UIandUX
+        visibleItems={[visibleItems, setVisibleItems]}
         lastSelected={[lastSelected, setLastSelected]}
         selectedItems={[selectedItems, setSelectedItems]}
         popup={[popup, setPopup]}

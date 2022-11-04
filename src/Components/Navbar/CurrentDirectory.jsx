@@ -110,6 +110,7 @@ export default function CurrentDirectory({ drag, setPopup }) {
                 {result.map((item) => {
                   return (
                     <button
+                      key={item.path}
                       className="sub-directory-button"
                       onClick={() => {
                         dispatch({
