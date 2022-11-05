@@ -3,15 +3,18 @@ import { GeneralContext } from "../Main/App.jsx";
 
 import clickOnItem from "../../Helpers/ClickOnItem";
 import handleItemsSelected from "../../Helpers/HandleItemsSelected";
-
-import ItemName from "./Icons/ItemName";
-
-import blockContent from "../../Helpers/BlockContent.js";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
-import formatTitle from "../../Helpers/FormatTitle";
 import getVideoAtPercentage from "../../Helpers/FS and OS/GetVideoAtPercentage.js";
-import formatDate from "../../Helpers/FormatDate.js";
+
+import formatDuration from "../../Helpers/FormatVideoTime";
 import formatSize from "../../Helpers/FormatSize.js";
+import formatTitle from "../../Helpers/FormatTitle";
+import formatDate from "../../Helpers/FormatDate.js";
+
+import ItemName from "./Icons/ItemName.jsx";
+import CustomDriveIcon from "./Icons/CustomDriveIcon";
+import CustomFileIcon from "./Icons/CustomFileIcon";
+import CustomFolderIcon from "./Icons/CustomFolderIcon";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
@@ -20,12 +23,11 @@ const { execFile, exec, execFileSync } = window.require("child_process");
 
 let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
+  selectedItems: [selectedItems, setSelectedItems],
+  lastSelected: [lastSelected, setLastSelected],
+  viewTypeTabWidth,
   directoryItem,
   visibleItems,
-  setSelectedItems,
-  selectedItems,
-  lastSelected,
-  setLastSelected,
   setDrag,
 }) {
   const {
@@ -40,16 +42,18 @@ export default function PageItem({
     isDrive,
     isSymbolicLink,
     linkTo,
+    duration,
+    isFile,
+    fileextension,
     modified,
     dimensions,
-    fileextension,
   } = directoryItem;
 
   const {
     dispatch,
     state: { currentDirectory, drive },
-    renameItem,
     setRenameItem,
+    renameItem,
     settings: {
       clickToOpen,
       showThumbnails,
@@ -66,6 +70,7 @@ export default function PageItem({
   const selectedElements = selectedItems.map(
     (selectedItem) => selectedItem.element
   );
+
   useEffect(() => {
     let timeout;
     if (isMedia && filetype !== "audio" && showThumbnails) {
@@ -129,6 +134,113 @@ export default function PageItem({
     };
   }, [currentDirectory, showThumbnails]);
 
+  function mainContent() {
+    if (
+      thumbnail &&
+      showThumbnails &&
+      isMedia &&
+      pageView !== "list" &&
+      pageView !== "details"
+    ) {
+      return (
+        <div className="media-container">
+          <img
+            src={thumbnail}
+            className="media-thumbnail"
+            style={{
+              ...(pageView === "icon" && {
+                maxHeight: iconSize * (9 / 10) + "rem",
+              }),
+            }}
+            onError={() => {
+              setThumbnail();
+            }}
+          />
+          {duration && (
+            <div className="duration">{formatDuration(duration)}</div>
+          )}
+        </div>
+      );
+    } else if (isFile) {
+      return <CustomFileIcon fileextension={fileextension.split(".")[1]} />;
+    } else if (isDirectory || isSymbolicLink) {
+      return <CustomFolderIcon directoryPath={path + "/"} />;
+    } else if (isDrive) {
+      return <CustomDriveIcon directoryItem={directoryItem} />;
+    }
+  }
+  function metadataContent() {
+    if (pageView === "content") {
+      return (
+        <>
+          <div className="information-container">
+            <p className="date">
+              Date Modified: {formatDate(new Date(modified), true)}
+            </p>
+            {size ? <p>Size: {formatSize(size)}</p> : <></>}
+          </div>
+          <div className="metadata-container">
+            <p className="dimensions">Dimensions: {dimensions}</p>
+            <p className="type">
+              Type:&nbsp;
+              {fileextension ? filetype.toUpperCase() : "FOLDER"}
+            </p>
+          </div>
+        </>
+      );
+    } else if (pageView === "details") {
+      return (
+        <>
+          <p
+            className="details-metadata"
+            style={{
+              width: viewTypeTabWidth.modified + "rem",
+              marginLeft: viewTypeTabWidth.name + "rem",
+            }}
+          >
+            {formatDate(new Date(modified))}
+          </p>
+          <p
+            className="details-metadata"
+            style={{
+              width: viewTypeTabWidth.type + "rem",
+            }}
+          >
+            Type:&nbsp;
+            {fileextension
+              ? fileextension.slice(1, Infinity).toUpperCase() + " FILE"
+              : "FOLDER"}
+          </p>
+          <p
+            className="details-metadata"
+            style={{
+              width: viewTypeTabWidth.size + "rem",
+            }}
+          >
+            {size ? formatSize(size) : ""}
+          </p>
+          <p
+            className="details-metadata"
+            style={{
+              width: viewTypeTabWidth.duration + "rem",
+            }}
+          >
+            {duration ? formatDuration(duration) : ""}
+          </p>
+          <p
+            className="details-metadata"
+            style={{
+              width: viewTypeTabWidth.dimensions + "rem",
+            }}
+          >
+            {dimensions || ""}
+          </p>
+        </>
+      );
+    } else {
+      return <></>;
+    }
+  }
   function className() {
     let clsName = "page-item";
     if (clickToOpen === "single") {
@@ -252,35 +364,13 @@ export default function PageItem({
         }
       })()}
     >
-      {blockContent(
-        directoryItem,
-        showThumbnails,
-        iconSize,
-        [thumbnail, setThumbnail],
-        pageView
-      )}
+      {mainContent()}
       <ItemName
         directoryItem={directoryItem}
         renameItem={renameItem}
         setRenameItem={setRenameItem}
       />
-      {pageView === "content" && (
-        <>
-          <div className="information-container">
-            <p className="date">
-              Date Modified: {formatDate(new Date(modified), true)}
-            </p>
-            {size ? <p>Size: {formatSize(size)}</p> : <></>}
-          </div>
-          <div className="metadata-container">
-            <p className="dimensions">Dimensions: {dimensions}</p>
-            <p className="type">
-              Type:&nbsp;
-              {fileextension ? filetype.toUpperCase() : "FOLDER"}
-            </p>
-          </div>
-        </>
-      )}
+      {metadataContent()}
     </div>
   ) : (
     <div

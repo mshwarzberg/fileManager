@@ -1,11 +1,27 @@
+@import "../general";
+
 .page-details-view {
   .details-view-buttons-container {
     display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
   .details-view-button {
-    background-color: #fff;
-    margin-inline: 1rem;
-    padding-inline: 1rem;
+    @include Buttons;
+    box-shadow: none;
+    border: 1px solid black;
+    font-size: 0.9rem;
+    padding: 0;
+    padding-left: 0.5rem;
+    display: flex;
+    justify-content: flex-start;
+  }
+  .details-metadata {
+    margin-left: 0.5rem;
+    color: white;
+    font-family: akshar;
+    font-size: 0.9rem;
   }
   .page-item {
     min-height: 1.5rem;
@@ -22,7 +38,10 @@
       display: flex;
       flex-direction: row;
       position: absolute;
-      left: 2rem;
+      left: 1.5rem;
+      max-width: 13rem;
+      overflow: hidden;
+      white-space: nowrap;
       .block-name {
         white-space: nowrap;
         height: 2rem;

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { findInArray } from "../Helpers/SearchArray";
 
 let timeout;
 export default function useSelectMultiple(setLastSelected, setSelectedItems) {
@@ -30,9 +29,6 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
               element: element,
             });
           }
-        }
-        if (!notBelowBlock) {
-          break;
         }
       }
       setLastSelected(infoArray[0]?.element);

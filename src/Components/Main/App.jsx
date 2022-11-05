@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, Fragment, useEffect, useState } from "react";
 
 import DirectoryState from "./State/DirectoryState";
 import UIandUXState from "./State/UIandUXState";
@@ -12,6 +12,7 @@ import UIandUX from "./UIandUX";
 import sortBy from "../../Helpers/SortBy";
 import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
+import randomID from "../../Helpers/RandomID";
 
 export const GeneralContext = createContext();
 
@@ -40,6 +41,14 @@ export default function App() {
   const [clipboard, setClipboard] = useState({});
   const [drag, setDrag] = useState({});
   const [reload, setReload] = useState();
+  const [viewTypeTabWidth, setViewTypeTabWidth] = useState({
+    name: 14.5,
+    modified: 12,
+    type: 8,
+    size: 5,
+    duration: 5,
+    dimensions: 5,
+  });
 
   useEffect(() => {
     console.clear();
@@ -119,15 +128,17 @@ export default function App() {
   }, [settings.appTheme]);
 
   const renderDirectoryItems = directoryItems.map((directoryItem) => {
+    if (!directoryItem.name) {
+      return <Fragment key={randomID()} />;
+    }
     return (
       <PageItem
         key={directoryItem.key || directoryItem.name}
+        lastSelected={[lastSelected, setLastSelected]}
+        selectedItems={[selectedItems, setSelectedItems]}
+        viewTypeTabWidth={viewTypeTabWidth}
         directoryItem={directoryItem}
         visibleItems={visibleItems}
-        lastSelected={lastSelected}
-        setLastSelected={setLastSelected}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
         setDrag={setDrag}
       />
     );
@@ -151,11 +162,54 @@ export default function App() {
       <Page selectedItems={selectedItems} clipboard={clipboard} reload={reload}>
         {pageView === "details" && (
           <div className="details-view-buttons-container">
-            <div className="details-view-button">Name</div>
-            <div className="details-view-button">Date Modified</div>
-            <div className="details-view-button">Type</div>
-            <div className="details-view-button">Size</div>
-            <div className="details-view-button">Duration</div>
+            <div
+              className="details-view-button"
+              style={{
+                width: viewTypeTabWidth.name + "rem",
+              }}
+            >
+              Name
+            </div>
+            <div
+              className="details-view-button"
+              style={{
+                width: viewTypeTabWidth.modified + "rem",
+              }}
+            >
+              Date Modified
+            </div>
+            <div
+              className="details-view-button"
+              style={{
+                width: viewTypeTabWidth.type + "rem",
+              }}
+            >
+              Type
+            </div>
+            <div
+              className="details-view-button"
+              style={{
+                width: viewTypeTabWidth.size + "rem",
+              }}
+            >
+              Size
+            </div>
+            <div
+              className="details-view-button"
+              style={{
+                width: viewTypeTabWidth.duration + "rem",
+              }}
+            >
+              Duration
+            </div>
+            <div
+              className="details-view-button"
+              style={{
+                width: viewTypeTabWidth.dimensions + "rem",
+              }}
+            >
+              Dimensions
+            </div>
           </div>
         )}
         {renderDirectoryItems}
