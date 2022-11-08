@@ -97,7 +97,11 @@ export default function ContextMenuItem({
             setClipboard({
               source: state.currentDirectory,
               mode: contextName === "Cut" ? "move" : "copy",
-              info: selectedItems.map((itemSelected) => itemSelected.info),
+              info: selectedItems.map((path) => {
+                const element = document.getElementById(path);
+                const info = JSON.parse(element.dataset.info || "{}");
+                return info;
+              }),
             });
             break;
           case "Paste":
@@ -168,7 +172,11 @@ export default function ContextMenuItem({
           case "Restore":
             setDirectoryItems(
               restoreFromTrash(
-                selectedItems.map((selectedItem) => selectedItem.info)
+                selectedItems.map((path) => {
+                  const element = document.getElementById(path);
+                  const info = JSON.parse(element.dataset.info || "{}");
+                  return info;
+                })
               )
             );
             break;

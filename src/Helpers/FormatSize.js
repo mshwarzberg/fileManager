@@ -2,8 +2,8 @@
 export default function formatSize(originalSize) {
   let newSize;
   let letter;
-  if (!originalSize && originalSize !== 0) {
-    return undefined;
+  if (!originalSize) {
+    return "";
   }
   if (originalSize < 1000) {
     newSize = originalSize;

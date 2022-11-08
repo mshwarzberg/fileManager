@@ -29,7 +29,9 @@ export function restoreFromTrash(items) {
         })
         .includes(trashedItem.original)
     ) {
-      fs.renameSync(trashedItem.current, trashedItem.original);
+      try {
+        fs.renameSync(trashedItem.current, trashedItem.original);
+      } catch (error) {}
     } else {
       remainingItems.push(trashedItem);
     }

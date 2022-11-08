@@ -64,7 +64,11 @@ export default function useDragAndDrop(
             {
               source: sourceDirectory,
               mode: drag.mode,
-              info: selectedItems.map((selectedItem) => selectedItem.info),
+              info: selectedItems.map((path) => {
+                const element = document.getElementById(path);
+                const info = JSON.parse(element.dataset.info || "{}");
+                return info;
+              }),
             },
             () => {}
           );

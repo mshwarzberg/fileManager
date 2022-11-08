@@ -13,6 +13,24 @@ export default function UIandUXState() {
     pageCompactView: initSettings.pageCompactView,
     treeCompactView: initSettings.treeCompactView,
     pageView: initSettings.pageView || "icon",
+    currentSort: initSettings.currentSort || "name",
+    isSortDescending: initSettings.currentSort !== false,
+    detailsTabWidth: initSettings.detailsTabWidth || {
+      name: 15,
+      modified: 12,
+      type: 8,
+      size: 5,
+      duration: 5,
+      dimensions: 5,
+    },
+    detailsTabWidthLimits: {
+      name: [5, 35],
+      modified: [8, 15],
+      type: [5, 10],
+      size: [5, 8],
+      duration: [5, 10],
+      dimensions: [5, 10],
+    },
   });
 
   useEffect(() => {
@@ -28,6 +46,9 @@ export default function UIandUXState() {
         pageCompactView: settings.pageCompactView,
         treeCompactView: settings.treeCompactView,
         pageView: settings.pageView,
+        currentSort: settings.currentSort,
+        isSortDescending: settings.isSortDescending,
+        detailsTabWidth: settings.detailsTabWidth,
       })
     );
   }, [settings]);

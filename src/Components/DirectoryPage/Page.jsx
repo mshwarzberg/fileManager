@@ -3,6 +3,7 @@ import { GeneralContext } from "../Main/App.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
+import { findInArray } from "../../Helpers/SearchArray.js";
 
 const { exec } = window.require("child_process");
 const fs = window.require("fs");

@@ -3,13 +3,18 @@ import { GeneralContext } from "../../Main/App.jsx";
 
 const fs = window.require("fs");
 
-export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
+export default function ItemName({
+  directoryItem,
+  renameItem,
+  setRenameItem,
+  detailsTabWidth,
+}) {
   const { displayName, name, fileextension, location, path, isDrive } =
     directoryItem;
 
   const {
     state: { currentDirectory },
-    settings: { appTheme },
+    settings: { appTheme, pageView },
     directoryItems,
   } = useContext(GeneralContext);
 
@@ -24,7 +29,13 @@ export default function ItemName({ directoryItem, renameItem, setRenameItem }) {
   }, [renameItem]);
 
   return (
-    <div className="block-name-container">
+    <div
+      className="block-name-container"
+      style={{
+        maxWidth:
+          pageView === "details" ? detailsTabWidth.name - 1 + "rem" : "",
+      }}
+    >
       {newName || newName === "" ? newName : displayName}
       <textarea
         id={`name${path}`}

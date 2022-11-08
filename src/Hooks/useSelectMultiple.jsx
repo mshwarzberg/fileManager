@@ -1,55 +1,56 @@
 import { useEffect } from "react";
 
 let timeout;
-export default function useSelectMultiple(setLastSelected, setSelectedItems) {
+export default function useSelectMultiple(
+  setLastSelected,
+  setSelectedItems,
+  directoryItems
+) {
   function highlightItems(boxDimensions, e) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      const elements = document.getElementsByClassName("page-item");
-      let infoArray = [];
-      for (const element of elements) {
-        const elDimensions = element.getBoundingClientRect();
-
-        const notToRightOfBlock = elDimensions.x < boxDimensions.right;
-        const notToLeftOfBlock =
-          elDimensions.x + elDimensions.width > boxDimensions.x;
-
-        const notBelowBlock = elDimensions.y < boxDimensions.bottom;
-        const notAboveBlock =
-          elDimensions.y + elDimensions.height > boxDimensions.y;
-
-        const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
-        const isWithinYAxis = notAboveBlock && notBelowBlock;
-
-        if (isWithinXAxis && isWithinYAxis) {
-          const info = JSON.parse(element.dataset.info || "{}");
-          if (info.name) {
-            infoArray.push({
-              info: info,
-              element: element,
-            });
-          }
-        }
-      }
-      setLastSelected(infoArray[0]?.element);
-      setSelectedItems((prevItems) => {
-        let array = [...prevItems];
-        if (e.shiftKey || e.ctrlKey) {
-          for (const { info, element } of infoArray) {
-            if (!prevItems.map((item) => item.element).includes(element)) {
-              array.push({
-                info: info,
-                element: element,
-              });
-            }
-          }
-        } else {
-          array = infoArray;
-        }
-        return array;
-      });
-    }, 0);
+    // clearTimeout(timeout);
+    // timeout = setTimeout(() => {
+    //   const elements = document.getElementsByClassName("page-item");
+    //   let infoArray = [];
+    //   for (const element of elements) {
+    //     const elDimensions = element.getBoundingClientRect();
+    //     const notToRightOfBlock = elDimensions.x < boxDimensions.right;
+    //     const notToLeftOfBlock =
+    //       elDimensions.x + elDimensions.width > boxDimensions.x;
+    //     const notBelowBlock = elDimensions.y < boxDimensions.bottom;
+    //     const notAboveBlock =
+    //       elDimensions.y + elDimensions.height > boxDimensions.y;
+    //     const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
+    //     const isWithinYAxis = notAboveBlock && notBelowBlock;
+    //     if (isWithinXAxis && isWithinYAxis) {
+    //       const info = JSON.parse(element.dataset.info || "{}");
+    //       if (info.name) {
+    //         infoArray.push({
+    //           info: info,
+    //           element: element,
+    //         });
+    //       }
+    //     }
+    //   }
+    //   setLastSelected(infoArray[0]?.element);
+    //   setSelectedItems((prevItems) => {
+    //     let array = [...prevItems];
+    //     if (e.shiftKey || e.ctrlKey) {
+    //       for (const { info, element } of infoArray) {
+    //         if (!prevItems.map((item) => item.element).includes(element)) {
+    //           array.push({
+    //             info: info,
+    //             element: element,
+    //           });
+    //         }
+    //       }
+    //     } else {
+    //       array = infoArray;
+    //     }
+    //     return array;
+    //   });
+    // }, 0);
   }
+
   function changeBoxDimensions(
     box,
     anchorY,
@@ -82,7 +83,7 @@ export default function useSelectMultiple(setLastSelected, setSelectedItems) {
         return;
       }
       if (!e.shiftKey && !e.ctrlKey && e.clientX < window.innerWidth - 12) {
-        setSelectedItems([]);
+        // setSelectedItems([]);
         setLastSelected();
       }
       isBox = true;

@@ -2,7 +2,6 @@ import { findInArray } from "./SearchArray";
 
 export default function handleItemsSelected(
   e,
-  selectedItems,
   setSelectedItems,
   lastSelected,
   setLastSelected
@@ -10,42 +9,31 @@ export default function handleItemsSelected(
   if (e.shiftKey) {
     const pageItems = [...document.getElementsByClassName("page-item")];
     let selected = [];
-    if (!selectedItems[0]) {
-      selected = pageItems
-        .slice(0, pageItems.indexOf(e.target) + 1)
-        .map((block) => ({
-          element: block,
-          info: JSON.parse(block.dataset.info || "{}"),
-        }));
-      setLastSelected(pageItems[0]);
-    } else {
-      const anchorElement = pageItems.indexOf(lastSelected);
-      const flexElement = pageItems.indexOf(e.target);
+    setSelectedItems((prevItemsSelected) => {
+      if (!prevItemsSelected[0]) {
+        selected = pageItems
+          .slice(0, pageItems.indexOf(e.target) + 1)
+          .map((block) => block.id);
+        setLastSelected(pageItems[0].id);
+      } else {
+        const anchorElement = pageItems.indexOf(lastSelected);
+        const flexElement = pageItems.indexOf(e.target);
 
-      selected = pageItems
-        .slice(
-          Math.min(anchorElement, flexElement),
-          Math.max(anchorElement, flexElement) + 1
-        )
-        .map((block) => ({
-          element: block,
-          info: JSON.parse(block.dataset.info || "{}"),
-        }));
-    }
-    setSelectedItems(selected);
+        selected = pageItems
+          .slice(
+            Math.min(anchorElement, flexElement),
+            Math.max(anchorElement, flexElement) + 1
+          )
+          .map((block) => block.id);
+      }
+      return selected;
+    });
     return;
   } else if (e.ctrlKey) {
-    if (!findInArray(selectedItems, e.target, "element")) {
-      setSelectedItems((prevItemsSelected) => [
-        ...prevItemsSelected,
-        {
-          element: e.target,
-          info: JSON.parse(e.target.dataset.info || "{}"),
-        },
-      ]);
-      return;
-    } else {
-      setSelectedItems((prevItemsSelected) => {
+    setSelectedItems((prevItemsSelected) => {
+      if (!prevItemsSelected.includes(e.target.id)) {
+        return [...prevItemsSelected, e.target.id];
+      } else {
         return prevItemsSelected
           .map((prevItemSelected) => {
             if (prevItemSelected.element === e.target) {
@@ -56,18 +44,15 @@ export default function handleItemsSelected(
           .filter(
             (prevItemSelected) => prevItemSelected.element && prevItemSelected
           );
-      });
-    }
-  } else if (
-    !selectedItems
-      .map((selectedItem) => selectedItem.element)
-      .includes(e.target) ||
-    e.button !== 2
-  ) {
-    setSelectedItems([
-      { element: e.target, info: JSON.parse(e.target.dataset.info || "{}") },
-    ]);
+      }
+    });
   } else {
+    setSelectedItems((prevItemsSelected) => {
+      if (!prevItemsSelected.includes(e.target.id) || e.button !== 2) {
+        return [e.target.id];
+      }
+      return [];
+    });
   }
-  setLastSelected(e.target);
+  setLastSelected(e.target.id);
 }

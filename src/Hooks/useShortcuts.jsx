@@ -62,19 +62,16 @@ export default function useShortcuts(
             setClipboard({
               source: state.currentDirectory,
               mode: e.key === "c" ? "copy" : "move",
-              info: selectedItems.map((itemSelected) => {
-                return itemSelected.info;
+              info: selectedItems.map((path) => {
+                const element = document.getElementById(path);
+                const info = JSON.parse(element.dataset.info || "{}");
+                return info;
               }),
             });
             break;
           case "a":
             const pageItems = [...document.getElementsByClassName("page-item")];
-            setSelectedItems(
-              pageItems.map((block) => ({
-                element: block,
-                info: JSON.parse(block.dataset.info || "{}"),
-              }))
-            );
+            setSelectedItems(pageItems.map((block) => block.id));
             break;
           case "v":
             handleTransfer(
@@ -102,8 +99,9 @@ export default function useShortcuts(
           break;
         case "Delete":
           handleMoveToTrash(
-            selectedItems.map((item) => {
-              const { info } = item;
+            selectedItems.map((path) => {
+              const element = document.getElementById(path);
+              const info = JSON.parse(element.dataset.info || "{}");
               const id = "$" + randomID(10);
               return {
                 ...info,
@@ -123,39 +121,34 @@ export default function useShortcuts(
         case "ArrowRight":
         case "ArrowLeft":
           if (!selectedItems[0]) {
-            return setSelectedItems([
-              {
-                element: document.getElementById(directoryItems[0].path),
-                info: directoryItems[0],
-              },
-            ]);
+            return setSelectedItems([directoryItems[0].path]);
           }
-          const lastSelectedInArray =
-            selectedItems[selectedItems.length - 1].info;
-          directoryItems.map((directoryItem, index) => {
-            if (directoryItem.name === lastSelectedInArray.name) {
-              if (e.key === "ArrowRight") {
-                index++;
-              } else {
-                index--;
-              }
-              if (!directoryItems[index]) {
-                return <></>;
-              }
-              const { name, location } = directoryItems[index];
-              setSelectedItems([
-                {
-                  element: document.getElementById(location + name),
-                  info: directoryItems[index],
-                },
-              ]);
-              document.getElementById(location + name).focus();
-            }
-          });
+          const lastSelectedInArray = selectedItems[selectedItems.length - 1];
+          let indexOfSelectedItem = directoryItems
+            .map((directoryItem) => {
+              return directoryItem.path;
+            })
+            .indexOf(lastSelectedInArray);
+
+          if (e.key === "ArrowRight") {
+            indexOfSelectedItem++;
+            indexOfSelectedItem = Math.min(
+              directoryItems.length - 1,
+              indexOfSelectedItem
+            );
+          } else {
+            indexOfSelectedItem--;
+            indexOfSelectedItem = Math.max(0, indexOfSelectedItem);
+          }
+
+          setSelectedItems([directoryItems[indexOfSelectedItem].path]);
           break;
         case "Enter":
-          selectedItems.map((item) => {
-            clickOnItem(item.info, dispatch);
+          selectedItems.map((path) => {
+            const element = document.getElementById(path);
+            const info = JSON.parse(element.dataset.info || "{}");
+            clickOnItem(info, dispatch);
+            return "";
           });
           break;
         case "Escape":

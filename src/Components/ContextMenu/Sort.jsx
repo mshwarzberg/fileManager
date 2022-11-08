@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import sortBy from "../../Helpers/SortBy";
+import sortBy from "../../Helpers/Sort";
 import { GeneralContext } from "../Main/App.jsx";
 
 export default function Sort({ contextMenu }) {

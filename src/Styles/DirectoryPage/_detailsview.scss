@@ -16,12 +16,21 @@
     padding-left: 0.5rem;
     display: flex;
     justify-content: flex-start;
+    position: relative;
+    #scaler {
+      height: 100%;
+      width: 3px;
+      position: absolute;
+      cursor: ew-resize;
+      right: -1.5px;
+    }
   }
   .details-metadata {
     margin-left: 0.5rem;
     color: white;
     font-family: akshar;
     font-size: 0.9rem;
+    min-width: 4rem;
   }
   .page-item {
     min-height: 1.5rem;

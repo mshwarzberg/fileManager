@@ -6,7 +6,7 @@ export default function useScaleDirectoryTree() {
   const { settings, setSettings } = useContext(GeneralContext);
 
   useEffect(() => {
-    const lineSplit = document.getElementById("directory-tree-scaler");
+    const scaleDirectoryTree = document.getElementById("directory-tree-scaler");
     function handleMouseDown(e) {
       if (e.button === 0) {
         setScalingTree(true);
@@ -26,11 +26,11 @@ export default function useScaleDirectoryTree() {
     function handleMouseUp(e) {
       setScalingTree();
     }
-    lineSplit?.addEventListener("mousedown", handleMouseDown);
+    scaleDirectoryTree?.addEventListener("mousedown", handleMouseDown);
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
     return () => {
-      lineSplit?.removeEventListener("mousedown", handleMouseDown);
+      scaleDirectoryTree?.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };

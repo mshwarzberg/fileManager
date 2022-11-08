@@ -4,12 +4,14 @@ import DirectoryState from "./State/DirectoryState";
 import UIandUXState from "./State/UIandUXState";
 
 import Page from "../DirectoryPage/Page";
+import DetailsView from "../DirectoryPage/DetailsView/DetailsView";
+
 import Navbar from "../Navbar/Navbar";
 import DirectoryTree from "../DirectoryTree/DirectoryTree";
 import PageItem from "../DirectoryPage/PageItem";
 import UIandUX from "./UIandUX";
 
-import sortBy from "../../Helpers/SortBy";
+import sortDirectoryItems from "../../Helpers/Sort";
 import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
 import randomID from "../../Helpers/RandomID";
@@ -28,7 +30,7 @@ export default function App() {
 
   const {
     settings,
-    settings: { pageView },
+    settings: { pageView, detailsTabWidth },
     setSettings,
   } = UIandUXState();
 
@@ -36,19 +38,19 @@ export default function App() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [lastSelected, setLastSelected] = useState();
   const [renameItem, setRenameItem] = useState({});
-  const [visibleItems, setVisibleItems] = useState([]);
   const [popup, setPopup] = useState({});
   const [clipboard, setClipboard] = useState({});
   const [drag, setDrag] = useState({});
   const [reload, setReload] = useState();
-  const [viewTypeTabWidth, setViewTypeTabWidth] = useState({
-    name: 14.5,
-    modified: 12,
-    type: 8,
-    size: 5,
-    duration: 5,
-    dimensions: 5,
-  });
+
+  const [viewTypes, setViewTypes] = useState([
+    "Name",
+    "Modified",
+    "Type",
+    "Size",
+    "Dimensions",
+    "Duration",
+  ]);
 
   useEffect(() => {
     console.clear();
@@ -76,7 +78,7 @@ export default function App() {
               });
           }
           setDirectoryItems(result);
-          sortBy(setDirectoryItems, "Name");
+          sortDirectoryItems(setDirectoryItems, "name", true);
         } catch (e) {
           setPopup({
             show: true,
@@ -136,9 +138,8 @@ export default function App() {
         key={directoryItem.key || directoryItem.name}
         lastSelected={[lastSelected, setLastSelected]}
         selectedItems={[selectedItems, setSelectedItems]}
-        viewTypeTabWidth={viewTypeTabWidth}
+        detailsTabWidth={detailsTabWidth}
         directoryItem={directoryItem}
-        visibleItems={visibleItems}
         setDrag={setDrag}
       />
     );
@@ -161,61 +162,16 @@ export default function App() {
       <DirectoryTree />
       <Page selectedItems={selectedItems} clipboard={clipboard} reload={reload}>
         {pageView === "details" && (
-          <div className="details-view-buttons-container">
-            <div
-              className="details-view-button"
-              style={{
-                width: viewTypeTabWidth.name + "rem",
-              }}
-            >
-              Name
-            </div>
-            <div
-              className="details-view-button"
-              style={{
-                width: viewTypeTabWidth.modified + "rem",
-              }}
-            >
-              Date Modified
-            </div>
-            <div
-              className="details-view-button"
-              style={{
-                width: viewTypeTabWidth.type + "rem",
-              }}
-            >
-              Type
-            </div>
-            <div
-              className="details-view-button"
-              style={{
-                width: viewTypeTabWidth.size + "rem",
-              }}
-            >
-              Size
-            </div>
-            <div
-              className="details-view-button"
-              style={{
-                width: viewTypeTabWidth.duration + "rem",
-              }}
-            >
-              Duration
-            </div>
-            <div
-              className="details-view-button"
-              style={{
-                width: viewTypeTabWidth.dimensions + "rem",
-              }}
-            >
-              Dimensions
-            </div>
-          </div>
+          <DetailsView
+            detailsTabWidth={detailsTabWidth}
+            viewTypes={viewTypes}
+            setDirectoryItems={setDirectoryItems}
+            setSettings={setSettings}
+          />
         )}
         {renderDirectoryItems}
       </Page>
       <UIandUX
-        visibleItems={[visibleItems, setVisibleItems]}
         lastSelected={[lastSelected, setLastSelected]}
         selectedItems={[selectedItems, setSelectedItems]}
         popup={[popup, setPopup]}

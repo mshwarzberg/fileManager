@@ -25,9 +25,8 @@ let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
   selectedItems: [selectedItems, setSelectedItems],
   lastSelected: [lastSelected, setLastSelected],
-  viewTypeTabWidth,
+  detailsTabWidth,
   directoryItem,
-  visibleItems,
   setDrag,
 }) {
   const {
@@ -64,12 +63,10 @@ export default function PageItem({
     directoryItems,
   } = useContext(GeneralContext);
 
+  const isSelected = selectedItems.includes(path);
+
   const [thumbnail, setThumbnail] = useState();
   const [description, setDescription] = useState();
-
-  const selectedElements = selectedItems.map(
-    (selectedItem) => selectedItem.element
-  );
 
   useEffect(() => {
     let timeout;
@@ -194,8 +191,8 @@ export default function PageItem({
           <p
             className="details-metadata"
             style={{
-              width: viewTypeTabWidth.modified + "rem",
-              marginLeft: viewTypeTabWidth.name + "rem",
+              width: detailsTabWidth.modified + "rem",
+              marginLeft: detailsTabWidth.name + "rem",
             }}
           >
             {formatDate(new Date(modified))}
@@ -203,7 +200,7 @@ export default function PageItem({
           <p
             className="details-metadata"
             style={{
-              width: viewTypeTabWidth.type + "rem",
+              width: detailsTabWidth.type + "rem",
             }}
           >
             Type:&nbsp;
@@ -214,27 +211,31 @@ export default function PageItem({
           <p
             className="details-metadata"
             style={{
-              width: viewTypeTabWidth.size + "rem",
+              width: detailsTabWidth.size + "rem",
             }}
           >
-            {size ? formatSize(size) : ""}
+            {formatSize(size)}
           </p>
-          <p
-            className="details-metadata"
-            style={{
-              width: viewTypeTabWidth.duration + "rem",
-            }}
-          >
-            {duration ? formatDuration(duration) : ""}
-          </p>
-          <p
-            className="details-metadata"
-            style={{
-              width: viewTypeTabWidth.dimensions + "rem",
-            }}
-          >
-            {dimensions || ""}
-          </p>
+          {detailsTabWidth.dimensions !== 0 && (
+            <p
+              className="details-metadata"
+              style={{
+                width: detailsTabWidth.dimensions + "rem",
+              }}
+            >
+              {parseInt(dimensions) ? dimensions : ""}
+            </p>
+          )}
+          {detailsTabWidth.duration !== 0 && (
+            <p
+              className="details-metadata"
+              style={{
+                width: detailsTabWidth.duration + "rem",
+              }}
+            >
+              {duration ? formatDuration(duration) : ""}
+            </p>
+          )}
         </>
       );
     } else {
@@ -252,10 +253,13 @@ export default function PageItem({
     if (!permission) {
       clsName += " no-permission";
     }
+    if (isSelected) {
+      clsName += " selected";
+    }
     return clsName;
   }
 
-  return visibleItems.includes(document.getElementById(path)) && name ? (
+  return (
     <div
       className={className()}
       id={path}
@@ -281,14 +285,13 @@ export default function PageItem({
         }
       }}
       onMouseMove={(e) => {
-        if (selectedElements.includes(e.target)) {
+        if (isSelected) {
           clearTimeout(selectTimeout);
         } else if (clickToOpen === "single") {
           clearTimeout(selectTimeout);
           selectTimeout = setTimeout(() => {
             handleItemsSelected(
               e,
-              selectedItems,
               setSelectedItems,
               lastSelected,
               setLastSelected
@@ -305,15 +308,14 @@ export default function PageItem({
             () => {
               handleItemsSelected(
                 e,
-                selectedItems,
                 setSelectedItems,
                 lastSelected,
                 setLastSelected
               );
             },
-            selectedElements.includes(e.target) ? 200 : 0
+            isSelected ? 200 : 0
           );
-          if (selectedElements.includes(e.target)) {
+          if (isSelected) {
             dragTimeout = setTimeout(() => {
               setDrag({
                 x: e.clientX - 64,
@@ -369,20 +371,9 @@ export default function PageItem({
         directoryItem={directoryItem}
         renameItem={renameItem}
         setRenameItem={setRenameItem}
+        detailsTabWidth={detailsTabWidth}
       />
       {metadataContent()}
     </div>
-  ) : (
-    <div
-      className={className()}
-      id={path}
-      style={{
-        ...(pageView === "icon" && {
-          width: iconSize + "rem",
-          minHeight: iconSize + "rem",
-        }),
-      }}
-      data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
-    />
   );
 }
