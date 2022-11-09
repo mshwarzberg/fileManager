@@ -1,56 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-let timeout;
 export default function useSelectMultiple(
-  setLastSelected,
-  setSelectedItems,
-  directoryItems
+  setLastSelected = () => {},
+  setSelectedItems = () => {},
+  pageView
 ) {
-  function highlightItems(boxDimensions, e) {
-    // clearTimeout(timeout);
-    // timeout = setTimeout(() => {
-    //   const elements = document.getElementsByClassName("page-item");
-    //   let infoArray = [];
-    //   for (const element of elements) {
-    //     const elDimensions = element.getBoundingClientRect();
-    //     const notToRightOfBlock = elDimensions.x < boxDimensions.right;
-    //     const notToLeftOfBlock =
-    //       elDimensions.x + elDimensions.width > boxDimensions.x;
-    //     const notBelowBlock = elDimensions.y < boxDimensions.bottom;
-    //     const notAboveBlock =
-    //       elDimensions.y + elDimensions.height > boxDimensions.y;
-    //     const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
-    //     const isWithinYAxis = notAboveBlock && notBelowBlock;
-    //     if (isWithinXAxis && isWithinYAxis) {
-    //       const info = JSON.parse(element.dataset.info || "{}");
-    //       if (info.name) {
-    //         infoArray.push({
-    //           info: info,
-    //           element: element,
-    //         });
-    //       }
-    //     }
-    //   }
-    //   setLastSelected(infoArray[0]?.element);
-    //   setSelectedItems((prevItems) => {
-    //     let array = [...prevItems];
-    //     if (e.shiftKey || e.ctrlKey) {
-    //       for (const { info, element } of infoArray) {
-    //         if (!prevItems.map((item) => item.element).includes(element)) {
-    //           array.push({
-    //             info: info,
-    //             element: element,
-    //           });
-    //         }
-    //       }
-    //     } else {
-    //       array = infoArray;
-    //     }
-    //     return array;
-    //   });
-    // }, 0);
-  }
-
   function changeBoxDimensions(
     box,
     anchorY,
@@ -82,10 +36,7 @@ export default function useSelectMultiple(
       if (e.target.id !== "display-page" || e.button !== 0) {
         return;
       }
-      if (!e.shiftKey && !e.ctrlKey && e.clientX < window.innerWidth - 12) {
-        // setSelectedItems([]);
-        setLastSelected();
-      }
+
       isBox = true;
       const pageDimensions = page.getBoundingClientRect();
       box.style.top = e.clientY - pageDimensions.top + page.scrollTop + "px";
@@ -103,7 +54,10 @@ export default function useSelectMultiple(
           e.clientY - pageDimensions.top + page.scrollTop,
           page.scrollHeight
         );
-        const currentPositionX = e.clientX - pageDimensions.left;
+        const currentPositionX = Math.min(
+          e.clientX - pageDimensions.left + page.scrollLeft,
+          page.scrollWidth
+        );
 
         changeBoxDimensions(
           box,
@@ -112,11 +66,18 @@ export default function useSelectMultiple(
           currentPositionY,
           currentPositionX
         );
-        highlightItems(box.getBoundingClientRect(), e);
+        // myOther(box);
         clearInterval(scrollOnDrag);
-        if (e.clientY < 100 && page.scrollTop !== 0) {
+        if (
+          (e.clientY < 100 && page.scrollTop !== 0) ||
+          (e.clientX < 100 && page.scrollLeft !== 0 && pageView === "list")
+        ) {
           scrollOnDrag = setInterval(() => {
-            page.scroll(0, page.scrollTop - 100);
+            if (pageView !== "list") {
+              page.scroll(0, page.scrollTop - 100);
+            } else {
+              page.scroll(page.scrollLeft - 100, 0);
+            }
             changeBoxDimensions(
               box,
               anchorY,
@@ -124,15 +85,23 @@ export default function useSelectMultiple(
               page.scrollTop,
               currentPositionX
             );
-            highlightItems(box.getBoundingClientRect(), e);
+            // myOther(box);
           }, 10);
         } else if (
-          e.clientY > page.getBoundingClientRect().height &&
-          Math.round(page.scrollTop + page.getBoundingClientRect().height) !==
-            page.scrollHeight
+          (e.clientY > page.getBoundingClientRect().height &&
+            Math.round(page.scrollTop + page.getBoundingClientRect().height) !==
+              page.scrollHeight) ||
+          (e.clientX > page.getBoundingClientRect().width &&
+            Math.round(page.scrollLeft + page.getBoundingClientRect().width) !==
+              page.scrollWidth &&
+            pageView === "list")
         ) {
           scrollOnDrag = setInterval(() => {
-            page.scroll(0, page.scrollTop + 100);
+            if (pageView !== "list") {
+              page.scroll(0, page.scrollTop + 100);
+            } else {
+              page.scroll(page.scrollLeft + 100, 0);
+            }
             changeBoxDimensions(
               box,
               anchorY,
@@ -140,7 +109,7 @@ export default function useSelectMultiple(
               Math.min(page.scrollTop + currentPositionY, page.scrollHeight),
               currentPositionX
             );
-            highlightItems(box.getBoundingClientRect(), e);
+            // myOther(box);
           }, 10);
         }
       } else {
@@ -165,8 +134,7 @@ export default function useSelectMultiple(
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("mousemove", handleMouseMove);
       page.removeEventListener("mousedown", handleMouseDown);
-      clearTimeout(timeout);
     };
     // eslint-disable-next-line
-  }, []);
+  }, [pageView]);
 }

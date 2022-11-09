@@ -18,8 +18,7 @@ import CustomFolderIcon from "./Icons/CustomFolderIcon";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
-const exifr = window.require("exifr");
-const { execFile, exec, execFileSync } = window.require("child_process");
+const { execFile, execFileSync } = window.require("child_process");
 
 let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
@@ -66,7 +65,6 @@ export default function PageItem({
   const isSelected = selectedItems.includes(path);
 
   const [thumbnail, setThumbnail] = useState();
-  const [description, setDescription] = useState();
 
   useEffect(() => {
     let timeout;
@@ -269,21 +267,6 @@ export default function PageItem({
           minHeight: iconSize + "rem",
         }),
       }}
-      onMouseEnter={() => {
-        if (filetype === "image") {
-          exifr
-            .parse(path, true)
-            .then((data) => {
-              if (!data) {
-                return;
-              }
-              setDescription(
-                data.Comment || data.description?.value || data.description
-              );
-            })
-            .catch(() => {});
-        }
-      }}
       onMouseMove={(e) => {
         if (isSelected) {
           clearTimeout(selectTimeout);
@@ -304,6 +287,8 @@ export default function PageItem({
       }}
       onMouseDown={(e) => {
         if (e.button === 0 || e.button === 2) {
+          // prevent click through to page
+          e.stopPropagation();
           selectTimeout = setTimeout(
             () => {
               handleItemsSelected(
@@ -352,7 +337,7 @@ export default function PageItem({
       }}
       data-contextmenu={contextMenuOptions(directoryItem)}
       data-info={permission && JSON.stringify({ ...directoryItem, path: path })}
-      data-title={formatTitle({ ...directoryItem, description: description })}
+      data-title={formatTitle(directoryItem)}
       data-timing={isDirectory && 400}
       data-destination={(() => {
         if (isDirectory) {

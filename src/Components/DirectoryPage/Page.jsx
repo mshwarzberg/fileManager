@@ -3,12 +3,18 @@ import { GeneralContext } from "../Main/App.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
-import { findInArray } from "../../Helpers/SearchArray.js";
 
 const { exec } = window.require("child_process");
 const fs = window.require("fs");
 
-export default function Page({ selectedItems, clipboard, children, reload }) {
+export default function Page({
+  selectedItems: [selectedItems, setSelectedItems],
+  clipboard,
+  children,
+  reload,
+  loading: [loading, setLoading],
+  setLastSelected,
+}) {
   const {
     setDirectoryItems,
     directoryItems,
@@ -125,6 +131,7 @@ export default function Page({ selectedItems, clipboard, children, reload }) {
         return prevItem;
       })
     );
+    setLoading(false);
   }, [metadata]);
 
   useEffect(() => {
@@ -141,6 +148,12 @@ export default function Page({ selectedItems, clipboard, children, reload }) {
     <div
       className={`page-${appTheme} page-${pageView}-view`}
       id="display-page"
+      onMouseDown={(e) => {
+        if (!e.shiftKey && !e.ctrlKey && e.clientX < window.innerWidth - 12) {
+          setSelectedItems([]);
+          setLastSelected();
+        }
+      }}
       data-contextmenu={contextMenuOptions()}
       data-info={JSON.stringify({
         isDirectory: true,
@@ -149,7 +162,7 @@ export default function Page({ selectedItems, clipboard, children, reload }) {
       data-destination={currentDirectory}
     >
       <div id="select-multiple-box" />
-      {children}
+      {!loading ? children : <h1>Loading</h1>}
       {!directoryItems.length && (
         <h1 id="empty-directory-header">
           {currentDirectory === "Trash" ? "Trash" : "Folder"} is empty

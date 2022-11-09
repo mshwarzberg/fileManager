@@ -26,10 +26,10 @@ export default function UIandUX({
   const {
     state: { currentDirectory },
     dispatch,
-    directoryItems,
     settings: { pageView },
   } = useContext(GeneralContext);
   const [contextMenu, setContextMenu] = useState({});
+  const [dragSelect, setDragSelect] = useState({});
 
   useEffect(() => {
     setClipboard(JSON.parse(sessionStorage.getItem("clipboard") || "{}"));
@@ -61,7 +61,7 @@ export default function UIandUX({
 
   useWatch();
   useScaleDirectoryTree();
-  useSelectMultiple(setLastSelected, setSelectedItems, directoryItems);
+  useSelectMultiple(setLastSelected, setSelectedItems, pageView);
   useShortcuts(
     [selectedItems, setSelectedItems],
     [clipboard, setClipboard],
@@ -75,6 +75,7 @@ export default function UIandUX({
     setPopup,
     dispatch
   );
+
   return (
     <UIContext.Provider
       value={{

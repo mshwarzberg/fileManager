@@ -8,8 +8,6 @@ import formatDuration from "../../Helpers/FormatVideoTime";
 import CustomFileIcon from "../DirectoryPage/Icons/CustomFileIcon";
 import CustomFolderIcon from "../DirectoryPage/Icons/CustomFolderIcon";
 
-const exifr = window.require("exifr");
-
 export default function BlockComparison({
   directoryItem,
   location,
@@ -33,28 +31,11 @@ export default function BlockComparison({
     prefix,
   } = directoryItem;
 
-  const [description, setDescription] = useState();
-
   return (
     <label
       key={key}
       className="block-container"
-      data-title={formatTitle({ ...directoryItem, description: description })}
-      onMouseEnter={() => {
-        if (filetype === "image") {
-          exifr
-            .parse(path, true)
-            .then((data) => {
-              if (!data) {
-                return;
-              }
-              const description =
-                data.Comment || data.description?.value || data.description;
-              setDescription(description);
-            })
-            .catch(() => {});
-        }
-      }}
+      data-title={formatTitle(directoryItem)}
     >
       <input
         type="checkbox"

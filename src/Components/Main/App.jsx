@@ -42,6 +42,7 @@ export default function App() {
   const [clipboard, setClipboard] = useState({});
   const [drag, setDrag] = useState({});
   const [reload, setReload] = useState();
+  const [loading, setLoading] = useState();
 
   const [viewTypes, setViewTypes] = useState([
     "Name",
@@ -102,15 +103,18 @@ export default function App() {
             value: "error",
           });
         }
+        setLoading();
       } else {
         exec(
           `wmic LogicalDisk where(DriveType=3) get Name,Size,VolumeName, FreeSpace, FileSystem`,
           (_, data) => {
             setDirectoryItems(formatDriveOutput(data));
+            setLoading();
           }
         );
       }
     }
+    setLoading(true);
     updatePage();
     // eslint-disable-next-line
   }, [currentDirectory, drive, reload]);
@@ -160,7 +164,13 @@ export default function App() {
     >
       <Navbar setPopup={setPopup} drag={drag} />
       <DirectoryTree />
-      <Page selectedItems={selectedItems} clipboard={clipboard} reload={reload}>
+      <Page
+        selectedItems={[selectedItems, setSelectedItems]}
+        clipboard={clipboard}
+        reload={reload}
+        loading={[loading, setLoading]}
+        setLastSelected={setLastSelected}
+      >
         {pageView === "details" && (
           <DetailsView
             detailsTabWidth={detailsTabWidth}

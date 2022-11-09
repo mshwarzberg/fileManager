@@ -36,14 +36,12 @@ export default function handleItemsSelected(
       } else {
         return prevItemsSelected
           .map((prevItemSelected) => {
-            if (prevItemSelected.element === e.target) {
-              return {};
+            if (prevItemSelected === e.target.id) {
+              return;
             }
             return prevItemSelected;
           })
-          .filter(
-            (prevItemSelected) => prevItemSelected.element && prevItemSelected
-          );
+          .filter((prevItemSelected) => prevItemSelected && prevItemSelected);
       }
     });
   } else {
