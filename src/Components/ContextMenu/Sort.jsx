@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import sortBy from "../../Helpers/Sort";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 
 export default function Sort({ contextMenu }) {
   const sortOptions = ["Name", "Size", "Date", "Type", "Duration"];

@@ -1,12 +1,10 @@
-import { useState } from "react";
-
 import formatDate from "../../Helpers/FormatDate";
 import formatSize from "../../Helpers/FormatSize";
 import formatTitle from "../../Helpers/FormatTitle";
 import formatDuration from "../../Helpers/FormatVideoTime";
 
-import CustomFileIcon from "../DirectoryPage/Icons/CustomFileIcon";
-import CustomFolderIcon from "../DirectoryPage/Icons/CustomFolderIcon";
+import CustomFileIcon from "../DirectoryPage/Item/Icons/CustomFileIcon";
+import CustomFolderIcon from "../DirectoryPage/Item/Icons/CustomFolderIcon";
 
 export default function BlockComparison({
   directoryItem,
@@ -32,11 +30,7 @@ export default function BlockComparison({
   } = directoryItem;
 
   return (
-    <label
-      key={key}
-      className="block-container"
-      data-title={formatTitle(directoryItem)}
-    >
+    <label key={key} className="block-container">
       <input
         type="checkbox"
         className={location}

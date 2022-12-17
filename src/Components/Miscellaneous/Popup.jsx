@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import { GeneralContext } from "../Main/App";
+import { GeneralContext } from "../Main/Main";
 
 export default function Popup({ popup, setPopup }) {
   const { body, ok, cancel, thirdButton, popupLabel } = popup;
 
   const [drag, setDrag] = useState(false);
   const {
-    settings: { appTheme },
+    views: { appTheme },
   } = useContext(GeneralContext);
 
   useEffect(() => {

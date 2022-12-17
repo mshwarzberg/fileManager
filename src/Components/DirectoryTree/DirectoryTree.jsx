@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import ChildDirectory from "./ChildDirectory";
 import ParentDirectory from "./ParentDirectory";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
@@ -11,8 +11,8 @@ const { execSync, exec } = window.require("child_process");
 export default function DirectoryTree() {
   const {
     state: { directoryTree, currentDirectory },
-    settings,
-    settings: { appTheme },
+    views: { appTheme, treeWidth },
+    settings: { showDirectoryTree },
     dispatch,
   } = useContext(GeneralContext);
 
@@ -135,13 +135,9 @@ export default function DirectoryTree() {
     <>
       <div
         className={`directory-tree-${appTheme}`}
-        id={
-          settings.showDirectoryTree
-            ? "directory-tree-show"
-            : "directory-tree-hide"
-        }
+        id={showDirectoryTree ? "directory-tree-show" : "directory-tree-hide"}
         style={{
-          flex: `0 0 ${settings.treeWidth}px`,
+          flex: `0 0 ${treeWidth}px`,
         }}
       >
         {mapDirectoryTreeLoop()}

@@ -21,6 +21,7 @@ function reducer(state, action) {
         currentDirectory: action.value,
         navigatedIndex: navigatedIndex + 1,
         navigatedDirectories: newNavigatedDirectories,
+        drive: action.value.slice(0, 3),
       };
     }
     case "up":
@@ -29,7 +30,7 @@ function reducer(state, action) {
         currentDirectory: action.value,
         navigatedDirectories: [...navigatedDirectories, action.value],
         navigatedIndex: navigatedIndex + 1,
-        ...(action.value === "" && { drive: "" }),
+        drive: action.value.slice(0, 3),
       };
     case "back":
       const navBackwards = navigatedDirectories[navigatedIndex - 1];
@@ -40,37 +41,20 @@ function reducer(state, action) {
         ...state,
         currentDirectory: navBackwards,
         navigatedIndex: navigatedIndex - 1,
-        ...(!navBackwards.startsWith(drive) && {
-          drive: navBackwards.slice(0, 3),
-        }),
+        drive: navBackwards.slice(0, 3),
       };
     case "forwards":
       const navForwards = navigatedDirectories[navigatedIndex + 1];
-      let newDrive;
-      if (!navForwards.startsWith(newDrive)) {
-        newDrive = navForwards.slice(0, 3);
-      }
       return {
         ...state,
         currentDirectory: navForwards,
         navigatedIndex: navigatedIndex + 1,
-        drive: newDrive || drive,
+        drive: navForwards.slice(0, 3),
       };
     case "updateDirectoryTree":
       return {
         ...state,
         directoryTree: action.value,
-      };
-    case "drive":
-      if (action.value === "Tra") {
-        return {
-          ...state,
-          drive: "",
-        };
-      }
-      return {
-        ...state,
-        drive: action.value,
       };
     case "resetToDefault":
       return {
@@ -81,15 +65,6 @@ function reducer(state, action) {
         navigatedIndex: 0,
         networkDrives: [],
       };
-    case "addNetworkDrive":
-      if (!state.networkDrives.includes(action.value)) {
-        return {
-          ...state,
-          networkDrives: [...state.networkDrives, action.value],
-        };
-      } else {
-        return state;
-      }
     default:
       return state;
   }

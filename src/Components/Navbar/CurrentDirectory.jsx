@@ -1,5 +1,5 @@
 import { useContext, useState, Fragment } from "react";
-import { GeneralContext } from "../Main/App";
+import { GeneralContext } from "../Main/Main";
 import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
 
 import formatTitle from "../../Helpers/FormatTitle";
@@ -9,7 +9,7 @@ const fs = window.require("fs");
 export default function CurrentDirectory({ drag, setPopup }) {
   const {
     state: { currentDirectory, drive },
-    settings: { appTheme },
+    views: { appTheme },
     dispatch,
   } = useContext(GeneralContext);
 
@@ -39,32 +39,16 @@ export default function CurrentDirectory({ drag, setPopup }) {
             .filter((item) => {
               return item?.name && item;
             });
-        } catch (e) {
-          setPopup({
-            show: true,
-            body: (
-              <div id="body">
-                <h1 id="description">{e.toString()}</h1>
-              </div>
-            ),
-            ok: (
-              <button
-                onClick={() => {
-                  setPopup({});
-                }}
-              >
-                OK
-              </button>
-            ),
-          });
-          dispatch({
-            type: "back",
-            value: "error",
-          });
-        }
+        } catch (e) {}
 
         return (
-          <div className="arrow-and-name-container" key={index}>
+          <div
+            className="arrow-and-name-container"
+            key={index}
+            onMouseLeave={() => {
+              setShowSubDirectories();
+            }}
+          >
             <button
               className={`button-${appTheme}`}
               onClick={() => {
@@ -119,7 +103,6 @@ export default function CurrentDirectory({ drag, setPopup }) {
                         });
                         setShowSubDirectories();
                       }}
-                      data-title={formatTitle(item)}
                       data-destination={item.path + "/"}
                     >
                       {item.name}

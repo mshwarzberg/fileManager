@@ -1,16 +1,58 @@
 import { useEffect, useState } from "react";
 
+let timeout;
 export default function useSelectMultiple(
   setLastSelected = () => {},
   setSelectedItems = () => {},
   pageView
 ) {
+  function highlightItems(boxDimensions, e) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const elements = document.getElementsByClassName("page-item");
+      let infoArray = [];
+      for (const element of elements) {
+        const elDimensions = element.getBoundingClientRect();
+
+        const notToRightOfBlock = elDimensions.x < boxDimensions.right;
+        const notToLeftOfBlock =
+          elDimensions.x + elDimensions.width > boxDimensions.x;
+
+        const notBelowBlock = elDimensions.y < boxDimensions.bottom;
+        const notAboveBlock =
+          elDimensions.y + elDimensions.height > boxDimensions.y;
+
+        const isWithinXAxis = notToLeftOfBlock && notToRightOfBlock;
+        const isWithinYAxis = notAboveBlock && notBelowBlock;
+
+        if (isWithinXAxis && isWithinYAxis) {
+          infoArray.push(element.id);
+        }
+        if (!notBelowBlock) {
+          break;
+        }
+      }
+      setLastSelected(infoArray[0]);
+      setSelectedItems((prevItems) => {
+        let array = [...prevItems];
+        if (e.shiftKey || e.ctrlKey) {
+          for (const id of infoArray) {
+            if (!prevItems.includes(id)) {
+              array.push(id);
+            }
+          }
+        } else {
+          array = infoArray;
+        }
+        return array;
+      });
+    }, 0);
+  }
   function changeBoxDimensions(
     box,
-    anchorY,
-    anchorX,
-    currentPositionY,
-    currentPositionX
+    [anchorX, anchorY],
+    [currentPositionX, currentPositionY],
+    e
   ) {
     if (anchorY < currentPositionY) {
       box.style.height = currentPositionY - anchorY + "px";
@@ -26,6 +68,7 @@ export default function useSelectMultiple(
       box.style.width = Math.abs(currentPositionX - anchorX) + "px";
       box.style.left = anchorX - Math.abs(currentPositionX - anchorX) + "px";
     }
+    highlightItems(box.getBoundingClientRect(), e);
   }
   useEffect(() => {
     let isBox, anchorY, anchorX, scrollOnDrag;
@@ -58,15 +101,13 @@ export default function useSelectMultiple(
           e.clientX - pageDimensions.left + page.scrollLeft,
           page.scrollWidth
         );
-
         changeBoxDimensions(
           box,
-          anchorY,
-          anchorX,
-          currentPositionY,
-          currentPositionX
+          [anchorX, anchorY],
+          [currentPositionX, currentPositionY],
+          e
         );
-        // myOther(box);
+        highlightItems(box.getBoundingClientRect(), e);
         clearInterval(scrollOnDrag);
         if (
           (e.clientY < 100 && page.scrollTop !== 0) ||
@@ -80,12 +121,10 @@ export default function useSelectMultiple(
             }
             changeBoxDimensions(
               box,
-              anchorY,
-              anchorX,
-              page.scrollTop,
-              currentPositionX
+              [anchorX, anchorY],
+              [currentPositionX, page.scrollTop],
+              e
             );
-            // myOther(box);
           }, 10);
         } else if (
           (e.clientY > page.getBoundingClientRect().height &&
@@ -104,12 +143,13 @@ export default function useSelectMultiple(
             }
             changeBoxDimensions(
               box,
-              anchorY,
-              anchorX,
-              Math.min(page.scrollTop + currentPositionY, page.scrollHeight),
-              currentPositionX
+              [anchorX, anchorY],
+              [
+                currentPositionX,
+                Math.min(page.scrollTop + currentPositionY, page.scrollHeight),
+              ],
+              e
             );
-            // myOther(box);
           }, 10);
         }
       } else {

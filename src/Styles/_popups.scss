@@ -129,10 +129,12 @@
     #view-selection {
       @include Buttons;
       width: 10rem;
+      position: absolute;
+      top: 3rem;
     }
     #options-container {
       position: absolute;
-      bottom: calc(-100% - 0.75rem);
+      bottom: calc(100% - 3rem);
       #view-option {
         @include Buttons;
         width: 10rem;
@@ -152,5 +154,12 @@
     input {
       background-color: #fff;
     }
+  }
+}
+
+#properties-body {
+  @include Body;
+  p {
+    @include Text;
   }
 }

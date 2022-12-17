@@ -38,29 +38,51 @@ export default function formatMetadata(file, directory, drive) {
   if (name.startsWith("$")) {
     return {};
   }
+
+  const filtered = {
+    ...item,
+    path: directory + name,
+    location: directory,
+    ...itemData(file, directory),
+    isFile: item.isFile,
+  };
+
+  return filtered;
+}
+
+export function itemData(file, directory, isTrash) {
+  let name = file.name;
+  if (isTrash) {
+    directory = directory.split("/$");
+    const len = directory.length - 1;
+    name = "$" + directory[len];
+    directory = directory[0] + "/$" + directory[len - 1] + "/";
+  }
   let fileextension = file.isFile()
     ? path.extname(directory + name).toLowerCase()
     : "";
   let itemtype = checkFileType(fileextension);
-
   let sizeOf, symLink, dateAccessed, dateCreated, dateModified;
   let permission = true;
+
   try {
-    var { size, birthtimeMs, mtimeMs, atimeMs } = fs.statSync(
-      `${directory}${name}`
+    const { size, birthtimeMs, mtimeMs, atimeMs } = fs.statSync(
+      directory + name
     );
     dateAccessed = atimeMs;
     dateModified = mtimeMs;
     dateCreated = birthtimeMs;
     sizeOf = size;
-
-    if (item.isSymbolicLink) {
-      symLink = fs.readlinkSync(`${directory}/${name}`).replaceAll("\\", "/");
-    }
   } catch {
     sizeOf = 0;
     permission = false;
   }
+
+  try {
+    if (file.isSymbolicLink()) {
+      symLink = fs.readlinkSync(directory + "/" + name).replaceAll("\\", "/");
+    }
+  } catch (error) {}
 
   let isMedia, thumbPath;
   if (
@@ -78,14 +100,7 @@ export default function formatMetadata(file, directory, drive) {
     }
   }
 
-  const filtered = {
-    ...item,
-    path: directory + name,
-    displayName: name,
-    displayLocation: directory,
-    displayPath: directory + name,
-    key: randomID(),
-    location: directory,
+  return {
     fileextension: fileextension,
     permission: permission,
     size: sizeOf,
@@ -97,7 +112,10 @@ export default function formatMetadata(file, directory, drive) {
     prefix: name.slice(0, name.length - fileextension.length),
     ...(symLink && { linkTo: symLink }),
     ...(thumbPath && { thumbPath: thumbPath }),
+    displayName: file.name,
+    displayLocation: file.displayLocation || directory,
+    displayPath: (file.displayLocation || directory) + name,
+    isFile: !file.isDirectory,
+    key: randomID(10),
   };
-
-  return filtered;
 }

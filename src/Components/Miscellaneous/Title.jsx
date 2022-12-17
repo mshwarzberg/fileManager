@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import formatSize from "../../Helpers/FormatSize";
+import { GeneralContext } from "../Main/Main";
 
 const { exec } = window.require("child_process");
 
 let titleTimeout;
 export default function Title() {
+  const {
+    views: { appTheme },
+    state: { currentDirectory },
+  } = useContext(GeneralContext);
+
   const [element, setElement] = useState();
   const [title, setTitle] = useState({});
 
@@ -46,7 +52,7 @@ export default function Title() {
             JSON.parse(e.target.dataset.info).isDirectory
           ) {
             const directoryPath = JSON.parse(e.target.dataset.info).path + "/";
-            const cmd = `powershell.exe ./PS1Scripts/DirectoryInfo.ps1 """${directoryPath}"""`;
+            const cmd = `powershell.exe "./Misc/PS1Scripts/DirectoryInfo.ps1" """${directoryPath}"""`;
             function formatDirectoryTitleInfo(result) {
               const { files, directories, hidden, combined, size } = result;
               if (combined === 0) {
@@ -77,7 +83,7 @@ export default function Title() {
               y: e.clientY + 3,
             });
           }
-        }, e.target.dataset.timing || 800);
+        }, 800);
       }
     }
 
@@ -102,18 +108,38 @@ export default function Title() {
     // eslint-disable-next-line
   }, [element]);
 
+  useEffect(() => {
+    const element = document.querySelector("#custom-title");
+    if (element) {
+      const { y, x, width, height } = element.getBoundingClientRect();
+      setTitle((prevState) => ({
+        ...prevState,
+        x: x + width > window.innerWidth ? x - width : prevState.x,
+        y: y + height > window.innerHeight ? y - height - 30 : prevState.y,
+        visible: true,
+      }));
+    }
+    // eslint-disable-next-line
+  }, [title.title]);
+
+  useEffect(() => {
+    setTitle({});
+  }, [currentDirectory]);
+
   return (
-    (title.x || title.y) && (
-      <pre
-        style={{
-          top: title.y,
-          left: title.x,
-          ...(title.style && JSON.parse(title.style)),
-        }}
-        id="custom-title"
-      >
-        {title.title}
-      </pre>
-    )
+    <pre
+      style={{
+        top: title.y + "px",
+        left: title.x + "px",
+        ...(title.style && JSON.parse(title.style)),
+        visibility: !title.title && title.visible ? "hidden" : "",
+      }}
+      className={`title-${appTheme} ${
+        !title.visible ? "fitting-title-to-page" : ""
+      }`}
+      id="custom-title"
+    >
+      {title.title}
+    </pre>
   );
 }

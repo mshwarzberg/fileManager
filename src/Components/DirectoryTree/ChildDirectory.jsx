@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import {
   addToDirectoryTree,
   handleDirectoryTree,
@@ -14,7 +14,7 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
   const {
     state: { directoryTree, currentDirectory },
     dispatch,
-    settings: { treeCompactView, appTheme },
+    views: { treeCompactView, appTheme },
   } = useContext(GeneralContext);
   const { path, name, permission, linkTo } = childDir;
 
@@ -81,7 +81,6 @@ export default function ChildDirectory({ childDir, containsDirectories }) {
       }}
       data-contextmenu={contextMenuOptions(childDir)}
       data-info={permission && JSON.stringify(childDir)}
-      data-title={formatTitle(childDir)}
       data-destination={path}
     >
       {containsDirectories && (

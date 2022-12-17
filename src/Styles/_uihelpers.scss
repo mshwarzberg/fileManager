@@ -126,8 +126,24 @@
   letter-spacing: 1px;
   font-family: "Akshar";
   animation: showTitle 100ms ease-in-out;
+  pointer-events: none;
+  &.fitting-title-to-page {
+    visibility: hidden;
+  }
+  &.title-light-mode {
+    background-color: #ffffff44;
+    color: #000;
+    font-weight: bold;
+    text-decoration-color: black;
+    border: 1.5px solid black;
+  }
+  &.title-sky-blue {
+    text-decoration-color: black;
+    color: #000;
+    font-weight: bold;
+    background-color: #bee9f7cc;
+  }
 }
-
 @mixin Body {
   width: 95%;
   display: flex;

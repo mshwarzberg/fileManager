@@ -1,6 +1,6 @@
 import { useState, createContext, useEffect, useContext } from "react";
 
-import { GeneralContext } from "./App";
+import { GeneralContext } from "./Main";
 
 import useSelectMultiple from "../../Hooks/useSelectMultiple";
 import useShortcuts from "../../Hooks/useShortcuts";
@@ -9,8 +9,7 @@ import useWatch from "../../Hooks/useWatch";
 import useDragAndDrop from "../../Hooks/useDragAndDrop";
 
 import Popup from "../Miscellaneous/Popup";
-import Title from "../Miscellaneous/Title";
-import SettingsButton from "../Miscellaneous/Settings/SettingsButton";
+import SettingsButton from "../Settings/SettingsButton";
 import ContextMenu from "../ContextMenu/ContextMenu";
 
 export const UIContext = createContext();
@@ -26,10 +25,9 @@ export default function UIandUX({
   const {
     state: { currentDirectory },
     dispatch,
-    settings: { pageView },
+    views: { pageView },
   } = useContext(GeneralContext);
   const [contextMenu, setContextMenu] = useState({});
-  const [dragSelect, setDragSelect] = useState({});
 
   useEffect(() => {
     setClipboard(JSON.parse(sessionStorage.getItem("clipboard") || "{}"));
@@ -87,13 +85,12 @@ export default function UIandUX({
       }}
     >
       {popup.body && <Popup popup={popup} setPopup={setPopup} />}
-      {!drag.x && !drag.y && <Title />}
+      <SettingsButton setPopup={setPopup} />
       <ContextMenu
         selectedItems={selectedItems}
         setPopup={setPopup}
         setReload={setReload}
       />
-      <SettingsButton setPopup={setPopup} />
     </UIContext.Provider>
   );
 }

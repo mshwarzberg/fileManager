@@ -1,9 +1,13 @@
 import { useEffect, useState, useContext } from "react";
-import { GeneralContext } from "../Components/Main/App.jsx";
+import { GeneralContext } from "../Components/Main/Main.jsx";
 
 export default function useScaleDirectoryTree() {
+  const {
+    settings: { showDirectoryTree },
+    setViews,
+  } = useContext(GeneralContext);
+
   const [scalingTree, setScalingTree] = useState();
-  const { settings, setSettings } = useContext(GeneralContext);
 
   useEffect(() => {
     const scaleDirectoryTree = document.getElementById("directory-tree-scaler");
@@ -17,8 +21,8 @@ export default function useScaleDirectoryTree() {
         if (e.clientX < 200 || e.clientX > window.innerWidth / 2) {
           return;
         }
-        setSettings((prevSettings) => ({
-          ...prevSettings,
+        setViews((prevViews) => ({
+          ...prevViews,
           treeWidth: e.clientX,
         }));
       }
@@ -34,5 +38,5 @@ export default function useScaleDirectoryTree() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [scalingTree, settings.showDirectoryTree]);
+  }, [scalingTree, showDirectoryTree]);
 }

@@ -56,6 +56,13 @@ body {
   box-shadow: 1px 1px 5px black;
   font-family: "mukta";
   font-weight: bold;
+  &.button-sky-blue {
+    background-color: navy;
+    color: white;
+    &:hover {
+      background-color: #003;
+    }
+  }
   &:hover {
     background-color: #444;
     color: white;
@@ -72,10 +79,18 @@ body {
   &.text-dark-mode {
     color: white;
   }
-  &.text-light-mode {
+  &.text-light-mode,
+  &.text-sky-blue {
     font-weight: bold;
     color: black;
   }
+}
+#test-button {
+  @include Buttons();
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
 }
 
 // font-family: "Bebas Neue";

@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import { updateDirectoryTree } from "../../Helpers/ChangeItemInTree";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 
@@ -18,7 +18,7 @@ export default function ParentDirectory({
   const {
     state,
     dispatch,
-    settings: { treeCompactView, appTheme },
+    views: { treeCompactView, appTheme },
   } = useContext(GeneralContext);
 
   const isDirectoryCurrent = state.currentDirectory === path;
@@ -103,7 +103,6 @@ export default function ParentDirectory({
         }}
         data-contextmenu={contextMenuOptions(parentDir)}
         data-info={permission && JSON.stringify(parentDir)}
-        data-title={formatTitle(parentDir)}
         data-destination={path}
       >
         {name && (

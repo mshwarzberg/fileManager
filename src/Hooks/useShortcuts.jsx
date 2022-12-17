@@ -1,8 +1,7 @@
 import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
-import { GeneralContext } from "../Components/Main/App.jsx";
+import { GeneralContext } from "../Components/Main/Main.jsx";
 import clickOnItem from "../Helpers/ClickOnItem";
-import { handleMoveToTrash } from "../Helpers/FS and OS/HandleTrash";
 import randomID from "../Helpers/RandomID";
 import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 
@@ -17,8 +16,9 @@ export default function useShortcuts(
     dispatch,
     directoryItems,
     setRenameItem,
-    setSettings,
+    setViews,
     settings,
+    views,
   } = useContext(GeneralContext);
 
   useEffect(() => {
@@ -37,7 +37,9 @@ export default function useShortcuts(
 
   useEffect(() => {
     function handleKeyDown(e) {
-      e.preventDefault();
+      if (e.key !== "F4") {
+        e.preventDefault();
+      }
       if (e.repeat && !e.key.includes("Arrow")) {
         return;
       }
@@ -55,7 +57,7 @@ export default function useShortcuts(
       if (e.ctrlKey) {
         switch (e.key) {
           case "r":
-            setReload((prevTest) => !prevTest);
+            setReload((prevReload) => !prevReload);
             break;
           case "x":
           case "c":
@@ -98,25 +100,6 @@ export default function useShortcuts(
           }
           break;
         case "Delete":
-          handleMoveToTrash(
-            selectedItems.map((path) => {
-              const element = document.getElementById(path);
-              const info = JSON.parse(element.dataset.info || "{}");
-              const id = "$" + randomID(10);
-              return {
-                ...info,
-                name: id + info.fileextension,
-                location: state.drive + "trash/",
-                path: state.drive + "trash/" + id + info.fileextension,
-                current: state.drive + "trash/" + id + info.fileextension,
-                original: info.path,
-                ...(info.size < 300000 && {
-                  thumbPath: state.drive + "trash/" + id + info.fileextension,
-                }),
-              };
-            }),
-            state.drive
-          );
           break;
         case "ArrowRight":
         case "ArrowLeft":
@@ -163,8 +146,8 @@ export default function useShortcuts(
     }
     function handleIconSizeChange(e) {
       if (e.ctrlKey || e.shiftKey) {
-        setSettings((prevSettings) => {
-          const { pageView, iconSize } = prevSettings;
+        setViews((prevViews) => {
+          const { pageView, iconSize } = prevViews;
           const scrollingUp = e.deltaY < 0;
           const scrollingDown = e.deltaY > 0;
 
@@ -172,7 +155,7 @@ export default function useShortcuts(
 
           if (Math.max(iconSize - 0.5, 6) === 6 && scrollingDown) {
             return {
-              ...prevSettings,
+              ...prevViews,
               pageView:
                 pageView === "content"
                   ? pageView
@@ -180,7 +163,7 @@ export default function useShortcuts(
             };
           } else {
             return {
-              ...prevSettings,
+              ...prevViews,
               pageView:
                 pageView === "list"
                   ? "icon"
@@ -201,5 +184,5 @@ export default function useShortcuts(
       window.removeEventListener("wheel", handleIconSizeChange);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedItems, clipboard, popup, settings]);
+  }, [selectedItems, clipboard, popup, settings, views]);
 }

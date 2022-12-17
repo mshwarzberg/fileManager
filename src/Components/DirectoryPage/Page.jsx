@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
@@ -19,13 +19,15 @@ export default function Page({
     setDirectoryItems,
     directoryItems,
     state: { currentDirectory },
-    settings: { appTheme, pageView },
+    views: { appTheme, pageView },
   } = useContext(GeneralContext);
 
-  const [metadata, setMetadata] = useState();
+  const [metadata, setMetadata] = useState([]);
+  const [InfoHeader, setInfoHeader] = useState("");
 
   useEffect(() => {
-    const cmd = `powershell.exe ./PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
+    const cmd = `powershell.exe ./Misc/PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
+
     function videoTimeToNum(str) {
       if (!str) {
         return "";
@@ -44,14 +46,13 @@ export default function Page({
       }
       return str.replaceAll(" pixels", "").replaceAll("?", "");
     }
-
     if (sessionStorage.getItem(currentDirectory)) {
       setMetadata(
         JSON.parse(sessionStorage.getItem(currentDirectory) || "[]").map(
           (data) => JSON.parse(data)
         )
       );
-    } else {
+    } else if (currentDirectory !== "Trash") {
       exec(cmd, (error, output) => {
         if (error) console.log(error);
         let formattedMetadata = output?.replaceAll("\\r\\n", "");
@@ -108,6 +109,7 @@ export default function Page({
             },
           ];
         }
+
         sessionStorage.setItem(
           currentDirectory,
           JSON.stringify(formattedMetadata.map((data) => JSON.stringify(data)))
@@ -131,13 +133,25 @@ export default function Page({
         return prevItem;
       })
     );
-    setLoading(false);
   }, [metadata]);
+
+  useEffect(() => {
+    if (loading) {
+      setInfoHeader("Loading");
+    } else if (!directoryItems.length) {
+      setInfoHeader(
+        (currentDirectory === "Trash" ? "Trash" : "Folder") + " is empty"
+      );
+    } else {
+      setInfoHeader("");
+    }
+  }, [loading, directoryItems, currentDirectory]);
 
   useEffect(() => {
     if (
       directoryItems.map((item) => item.isMedia).includes(true) &&
-      currentDirectory !== "Trash"
+      currentDirectory !== "Trash" &&
+      currentDirectory !== ""
     ) {
       fs.mkdirSync(currentDirectory + "$Thumbs$", { recursive: true });
       exec(`attrib +s +h "${currentDirectory}$Thumbs$"`);
@@ -146,7 +160,9 @@ export default function Page({
 
   return (
     <div
-      className={`page-${appTheme} page-${pageView}-view`}
+      className={`page-${appTheme} page-${pageView}-view ${
+        InfoHeader ? "page-loading" : ""
+      }`}
       id="display-page"
       onMouseDown={(e) => {
         if (!e.shiftKey && !e.ctrlKey && e.clientX < window.innerWidth - 12) {
@@ -162,12 +178,8 @@ export default function Page({
       data-destination={currentDirectory}
     >
       <div id="select-multiple-box" />
-      {!loading ? children : <h1>Loading</h1>}
-      {!directoryItems.length && (
-        <h1 id="empty-directory-header">
-          {currentDirectory === "Trash" ? "Trash" : "Folder"} is empty
-        </h1>
-      )}
+      {!InfoHeader && children}
+      {InfoHeader && <h1 id="page-info-header">{InfoHeader}</h1>}
       <CornerInfo
         clipboard={clipboard}
         selectedItems={selectedItems}

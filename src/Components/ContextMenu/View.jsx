@@ -1,9 +1,9 @@
 import { useContext } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 
 export default function View({ contextMenu }) {
   const {
-    setSettings,
+    setViews,
     settings: { iconSize, pageView },
   } = useContext(GeneralContext);
   const views = ["Small", "Medium", "Large", "Extra Large"];
@@ -33,17 +33,24 @@ export default function View({ contextMenu }) {
             key={viewOption}
             onClick={() => {
               let newSize;
-              if (viewOption === "Small") {
-                newSize = 8;
-              } else if (viewOption === "Medium") {
-                newSize = 10;
-              } else if (viewOption === "Large") {
-                newSize = 12;
-              } else if (viewOption === "Extra Large") {
-                newSize = 14;
+              switch (viewOption) {
+                case "Small":
+                  newSize = 8;
+                  break;
+                case "Medium":
+                  newSize = 10;
+                  break;
+                case "Large":
+                  newSize = 12;
+                  break;
+                case "Extra Large":
+                  newSize = 14;
+                  break;
+                default:
+                  newSize = 10;
               }
-              setSettings((prevSettings) => ({
-                ...prevSettings,
+              setViews((prevViews) => ({
+                ...prevViews,
                 iconSize: newSize,
                 pageView: "icon",
               }));
@@ -69,8 +76,8 @@ export default function View({ contextMenu }) {
           <button
             key={view}
             onClick={() => {
-              setSettings((prevSettings) => ({
-                ...prevSettings,
+              setViews((prevViews) => ({
+                ...prevViews,
                 pageView: view.toLowerCase(),
               }));
             }}

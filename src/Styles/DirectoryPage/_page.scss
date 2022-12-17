@@ -1,5 +1,17 @@
 @import "../general";
 
+@keyframes fadeBackground {
+  0% {
+    background: #222;
+  }
+  50% {
+    background: #333;
+  }
+  100% {
+    background: #222;
+  }
+}
+
 #display-page {
   display: flex;
   flex-direction: row;
@@ -12,8 +24,10 @@
   overflow-x: hidden;
   flex-grow: 1;
   &.page-dark-mode {
-    box-shadow: inset 4rem 4rem 20rem #111;
-    background-color: #222;
+    &.page-loading {
+      animation: fadeBackground 2s infinite ease-in-out;
+    }
+    background: linear-gradient(90deg, #111 0%, #191919 50%, #222 100%);
   }
   &.page-light-mode {
     box-shadow: inset 4rem 4rem 20rem #eee;
@@ -23,13 +37,14 @@
     background-color: #87ceeb99;
     box-shadow: inset 4rem 4rem 20rem #184a52 !important;
   }
-  #empty-directory-header,
-  #does-not-exist-error {
-    margin-inline: auto;
+  #page-info-header {
     font-size: 4rem;
     font-family: merriweather;
     color: #777;
     pointer-events: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
   &.page-details-view,
   &.page-content-view,
@@ -98,11 +113,11 @@
         outline: none;
         border: none;
         font-family: akshar;
+        cursor: default;
         &:disabled {
           pointer-events: none;
         }
         &:enabled {
-          cursor: text;
           pointer-events: all;
         }
       }

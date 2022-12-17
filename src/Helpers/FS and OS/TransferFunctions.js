@@ -5,7 +5,7 @@ const { exec } = window.require("child_process");
 
 function transfer(source, destination, mode) {
   exec(
-    `powershell.exe ./PS1Scripts/Transfer.ps1 '${source}' '${destination}' ${mode}`
+    `powershell.exe "./Misc/PS1Scripts/Transfer.ps1" '${source}' '${destination}' ${mode}`
   );
 }
 

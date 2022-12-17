@@ -1,5 +1,5 @@
 import { useEffect, useContext } from "react";
-import { GeneralContext } from "../Components/Main/App.jsx";
+import { GeneralContext } from "../Components/Main/Main.jsx";
 import formatMetadata from "../Helpers/FS and OS/FormatMetadata";
 import { findInArray } from "../Helpers/SearchArray";
 

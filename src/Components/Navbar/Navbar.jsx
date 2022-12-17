@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import ButtonNavigation from "./ButtonNavigation";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import TrashButtons from "./TrashButtons";
 import CurrentDirectory from "./CurrentDirectory";
 
@@ -8,8 +8,8 @@ export default function Navbar({ setPopup, drag }) {
   const {
     state: { currentDirectory },
     setSettings,
-    settings,
-    settings: { appTheme },
+    settings: { showDirectoryTree },
+    views: { appTheme },
     directoryItems,
     setDirectoryItems,
   } = useContext(GeneralContext);
@@ -26,7 +26,7 @@ export default function Navbar({ setPopup, drag }) {
           }));
         }}
       >
-        {settings.showDirectoryTree ? "Hide" : "Show"} Tree
+        {showDirectoryTree ? "Hide" : "Show"} Tree
       </button>
       <ButtonNavigation />
       {currentDirectory === "Trash" ? (

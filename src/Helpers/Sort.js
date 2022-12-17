@@ -40,6 +40,13 @@ export default function sortDirectoryItems(
           b.dimensions?.split("x")[0] * b.dimensions?.split("x")[1];
         return parseInt(bPixelCount) - parseInt(aPixelCount);
       });
+    } else if (method === "description") {
+      newArray.sort((a, b) => {
+        if (a.description) {
+          return -1;
+        }
+        return 0;
+      });
     }
     if (!descending) {
       return newArray.reverse();

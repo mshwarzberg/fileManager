@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import BlockComparison from "./BlockComparison";
 
 import { transfer } from "../../Helpers/FS and OS/TransferFunctions";
@@ -162,17 +162,13 @@ export default function CompareFiles({
           />
           <label htmlFor="select-all-in-source">
             Select All In&nbsp;
-            <b data-title={source} data-timing={0}>
-              Source
-            </b>
+            <b>Source</b>
           </label>
         </div>
         <div>
           <label htmlFor="select-all-in-destination">
             Select All In&nbsp;
-            <b data-title={destination} data-timing={0}>
-              Destination
-            </b>
+            <b>Destination</b>
           </label>
           <input
             type="checkbox"

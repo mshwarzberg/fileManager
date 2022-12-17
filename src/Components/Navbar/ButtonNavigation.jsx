@@ -1,11 +1,11 @@
 import { useContext } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 
 export default function ButtonNavigation() {
   const {
     state,
     dispatch,
-    settings: { appTheme },
+    views: { appTheme },
   } = useContext(GeneralContext);
 
   return (

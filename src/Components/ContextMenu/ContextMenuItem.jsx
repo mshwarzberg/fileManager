@@ -1,17 +1,15 @@
 import { useContext, useEffect, useState } from "react";
-import { GeneralContext } from "../Main/App.jsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import Sort from "./Sort";
 import View from "./View";
 import clickOnItem from "../../Helpers/ClickOnItem";
-import randomID from "../../Helpers/RandomID";
-import {
-  handleMoveToTrash,
-  restoreFromTrash,
-} from "../../Helpers/FS and OS/HandleTrash";
 import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer";
-const { exec } = window.require("child_process");
+import formatSize from "../../Helpers/FormatSize.js";
+import formatDate from "../../Helpers/FormatDate.js";
+
+const { exec, execSync } = window.require("child_process");
 
 export default function ContextMenuItem({
   contextName,
@@ -89,7 +87,10 @@ export default function ContextMenuItem({
             exec(
               `explorer.exe ${
                 isFile ? `/select, "${CMDpath}"` : `"${CMDpath}"`
-              }`
+              }`,
+              (e, d) => {
+                console.log(e, d);
+              }
             );
             break;
           case "Cut":
@@ -116,47 +117,7 @@ export default function ContextMenuItem({
             setRenameItem({ path: path, element: element });
             break;
           case "Delete":
-            try {
-              const id = "$" + randomID(10);
-              handleMoveToTrash(
-                selectedItems[0]
-                  ? selectedItems.map((item) => {
-                      const id = "$" + randomID(10);
-                      const { info } = item;
-                      return {
-                        ...info,
-                        name: id + info.fileextension,
-                        location: state.drive + "trash/",
-                        path: state.drive + "trash/" + id + info.fileextension,
-                        current:
-                          state.drive + "trash/" + id + info.fileextension,
-                        original: info.path,
-                        ...(info.size < 300000 && {
-                          thumbPath:
-                            state.drive + "trash/" + id + info.fileextension,
-                        }),
-                      };
-                    })
-                  : [
-                      {
-                        ...info,
-                        name: id + info.fileextension,
-                        location: state.drive + "trash/",
-                        path: state.drive + "trash/" + id + info.fileextension,
-                        current:
-                          state.drive + "trash/" + id + info.fileextension,
-                        original: info.path,
-                        ...(info.size < 300000 && {
-                          thumbPath:
-                            state.drive + "trash/" + id + info.fileextension,
-                        }),
-                      },
-                    ],
-                state.drive
-              );
-            } catch (e) {
-              console.log(e);
-            }
+            exec(`call ./Misc/del.bat "${contextMenu.info.path}"`, () => {});
             break;
           case "New Folder":
             newDirectory(state);
@@ -166,19 +127,19 @@ export default function ContextMenuItem({
             break;
           case "Properties":
             setPopup({
-              body: <div id="description">blah</div>,
+              body: (
+                <div id="properties-body">
+                  <p className={`text-${appTheme}`}>
+                    Size: {formatSize(info.size)}
+                  </p>
+                  <p className={`text-${appTheme}`}>
+                    Last Modified: {formatDate(new Date(info.modified))}
+                  </p>
+                </div>
+              ),
             });
             break;
           case "Restore":
-            setDirectoryItems(
-              restoreFromTrash(
-                selectedItems.map((path) => {
-                  const element = document.getElementById(path);
-                  const info = JSON.parse(element.dataset.info || "{}");
-                  return info;
-                })
-              )
-            );
             break;
           case "Delete Permanently":
             break;
