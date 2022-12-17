@@ -52,7 +52,7 @@ export default function Title() {
             JSON.parse(e.target.dataset.info).isDirectory
           ) {
             const directoryPath = JSON.parse(e.target.dataset.info).path + "/";
-            const cmd = `powershell.exe "./Misc/PS1Scripts/DirectoryInfo.ps1" """${directoryPath}"""`;
+            const cmd = `powershell.exe "./resources/PS1Scripts/DirectoryInfo.ps1" """${directoryPath}"""`;
             function formatDirectoryTitleInfo(result) {
               const { files, directories, hidden, combined, size } = result;
               if (combined === 0) {

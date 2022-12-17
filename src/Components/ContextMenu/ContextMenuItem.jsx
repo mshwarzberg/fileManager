@@ -117,7 +117,9 @@ export default function ContextMenuItem({
             setRenameItem({ path: path, element: element });
             break;
           case "Delete":
-            exec(`call ./Misc/del.bat "${contextMenu.info.path}"`, () => {});
+            for (const file of selectedItems) {
+              exec(`call ./resources/MoveToTrash.bat "${file}"`, (e, d) => {});
+            }
             break;
           case "New Folder":
             newDirectory(state);

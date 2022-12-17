@@ -75,7 +75,7 @@ export default function PageItem({
             output = JSON.parse(output || "{}");
             let { duration } = output["format"];
             execFile(
-              "./Misc/ffmpeg.exe",
+              "./resources/ffmpeg.exe",
               [
                 "-ss",
                 getVideoAtPercentage(duration * 1),

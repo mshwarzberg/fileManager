@@ -23,10 +23,10 @@ export default function Page({
   } = useContext(GeneralContext);
 
   const [metadata, setMetadata] = useState([]);
-  const [InfoHeader, setInfoHeader] = useState("");
+  const [infoHeader, setInfoHeader] = useState("");
 
   useEffect(() => {
-    const cmd = `powershell.exe ./Misc/PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
+    const cmd = `powershell.exe ./resources/PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
 
     function videoTimeToNum(str) {
       if (!str) {
@@ -158,11 +158,20 @@ export default function Page({
     }
   }, [currentDirectory, reload]);
 
+  function pageClassName() {
+    let className = `page-${appTheme} page-${pageView}-view `;
+    if (
+      infoHeader &&
+      infoHeader !==
+        (currentDirectory === "Trash" ? "Trash" : "Folder") + " is empty"
+    ) {
+      return className + "page-loading";
+    }
+    return className;
+  }
   return (
     <div
-      className={`page-${appTheme} page-${pageView}-view ${
-        InfoHeader ? "page-loading" : ""
-      }`}
+      className={pageClassName()}
       id="display-page"
       onMouseDown={(e) => {
         if (!e.shiftKey && !e.ctrlKey && e.clientX < window.innerWidth - 12) {
@@ -178,8 +187,8 @@ export default function Page({
       data-destination={currentDirectory}
     >
       <div id="select-multiple-box" />
-      {!InfoHeader && children}
-      {InfoHeader && <h1 id="page-info-header">{InfoHeader}</h1>}
+      {!infoHeader && children}
+      {infoHeader && <h1 id="page-info-header">{infoHeader}</h1>}
       <CornerInfo
         clipboard={clipboard}
         selectedItems={selectedItems}

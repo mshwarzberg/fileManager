@@ -62,7 +62,7 @@ export default function App() {
     function updatePage() {
       if (currentDirectory === "Trash") {
         exec(
-          `powershell.exe "./Misc/PS1Scripts/GetRecycleBin.ps1"`,
+          `powershell.exe "./resources/PS1Scripts/GetRecycleBin.ps1"`,
           (error, output) => {
             setDirectoryItems(formatTrash(output));
             setLoading();
