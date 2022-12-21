@@ -168,7 +168,7 @@ export default function App() {
         selectedItems={[selectedItems, setSelectedItems]}
         clipboard={clipboard}
         reload={reload}
-        loading={[loading, setLoading]}
+        loading={loading}
         setLastSelected={setLastSelected}
       >
         {pageView === "details" && (

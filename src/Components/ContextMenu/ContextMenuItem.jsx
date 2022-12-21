@@ -9,7 +9,7 @@ import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer";
 import formatSize from "../../Helpers/FormatSize.js";
 import formatDate from "../../Helpers/FormatDate.js";
 
-const { exec, execSync } = window.require("child_process");
+const { exec } = window.require("child_process");
 
 export default function ContextMenuItem({
   contextName,
@@ -33,10 +33,9 @@ export default function ContextMenuItem({
   }, []);
 
   const {
-    state,
+    state: { currentDirectory },
     setRenameItem,
     dispatch,
-    setDirectoryItems,
     settings: { appTheme },
   } = useContext(GeneralContext);
   const { setClipboard, clipboard, setPopup } = useContext(UIContext);
@@ -44,7 +43,7 @@ export default function ContextMenuItem({
   const [showSort, setShowSort] = useState();
   const [showView, setShowView] = useState();
 
-  if (state.currentDirectory === "Trash") {
+  if (currentDirectory === "Trash") {
     if (contextName === "Delete") {
       contextName = "Delete Permanently";
     }
@@ -84,25 +83,28 @@ export default function ContextMenuItem({
             break;
           case "Show In Explorer":
             let CMDpath = path.replaceAll("/", "\\");
-            exec(
-              `explorer.exe ${
-                isFile ? `/select, "${CMDpath}"` : `"${CMDpath}"`
-              }`,
-              (e, d) => {
-                console.log(e, d);
-              }
-            );
+            if (CMDpath === "Trash") {
+              exec(`start shell:RecycleBinFolder`);
+            } else {
+              exec(
+                `explorer.exe ${
+                  isFile ? `/select, "${CMDpath}"` : `"${CMDpath}"`
+                }`
+              );
+            }
             break;
           case "Cut":
           case "Copy":
             setClipboard({
-              source: state.currentDirectory,
+              source: currentDirectory,
               mode: contextName === "Cut" ? "move" : "copy",
-              info: selectedItems.map((path) => {
-                const element = document.getElementById(path);
-                const info = JSON.parse(element.dataset.info || "{}");
-                return info;
-              }),
+              info: Object.keys(contextMenu.info).includes("collapsed")
+                ? [contextMenu.info]
+                : selectedItems.map((path) => {
+                    const element = document.getElementById(path);
+                    const info = JSON.parse(element.dataset.info || "{}");
+                    return info;
+                  }),
             });
             break;
           case "Paste":
@@ -116,13 +118,25 @@ export default function ContextMenuItem({
           case "Rename":
             setRenameItem({ path: path, element: element });
             break;
+          case "Extract":
+            path = path.replaceAll("/", "\\");
+            exec(
+              `.\\resources\\7zip\\7za.exe x "${path}" -y -o"${path.slice(
+                0,
+                path.length - (info.fileextension?.length || 0)
+              )}"`,
+              (e, d) => {
+                console.log(e, d);
+              }
+            );
+            break;
           case "Delete":
             for (const file of selectedItems) {
               exec(`call ./resources/MoveToTrash.bat "${file}"`, (e, d) => {});
             }
             break;
           case "New Folder":
-            newDirectory(state);
+            newDirectory(currentDirectory);
             break;
           case "Refresh":
             setReload((prevReload) => !prevReload);
@@ -142,6 +156,14 @@ export default function ContextMenuItem({
             });
             break;
           case "Restore":
+            for (const currentPath of selectedItems) {
+              const originalPath = JSON.parse(
+                document.getElementById(currentPath).dataset.info || "{}"
+              ).displayPath;
+              exec(
+                `powershell.exe ./resources/PS1Scripts/Transfer.ps1 '${currentPath}' '${originalPath}' move`
+              );
+            }
             break;
           case "Delete Permanently":
             break;

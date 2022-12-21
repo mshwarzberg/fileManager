@@ -29,3 +29,14 @@ export default function formatDuration(time) {
   }
   return `${hours ? hours + ":" : ""}${minutes}:${seconds}`;
 }
+
+export function durationToInt(duration) {
+  if (!duration) {
+    return "";
+  }
+  if (duration.endsWith("s")) {
+    return parseFloat(duration);
+  }
+  duration = duration.split(":");
+  return duration[0] * 3600 + duration[1] * 60 + duration[2] * 1;
+}

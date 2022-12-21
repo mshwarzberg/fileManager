@@ -3,6 +3,7 @@ import { GeneralContext } from "../Main/Main.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
+import { durationToInt } from "../../Helpers/FormatVideoTime.js";
 
 const { exec } = window.require("child_process");
 const fs = window.require("fs");
@@ -12,7 +13,7 @@ export default function Page({
   clipboard,
   children,
   reload,
-  loading: [loading, setLoading],
+  loading,
   setLastSelected,
 }) {
   const {
@@ -26,26 +27,6 @@ export default function Page({
   const [infoHeader, setInfoHeader] = useState("");
 
   useEffect(() => {
-    const cmd = `powershell.exe ./resources/PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
-
-    function videoTimeToNum(str) {
-      if (!str) {
-        return "";
-      }
-      str = str.split(":");
-      let value = 0;
-      value += parseInt(str[2]);
-      value += parseInt(str[1]) * 60;
-      value += parseInt(str[0]) * 3600;
-      return value;
-    }
-
-    function clearString(str) {
-      if (!str) {
-        return "";
-      }
-      return str.replaceAll(" pixels", "").replaceAll("?", "");
-    }
     if (sessionStorage.getItem(currentDirectory)) {
       setMetadata(
         JSON.parse(sessionStorage.getItem(currentDirectory) || "[]").map(
@@ -53,69 +34,31 @@ export default function Page({
         )
       );
     } else if (currentDirectory !== "Trash") {
-      exec(cmd, (error, output) => {
-        if (error) console.log(error);
-        let formattedMetadata = output?.replaceAll("\\r\\n", "");
-        try {
-          formattedMetadata = JSON.parse(output || "[]").map((data) => {
-            const {
-              name,
-              width,
-              height,
-              dimensions,
-              description,
-              bitrate,
-              duration,
-            } = JSON.parse(data);
-
+      exec(
+        `.\\resources\\exiftool.exe -j "${currentDirectory}"`,
+        (err, data) => {
+          if (err) return console.log(err);
+          const formattedMetadata = JSON.parse(data || "[]").map((item) => {
+            // console.log(item);
             return {
-              name: name,
-              duration: videoTimeToNum(duration),
-              width: parseInt(clearString(width)),
-              height: parseInt(clearString(height)),
-              ...(dimensions && {
-                dimensions: clearString(dimensions),
-              }),
-              ...(description && { description: description }),
-              ...(bitrate && {
-                bitrate: bitRateToInt(clearString(bitrate)),
-              }),
+              path: item.SourceFile,
+              width: item.ImageWidth,
+              height: item.ImageHeight,
+              bitrate: bitRateToInt(item.AvgBitrate),
+              duration: durationToInt(item.Duration),
+              dimensions: item.ImageSize,
+              description: item.Description,
             };
           });
-        } catch {
-          const {
-            name,
-            duration,
-            width,
-            height,
-            dimensions,
-            description,
-            bitrate,
-          } = JSON.parse(JSON.parse(formattedMetadata || "{}") || "{}");
-
-          formattedMetadata = [
-            {
-              name: name,
-              duration: videoTimeToNum(duration),
-              width: parseInt(clearString(width)),
-              height: parseInt(clearString(height)),
-              ...(dimensions && {
-                dimensions: clearString(dimensions),
-              }),
-              ...(description && { description: description }),
-              ...(bitrate && {
-                bitrate: bitRateToInt(clearString(bitrate)),
-              }),
-            },
-          ];
+          setMetadata(formattedMetadata);
+          sessionStorage.setItem(
+            currentDirectory,
+            JSON.stringify(
+              formattedMetadata.map((item) => JSON.stringify(item))
+            )
+          );
         }
-
-        sessionStorage.setItem(
-          currentDirectory,
-          JSON.stringify(formattedMetadata.map((data) => JSON.stringify(data)))
-        );
-        setMetadata(formattedMetadata);
-      });
+      );
     }
   }, [currentDirectory, reload]);
 
@@ -123,7 +66,7 @@ export default function Page({
     setDirectoryItems((prevItems) =>
       prevItems.map((prevItem) => {
         for (const data of metadata) {
-          if (data.name === prevItem.name) {
+          if (data.path === prevItem.path) {
             return {
               ...prevItem,
               ...data,

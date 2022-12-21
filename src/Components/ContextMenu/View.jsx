@@ -4,7 +4,7 @@ import { GeneralContext } from "../Main/Main.jsx";
 export default function View({ contextMenu }) {
   const {
     setViews,
-    settings: { iconSize, pageView },
+    views: { iconSize, pageView },
   } = useContext(GeneralContext);
   const views = ["Small", "Medium", "Large", "Extra Large"];
 

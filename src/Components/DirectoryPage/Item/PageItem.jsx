@@ -12,10 +12,11 @@ import ItemName from "./ItemName.jsx";
 
 import ItemContent from "./ItemContent.jsx";
 import ViewsContent from "./ViewsContent.jsx";
+import { durationToInt } from "../../../Helpers/FormatVideoTime.js";
 
 const fs = window.require("fs");
 const sharp = window.require("sharp");
-const { execFile, execFileSync } = window.require("child_process");
+const { execFile, exec } = window.require("child_process");
 
 let clickOnNameTimeout, selectTimeout, dragTimeout;
 export default function PageItem({
@@ -44,6 +45,7 @@ export default function PageItem({
     dispatch,
     setRenameItem,
     renameItem,
+    reload,
     directoryItems,
   } = useContext(GeneralContext);
 
@@ -66,51 +68,49 @@ export default function PageItem({
               })
               .catch((e) => {});
           } else {
-            let output = execFileSync("ffprobe.exe", [
-              "-show_format",
-              "-print_format",
-              "json",
-              path,
-            ]);
-            output = JSON.parse(output || "{}");
-            let { duration } = output["format"];
-            execFile(
-              "./resources/ffmpeg.exe",
-              [
-                "-ss",
-                getVideoAtPercentage(duration * 1),
-                "-i",
-                path,
-                "-vf",
-                "scale=400:-2",
-                "-vframes",
-                "1",
-                "-y",
-                thumbPath,
-              ],
-              (err, _) => {
-                if (!err) {
-                  setThumbnail(thumbPath);
-                }
+            exec(
+              `.\\resources\\exiftool -j "${path}" -Duration`,
+              (err, data) => {
+                if (err) return console.log(err);
+                const formattedOutput = JSON.parse(data || "[]");
+                const duration = formattedOutput[0]?.Duration || 0;
+                execFile(
+                  ".\\resources\\ffmpeg.exe",
+                  [
+                    "-ss",
+                    getVideoAtPercentage(durationToInt(duration)),
+                    "-i",
+                    path,
+                    "-vf",
+                    "scale=400:-2",
+                    "-vframes",
+                    "1",
+                    "-y",
+                    thumbPath,
+                  ],
+                  (err, _) => {
+                    if (!err) {
+                      setThumbnail(thumbPath);
+                    }
+                  }
+                );
               }
             );
           }
-        }, directoryItems.indexOf(directoryItem) * 20);
+        }, directoryItems.indexOf(directoryItem) * 10);
       }
-      timeout = setTimeout(() => {
-        try {
-          fs.accessSync(thumbPath);
-          setThumbnail(thumbPath);
-        } catch {
-          createThumbnails();
-        }
-      }, directoryItems.indexOf(directoryItem) * 3);
+      try {
+        fs.accessSync(thumbPath);
+        setThumbnail(thumbPath);
+      } catch {
+        createThumbnails();
+      }
     }
     // }, 0);
     return () => {
       clearTimeout(timeout);
     };
-  }, [currentDirectory, showThumbnails]);
+  }, [currentDirectory, showThumbnails, reload]);
 
   function className() {
     let clsName = "page-item";

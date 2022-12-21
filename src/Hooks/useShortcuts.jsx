@@ -2,7 +2,6 @@ import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
 import { GeneralContext } from "../Components/Main/Main.jsx";
 import clickOnItem from "../Helpers/ClickOnItem";
-import randomID from "../Helpers/RandomID";
 import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 
 export default function useShortcuts(
@@ -12,13 +11,14 @@ export default function useShortcuts(
   setReload
 ) {
   const {
-    state,
     dispatch,
     directoryItems,
     setRenameItem,
     setViews,
     settings,
     views,
+    reload,
+    state: { currentDirectory },
   } = useContext(GeneralContext);
 
   useEffect(() => {
@@ -47,8 +47,11 @@ export default function useShortcuts(
       if (e.ctrlKey && e.shiftKey) {
         switch (e.key) {
           case "N":
-            newDirectory(state);
+            newDirectory(currentDirectory);
             break;
+          case "R":
+            sessionStorage.removeItem(currentDirectory);
+            setReload((prevReload) => !prevReload);
           default:
             return;
         }
@@ -62,7 +65,7 @@ export default function useShortcuts(
           case "x":
           case "c":
             setClipboard({
-              source: state.currentDirectory,
+              source: currentDirectory,
               mode: e.key === "c" ? "copy" : "move",
               info: selectedItems.map((path) => {
                 const element = document.getElementById(path);
@@ -76,12 +79,7 @@ export default function useShortcuts(
             setSelectedItems(pageItems.map((block) => block.id));
             break;
           case "v":
-            handleTransfer(
-              state.currentDirectory,
-              setPopup,
-              clipboard,
-              setClipboard
-            );
+            handleTransfer(currentDirectory, setPopup, clipboard, setClipboard);
             break;
           case "z":
             break;
@@ -184,5 +182,5 @@ export default function useShortcuts(
       window.removeEventListener("wheel", handleIconSizeChange);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedItems, clipboard, popup, settings, views]);
+  }, [selectedItems, clipboard, popup, settings, views, reload]);
 }
