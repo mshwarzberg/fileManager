@@ -2,20 +2,10 @@ import { useContext } from "react";
 import sortBy from "../../Helpers/Sort";
 import { GeneralContext } from "../Main/Main.jsx";
 
-export default function Sort({ contextMenu }) {
+export default function Sort({ subMenuClassNames }) {
   const sortOptions = ["Name", "Size", "Date", "Type", "Duration"];
   const { setDirectoryItems } = useContext(GeneralContext);
 
-  function subMenuClassNames() {
-    let className = "sort-by-sub-menu";
-    if (contextMenu.x + 320 > window.innerWidth) {
-      className += " position-left";
-    }
-    if (contextMenu.y + 238 > window.innerHeight) {
-      className += " position-top";
-    }
-    return className;
-  }
   return (
     <div className={subMenuClassNames()}>
       {sortOptions.map((method) => {

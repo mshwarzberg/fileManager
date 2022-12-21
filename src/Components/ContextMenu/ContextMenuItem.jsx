@@ -4,6 +4,7 @@ import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import Sort from "./Sort";
 import View from "./View";
+import Archive from "./Archive.jsx";
 import clickOnItem from "../../Helpers/ClickOnItem";
 import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer";
 import formatSize from "../../Helpers/FormatSize.js";
@@ -42,6 +43,7 @@ export default function ContextMenuItem({
 
   const [showSort, setShowSort] = useState();
   const [showView, setShowView] = useState();
+  const [showArchive, setShowArchive] = useState();
 
   if (currentDirectory === "Trash") {
     if (contextName === "Delete") {
@@ -53,6 +55,17 @@ export default function ContextMenuItem({
     if (contextName === "Open") {
       contextName = "Empty Trash";
     }
+  }
+
+  function subMenuClassNames() {
+    let className = "sort-by-sub-menu";
+    if (contextMenu.x + 320 > window.innerWidth) {
+      className += " position-left";
+    }
+    if (contextMenu.y + 238 > window.innerHeight) {
+      className += " position-top";
+    }
+    return className;
   }
 
   return (
@@ -67,6 +80,10 @@ export default function ContextMenuItem({
           setTimeout(() => {
             setShowView(true);
           }, 0);
+        } else if (contextName === "Archive") {
+          setTimeout(() => {
+            setShowArchive(true);
+          }, 0);
         }
       }}
       onMouseLeave={(e) => {
@@ -74,6 +91,8 @@ export default function ContextMenuItem({
           setShowSort();
         } else if (contextName === "View") {
           setShowView();
+        } else if (contextName === "Archive") {
+          setShowArchive();
         }
       }}
       onMouseUp={() => {
@@ -117,18 +136,6 @@ export default function ContextMenuItem({
             break;
           case "Rename":
             setRenameItem({ path: path, element: element });
-            break;
-          case "Extract":
-            path = path.replaceAll("/", "\\");
-            exec(
-              `.\\resources\\7zip\\7za.exe x "${path}" -y -o"${path.slice(
-                0,
-                path.length - (info.fileextension?.length || 0)
-              )}"`,
-              (e, d) => {
-                console.log(e, d);
-              }
-            );
             break;
           case "Delete":
             for (const file of selectedItems) {
@@ -175,11 +182,20 @@ export default function ContextMenuItem({
       }}
     >
       {contextName}
-      {(contextName === "Sort By" || contextName === "View") && (
-        <p className="sub-menu-arrow">→</p>
+      {(contextName === "Sort By" ||
+        contextName === "View" ||
+        contextName === "Archive") && <p className="sub-menu-arrow">→</p>}
+
+      {showSort && <Sort subMenuClassNames={subMenuClassNames} />}
+      {showView && (
+        <View contextMenu={contextMenu} subMenuClassNames={subMenuClassNames} />
       )}
-      {showSort && <Sort contextMenu={contextMenu} />}
-      {showView && <View contextMenu={contextMenu} />}
+      {showArchive && (
+        <Archive
+          contextMenu={contextMenu}
+          subMenuClassNames={subMenuClassNames}
+        />
+      )}
     </div>
   );
 }

@@ -19,11 +19,12 @@
     .sub-menu-arrow {
       position: absolute;
       right: 5px;
+      font-weight: bold;
     }
     .sort-by-sub-menu {
       position: absolute;
       width: 10rem;
-      transform: translateY(calc(100% + 0.475rem));
+      transform: translateY(calc(100% - 1rem));
       left: calc(10rem + 0.5px);
       button {
         height: 2rem;

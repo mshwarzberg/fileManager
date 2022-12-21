@@ -15,18 +15,6 @@ export default function contextMenuOptions(item) {
   if (!permission) {
     return JSON.stringify([]);
   }
-  if (filetype === "archive") {
-    return JSON.stringify([
-      "Open",
-      "Rename",
-      "Extract",
-      "Cut",
-      "Copy",
-      "Delete",
-      "Show In Explorer",
-      "Properties",
-    ]);
-  }
   if (isDirectory) {
     return JSON.stringify([
       "Open",
@@ -47,6 +35,7 @@ export default function contextMenuOptions(item) {
       "Cut",
       "Copy",
       "Delete",
+      "Archive",
       "Show In Explorer",
       "Properties",
     ]);
