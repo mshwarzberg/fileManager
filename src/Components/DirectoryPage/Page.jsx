@@ -26,96 +26,44 @@ export default function Page({
   const [infoHeader, setInfoHeader] = useState("");
 
   useEffect(() => {
-    const cmd = `powershell.exe ./resources/PS1Scripts/MediaMetadata.ps1 """${currentDirectory}"""`;
-
-    function videoTimeToNum(str) {
-      if (!str) {
-        return "";
-      }
-      str = str.split(":");
-      let value = 0;
-      value += parseInt(str[2]);
-      value += parseInt(str[1]) * 60;
-      value += parseInt(str[0]) * 3600;
-      return value;
-    }
-
-    function clearString(str) {
-      if (!str) {
-        return "";
-      }
-      return str.replaceAll(" pixels", "").replaceAll("?", "");
-    }
-    if (sessionStorage.getItem(currentDirectory)) {
+    if (sessionStorage.getItem("currentDirectory")) {
       setMetadata(
         JSON.parse(sessionStorage.getItem(currentDirectory) || "[]").map(
           (data) => JSON.parse(data)
         )
       );
     } else if (currentDirectory !== "Trash") {
-      exec(cmd, (error, output) => {
-        if (error) console.log(error);
-        let formattedMetadata = output?.replaceAll("\\r\\n", "");
-        try {
-          formattedMetadata = JSON.parse(output || "[]").map((data) => {
-            const {
-              name,
-              width,
-              height,
-              dimensions,
-              description,
-              bitrate,
-              duration,
-            } = JSON.parse(data);
-
-            return {
-              name: name,
-              duration: videoTimeToNum(duration),
-              width: parseInt(clearString(width)),
-              height: parseInt(clearString(height)),
-              ...(dimensions && {
-                dimensions: clearString(dimensions),
-              }),
-              ...(description && { description: description }),
-              ...(bitrate && {
-                bitrate: bitRateToInt(clearString(bitrate)),
-              }),
-            };
-          });
-        } catch {
-          const {
-            name,
-            duration,
-            width,
-            height,
-            dimensions,
-            description,
-            bitrate,
-          } = JSON.parse(JSON.parse(formattedMetadata || "{}") || "{}");
-
-          formattedMetadata = [
-            {
-              name: name,
-              duration: videoTimeToNum(duration),
-              width: parseInt(clearString(width)),
-              height: parseInt(clearString(height)),
-              ...(dimensions && {
-                dimensions: clearString(dimensions),
-              }),
-              ...(description && { description: description }),
-              ...(bitrate && {
-                bitrate: bitRateToInt(clearString(bitrate)),
-              }),
-            },
-          ];
+      exec(
+        `.\\resources\\exiftool.exe -j "${currentDirectory}"`,
+        (err, data) => {
+          if (err) return console.log(err);
+          const formattedMetadata = JSON.parse(data || "[]");
+          function durationToInt(duration) {
+            if (!duration) {
+              return "";
+            }
+            if (duration.endsWith("s")) {
+              return parseFloat(duration);
+            }
+            duration = duration.split(":");
+            return duration[0] * 3600 + duration[1] * 60 + duration[2] * 1;
+          }
+          setMetadata(
+            formattedMetadata.map((item) => {
+              console.log(item);
+              return {
+                path: item.SourceFile,
+                width: item.ImageWidth,
+                height: item.ImageHeight,
+                bitrate: bitRateToInt(item.AvgBitrate),
+                duration: durationToInt(item.Duration),
+                dimensions: item.ImageSize,
+                description: item.Description,
+              };
+            })
+          );
         }
-
-        sessionStorage.setItem(
-          currentDirectory,
-          JSON.stringify(formattedMetadata.map((data) => JSON.stringify(data)))
-        );
-        setMetadata(formattedMetadata);
-      });
+      );
     }
   }, [currentDirectory, reload]);
 
@@ -123,7 +71,7 @@ export default function Page({
     setDirectoryItems((prevItems) =>
       prevItems.map((prevItem) => {
         for (const data of metadata) {
-          if (data.name === prevItem.name) {
+          if (data.path === prevItem.path) {
             return {
               ...prevItem,
               ...data,

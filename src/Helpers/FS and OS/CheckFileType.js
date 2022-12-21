@@ -37,6 +37,8 @@ export default function checkFileType(fileextension) {
       return "audio";
     case "gif":
       return "gif";
+    case "zip":
+      return "archive";
     default:
       return "unknown";
   }

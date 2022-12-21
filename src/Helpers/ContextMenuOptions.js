@@ -10,9 +10,22 @@ export default function contextMenuOptions(item) {
       "Properties",
     ]);
   }
-  const { isDirectory, isDrive, isFile, permission } = item;
+  const { isDirectory, isDrive, isFile, permission, filetype } = item;
+
   if (!permission) {
     return JSON.stringify([]);
+  }
+  if (filetype === "archive") {
+    return JSON.stringify([
+      "Open",
+      "Rename",
+      "Extract",
+      "Cut",
+      "Copy",
+      "Delete",
+      "Show In Explorer",
+      "Properties",
+    ]);
   }
   if (isDirectory) {
     return JSON.stringify([

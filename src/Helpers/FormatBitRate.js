@@ -2,6 +2,7 @@ export function bitRateToInt(str) {
   if (!str) {
     return "";
   }
+  str = str.toLowerCase();
   let value = 0;
   if (str.endsWith("mbps")) {
     value = parseInt(str) * 1000000;
