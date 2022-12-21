@@ -76,7 +76,7 @@ export default function ContextMenuItem({
           setShowView();
         }
       }}
-      onClick={() => {
+      onMouseUp={() => {
         switch (contextName) {
           case "Open":
             clickOnItem(info, dispatch);
