@@ -8,6 +8,7 @@ export default function formatTrash(output) {
     .replaceAll("\\r\\n", "")
     .replaceAll("//", "/");
   output = JSON.parse(output || "[]").map((data) => JSON.parse(data));
+
   output = output.map((item) => {
     return {
       ...item,
@@ -23,5 +24,6 @@ export default function formatTrash(output) {
       ),
     };
   });
+  console.log(output);
   return output;
 }

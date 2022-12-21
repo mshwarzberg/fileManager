@@ -114,7 +114,7 @@ export function itemData(file, directory, isTrash) {
     ...(thumbPath && { thumbPath: thumbPath }),
     displayName: file.name,
     displayLocation: file.displayLocation || directory,
-    displayPath: (file.displayLocation || directory) + name,
+    displayPath: (file.displayLocation || directory) + file.name,
     isFile: !file.isDirectory,
     key: randomID(10),
   };
