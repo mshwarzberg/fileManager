@@ -63,7 +63,7 @@ export default function CustomFolderIcon({ directoryPath }) {
   }, [directoryPath, showThumbnails]);
 
   return (
-    <svg viewBox="0 0 100 90">
+    <svg viewBox="0 0 100 95">
       <>
         <rect
           name="top-right-dark-corner"

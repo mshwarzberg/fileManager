@@ -38,6 +38,7 @@ export default function checkFileType(fileextension) {
     case "gif":
       return "gif";
     case "zip":
+    case "7z":
       return "archive";
     default:
       return "unknown";

@@ -55,6 +55,9 @@ export default function ContextMenuItem({
     if (contextName === "Open") {
       contextName = "Empty Trash";
     }
+    if (contextName === "Archive") {
+      return <></>;
+    }
   }
 
   function subMenuClassNames() {
@@ -192,6 +195,7 @@ export default function ContextMenuItem({
       )}
       {showArchive && (
         <Archive
+          selectedItems={selectedItems}
           contextMenu={contextMenu}
           subMenuClassNames={subMenuClassNames}
         />

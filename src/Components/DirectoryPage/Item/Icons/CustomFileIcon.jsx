@@ -6,9 +6,9 @@ import {
 
 export default function CustomFileIcon({
   fileextension = "",
-  viewBox = 100,
-  x = 0,
-  y = 0,
+  viewBox = 105,
+  x = -2.5,
+  y = 5,
 }) {
   return (
     <svg viewBox={`${x} ${y} ${viewBox} ${viewBox}`}>
@@ -40,9 +40,7 @@ export default function CustomFileIcon({
         x="12"
         y="65.5"
         style={{
-          filter: `drop-shadow( 2px 2px 0.1rem ${colorizeIcons(
-            fileextension
-          )})`,
+          filter: `drop-shadow( 1px 1px 1px ${colorizeIcons(fileextension)})`,
         }}
       />
       <text

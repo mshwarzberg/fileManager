@@ -1,16 +1,45 @@
+import { useContext } from "react";
+import { GeneralContext } from "../Main/Main.jsx";
+
 const { exec } = window.require("child_process");
-export default function Archive({ contextMenu, subMenuClassNames }) {
+
+export default function Archive({
+  contextMenu,
+  subMenuClassNames,
+  selectedItems,
+}) {
   const {
     info: { filetype, path, fileextension },
   } = contextMenu;
+
+  const {
+    state: { currentDirectory },
+  } = useContext(GeneralContext);
+
+  const sevenZipPath = ".\\resources\\7zip\\7za.exe";
+
   return (
     <div className={subMenuClassNames()}>
-      <button>Add To Archive</button>
+      <button
+        onClick={() => {
+          exec(
+            `${sevenZipPath} a "${currentDirectory}.zip" "${selectedItems.join(
+              '" "'
+            )}"`,
+            (e, d) => {
+              if (e) return console.log(e);
+              console.log(d);
+            }
+          );
+        }}
+      >
+        Add To Archive
+      </button>
       {filetype === "archive" && (
         <button
           onMouseUp={() => {
             exec(
-              `.\\resources\\7zip\\7za.exe x "${path}" -y -o"${path.slice(
+              `${sevenZipPath} x "${path}" -y -o"${path.slice(
                 0,
                 path.length - (fileextension?.length || 0)
               )}"`,

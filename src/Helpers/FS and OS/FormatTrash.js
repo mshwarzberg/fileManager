@@ -1,7 +1,5 @@
 import { itemData } from "./FormatMetadata";
 
-const path = window.require("path");
-
 export default function formatTrash(output) {
   output = output
     ?.replaceAll("\\\\", "/")
@@ -24,6 +22,6 @@ export default function formatTrash(output) {
       ),
     };
   });
-  console.log(output);
+
   return output;
 }
