@@ -1,7 +1,7 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 import sortDirectoryItems from "../../../Helpers/Sort";
 
-import { GeneralContext } from "../../Main/Main";
+import { GeneralContext } from "../../Main/Main.tsx";
 
 export default function DetailsView({
   detailsTabWidth,

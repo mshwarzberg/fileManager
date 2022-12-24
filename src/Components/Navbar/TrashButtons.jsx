@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GeneralContext } from "../Main/Main";
+import { GeneralContext } from "../Main/Main.tsx";
 
 export default function TrashButtons({
   setPopup,

@@ -24,7 +24,7 @@
     .sort-by-sub-menu {
       position: absolute;
       width: 10rem;
-      transform: translateY(calc(100% - 1rem));
+      top: 0rem;
       left: calc(10rem + 0.5px);
       button {
         height: 2rem;

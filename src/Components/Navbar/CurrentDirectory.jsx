@@ -1,8 +1,6 @@
 import { useContext, useState, Fragment } from "react";
-import { GeneralContext } from "../Main/Main";
+import { GeneralContext } from "../Main/Main.tsx";
 import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
-
-import formatTitle from "../../Helpers/FormatTitle";
 
 const fs = window.require("fs");
 
@@ -23,7 +21,7 @@ export default function CurrentDirectory({ drag, setPopup }) {
         let path = "";
         for (let i in arrayifyCurrentDirectory) {
           path += arrayifyCurrentDirectory[i] + "/";
-          if (i == index) {
+          if (i === index) {
             break;
           }
         }
@@ -35,6 +33,7 @@ export default function CurrentDirectory({ drag, setPopup }) {
               if (file.isDirectory()) {
                 return formatMetadata(file, path, drive);
               }
+              return null;
             })
             .filter((item) => {
               return item?.name && item;

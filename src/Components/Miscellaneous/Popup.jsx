@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { GeneralContext } from "../Main/Main";
+import { GeneralContext } from "../Main/Main.tsx";
 
 export default function Popup({ popup, setPopup }) {
   const { body, ok, cancel, thirdButton, popupLabel } = popup;

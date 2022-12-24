@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 
-import { GeneralContext } from "../Main/Main";
+import { GeneralContext } from "../Main/Main.tsx";
 
 import Views from "./Tabs/Views";
 import Interactions from "./Tabs/Interactions";

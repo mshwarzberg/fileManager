@@ -3,7 +3,7 @@ import CustomDriveIcon from "./Icons/CustomDriveIcon";
 import CustomFileIcon from "./Icons/CustomFileIcon";
 import CustomFolderIcon from "./Icons/CustomFolderIcon";
 import formatDuration from "../../../Helpers/FormatVideoTime";
-import { GeneralContext } from "../../Main/Main";
+import { GeneralContext } from "../../Main/Main.tsx";
 
 export default function ItemContent({
   thumbnail: [thumbnail, setThumbnail],

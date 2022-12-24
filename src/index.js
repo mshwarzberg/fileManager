@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Main from "./Components/Main/Main";
+import Main from "./Components/Main/Main.tsx";
 import "./Styles/index";
 import "./Fonts/fonts.scss";
 

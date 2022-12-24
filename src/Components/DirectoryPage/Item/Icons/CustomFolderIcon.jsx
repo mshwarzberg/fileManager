@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { GeneralContext } from "../../../Main/Main";
+import { GeneralContext } from "../../../Main/Main.tsx";
 import formatMetadata from "../../../../Helpers/FS and OS/FormatMetadata";
 import CustomFileIcon from "./CustomFileIcon";
 import randomIntBetweenTwoNums from "../../../../Helpers/RandomIntBetweenTwoNums";
@@ -64,6 +64,14 @@ export default function CustomFolderIcon({ directoryPath }) {
 
   return (
     <svg viewBox="0 0 100 95">
+      <rect
+        width={80}
+        height="63"
+        x="10"
+        y="18"
+        rx={3}
+        style={{ filter: "drop-shadow( 2px 3px 1px rgba(0, 0, 0, .7))" }}
+      />
       <>
         <rect
           name="top-right-dark-corner"
@@ -124,7 +132,6 @@ export default function CustomFolderIcon({ directoryPath }) {
           x="11"
           y="73"
           fill="rgb(253, 191, 33)"
-          style={{ filter: "drop-shadow( 2px 3px 1px rgba(0, 0, 0, .7))" }}
           name="bottom-of-folder"
         />
         <rect
@@ -135,7 +142,6 @@ export default function CustomFolderIcon({ directoryPath }) {
           fill="rgb(253, 191, 33)"
           rx="4"
           name="right-of-folder"
-          style={{ filter: "drop-shadow( 2px 2px 0.3rem black)" }}
         />
         <rect
           fill="rgb(255, 208, 107)"

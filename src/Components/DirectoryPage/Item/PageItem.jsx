@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { GeneralContext } from "../../Main/Main.jsx";
+import { GeneralContext } from "../../Main/Main.tsx";
 
 import clickOnItem from "../../../Helpers/ClickOnItem";
 import handleItemsSelected from "../../../Helpers/HandleItemsSelected";
@@ -25,6 +25,7 @@ export default function PageItem({
   detailsTabWidth,
   directoryItem,
   setDrag,
+  indexOfDirectoryItem,
 }) {
   const {
     path,
@@ -38,6 +39,7 @@ export default function PageItem({
     linkTo,
   } = directoryItem;
 
+  console.log(directoryItem);
   const {
     state: { currentDirectory },
     settings: { clickToOpen, showThumbnails },
@@ -46,7 +48,6 @@ export default function PageItem({
     setRenameItem,
     renameItem,
     reload,
-    directoryItems,
   } = useContext(GeneralContext);
 
   const isSelected = selectedItems.includes(path);
@@ -97,7 +98,7 @@ export default function PageItem({
               }
             );
           }
-        }, directoryItems.indexOf(directoryItem) * 10);
+        }, indexOfDirectoryItem * 10);
       }
       try {
         fs.accessSync(thumbPath);

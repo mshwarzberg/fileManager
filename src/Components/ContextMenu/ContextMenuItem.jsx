@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { GeneralContext } from "../Main/Main.jsx";
+import { GeneralContext } from "../Main/Main.tsx";
 import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory";
 import Sort from "./Sort";
-import View from "./View";
+import View from "./View.tsx";
 import Archive from "./Archive.jsx";
 import clickOnItem from "../../Helpers/ClickOnItem";
 import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer";

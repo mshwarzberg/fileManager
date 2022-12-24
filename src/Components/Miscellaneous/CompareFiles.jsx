@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 import formatMetadata from "../../Helpers/FS and OS/FormatMetadata";
-import { GeneralContext } from "../Main/Main.jsx";
+import { GeneralContext } from "../Main/Main.tsx";
 import BlockComparison from "./BlockComparison";
 
 import { transfer } from "../../Helpers/FS and OS/TransferFunctions";

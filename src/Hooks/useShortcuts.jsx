@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
-import { GeneralContext } from "../Components/Main/Main.jsx";
+import { GeneralContext } from "../Components/Main/Main.tsx";
 import clickOnItem from "../Helpers/ClickOnItem";
 import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 

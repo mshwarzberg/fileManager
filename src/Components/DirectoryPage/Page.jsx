@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { GeneralContext } from "../Main/Main.jsx";
+import { GeneralContext } from "../Main/Main.tsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";

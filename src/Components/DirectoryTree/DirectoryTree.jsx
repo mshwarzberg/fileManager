@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { GeneralContext } from "../Main/Main.jsx";
+import { GeneralContext } from "../Main/Main.tsx";
 import ChildDirectory from "./ChildDirectory";
 import ParentDirectory from "./ParentDirectory";
 import formatDriveOutput from "../../Helpers/FS and OS/FormatDriveOutput";
