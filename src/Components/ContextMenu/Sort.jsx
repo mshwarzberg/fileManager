@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import sortBy from "../../Helpers/Sort";
-import { GeneralContext } from "../Main/Main.tsx";
+import { GeneralContext } from "../Main/Main.jsx";
 
 export default function Sort({ subMenuClassNames }) {
   const sortOptions = ["Name", "Size", "Date", "Type", "Duration"];
-  const { setDirectoryItems } = useContext(GeneralContext);
+  const { setDirectoryContent } = useContext(GeneralContext);
 
   return (
     <div className={subMenuClassNames()}>
@@ -14,7 +14,7 @@ export default function Sort({ subMenuClassNames }) {
             key={method}
             onClick={() => {
               sortBy(
-                setDirectoryItems,
+                setDirectoryContent,
                 method,
                 sessionStorage.getItem("ascending")
               );
@@ -30,7 +30,7 @@ export default function Sort({ subMenuClassNames }) {
         onClick={() => {
           sessionStorage.setItem("ascending", true);
           sortBy(
-            setDirectoryItems,
+            setDirectoryContent,
             sessionStorage.getItem("method") || "Name",
             true
           );
@@ -42,7 +42,7 @@ export default function Sort({ subMenuClassNames }) {
         onClick={() => {
           sessionStorage.removeItem("ascending");
           sortBy(
-            setDirectoryItems,
+            setDirectoryContent,
             sessionStorage.getItem("method") || "Name",
             false
           );

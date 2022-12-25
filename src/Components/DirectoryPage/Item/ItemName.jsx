@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { GeneralContext } from "../../Main/Main.tsx";
+import { GeneralContext } from "../../Main/Main.jsx";
 
 const fs = window.require("fs");
 

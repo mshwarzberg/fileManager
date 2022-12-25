@@ -5,6 +5,8 @@ export default function clickOnItem(item, dispatch) {
     isNetworkDrive,
     isDirectory,
     isDrive,
+    name,
+    location,
     isFile,
     path,
     isSymbolicLink,
@@ -43,5 +45,6 @@ export default function clickOnItem(item, dispatch) {
       value: linkTo + "/",
     });
   } else {
+    console.log("?");
   }
 }

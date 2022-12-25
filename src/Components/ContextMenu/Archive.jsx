@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GeneralContext } from "../Main/Main.tsx";
+import { GeneralContext } from "../Main/Main.jsx";
 
 const { exec } = window.require("child_process");
 
@@ -23,9 +23,13 @@ export default function Archive({
       <button
         onClick={() => {
           exec(
-            `${sevenZipPath} a "${currentDirectory}.zip" "${selectedItems.join(
-              '" "'
-            )}"`,
+            `${sevenZipPath} a "${
+              currentDirectory +
+              currentDirectory.slice(
+                currentDirectory.lastIndexOf("/"),
+                Infinity
+              )
+            }.zip" "${selectedItems.join('" "')}"`,
             (e, d) => {
               if (e) return console.log(e);
               console.log(d);

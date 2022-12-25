@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 
 export default function CornerInfo({
-  directoryItems,
+  directoryContent,
   clipboard,
   selectedItems,
 }) {
   const [cornerMessage, setCornerMessage] = useState("");
 
   useEffect(() => {
-    let message = `${directoryItems.length} total items`;
+    let message = `${directoryContent.length} total items`;
     let clipboardMessage;
     if (selectedItems.length === 1) {
       message += " (1 selected)";
@@ -25,7 +25,7 @@ export default function CornerInfo({
       clipboardMessage = "";
     }
     setCornerMessage(message + clipboardMessage);
-  }, [clipboard, selectedItems, directoryItems.length]);
+  }, [clipboard, selectedItems, directoryContent.length]);
 
   return (
     <div id="corner-message-container">

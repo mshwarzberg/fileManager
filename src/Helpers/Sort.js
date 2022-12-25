@@ -1,5 +1,5 @@
 export default function sortDirectoryItems(
-  setDirectoryItems,
+  setDirectoryContent,
   method,
   descending
 ) {
@@ -9,7 +9,7 @@ export default function sortDirectoryItems(
   } else if (method === "type") {
     method = "fileextension";
   }
-  setDirectoryItems((prevItems) => {
+  setDirectoryContent((prevItems) => {
     let newArray = [...prevItems];
     if (method === "name" || method === "fileextension") {
       newArray.sort((a, b) => {

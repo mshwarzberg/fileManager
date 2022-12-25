@@ -1,12 +1,12 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 import sortDirectoryItems from "../../../Helpers/Sort";
 
-import { GeneralContext } from "../../Main/Main.tsx";
+import { GeneralContext } from "../../Main/Main";
 
 export default function DetailsView({
   detailsTabWidth,
   viewTypes,
-  setDirectoryItems,
+  setDirectoryContent,
 }) {
   const {
     settings: { currentSort, isSortDescending },
@@ -71,7 +71,7 @@ export default function DetailsView({
             key={viewType}
             onClick={() => {
               sortDirectoryItems(
-                setDirectoryItems,
+                setDirectoryContent,
                 viewType,
                 !isSortDescending
               );

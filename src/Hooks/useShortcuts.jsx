@@ -1,6 +1,6 @@
 import { useEffect, useContext } from "react";
 import newDirectory from "../Helpers/FS and OS/NewDirectory";
-import { GeneralContext } from "../Components/Main/Main.tsx";
+import { GeneralContext } from "../Components/Main/Main.jsx";
 import clickOnItem from "../Helpers/ClickOnItem";
 import { handleTransfer } from "../Helpers/FS and OS/HandleTransfer";
 
@@ -12,7 +12,7 @@ export default function useShortcuts(
 ) {
   const {
     dispatch,
-    directoryItems,
+    directoryContent,
     setRenameItem,
     setViews,
     settings,
@@ -102,10 +102,10 @@ export default function useShortcuts(
         case "ArrowRight":
         case "ArrowLeft":
           if (!selectedItems[0]) {
-            return setSelectedItems([directoryItems[0].path]);
+            return setSelectedItems([directoryContent[0].path]);
           }
           const lastSelectedInArray = selectedItems[selectedItems.length - 1];
-          let indexOfSelectedItem = directoryItems
+          let indexOfSelectedItem = directoryContent
             .map((directoryItem) => {
               return directoryItem.path;
             })
@@ -114,7 +114,7 @@ export default function useShortcuts(
           if (e.key === "ArrowRight") {
             indexOfSelectedItem++;
             indexOfSelectedItem = Math.min(
-              directoryItems.length - 1,
+              directoryContent.length - 1,
               indexOfSelectedItem
             );
           } else {
@@ -122,7 +122,7 @@ export default function useShortcuts(
             indexOfSelectedItem = Math.max(0, indexOfSelectedItem);
           }
 
-          setSelectedItems([directoryItems[indexOfSelectedItem].path]);
+          setSelectedItems([directoryContent[indexOfSelectedItem].path]);
           break;
         case "Enter":
           selectedItems.map((path) => {

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GeneralContext } from "../../Main/Main.tsx";
+import { GeneralContext } from "../../Main/Main";
 
 import formatDuration from "../../../Helpers/FormatVideoTime";
 import formatSize from "../../../Helpers/FormatSize.js";

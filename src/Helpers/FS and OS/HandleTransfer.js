@@ -134,9 +134,13 @@ function copyToSameDirectory(prefix, fileextension, location) {
     "''"
   )}' '${newPath.replaceAll("'", "''")}' -recurse`;
 
-  exec(command, (err) => {
-    if (err) console.log(err);
-  });
+  try {
+    exec(command, (err) => {
+      if (err) console.log(err);
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function newName(directory, prefix, fileextension) {

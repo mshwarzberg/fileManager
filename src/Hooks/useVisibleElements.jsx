@@ -5,7 +5,7 @@ export default function useVisibleElements(
   setVisibleItems,
   selectedItems,
   visibleItems,
-  directoryItems,
+  directoryContent,
   pageView
 ) {
   function handleVisibleItems() {
@@ -61,7 +61,7 @@ export default function useVisibleElements(
 
   useEffect(() => {
     handleVisibleItems();
-  }, [directoryItems, pageView]);
+  }, [directoryContent, pageView]);
 
   useEffect(() => {
     document

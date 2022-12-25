@@ -1,5 +1,5 @@
 import { useEffect, useContext } from "react";
-import { GeneralContext } from "../Components/Main/Main.tsx";
+import { GeneralContext } from "../Components/Main/Main";
 import formatMetadata from "../Helpers/FS and OS/FormatMetadata";
 import { findInArray } from "../Helpers/SearchArray";
 
@@ -8,8 +8,8 @@ const fs = window.require("fs");
 export default function useWatch() {
   const {
     state: { currentDirectory, drive },
-    setDirectoryItems,
-    directoryItems,
+    setDirectoryContent,
+    directoryContent,
   } = useContext(GeneralContext);
 
   function getData(path) {
@@ -28,7 +28,10 @@ export default function useWatch() {
   function handleChange(typeOfChange, path) {
     if (typeOfChange === "update") {
       const data = getData();
-      setDirectoryItems((prevItems) =>
+      if (!data) {
+        return;
+      }
+      setDirectoryContent((prevItems) =>
         prevItems.map((prevItem) => {
           if (prevItem.name === data.name) {
             return data;
@@ -38,7 +41,7 @@ export default function useWatch() {
       );
     }
     if (typeOfChange === "delete") {
-      setDirectoryItems((prevItems) =>
+      setDirectoryContent((prevItems) =>
         prevItems
           .map((prevItem) => {
             if (prevItem.path === path) {
@@ -60,7 +63,7 @@ export default function useWatch() {
     let watcher;
     if (currentDirectory) {
       try {
-        for (const { path } of directoryItems) {
+        for (const { path } of directoryContent) {
           fs.watchFile(path, { interval: 100 }, (current, _previous) => {
             if (current.birthtimeMs) {
               handleChange("update", path);
@@ -71,8 +74,8 @@ export default function useWatch() {
         }
         watcher = fs.watch(currentDirectory, (event, fileName) => {
           if (event === "rename") {
-            if (!findInArray(directoryItems, fileName, "name")) {
-              setDirectoryItems((prevItems) => [
+            if (!findInArray(directoryContent, fileName, "name")) {
+              setDirectoryContent((prevItems) => [
                 ...prevItems,
                 getData(currentDirectory + fileName),
               ]);
@@ -82,11 +85,11 @@ export default function useWatch() {
       } catch {}
 
       return () => {
-        for (const { path } of directoryItems) {
+        for (const { path } of directoryContent) {
           fs.unwatchFile(path);
         }
         watcher?.close();
       };
     }
-  }, [currentDirectory, directoryItems]);
+  }, [currentDirectory, directoryContent]);
 }

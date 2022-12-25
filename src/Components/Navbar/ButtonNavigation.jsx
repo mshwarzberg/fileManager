@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { GeneralContext } from "../Main/Main.tsx";
+import { GeneralContext } from "../Main/Main.jsx";
 
 export default function ButtonNavigation() {
   const {

@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import formatSize from "../../Helpers/FormatSize";
-import { GeneralContext } from "../Main/Main.tsx";
+import { GeneralContext } from "../Main/Main";
 
 const { exec } = window.require("child_process");
 

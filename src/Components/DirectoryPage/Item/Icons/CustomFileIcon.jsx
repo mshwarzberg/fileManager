@@ -22,15 +22,6 @@ export default function CustomFileIcon({
         y="8"
       />
       <rect
-        width="67.5"
-        fill="#bbb"
-        height={67.5}
-        x={16.25}
-        y="30"
-        rx={3}
-        style={{ filter: "drop-shadow( 2px 3px 1px rgba(0, 0, 0, 0.7))" }}
-      />
-      <rect
         fill="#444"
         clipPath="polygon(0 10%, 0% 100%, 90% 100%)"
         width="22.5"

@@ -1,10 +1,10 @@
 import { useContext } from "react";
-import { GeneralContext } from "../Main/Main.tsx";
+import { GeneralContext } from "../Main/Main";
 
 export default function TrashButtons({
   setPopup,
-  directoryItems,
-  setDirectoryItems,
+  directoryContent,
+  setDirectoryContent,
 }) {
   const {
     views: { appTheme },
@@ -15,14 +15,14 @@ export default function TrashButtons({
       <button
         className={`button-${appTheme}`}
         onClick={() => {}}
-        disabled={directoryItems.length === 0}
+        disabled={directoryContent.length === 0}
       >
         Restore All
       </button>
       <button
         className={`button-${appTheme}`}
         onClick={() => {}}
-        disabled={directoryItems.length === 0}
+        disabled={directoryContent.length === 0}
       >
         Empty Trash
       </button>

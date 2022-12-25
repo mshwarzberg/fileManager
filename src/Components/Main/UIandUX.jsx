@@ -1,6 +1,6 @@
 import { useState, createContext, useEffect, useContext } from "react";
 
-import { GeneralContext } from "./Main.tsx";
+import { GeneralContext } from "./Main";
 
 import useSelectMultiple from "../../Hooks/useSelectMultiple";
 import useShortcuts from "../../Hooks/useShortcuts";

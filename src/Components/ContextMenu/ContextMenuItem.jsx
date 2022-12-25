@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { GeneralContext } from "../Main/Main.tsx";
+import React, { useContext, useEffect, useState } from "react";
+import { GeneralContext } from "../Main/Main";
 import { UIContext } from "../Main/UIandUX";
-import newDirectory from "../../Helpers/FS and OS/NewDirectory";
+import newDirectory from "../../Helpers/FS and OS/NewDirectory.js";
 import Sort from "./Sort";
-import View from "./View.tsx";
-import Archive from "./Archive.jsx";
-import clickOnItem from "../../Helpers/ClickOnItem";
-import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer";
+import View from "./View";
+import Archive from "./Archive";
+import clickOnItem from "../../Helpers/ClickOnItem.js";
+import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer.js";
 import formatSize from "../../Helpers/FormatSize.js";
 import formatDate from "../../Helpers/FormatDate.js";
 
@@ -142,7 +142,10 @@ export default function ContextMenuItem({
             break;
           case "Delete":
             for (const file of selectedItems) {
-              exec(`call ./resources/MoveToTrash.bat "${file}"`, (e, d) => {});
+              exec(
+                `powershell.exe ./resources/PS1Scripts/MoveToRecycleBin.ps1 "${file}"`,
+                (e, d) => {}
+              );
             }
             break;
           case "New Folder":

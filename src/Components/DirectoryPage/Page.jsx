@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { GeneralContext } from "../Main/Main.tsx";
+import { GeneralContext } from "../Main/Main.jsx";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
 import CornerInfo from "./CornerInfo";
 import { bitRateToInt } from "../../Helpers/FormatBitRate.js";
@@ -17,8 +17,8 @@ export default function Page({
   setLastSelected,
 }) {
   const {
-    setDirectoryItems,
-    directoryItems,
+    setDirectoryContent,
+    directoryContent,
     state: { currentDirectory },
     views: { appTheme, pageView },
   } = useContext(GeneralContext);
@@ -63,7 +63,7 @@ export default function Page({
   }, [currentDirectory, reload]);
 
   useEffect(() => {
-    setDirectoryItems((prevItems) =>
+    setDirectoryContent((prevItems) =>
       prevItems.map((prevItem) => {
         for (const data of metadata) {
           if (data.path === prevItem.path) {
@@ -81,18 +81,18 @@ export default function Page({
   useEffect(() => {
     if (loading) {
       setInfoHeader("Loading");
-    } else if (!directoryItems.length) {
+    } else if (!directoryContent.length) {
       setInfoHeader(
         (currentDirectory === "Trash" ? "Trash" : "Folder") + " is empty"
       );
     } else {
       setInfoHeader("");
     }
-  }, [loading, directoryItems, currentDirectory]);
+  }, [loading, directoryContent, currentDirectory]);
 
   useEffect(() => {
     if (
-      directoryItems.map((item) => item.isMedia).includes(true) &&
+      directoryContent.map((item) => item.isMedia).includes(true) &&
       currentDirectory !== "Trash" &&
       currentDirectory !== ""
     ) {
@@ -135,7 +135,7 @@ export default function Page({
       <CornerInfo
         clipboard={clipboard}
         selectedItems={selectedItems}
-        directoryItems={directoryItems}
+        directoryContent={directoryContent}
       />
     </div>
   );

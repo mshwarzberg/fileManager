@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { GeneralContext } from "../Components/Main/Main.tsx";
+import { GeneralContext } from "../Components/Main/Main.jsx";
 
 export default function useScaleDirectoryTree() {
   const {
@@ -38,6 +38,5 @@ export default function useScaleDirectoryTree() {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-    // eslint-disable-next-line
   }, [scalingTree, showDirectoryTree]);
 }
