@@ -85,14 +85,6 @@ body {
     color: black;
   }
 }
-#test-button {
-  @include Buttons();
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-}
-
 // font-family: "Bebas Neue";
 // font-family: "Roboto Slab";
 // font-family: "PT Serif";

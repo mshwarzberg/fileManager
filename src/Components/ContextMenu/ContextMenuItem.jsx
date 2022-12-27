@@ -4,7 +4,7 @@ import { UIContext } from "../Main/UIandUX";
 import newDirectory from "../../Helpers/FS and OS/NewDirectory.js";
 import Sort from "./Sort";
 import View from "./View";
-import Archive from "./Archive";
+import Archive from "./Archive/Archive";
 import clickOnItem from "../../Helpers/ClickOnItem.js";
 import { handleTransfer } from "../../Helpers/FS and OS/HandleTransfer.js";
 import formatSize from "../../Helpers/FormatSize.js";
@@ -34,7 +34,7 @@ export default function ContextMenuItem({
   }, []);
 
   const {
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
     setRenameItem,
     dispatch,
     settings: { appTheme },
@@ -143,7 +143,7 @@ export default function ContextMenuItem({
           case "Delete":
             for (const file of selectedItems) {
               exec(
-                `powershell.exe ./resources/PS1Scripts/MoveToRecycleBin.ps1 "${file}"`,
+                `powershell.exe ./resources/PS1Scripts/MoveToRecycleBin.ps1 """${file}"""`,
                 (e, d) => {}
               );
             }

@@ -16,12 +16,12 @@ export default function ParentDirectory({
 }) {
   const { path, name, permission, collapsed } = parentDir;
   const {
-    state,
+    directoryState: { directoryTree, currentDirectory },
     dispatch,
     views: { treeCompactView, appTheme },
   } = useContext(GeneralContext);
 
-  const isDirectoryCurrent = state.currentDirectory === path;
+  const isDirectoryCurrent = currentDirectory === path;
 
   useEffect(() => {
     try {
@@ -33,7 +33,7 @@ export default function ParentDirectory({
             return child.path || child[0]?.path;
           });
           if (!childDirNames.includes(path + item.name + "/") && newTreeItem) {
-            handleDirectoryTree(state.directoryTree, path, [
+            handleDirectoryTree(directoryTree, path, [
               ...childDirsList,
               newTreeItem,
             ]);
@@ -41,7 +41,7 @@ export default function ParentDirectory({
         }
       }
     } catch {
-      handleDirectoryTree(state.directoryTree, path);
+      handleDirectoryTree(directoryTree, path);
     }
   }, []);
 
@@ -53,14 +53,14 @@ export default function ParentDirectory({
     if (collapsed) {
       return dispatch({
         type: "updateDirectoryTree",
-        value: updateDirectoryTree(state.directoryTree, path, {
+        value: updateDirectoryTree(directoryTree, path, {
           collapsed: false,
         }),
       });
     }
     dispatch({
       type: "updateDirectoryTree",
-      value: updateDirectoryTree(state.directoryTree, path, {
+      value: updateDirectoryTree(directoryTree, path, {
         collapsed: true,
       }),
     });
@@ -92,7 +92,7 @@ export default function ParentDirectory({
         onDoubleClick={() => {
           dispatch({
             type: "updateDirectoryTree",
-            value: updateDirectoryTree(state.directoryTree, path, {
+            value: updateDirectoryTree(directoryTree, path, {
               collapsed: !collapsed,
             }),
           });

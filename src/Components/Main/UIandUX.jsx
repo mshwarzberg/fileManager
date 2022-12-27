@@ -15,16 +15,18 @@ import ContextMenu from "../ContextMenu/ContextMenu";
 export const UIContext = createContext();
 
 export default function UIandUX({
-  lastSelected: [lastSelected, setLastSelected = () => {}],
-  selectedItems: [selectedItems, setSelectedItems = () => {}],
-  popup: [popup, setPopup = () => {}],
-  clipboard: [clipboard, setClipboard = () => {}],
-  drag: [drag, setDrag = () => {}],
-  reload: [reload, setReload = () => {}],
+  lastSelected: [lastSelected, setLastSelected],
+  selectedItems: [selectedItems, setSelectedItems],
+  popup: [popup, setPopup],
+  clipboard: [clipboard, setClipboard],
+  drag: [drag, setDrag],
+  reload: [reload, setReload],
 }) {
   const {
-    state: { currentDirectory },
+    directoryState,
     dispatch,
+    directoryContent,
+    setDirectoryContent,
     views: { pageView },
   } = useContext(GeneralContext);
   const [contextMenu, setContextMenu] = useState({});
@@ -57,7 +59,7 @@ export default function UIandUX({
     sessionStorage.setItem("clipboard", JSON.stringify(clipboard));
   }, [clipboard]);
 
-  useWatch();
+  useWatch(directoryState, setDirectoryContent, directoryContent);
   useScaleDirectoryTree();
   useSelectMultiple(setLastSelected, setSelectedItems, pageView);
   useShortcuts(
@@ -69,7 +71,7 @@ export default function UIandUX({
   useDragAndDrop(
     [selectedItems, setSelectedItems],
     [drag, setDrag],
-    currentDirectory,
+    directoryState.currentDirectory,
     setPopup,
     dispatch
   );

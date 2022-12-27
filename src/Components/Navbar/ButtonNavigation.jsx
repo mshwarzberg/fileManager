@@ -3,7 +3,7 @@ import { GeneralContext } from "../Main/Main.jsx";
 
 export default function ButtonNavigation() {
   const {
-    state,
+    directoryState,
     dispatch,
     views: { appTheme },
   } = useContext(GeneralContext);
@@ -14,16 +14,20 @@ export default function ButtonNavigation() {
         className={`button-${appTheme}`}
         onClick={() => {
           let uppedDirectory = "";
-          for (let i = state.currentDirectory.length - 2; i >= 0; i--) {
-            if (state.currentDirectory[i] === "/") {
-              uppedDirectory = state.currentDirectory.slice(0, i + 1);
+          for (
+            let i = directoryState.currentDirectory.length - 2;
+            i >= 0;
+            i--
+          ) {
+            if (directoryState.currentDirectory[i] === "/") {
+              uppedDirectory = directoryState.currentDirectory.slice(0, i + 1);
               break;
             }
           }
 
           dispatch({ type: "up", value: uppedDirectory });
         }}
-        disabled={state.currentDirectory === ""}
+        disabled={directoryState.currentDirectory === ""}
       >
         Up
       </button>
@@ -33,7 +37,7 @@ export default function ButtonNavigation() {
         onClick={() => {
           dispatch({ type: "back" });
         }}
-        disabled={state.navigatedIndex === 0}
+        disabled={directoryState.navigatedIndex === 0}
       >
         Back
       </button>
@@ -44,7 +48,8 @@ export default function ButtonNavigation() {
           dispatch({ type: "forwards" });
         }}
         disabled={
-          state.navigatedIndex === state.navigatedDirectories.length - 1
+          directoryState.navigatedIndex ===
+          directoryState.navigatedDirectories.length - 1
         }
       >
         Forwards

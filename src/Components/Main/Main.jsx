@@ -23,12 +23,13 @@ import randomID from "../../Helpers/RandomID";
 export const GeneralContext = createContext();
 
 const fs = window.require("fs");
+
 const { execSync, exec } = window.require("child_process");
 
 export default function App() {
   const {
-    state,
-    state: { currentDirectory, drive },
+    directoryState,
+    directoryState: { currentDirectory, drive },
     dispatch,
   } = DirectoryState();
 
@@ -144,7 +145,7 @@ export default function App() {
   return (
     <GeneralContext.Provider
       value={{
-        state,
+        directoryState,
         dispatch,
         directoryContent,
         setDirectoryContent,
@@ -154,6 +155,7 @@ export default function App() {
         setRenameItem,
         views,
         setViews,
+        setPopup,
       }}
     >
       <Navbar setPopup={setPopup} drag={drag} />

@@ -8,7 +8,7 @@ let titleTimeout;
 export default function Title() {
   const {
     views: { appTheme },
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
   } = useContext(GeneralContext);
 
   const [element, setElement] = useState();

@@ -5,14 +5,13 @@ import {
   handleDirectoryTree,
 } from "../../Helpers/ChangeItemInTree";
 import contextMenuOptions from "../../Helpers/ContextMenuOptions";
-import formatTitle from "../../Helpers/FormatTitle";
 import getChildDirectoriesTree from "../../Helpers/FS and OS/GetChildDirectoriesTree";
 
 const fs = window.require("fs");
 
 export default function ChildDirectory({ childDir, containsDirectories }) {
   const {
-    state: { directoryTree, currentDirectory },
+    directoryState: { directoryTree, currentDirectory },
     dispatch,
     views: { treeCompactView, appTheme },
   } = useContext(GeneralContext);

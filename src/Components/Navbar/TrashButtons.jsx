@@ -1,29 +1,17 @@
 import { useContext } from "react";
 import { GeneralContext } from "../Main/Main";
 
-export default function TrashButtons({
-  setPopup,
-  directoryContent,
-  setDirectoryContent,
-}) {
+export default function TrashButtons({ setPopup }) {
   const {
     views: { appTheme },
   } = useContext(GeneralContext);
 
   return (
     <>
-      <button
-        className={`button-${appTheme}`}
-        onClick={() => {}}
-        disabled={directoryContent.length === 0}
-      >
+      <button className={`button-${appTheme}`} onClick={() => {}}>
         Restore All
       </button>
-      <button
-        className={`button-${appTheme}`}
-        onClick={() => {}}
-        disabled={directoryContent.length === 0}
-      >
+      <button className={`button-${appTheme}`} onClick={() => {}}>
         Empty Trash
       </button>
     </>

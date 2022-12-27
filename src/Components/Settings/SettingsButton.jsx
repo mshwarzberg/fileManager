@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { GeneralContext } from "../Main/Main";
 
-import SettingsBody from "./SettingsBody";
+import SettingsBody from "./SettingsPopup";
 
 export default function SettingsButton({ setPopup }) {
   const {

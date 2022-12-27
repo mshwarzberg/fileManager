@@ -6,7 +6,7 @@ import CurrentDirectory from "./CurrentDirectory";
 
 export default function Navbar({ setPopup, drag }) {
   const {
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
     setSettings,
     settings: { showDirectoryTree },
     views: { appTheme },
@@ -30,11 +30,7 @@ export default function Navbar({ setPopup, drag }) {
       </button>
       <ButtonNavigation />
       {currentDirectory === "Trash" ? (
-        <TrashButtons
-          setPopup={setPopup}
-          directoryContent={directoryContent}
-          setDirectoryContent={setDirectoryContent}
-        />
+        <TrashButtons setPopup={setPopup} />
       ) : (
         <CurrentDirectory drag={drag} setPopup={setPopup} />
       )}

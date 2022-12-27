@@ -19,7 +19,7 @@ export default function Page({
   const {
     setDirectoryContent,
     directoryContent,
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
     views: { appTheme, pageView },
   } = useContext(GeneralContext);
 

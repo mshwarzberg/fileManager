@@ -39,7 +39,7 @@ export default function PageItem({
   } = directoryItem;
 
   const {
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
     settings: { clickToOpen, showThumbnails },
     views: { iconSize, pageView, pageCompactView },
     dispatch,

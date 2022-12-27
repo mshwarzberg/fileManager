@@ -1,4 +1,4 @@
-import CompareFiles from "../../Components/Miscellaneous/CompareFiles";
+import CompareFiles from "../../Components/Miscellaneous/CompareFilesPopup";
 
 import { transfer, checkForDuplicates } from "./TransferFunctions";
 

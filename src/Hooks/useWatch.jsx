@@ -1,17 +1,15 @@
-import { useEffect, useContext } from "react";
-import { GeneralContext } from "../Components/Main/Main";
+import { useEffect } from "react";
 import formatMetadata from "../Helpers/FS and OS/FormatMetadata";
 import { findInArray } from "../Helpers/SearchArray";
 
 const fs = window.require("fs");
 
-export default function useWatch() {
-  const {
-    state: { currentDirectory, drive },
-    setDirectoryContent,
-    directoryContent,
-  } = useContext(GeneralContext);
-
+export default function useWatch(
+  directoryState,
+  setDirectoryContent,
+  directoryContent
+) {
+  const { currentDirectory, drive } = directoryState;
   function getData(path) {
     return fs
       .readdirSync(currentDirectory, {

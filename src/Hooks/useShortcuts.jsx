@@ -18,7 +18,7 @@ export default function useShortcuts(
     settings,
     views,
     reload,
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
   } = useContext(GeneralContext);
 
   useEffect(() => {

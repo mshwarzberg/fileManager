@@ -10,7 +10,7 @@ const { execSync, exec } = window.require("child_process");
 
 export default function DirectoryTree() {
   const {
-    state: { directoryTree, currentDirectory },
+    directoryState: { directoryTree, currentDirectory },
     views: { appTheme, treeWidth },
     settings: { showDirectoryTree },
     dispatch,

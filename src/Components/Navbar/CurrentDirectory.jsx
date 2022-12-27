@@ -8,7 +8,7 @@ const fs = window.require("fs");
 
 export default function CurrentDirectory({ drag, setPopup }) {
   const {
-    state: { currentDirectory, drive },
+    directoryState: { currentDirectory, drive },
     views: { appTheme },
     dispatch,
   } = useContext(GeneralContext);

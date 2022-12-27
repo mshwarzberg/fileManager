@@ -13,7 +13,7 @@ export default function ItemName({
     directoryItem;
 
   const {
-    state: { currentDirectory },
+    directoryState: { currentDirectory },
     views: { appTheme, pageView },
   } = useContext(GeneralContext);
 
