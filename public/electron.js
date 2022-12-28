@@ -1,5 +1,5 @@
 const electron = require("electron");
-const app = electron.app;
+const { ipcMain, app, dialog } = electron;
 const BrowserWindow = electron.BrowserWindow;
 const path = require("path");
 const isDev = require("electron-is-dev");
@@ -33,6 +33,17 @@ function createWindow() {
       ? "http://localhost:3000"
       : path.join(__dirname, "../build/index.html")
   );
+
+  ipcMain.on("archive", (event, data) => {
+    dialog
+      .showOpenDialog({
+        properties: ["openDirectory"],
+        filters: [{ name: "Select a Destination:" }],
+      })
+      .then((result) => {
+        event.reply(data, result.filePaths[0]);
+      });
+  });
 
   mainWindow.on("closed", () => (mainWindow = null));
 }

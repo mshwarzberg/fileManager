@@ -1,6 +1,10 @@
 @import "./uihelpers";
 @import "./general";
 
+button {
+  @include Buttons;
+}
+
 #file-comparison-body {
   @include Body;
   #select-all {
@@ -165,5 +169,22 @@
 }
 
 #archive-body {
-  color: #fff;
+  width: 90%;
+  #destination-selector {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 2rem;
+    background-color: #fff;
+    font-family: akshar;
+    font-weight: bold;
+    border-radius: 5px;
+    background-color: #666;
+    cursor: pointer;
+    * {
+      max-height: 90%;
+      pointer-events: none;
+    }
+  }
 }

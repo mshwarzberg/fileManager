@@ -83,7 +83,7 @@ export default function Title() {
               y: e.clientY + 3,
             });
           }
-        }, 800);
+        }, e.target.dataset.timing || 800);
       }
     }
 

@@ -36,8 +36,14 @@ export default function Archive({
     <div className={subMenuClassNames()}>
       <button
         onClick={() => {
+          const cacheSelectedItems = selectedItems;
           setPopup({
-            body: <ArchivePopup selectedItems={selectedItems} />,
+            body: (
+              <ArchivePopup
+                selectedItems={selectedItems}
+                cacheSelectedItems={cacheSelectedItems}
+              />
+            ),
             ok: (
               <button id="ok-settings" className={`button-${appTheme}`}>
                 OK
