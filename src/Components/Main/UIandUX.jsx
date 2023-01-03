@@ -11,6 +11,7 @@ import useDragAndDrop from "../../Hooks/useDragAndDrop";
 import Popup from "../Miscellaneous/Popup";
 import SettingsButton from "../Settings/SettingsButton";
 import ContextMenu from "../ContextMenu/ContextMenu";
+import Drag from "../Miscellaneous/Drag";
 
 export const UIContext = createContext();
 
@@ -93,6 +94,7 @@ export default function UIandUX({
         setPopup={setPopup}
         setReload={setReload}
       />
+      {drag.x && drag.y && <Drag selectedItems={selectedItems} drag={drag} />}
     </UIContext.Provider>
   );
 }

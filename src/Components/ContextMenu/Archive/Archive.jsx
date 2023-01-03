@@ -2,8 +2,6 @@ import { useContext, useEffect } from "react";
 import { GeneralContext } from "../../Main/Main.jsx";
 import ArchivePopup from "./ArchivePopup.jsx";
 
-const { exec } = window.require("child_process");
-
 export default function Archive({
   contextMenu,
   subMenuClassNames,
@@ -30,22 +28,14 @@ export default function Archive({
     }
   }, [currentDirectory]);
 
-  const sevenZipPath = ".\\resources\\7zip\\7za.exe";
-
   return (
     <div className={subMenuClassNames()}>
       <button
         onClick={() => {
-          const cacheSelectedItems = selectedItems;
           setPopup({
-            body: (
-              <ArchivePopup
-                selectedItems={selectedItems}
-                cacheSelectedItems={cacheSelectedItems}
-              />
-            ),
+            body: <ArchivePopup selectedItems={selectedItems} />,
             ok: (
-              <button id="ok-settings" className={`button-${appTheme}`}>
+              <button id="ok-archive" className={`button-${appTheme}`}>
                 OK
               </button>
             ),
@@ -59,17 +49,10 @@ export default function Archive({
                 Cancel
               </button>
             ),
-            popupLabel: <h1 id="popup-label">Archive</h1>,
+            popupLabel: (
+              <h1 id="popup-label">Archive ({selectedItems.length}) items</h1>
+            ),
           });
-          // exec(
-          //   `${sevenZipPath} a "${
-          //     currentDirectory + currentDirectoryName
-          //   }.zip" "${selectedItems.join('" "')}"`,
-          //   (e, d) => {
-          //     if (e) return console.log(e);
-          //     console.log(d);
-          //   }
-          // );
         }}
       >
         Add To Archive
